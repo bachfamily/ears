@@ -1,0 +1,2 @@
+max definecommand E patcher inserttextobj ears.;
+max definecommandinstructions patcher E "ears object";

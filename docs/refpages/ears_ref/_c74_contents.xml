@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<root>
+<refpage name='ears.lace~.maxref.xml'/>
+<refpage name='ears.readtags.maxref.xml'/>
+<refpage name='ears.join~.maxref.xml'/>
+<refpage name='ears.playmp3~.maxref.xml'/>
+<refpage name='ears.crop~.maxref.xml'/>
+<refpage name='ears.rubberband~.maxref.xml'/>
+<refpage name='ears.read~.maxref.xml'/>
+<refpage name='ears.slice~.maxref.xml'/>
+<refpage name='ears.format~.maxref.xml'/>
+<refpage name='ears.unpack~.maxref.xml'/>
+<refpage name='ears.fromsamps~.maxref.xml'/>
+<refpage name='ears.resample~.maxref.xml'/>
+<refpage name='ears.onepole~.maxref.xml'/>
+<refpage name='ears.rot~.maxref.xml'/>
+<refpage name='ears.write~.maxref.xml'/>
+<refpage name='ears.tosamps~.maxref.xml'/>
+<refpage name='ears.info~.maxref.xml'/>
+<refpage name='ears.channel~.maxref.xml'/>
+<refpage name='ears.fromroll~.maxref.xml'/>
+<refpage name='ears.freeverb~.maxref.xml'/>
+<refpage name='ears.repeat~.maxref.xml'/>
+<refpage name='ears.shift~.maxref.xml'/>
+<refpage name='ears.pan~.maxref.xml'/>
+<refpage name='ears.envelope~.maxref.xml'/>
+<refpage name='ears.fade~.maxref.xml'/>
+<refpage name='ears.biquad.maxref.xml'/>
+<refpage name='ears.filterempty~.maxref.xml'/>
+<refpage name='ears.pack~.maxref.xml'/>
+<refpage name='ears.rev~.maxref.xml'/>
+<refpage name='ears.expr~.maxref.xml'/>
+<refpage name='ears.paulstretch~.maxref.xml'/>
+<refpage name='ears.trim~.maxref.xml'/>
+<refpage name='ears.normalize~.maxref.xml'/>
+<refpage name='ears.writetags.maxref.xml'/>
+<refpage name='ears.process~.maxref.xml'/>
+<refpage name='ears.reg~.maxref.xml'/>
+<refpage name='ears.mix~.maxref.xml'/>
+<refpage name='ears.gain~.maxref.xml'/>
+<refpage name='ears.split~.maxref.xml'/>
+</root>
