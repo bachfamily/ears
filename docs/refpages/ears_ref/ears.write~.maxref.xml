@@ -50,13 +50,12 @@
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="outnames" optional="1" type="symbol">
+		<objarg name="filenames" optional="1" type="symbol">
 			<digest>
-				Output buffer names
+				Output file names
 			</digest>
 			<description>
-				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'.
+				Sets the output file names for the incoming buffers
 			</description>
 		</objarg>
 	</objarglist>

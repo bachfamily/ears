@@ -3,7 +3,7 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 0,
+			"minor" : 1,
 			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
@@ -37,6 +37,7 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-1",
@@ -67,7 +68,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"id" : "obj-37",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -81,7 +82,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"chanoffset" : 2,
 					"id" : "obj-38",
 					"labels" : 0,
@@ -96,7 +97,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"chanoffset" : 3,
 					"id" : "obj-39",
 					"labels" : 0,
@@ -111,7 +112,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"chanoffset" : 4,
 					"id" : "obj-35",
 					"labels" : 0,
@@ -126,7 +127,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"chanoffset" : 5,
 					"id" : "obj-36",
 					"labels" : 0,
@@ -141,7 +142,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"chanoffset" : 6,
 					"id" : "obj-33",
 					"labels" : 0,
@@ -156,7 +157,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"chanoffset" : 7,
 					"id" : "obj-20",
 					"labels" : 0,
@@ -183,7 +184,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u965005869",
+					"buffername" : "u686010336",
 					"chanoffset" : 8,
 					"id" : "obj-22",
 					"maxclass" : "waveform~",
@@ -312,7 +313,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 69.0, 81.0, 204.0, 25.0 ],
+					"patching_rect" : [ 114.0, 84.0, 204.0, 25.0 ],
 					"text" : "Load a soundfile to be panned"
 				}
 
@@ -324,8 +325,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 15.0, 84.0, 48.0, 22.0 ],
-					"text" : "replace"
+					"patching_rect" : [ 15.0, 84.0, 97.0, 22.0 ],
+					"text" : "replace anton.aif"
 				}
 
 			}
@@ -488,7 +489,7 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 281.5, 84.0, 20.0, 20.0 ],
+					"patching_rect" : [ 326.5, 87.0, 20.0, 20.0 ],
 					"rounded" : 60.0,
 					"text" : "1",
 					"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ]

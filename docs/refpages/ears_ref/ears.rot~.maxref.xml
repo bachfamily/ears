@@ -198,7 +198,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds (default), Samples or Relative (0. to 1. as a percentage of the buffer length).
+				Sets the unit for time values: Milliseconds, Samples or Relative (0. to 1. as a percentage of the buffer length).
+				Object usually default to Milliseconds, except for <o>ears.repeat~</o> defaulting to relative.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />

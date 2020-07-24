@@ -200,12 +200,12 @@ int genre_map[genre_count] =
       147, 113, 18, 51, 130, 144, 60, 70, 31, 72, 27, 28 } ;
 #endif  // SORT_RUNTIME
 
-inline int GetGenreCount()
+int GetGenreCount()
 {
     return genre_count;
 }
 
-inline const char *GetGenreFromNum(int genre_id)
+const char *GetGenreFromNum(int genre_id)
 {
     if ((genre_id >= 0) && (genre_id < GetGenreCount()))
         return genre_table[genre_id];

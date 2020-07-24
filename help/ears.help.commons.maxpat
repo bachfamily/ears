@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 0,
+			"minor" : 1,
 			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 254.0, 79.0, 955.0, 611.0 ],
+		"rect" : [ 253.0, 79.0, 955.0, 611.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,7 @@
 		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontname" : "Arial",
@@ -51,7 +52,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -86,6 +87,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bubble" : 1,
@@ -473,9 +475,9 @@
 , 							{
 								"name" : "Default M4L",
 								"default" : 								{
-									"fontsize" : [ 11.0 ],
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
 									"fontname" : [ "Arial Bold" ],
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
+									"fontsize" : [ 11.0 ]
 								}
 ,
 								"parentstyle" : "",
@@ -484,9 +486,9 @@
 , 							{
 								"name" : "Default M4L Poletti",
 								"default" : 								{
-									"fontsize" : [ 10.0 ],
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
 									"fontname" : [ "Arial Bold" ],
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
+									"fontsize" : [ 10.0 ]
 								}
 ,
 								"parentstyle" : "",
@@ -495,9 +497,6 @@
 , 							{
 								"name" : "Default M4L-1",
 								"default" : 								{
-									"fontface" : [ 1 ],
-									"fontsize" : [ 11.0 ],
-									"fontname" : [ "Arial" ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -506,7 +505,10 @@
 										"angle" : 270.0,
 										"proportion" : 0.39
 									}
-
+,
+									"fontname" : [ "Arial" ],
+									"fontface" : [ 1 ],
+									"fontsize" : [ 11.0 ]
 								}
 ,
 								"parentstyle" : "",
@@ -532,8 +534,6 @@
 , 							{
 								"name" : "jbb",
 								"default" : 								{
-									"fontsize" : [ 9.0 ],
-									"fontname" : [ "Arial" ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -542,7 +542,9 @@
 										"angle" : 270.0,
 										"proportion" : 0.39
 									}
-
+,
+									"fontname" : [ "Arial" ],
+									"fontsize" : [ 9.0 ]
 								}
 ,
 								"parentstyle" : "",
@@ -613,14 +615,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 254.0, 105.0, 955.0, 585.0 ],
+						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -648,6 +650,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bubble" : 1,
@@ -950,7 +953,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -985,10 +988,10 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"buffername" : "u583009730",
-									"chanoffset" : 8,
 									"id" : "obj-37",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -1003,7 +1006,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u583009730",
-									"chanoffset" : 7,
 									"id" : "obj-38",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -1018,7 +1020,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u583009730",
-									"chanoffset" : 6,
 									"id" : "obj-39",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -1033,7 +1034,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u583009730",
-									"chanoffset" : 5,
 									"id" : "obj-35",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -1048,7 +1048,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u583009730",
-									"chanoffset" : 4,
 									"id" : "obj-36",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -1063,7 +1062,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u583009730",
-									"chanoffset" : 3,
 									"id" : "obj-33",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -1078,7 +1076,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u583009730",
-									"chanoffset" : 2,
 									"id" : "obj-7",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -1556,14 +1553,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
+						"rect" : [ 253.0, 105.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1591,6 +1588,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bubble" : 1,
@@ -1791,6 +1789,7 @@
 , 							{
 								"box" : 								{
 									"buffername" : "mycooloutputbuffer",
+									"chanoffset" : 0,
 									"id" : "obj-28",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1903,7 +1902,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 606.0, 159.0, 289.0, 108.0 ],
-									"text" : "3) DYNAMIC (beware!!!)\nEach time a new evaluation is requested, a NEW buffer is created, and assigned a name.\nBeware: this may creates a lot of .\nAt any point, you can start over using the already used names via the \"reset\" message (hence looping the \"name cycle\"). "
+									"text" : "3) DYNAMIC (beware!!!)\nEach time a new evaluation is requested, a NEW buffer is created, and assigned a name.\nBeware: this may creates a lot of buffers.\nAt any point, you can start over using the already used names via the \"reset\" message (hence looping the \"name cycle\"). "
 								}
 
 							}
@@ -2163,7 +2162,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -2198,6 +2197,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-26",
@@ -2636,7 +2636,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -2671,6 +2671,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"buffername" : "earsBufAnton",

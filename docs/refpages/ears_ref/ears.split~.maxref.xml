@@ -30,7 +30,7 @@
 		</inlet>
 		<inlet id="1" type="INLET_TYPE">
 			<digest>
-				Depending on the <m>mode</m> this can be the segment duration, the number of segments, the threh
+				Depending on the <m>mode</m> this can be the segment duration, the number of segments, the list of split point the thres
 			</digest>
 			<description>
 			</description>
@@ -66,12 +66,12 @@
 				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'.
 			</description>
 		</objarg>
-		<objarg name="duration/number/threshold" optional="1" type="number">
+		<objarg name="algorithm_parameters" optional="1" type="number">
 			<digest>
-				Segment duration or number or threshold
+				Segment duration or number or list of split points or threshold
 			</digest>
 			<description>
-				Depending on the <m>mode</m> attribute, sets the segment duration, the number of segments or the threshold
+				Depending on the <m>mode</m> attribute, sets the segment duration, the number of segments, or the list of split points or the threshold
 			</description>
 		</objarg>
 	</objarglist>
@@ -200,7 +200,8 @@
 				Sets the split mode: <br />
 				0 (Duration): buffer is split into equally long chunks, whose duration is set; <br />
 				1 (Number): buffer is split into a fixed number of buffers (such number is set); <br />
-				2 (Silence): buffer is split according to silence regions.
+				2 (List): buffer is split via a series of split points given as parameter (right inlet); <br />
+				3 (Silence): buffer is split according to silence regions.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Split Mode" />
@@ -258,7 +259,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds (default), Samples or Relative (0. to 1. as a percentage of the buffer length).
+				Sets the unit for time values: Milliseconds, Samples or Relative (0. to 1. as a percentage of the buffer length).
+				Object usually default to Milliseconds, except for <o>ears.repeat~</o> defaulting to relative.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
@@ -282,7 +284,7 @@
 		</entry>
 		<entry name ="Inlet 2 (number/llll)">
 			<description>
-				Depending on the <m>mode</m> this can be the segment duration, the number of segments, the threh.
+				Depending on the <m>mode</m> this can be the segment duration, the number of segments, the list of split point the thres.
 			</description>
 		</entry>
 	</misc>

@@ -6,7 +6,7 @@
 	ears.biquad~
  
 	@realname
-	ears.biquad
+	ears.biquad~
  
     @hiddenalias
     ears.biquad

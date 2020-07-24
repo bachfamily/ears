@@ -66,7 +66,7 @@
 				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'.
 			</description>
 		</objarg>
-		<objarg name="shift" optional="1" type="number">
+		<objarg name="slice_point" optional="1" type="number">
 			<digest>
 				Slice position
 			</digest>
@@ -205,7 +205,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds (default), Samples or Relative (0. to 1. as a percentage of the buffer length).
+				Sets the unit for time values: Milliseconds, Samples or Relative (0. to 1. as a percentage of the buffer length).
+				Object usually default to Milliseconds, except for <o>ears.repeat~</o> defaulting to relative.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
