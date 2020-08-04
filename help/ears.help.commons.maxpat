@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 253.0, 79.0, 955.0, 611.0 ],
+		"rect" : [ 367.0, 79.0, 955.0, 611.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -106,13 +106,11 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-15",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.625, 518.0, 359.0, 38.0 ],
-									"text" : "earsHelpCommonPolybuf.1 earsHelpCommonPolybuf.2 earsHelpCommonPolybuf.3"
+									"patching_rect" : [ 9.625, 518.0, 359.0, 23.0 ]
 								}
 
 							}
@@ -960,7 +958,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
+						"rect" : [ 367.0, 105.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1560,7 +1558,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 253.0, 105.0, 955.0, 585.0 ],
+						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1789,7 +1787,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "mycooloutputbuffer",
-									"chanoffset" : 0,
 									"id" : "obj-28",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

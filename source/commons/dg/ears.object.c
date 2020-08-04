@@ -1997,17 +1997,6 @@ t_llll *earsbufobj_llllelem_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, 
     return out;
 }
 
-
-double ears_ratio_to_cents(double ratio)
-{
-    return 1200 * log2(ratio);
-}
-
-double ears_cents_to_ratio(double cents)
-{
-    return pow(2, cents/1200.);
-}
-
 double earsbufobj_input_to_cents(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_pitchunit) {

@@ -274,6 +274,10 @@ double ears_envelope_iterator_walk_interp(t_ears_envelope_iterator *eei, long sa
 void ears_envelope_get_max_x(t_llllelem *el, t_atom *a_max);
 void ears_envelope_iterator_reset(t_ears_envelope_iterator *eei);
 
+// conversions
+double ears_ratio_to_cents(double ratio);
+double ears_cents_to_ratio(double cents);
+
 
 
 

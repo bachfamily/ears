@@ -157,8 +157,12 @@ void revmodel::processreplace(float *input, float *output, long numsamples)
     float *out = (float *)malloc(numchannels * sizeof(float));
     float inputmix;
 
-    double w1 = (1 - width) * 1 + width * 1./numchannels;
-    double w2 = (numchannels <= 1 ? 0. : (1. - w1)/(numchannels - 1));
+    wet1 = wet*(width/2 + 0.5f);
+    wet2 = wet*((1-width)/2);
+
+    
+    double w1 = wet * ((1 - width) * 1 + width * 1./numchannels);
+    double w2 = numchannels <= 1 ? 0. : (wet - w1)/(numchannels - 1);
     
 	while (numsamples-- > 0)
     {

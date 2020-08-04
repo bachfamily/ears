@@ -3195,3 +3195,15 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
 
 
 
+
+
+double ears_ratio_to_cents(double ratio)
+{
+    return 1200 * log2(ratio);
+}
+
+double ears_cents_to_ratio(double cents)
+{
+    return pow(2, cents/1200.);
+}
+
