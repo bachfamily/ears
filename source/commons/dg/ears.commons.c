@@ -481,8 +481,8 @@ t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizein
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
-            t_atom_long	new_framecount   = buffer_getframecount(buf);			// should be always equal to sizeinsamps!
-            sysmem_copyptr(temp, sample, channelcount * new_framecount * sizeof(float));
+            t_atom_long	new_framecount = buffer_getframecount(buf);			// should be always equal to sizeinsamps!
+            sysmem_copyptr(temp, sample, channelcount * MIN(new_framecount, framecount) * sizeof(float));
             buffer_setdirty(buf);
             buffer_unlocksamples(buf);
         }
@@ -1299,7 +1299,7 @@ t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
                         }
 
                     
-                    memset(dest_sample, 0, framecount * channelcount * sizeof(float));
+                    memset(dest_sample, 0, framecount * num_out_channels * sizeof(float));
                     
                     for (long i = 0; i < framecount; i++) {
                         for (long c = 0; c < num_out_channels; c++)
@@ -2289,7 +2289,8 @@ t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sour
     }
 
     total_length = sample_end[num_sources-1]; // global length
-    ears_buffer_set_size(ob, dest, total_length);
+//    ears_buffer_set_size(ob, dest, total_length);
+    ears_buffer_set_size_and_numchannels(ob, dest, total_length, channelcount);
     
     dest_sample = buffer_locksamples(dest);
     if (!dest_sample) {
