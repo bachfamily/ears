@@ -171,14 +171,14 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
         x->native_mp3_handling = 1;
         x->filenames = llll_make();
         
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
-
-        earsbufobj_init((t_earsbufobj *)x, 0);
 
         attr_args_process(x, argc, argv);
         

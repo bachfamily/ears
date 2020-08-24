@@ -175,6 +175,8 @@ t_buf_paulstretch *buf_paulstretch_new(t_symbol *s, short argc, t_atom *argv)
         x->e_winsize = 250; // 250 ms as default
         x->e_spectral = true;
         
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
@@ -183,8 +185,6 @@ t_buf_paulstretch *buf_paulstretch_new(t_symbol *s, short argc, t_atom *argv)
             llll_appendhatom_clone(x->e_factor, &args->l_head->l_hatom);
         }
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
-
         attr_args_process(x, argc, argv);
 
         earsbufobj_setup((t_earsbufobj *)x, "E4", "E", names);

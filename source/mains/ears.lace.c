@@ -138,6 +138,8 @@ t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_lace*)object_alloc_debug(s_tag_class);
     if (x) {
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
 
@@ -145,9 +147,6 @@ t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
 
-
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
-        
         attr_args_process(x, argc, argv); // this must be called before llllobj_obj_setup
 
         earsbufobj_setup((t_earsbufobj *)x, "ee", "e", names);

@@ -310,11 +310,11 @@ t_buf_pan *buf_pan_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Pan amount
         // @description Sets the initial pan amount
 
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
-
         if (args && args->l_head) {
             x->num_out_channels = MAX(1, hatom_getlong(&args->l_head->l_hatom));
             

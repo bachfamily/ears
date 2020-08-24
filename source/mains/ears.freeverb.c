@@ -250,10 +250,6 @@ t_buf_freeverb *buf_freeverb_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_freeverb*)object_alloc_debug(s_tag_class);
     if (x) {
-        // @arg 0 @name outnames @optional 1 @type symbol
-        // @digest Output buffer names
-        // @description @copy EARS_DOC_OUTNAME_ATTR
-
         x->e_wet = initialwet;
         x->e_dry = initialdry;
         x->e_room_size = initialroom;
@@ -264,10 +260,14 @@ t_buf_freeverb *buf_freeverb_new(t_symbol *s, short argc, t_atom *argv)
         
         x->e_model = new revmodel();
         
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+
+        // @arg 0 @name outnames @optional 1 @type symbol
+        // @digest Output buffer names
+        // @description @copy EARS_DOC_OUTNAME_ATTR
+        
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
         attr_args_process(x, argc, argv);
 

@@ -158,6 +158,8 @@ t_buf_trim *buf_trim_new(t_symbol *s, short argc, t_atom *argv)
         x->e_ampthreshold = 0.;
         x->e_trim_start = x->e_trim_end = 1;
 
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        
         // @arg 0 @name outname @optional 1 @type symbol
         // @digest Output buffer name
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -171,8 +173,6 @@ t_buf_trim *buf_trim_new(t_symbol *s, short argc, t_atom *argv)
         
         if (args && args->l_head && is_hatom_number(&args->l_head->l_hatom))
             x->e_ampthreshold = hatom_getdouble(&args->l_head->l_hatom);
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         attr_args_process(x, argc, argv);
         

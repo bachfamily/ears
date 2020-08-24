@@ -175,6 +175,8 @@ t_buf_fade *buf_fade_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->fadein_type = x->fadeout_type = EARS_FADE_LINEAR;
         
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+
         // @arg 0 @name outname @optional 1 @type symbol
         // @digest Output buffer name
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -207,8 +209,6 @@ t_buf_fade *buf_fade_new(t_symbol *s, short argc, t_atom *argv)
                 x->fadeout = hatom_getdouble(&cur->l_hatom);
         }
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
-
         attr_args_process(x, argc, argv);
 
         earsbufobj_setup((t_earsbufobj *)x, "Eff", "E", names);

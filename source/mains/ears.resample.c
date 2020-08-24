@@ -152,14 +152,14 @@ t_buf_resample *buf_resample_new(t_symbol *s, short argc, t_atom *argv)
         x->window_width = 11; // was: 7
         llll_appenddouble(x->resamplefactor, 1.);
         
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         // @arg 1 @name resamplingfactor @optional 1 @type number
         // @digest Resampling factor

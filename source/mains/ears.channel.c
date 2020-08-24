@@ -150,11 +150,11 @@ t_buf_channel *buf_channel_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Channel(s) to extract
         // @description Sets the number of channel or the list of channels to be extracted
 
+        earsbufobj_init((t_earsbufobj *)x, 0);
+
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
-
         if (args) {
             llll_free(x->channel);
             x->channel = llll_clone(args);

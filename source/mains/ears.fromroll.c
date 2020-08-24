@@ -333,6 +333,8 @@ t_buf_fromroll *buf_fromroll_new(t_symbol *s, short argc, t_atom *argv)
 
         x->fadein_type = x->fadeout_type = EARS_FADE_EQUALPOWER;
         
+        earsbufobj_init((t_earsbufobj *)x, 0);
+
         // @arg 0 @name outname @optional 1 @type symbol
         // @digest Output buffer name
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -350,8 +352,6 @@ t_buf_fromroll *buf_fromroll_new(t_symbol *s, short argc, t_atom *argv)
                 cur = cur ? cur->l_next : NULL;
             }
         }
-        
-        earsbufobj_init((t_earsbufobj *)x, 0);
         
         attr_args_process(x, argc, argv);
 

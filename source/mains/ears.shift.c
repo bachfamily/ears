@@ -141,6 +141,8 @@ t_buf_shift *buf_shift_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->amount = llll_from_text_buf("0.", false);
 
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+
         // @arg 0 @name outname @optional 1 @type symbol
         // @digest Output buffer name
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -172,8 +174,6 @@ t_buf_shift *buf_shift_new(t_symbol *s, short argc, t_atom *argv)
                 cur = cur ? cur->l_next : NULL;
             }
         }
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         attr_args_process(x, argc, argv);
         

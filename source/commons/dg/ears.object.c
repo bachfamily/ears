@@ -162,6 +162,9 @@ t_symbol *ears_bufferref_to_name(t_buffer_ref *ref)
 // Important: before calling earsbufobj_buffer_link, the buffer status of the corresponding buffer must be up to date
 void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store_index, long buffer_index, t_symbol *buf_name)
 {
+    if (!buf_name)
+        return; // to do: handle better
+    
     // retrieving references
     t_buffer_ref **ref = NULL;
     t_symbol **name = NULL;
@@ -283,7 +286,7 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
             store->stored_buf[i].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
         }
         store->num_stored_bufs = new_size;
-        if (!(type == EARSBUFOBJ_IN && e_ob->l_flags & EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS))
+        if (!(type == EARSBUFOBJ_IN && (!(e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS))))
             if (also_create_unique_buffers)
                 for (i = old_num_bufs; i < new_size; i++) {
                     t_symbol *s = NULL;
@@ -405,23 +408,46 @@ char llll_contains_only_symbols_and_at_least_one(t_llll *ll)
 
 
 // destructive on args
-t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args)
+t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, char assign_naming_policy)
 {
     t_llll *names = NULL;
-    if (args && args->l_head) {
-        if (hatom_gettype(&args->l_head->l_hatom) == H_LLLL && llll_contains_only_symbols_and_at_least_one(hatom_getllll(&args->l_head->l_hatom))) {
-            names = llll_get();
-            llll_appendhatom_clone(names, &args->l_head->l_hatom);
-            llll_behead(args);
-        } else if (hatom_gettype(&args->l_head->l_hatom) == H_SYM) {
-            names = symbol2llll(hatom_getsym(&args->l_head->l_hatom));
-            llll_behead(args);
+    if (args) {
+        if (assign_naming_policy) {
+            if (args->l_head && hatom_gettype(&args->l_head->l_hatom) == H_SYM) {
+                t_symbol *s = hatom_getsym(&args->l_head->l_hatom);
+                t_atom av;
+                if (s == gensym("=")) {
+                    atom_setsym(&av, gensym("copy"));
+                    earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
+                    llll_behead(args);
+                }
+                if (s == gensym("*")) {
+                    atom_setsym(&av, gensym("dynamic"));
+                    earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
+                    llll_behead(args);
+                }
+                if (s == gensym("-")) {
+                    atom_setsym(&av, gensym("static"));
+                    earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
+                    e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+                    llll_behead(args);
+                }
+            }
+        }
+        if (args->l_head) {
+            if (hatom_gettype(&args->l_head->l_hatom) == H_LLLL && llll_contains_only_symbols_and_at_least_one(hatom_getllll(&args->l_head->l_hatom))) {
+                names = llll_get();
+                llll_appendhatom_clone(names, &args->l_head->l_hatom);
+                llll_behead(args);
+            } else if (hatom_gettype(&args->l_head->l_hatom) == H_SYM) {
+                names = symbol2llll(hatom_getsym(&args->l_head->l_hatom));
+                llll_behead(args);
+            }
         }
     }
     
     return names;
 }
-
 void earsbufobj_init(t_earsbufobj *e_ob, long flags)
 {
     ears_hashtab_setup();
@@ -475,7 +501,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                 }
                 earsbufobj_resize_store(e_ob, EARSBUFOBJ_IN, j, 1, false);
                 e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
-                if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS)) {
+                if (e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS) {
                     e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
                     earsbufobj_buffer_link(e_ob, EARSBUFOBJ_IN, j, 0, symbol_unique());
                 }
@@ -574,8 +600,12 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                     llll_appendsym(e_ob->l_outnames, e_ob->l_outstore[j].stored_buf[0].l_name);
                 } else {
                     t_llll *ll = llll_get();
-                    for (h = 0; h < outstoresize; h++)
-                        llll_appendsym(ll, e_ob->l_outstore[j].stored_buf[h].l_name);
+                    for (h = 0; h < outstoresize; h++) {
+                        if (e_ob->l_outstore[j].stored_buf[h].l_name)
+                            llll_appendsym(ll, e_ob->l_outstore[j].stored_buf[h].l_name);
+                        else
+                            llll_appendsym(ll, _sym_none);
+                    }
                     llll_appendllll(e_ob->l_outnames, ll);
                 }
                 
@@ -1477,7 +1507,7 @@ void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
             case EARSBUFOBJ_IN:
                 if (store_idx >= 0 && store_idx < e_ob->l_numbufins && buffer_idx >= 0 && buffer_idx < e_ob->l_instore[store_idx].num_stored_bufs) {
                     t_earsbufobj_store *store = &e_ob->l_instore[store_idx];
-                    if (e_ob->l_flags & EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS) {
+                    if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS)) {
                         store->stored_buf[buffer_idx].l_name = buffername;
                         if (!store->stored_buf[buffer_idx].l_ref)
                             store->stored_buf[buffer_idx].l_ref = buffer_ref_new((t_object *)e_ob, buffername);

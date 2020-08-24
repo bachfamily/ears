@@ -146,6 +146,8 @@ t_buf_unpack *buf_unpack_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_unpack*)object_alloc_debug(s_tag_class);
     if (x) {
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
 
@@ -161,8 +163,6 @@ t_buf_unpack *buf_unpack_new(t_symbol *s, short argc, t_atom *argv)
 
         outlets = args && args->l_head ? args->l_size + 1 : 1;
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
-
         attr_args_process(x, argc, argv); // this must be called before llllobj_obj_setup
 
         outlets = MIN(outlets, LLLL_MAX_OUTLETS);

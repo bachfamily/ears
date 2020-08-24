@@ -149,6 +149,8 @@ t_buf_crop *buf_crop_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Output buffer name
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = NULL;
         t_llllelem *cur = args ? args->l_head : NULL;
@@ -189,8 +191,6 @@ t_buf_crop *buf_crop_new(t_symbol *s, short argc, t_atom *argv)
                 }
             }
         }
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         attr_args_process(x, argc, argv);
         

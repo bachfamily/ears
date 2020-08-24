@@ -150,11 +150,11 @@ t_buf_biquad *buf_biquad_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Biquad coefficients
         // @description Sets the biquad coefficients
 
+        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
-
         if (args && args->l_head) {
             llll_free(x->coefficients);
             x->coefficients = llll_clone(args);

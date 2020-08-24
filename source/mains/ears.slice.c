@@ -147,7 +147,9 @@ t_buf_slice *buf_slice_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_slice*)object_alloc_debug(s_tag_class);
     if (x) {
         x->where = llll_from_text_buf("0", false);
-        
+
+        earsbufobj_init((t_earsbufobj *)x, 0);
+
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -158,8 +160,6 @@ t_buf_slice *buf_slice_new(t_symbol *s, short argc, t_atom *argv)
 
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
         
         if (args && args->l_head) {
             llll_clear(x->where);

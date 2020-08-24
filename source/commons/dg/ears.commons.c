@@ -2221,7 +2221,7 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
 
 
 t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
-                              long *xfade_left_samples, long *xfade_right_samples, char also_fade_boundaries,
+                              long *xfade_samples, char also_fade_boundaries,
                               e_ears_fade_types fade_type, double fade_curve)
 {
     t_ears_err err = EARS_ERR_NONE;
@@ -2231,7 +2231,7 @@ t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sour
         return EARS_ERR_NONE;
     } else if (num_sources == 1) {
         if (also_fade_boundaries)
-            return ears_buffer_fade(ob, source[0], dest, xfade_right_samples[0], xfade_left_samples[0], fade_type, fade_type, fade_curve, fade_curve);
+            return ears_buffer_fade(ob, source[0], dest, xfade_samples[0], xfade_samples[0], fade_type, fade_type, fade_curve, fade_curve);
         else
             return ears_buffer_clone(ob, source[0], dest);
     }
@@ -2273,18 +2273,18 @@ t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sour
         if (i == 0) {
             sample_start[i] = 0;
             sample_end[i] = sample_start[i] + num_samples[i];
-            sample_fadein_end[i] = also_fade_boundaries ? sample_start[i] + MIN(xfade_right_samples[i]/2, num_samples[i]/2) : 0;
-            sample_fadeout_start[i] = sample_end[i] - MIN(MIN(xfade_left_samples[i]/2, num_samples[i]/2), num_samples[i+1]/2);
+            sample_fadein_end[i] = also_fade_boundaries ? sample_start[i] + MIN(xfade_samples[i]/2, num_samples[i]/2) : 0;
+            sample_fadeout_start[i] = sample_end[i] - MIN(MIN(xfade_samples[i]/2, num_samples[i]/2), num_samples[i+1]/2);
         } else if (i == num_sources - 1) {
             sample_start[i] = sample_fadeout_start[i-1];
             sample_end[i] = sample_start[i] + num_samples[i];
-            sample_fadein_end[i] = sample_start[i] + MIN(MIN(xfade_right_samples[i]/2, num_samples[i]/2), num_samples[i-1]/2);
-            sample_fadeout_start[i] = also_fade_boundaries ? sample_end[i] - MIN(xfade_left_samples[i]/2, num_samples[i]/2) : sample_end[i];
+            sample_fadein_end[i] = sample_start[i] + MIN(MIN(xfade_samples[i]/2, num_samples[i]/2), num_samples[i-1]/2);
+            sample_fadeout_start[i] = also_fade_boundaries ? sample_end[i] - MIN(xfade_samples[i]/2, num_samples[i]/2) : sample_end[i];
         } else {
             sample_start[i] = sample_fadeout_start[i-1];
             sample_end[i] = sample_start[i] + num_samples[i];
-            sample_fadein_end[i] = sample_start[i] + MIN(MIN(xfade_right_samples[i]/2, num_samples[i]/2), num_samples[i-1]/2);
-            sample_fadeout_start[i] = sample_end[i] - MIN(MIN(xfade_left_samples[i]/2, num_samples[i]/2), num_samples[i+1]/2);
+            sample_fadein_end[i] = sample_start[i] + MIN(MIN(xfade_samples[i]/2, num_samples[i]/2), num_samples[i-1]/2);
+            sample_fadeout_start[i] = sample_end[i] - MIN(MIN(xfade_samples[i]/2, num_samples[i]/2), num_samples[i+1]/2);
         }
     }
 

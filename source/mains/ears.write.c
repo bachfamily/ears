@@ -163,7 +163,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
         else
             x->filenames = llll_make();
 
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
+        earsbufobj_init((t_earsbufobj *)x, 0);
 
         attr_args_process(x, argc, argv);
         

@@ -297,6 +297,9 @@ t_buf_info *buf_info_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_info*)object_alloc_debug(s_tag_class);
     if (x) {
+
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
         // @arg 0 @name tags @optional 0 @type symbol/list
         // @digest Required buffer information tags
         // @description A list of symbols among the following ones: "min", "max", "maxabs", "rms", "length"
@@ -320,8 +323,6 @@ t_buf_info *buf_info_new(t_symbol *s, short argc, t_atom *argv)
             x->num_outlets++;
         }
         outlet_str[x->num_outlets] = 0;
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
         
         if (x->num_outlets <= 0) {
             llll_free(args);

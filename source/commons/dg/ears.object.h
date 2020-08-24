@@ -128,7 +128,7 @@ typedef enum _earsbufobj_namings
 typedef enum _earsbufobj_flag
 {
     EARSBUFOBJ_FLAG_NONE = 0,
-    EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
+    EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
     EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,   ///< Supports naming copy, i.e. "inplace" modification
 } e_earsbufobj_flag;
 
@@ -215,10 +215,10 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
 void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx, char copy_format_to_corresponding_output_buffer);
 t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av);
 
-
+t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv);
 void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob);
 
-t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args);
+t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, char assign_naming_policy = true);
 
 t_buffer_ref *earsbufobj_get_inlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx);

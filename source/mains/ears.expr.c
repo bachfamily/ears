@@ -177,7 +177,8 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
 
         x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
         
-        
+        earsbufobj_init((t_earsbufobj *)x, 0);
+
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -268,7 +269,6 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
             temp[i+1] = 'e';
         temp[i+1] = 0;
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
         attr_args_process(x, argc, argv);
         earsbufobj_setup((t_earsbufobj *)x, temp, "e", names);
 

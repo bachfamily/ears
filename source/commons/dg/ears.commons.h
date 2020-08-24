@@ -171,7 +171,7 @@ t_ears_err ears_buffer_fade_ms_inplace(t_object *ob, t_buffer_obj *buf, long fad
 
 
 t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
-                              long *xfade_left_samples, long *xfade_right_samples, char also_fade_boundaries,
+                              long *xfade_samples, char also_fade_boundaries,
                               e_ears_fade_types fade_type, double fade_curve);
 t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels); // also work inplace, with source == dest
 t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *env, char env_is_in_decibel); // also work inplace, with source == dest

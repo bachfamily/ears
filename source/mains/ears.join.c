@@ -49,19 +49,10 @@
 #include "ears.object.h"
 
 
-enum {
-    EARS_CONCAT_XFADE_AMOUNT_MS = 0,
-    EARS_CONCAT_XFADE_AMOUNT_SAMPS = 1,
-    EARS_CONCAT_XFADE_AMOUNT_PERCENTAGE = 2,
-};
-
-
 typedef struct _buf_join {
     t_earsbufobj       e_ob;
     
-    double             xfade_left;
-    double             xfade_right;
-    char               xfade_amount_mode; /// see the enum above
+    double             xfade;
     
     char               xfade_type;
     double             xfade_curve;
@@ -132,19 +123,14 @@ int C74_EXPORT main(void)
     // @description Sets the curve parameter for the crossfade (for fades of type Curve and S-Curve only).
     // The parameters goes from -1 to 1, 0 being linear (default).
 
-    CLASS_ATTR_DOUBLE(c, "xfadeleft", 0, t_buf_join, xfade_left);
-    CLASS_ATTR_STYLE_LABEL(c,"xfadeleft",0,"text","Left Crossfade Duration");
-    CLASS_ATTR_BASIC(c, "xfadeleft", 0);
-    // @description Sets the duration of the left portion of the crossfade (before junction point).
+    CLASS_ATTR_DOUBLE(c, "xfade", 0, t_buf_join, xfade);
+    CLASS_ATTR_STYLE_LABEL(c,"xfade",0,"text","Crossfade Duration");
+    CLASS_ATTR_BASIC(c, "xfade", 0);
+    // @description Sets the duration of the crossfade.
     // Unit is set via the <m>timeunit</m> attribute.
 
-    CLASS_ATTR_DOUBLE(c, "xfaderight", 0, t_buf_join, xfade_right);
-    CLASS_ATTR_STYLE_LABEL(c,"xfaderight",0,"text","Right Crossfade Duration");
-    CLASS_ATTR_BASIC(c, "xfaderight", 0);
-    // @description Sets the duration of the right portion of the crossfade (after junction point).
-    // Unit is set via the <m>timeunit</m> attribute.
-    
     CLASS_ATTR_CHAR(c, "fadeboundaries", 0, t_buf_join, also_fade_first_and_last);
+    CLASS_ATTR_STYLE_LABEL(c,"fadeboundaries",0,"text","onoff");
     CLASS_ATTR_STYLE_LABEL(c,"fadeboundaries",0,"text","Fade Beginning And End");
     // @description Toggles the ability to also fade the beginning of the first sample and the end of the last sample
 
@@ -182,10 +168,11 @@ t_buf_join *buf_join_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_join*)object_alloc_debug(s_tag_class);
     if (x) {
         x->xfade_type = EARS_FADE_EQUALPOWER;
-        x->xfade_left = x->xfade_right = 0;
-        x->xfade_amount_mode = EARS_CONCAT_XFADE_AMOUNT_MS;
+        x->xfade = 0;
         x->also_fade_first_and_last = true;
         
+        earsbufobj_init((t_earsbufobj *)x, 0);
+
         // @arg 0 @name outname @optional 1 @type symbol
         // @digest Output buffer name
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -210,17 +197,10 @@ t_buf_join *buf_join_new(t_symbol *s, short argc, t_atom *argv)
             // If two numbers are provided, they are the duration of the left and right cross fade regions (units always depend
             // on the <m>timeunit</m> attribute). <br />
             if (cur && is_hatom_number(&cur->l_hatom)) {
-                x->xfade_left = x->xfade_right = hatom_getdouble(&cur->l_hatom);
-                cur = cur ? cur->l_next : NULL;
-            }
-
-            if (cur && is_hatom_number(&cur->l_hatom)) {
-                x->xfade_right = hatom_getdouble(&cur->l_hatom);
+                x->xfade = hatom_getdouble(&cur->l_hatom);
                 cur = cur ? cur->l_next : NULL;
             }
         }
-        
-        earsbufobj_init((t_earsbufobj *)x, 0);
         
         attr_args_process(x, argc, argv);
 
@@ -245,27 +225,24 @@ void buf_join_bang(t_buf_join *x)
     long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
     
     t_buffer_obj **inbufs = (t_buffer_obj **)bach_newptrclear(num_buffers * sizeof(t_buffer_obj *));
-    long *xfade_left_samps = (long *)bach_newptrclear(num_buffers * sizeof(long));
-    long *xfade_right_samps = (long *)bach_newptrclear(num_buffers * sizeof(long));
+    long *xfade_samps = (long *)bach_newptrclear(num_buffers * sizeof(long));
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     for (long count = 0; count < num_buffers; count++) {
-        xfade_left_samps[count] = earsbufobj_input_to_samps((t_earsbufobj *)x, x->xfade_left, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count));
-        xfade_right_samps[count] = earsbufobj_input_to_samps((t_earsbufobj *)x, x->xfade_right, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count));
+        xfade_samps[count] = earsbufobj_input_to_samps((t_earsbufobj *)x, x->xfade, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count));
         inbufs[count] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
     }
     
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
     
-    ears_buffer_concat((t_object *)x, inbufs, num_buffers, out, xfade_left_samps, xfade_right_samps, x->also_fade_first_and_last, (e_ears_fade_types)x->xfade_type, x->xfade_curve);
+    ears_buffer_concat((t_object *)x, inbufs, num_buffers, out, xfade_samps, x->also_fade_first_and_last, (e_ears_fade_types)x->xfade_type, x->xfade_curve);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     
     bach_freeptr(inbufs);
-    bach_freeptr(xfade_left_samps);
-    bach_freeptr(xfade_right_samps);
+    bach_freeptr(xfade_samps);
     
 }
 

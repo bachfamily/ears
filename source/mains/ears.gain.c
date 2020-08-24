@@ -148,6 +148,8 @@ t_buf_gain *buf_gain_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->gain = llll_from_text_buf("1.", false);
         
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -163,8 +165,6 @@ t_buf_gain *buf_gain_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
-
         if (args && args->l_head) {
             llll_clear(x->gain);
             llll_appendhatom_clone(x->gain, &args->l_head->l_hatom);

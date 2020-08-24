@@ -336,6 +336,8 @@ t_buf_rubberband *buf_rubberband_new(t_symbol *s, short argc, t_atom *argv)
         x->e_pitchmode = 0;
         x->e_blocksize = 20;
         
+        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        
         // @arg 1 @type float/list/llll @digest Stretch factor or envelope
         // @description Sets the stretch factor, either as a single number or as an llll
         // containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>] [<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
@@ -361,8 +363,6 @@ t_buf_rubberband *buf_rubberband_new(t_symbol *s, short argc, t_atom *argv)
                 llll_appendhatom_clone(x->e_pitchshift_env, &args->l_head->l_next->l_hatom);
             }
         }
-
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS | EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
         attr_args_process(x, argc, argv);
 

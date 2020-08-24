@@ -181,14 +181,14 @@ t_buf_format *buf_format_new(t_symbol *s, short argc, t_atom *argv)
         x->resample = true;
         x->channelmode = EARS_CHANNELCONVERTMODE_CYCLE;
         
+        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
-        
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
         
         attr_args_process(x, argc, argv);
 
@@ -223,7 +223,8 @@ void buf_format_bang(t_buf_format *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        ears_buffer_clone((t_object *)x, in, out);
+        if (in != out)
+            ears_buffer_clone((t_object *)x, in, out);
         
         if (sr > 0) {
             double curr_sr = ears_buffer_get_sr((t_object *)x, out);

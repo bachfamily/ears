@@ -149,10 +149,10 @@ t_buf_envelope *buf_envelope_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
 
+        earsbufobj_init((t_earsbufobj *)x, 0);
+
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
-        
-        earsbufobj_init((t_earsbufobj *)x, 0);
         
         attr_args_process(x, argc, argv);
 

@@ -135,7 +135,7 @@ t_buf_tosamps *buf_tosamps_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_tosamps*)object_alloc_debug(s_tag_class);
     if (x) {
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
+        earsbufobj_init((t_earsbufobj *)x, 0);
         attr_args_process(x, argc, argv);
         earsbufobj_setup((t_earsbufobj *)x, "e", "4", NULL);
     }

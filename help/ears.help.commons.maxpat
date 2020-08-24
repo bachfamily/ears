@@ -474,8 +474,8 @@
 								"name" : "Default M4L",
 								"default" : 								{
 									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontname" : [ "Arial Bold" ],
-									"fontsize" : [ 11.0 ]
+									"fontsize" : [ 11.0 ],
+									"fontname" : [ "Arial Bold" ]
 								}
 ,
 								"parentstyle" : "",
@@ -485,8 +485,8 @@
 								"name" : "Default M4L Poletti",
 								"default" : 								{
 									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontname" : [ "Arial Bold" ],
-									"fontsize" : [ 10.0 ]
+									"fontsize" : [ 10.0 ],
+									"fontname" : [ "Arial Bold" ]
 								}
 ,
 								"parentstyle" : "",
@@ -504,9 +504,9 @@
 										"proportion" : 0.39
 									}
 ,
+									"fontsize" : [ 11.0 ],
 									"fontname" : [ "Arial" ],
-									"fontface" : [ 1 ],
-									"fontsize" : [ 11.0 ]
+									"fontface" : [ 1 ]
 								}
 ,
 								"parentstyle" : "",
@@ -541,8 +541,8 @@
 										"proportion" : 0.39
 									}
 ,
-									"fontname" : [ "Arial" ],
-									"fontsize" : [ 9.0 ]
+									"fontsize" : [ 9.0 ],
+									"fontname" : [ "Arial" ]
 								}
 ,
 								"parentstyle" : "",
@@ -958,7 +958,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 367.0, 105.0, 955.0, 585.0 ],
+						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1558,7 +1558,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
+						"rect" : [ 367.0, 105.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1588,6 +1588,62 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-39",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 762.0, 523.0, 145.0, 40.0 ],
+									"presentation_linecount" : 2,
+									"text" : "Shortcut for @naming dynamic"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-38",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 629.0, 531.5, 131.0, 23.0 ],
+									"text" : "ears.expr~ * sqrt($f1)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-37",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 114.0, 374.0, 140.0, 40.0 ],
+									"presentation_linecount" : 2,
+									"text" : "Same thing, but with a shortcut"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-25",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 10.0, 382.5, 102.0, 23.0 ],
+									"text" : "ears.gain~ = 0.5"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
@@ -1737,7 +1793,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 439.0, 276.0, 21.0 ],
+									"patching_rect" : [ 10.0, 499.0, 276.0, 21.0 ],
 									"text" : "Beware: not all objects support this mode."
 								}
 
@@ -1845,7 +1901,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 151.5, 380.5, 134.5, 54.0 ],
+									"patching_rect" : [ 151.5, 440.5, 134.5, 54.0 ],
 									"text" : "This waveform displays \"earsBufHelpTest\""
 								}
 
@@ -1858,7 +1914,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 10.0, 388.0, 182.5, 39.0 ]
+									"patching_rect" : [ 10.0, 448.0, 182.5, 39.0 ]
 								}
 
 							}
@@ -1956,12 +2012,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-6",
-									"linecount" : 6,
+									"linecount" : 7,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 159.0, 276.0, 94.0 ],
-									"text" : "1) COPY: \nthe output name is the same as the input name, which means that the ears operation is performed \"in-place\" on the buffer.\nThis systems saves memory, but is probably not that natural within the Max workflow"
+									"patching_rect" : [ 10.0, 159.0, 276.0, 108.0 ],
+									"text" : "1) COPY (= in-place)\nthe output name is the same as the input name, which means that the ears operation is performed \"in-place\" on the buffer.\nAlthough this may seem unnatural within the Max workflow, this setting saves a lot of memory and is often crucial in optimization"
 								}
 
 							}

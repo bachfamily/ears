@@ -171,6 +171,9 @@ t_buf_mix *buf_mix_new(t_symbol *s, short argc, t_atom *argv)
         x->offsets = llll_get();
         x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
         
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
+
         // @arg 0 @name outname @optional 1 @type symbol
         // @digest Output buffer name
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -189,8 +192,6 @@ t_buf_mix *buf_mix_new(t_symbol *s, short argc, t_atom *argv)
             }
         }
         
-        earsbufobj_init((t_earsbufobj *)x, 0);
-
         attr_args_process(x, argc, argv);
         
         earsbufobj_setup((t_earsbufobj *)x, "E44", "e", names);

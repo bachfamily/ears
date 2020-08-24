@@ -219,6 +219,8 @@ t_buf_pack *buf_pack_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
 
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -229,8 +231,6 @@ t_buf_pack *buf_pack_new(t_symbol *s, short argc, t_atom *argv)
         
         proxies = args && args->l_head && hatom_gettype(&args->l_head->l_hatom) == H_LONG ? MAX(hatom_getlong(&args->l_head->l_hatom) - 1, 0) : 0;
         
-        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_DONT_DUPLICATE_INPUT_BUFFERS);
-
         attr_args_process(x, argc, argv); // this must be called before llllobj_obj_setup
 
         proxies = MIN(proxies, LLLL_MAX_INLETS);
