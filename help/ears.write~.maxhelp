@@ -3,7 +3,7 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 0,
+			"minor" : 1,
 			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
@@ -39,6 +39,7 @@
 		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontname" : "Arial",
@@ -51,7 +52,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -86,6 +87,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -407,7 +409,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -442,7 +444,35 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-6",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 274.0, 281.0, 156.0, 25.0 ],
+									"presentation_linecount" : 3,
+									"text" : "Choose sample format"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "format",
+									"id" : "obj-5",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 117.0, 281.0, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -450,7 +480,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 270.0, 304.0, 239.0, 21.0 ],
+									"patching_rect" : [ 278.0, 258.0, 239.0, 21.0 ],
 									"text" : "Also supports native export of mp3 files.",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ],
 									"varname" : "u360001384[1]"
@@ -466,7 +496,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 270.0, 262.0, 191.0, 36.0 ],
+									"patching_rect" : [ 278.0, 226.0, 191.0, 36.0 ],
 									"text" : "Allowed saving extensions are: \naif(f), wav(e), flac, mp3, data",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ],
 									"varname" : "u360001384"
@@ -480,7 +510,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 80.5, 228.5, 180.0, 23.0 ],
+									"patching_rect" : [ 80.5, 192.5, 180.0, 23.0 ],
 									"text" : "/tmp/drums.aif /tmp/anton.flac"
 								}
 
@@ -495,7 +525,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 270.0, 220.0, 107.0, 40.0 ],
+									"patching_rect" : [ 270.0, 184.0, 107.0, 40.0 ],
 									"text" : "Send filenames"
 								}
 
@@ -522,7 +552,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
-									"patching_rect" : [ 25.0, 302.5, 74.5, 23.0 ],
+									"patching_rect" : [ 25.0, 317.0, 74.5, 23.0 ],
 									"text" : "ears.write~"
 								}
 
@@ -661,7 +691,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 377.5, 230.0, 20.0, 20.0 ],
+									"patching_rect" : [ 377.5, 194.0, 20.0, 20.0 ],
 									"rounded" : 60.0,
 									"text" : "1",
 									"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ]
@@ -710,6 +740,13 @@
 									"destination" : [ "obj-27", 0 ],
 									"hidden" : 1,
 									"source" : [ "obj-29", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-10", 0 ],
+									"source" : [ "obj-5", 0 ]
 								}
 
 							}
@@ -765,7 +802,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -800,6 +837,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [  ],
 						"lines" : [  ]
 					}

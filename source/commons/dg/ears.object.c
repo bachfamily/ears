@@ -421,7 +421,7 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
                     earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
                     llll_behead(args);
                 }
-                if (s == gensym("*")) {
+                if (s == gensym("!")) {
                     atom_setsym(&av, gensym("dynamic"));
                     earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
                     llll_behead(args);
@@ -429,7 +429,6 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
                 if (s == gensym("-")) {
                     atom_setsym(&av, gensym("static"));
                     earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
-                    e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
                     llll_behead(args);
                 }
             }

@@ -473,9 +473,9 @@
 , 							{
 								"name" : "Default M4L",
 								"default" : 								{
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
+									"fontname" : [ "Arial Bold" ],
 									"fontsize" : [ 11.0 ],
-									"fontname" : [ "Arial Bold" ]
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 								}
 ,
 								"parentstyle" : "",
@@ -484,9 +484,9 @@
 , 							{
 								"name" : "Default M4L Poletti",
 								"default" : 								{
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
+									"fontname" : [ "Arial Bold" ],
 									"fontsize" : [ 10.0 ],
-									"fontname" : [ "Arial Bold" ]
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 								}
 ,
 								"parentstyle" : "",
@@ -504,9 +504,9 @@
 										"proportion" : 0.39
 									}
 ,
-									"fontsize" : [ 11.0 ],
 									"fontname" : [ "Arial" ],
-									"fontface" : [ 1 ]
+									"fontface" : [ 1 ],
+									"fontsize" : [ 11.0 ]
 								}
 ,
 								"parentstyle" : "",
@@ -541,8 +541,8 @@
 										"proportion" : 0.39
 									}
 ,
-									"fontsize" : [ 9.0 ],
-									"fontname" : [ "Arial" ]
+									"fontname" : [ "Arial" ],
+									"fontsize" : [ 9.0 ]
 								}
 ,
 								"parentstyle" : "",
@@ -1558,7 +1558,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 367.0, 105.0, 955.0, 585.0 ],
+						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1598,7 +1598,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 762.0, 523.0, 145.0, 40.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Shortcut for @naming dynamic"
 								}
 
@@ -1611,7 +1610,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 629.0, 531.5, 131.0, 23.0 ],
-									"text" : "ears.expr~ * sqrt($f1)"
+									"text" : "ears.expr~ ! sqrt($f1)"
 								}
 
 							}
@@ -1626,7 +1625,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 114.0, 374.0, 140.0, 40.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Same thing, but with a shortcut"
 								}
 
@@ -2696,7 +2694,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
+						"rect" : [ 367.0, 105.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2892,7 +2890,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 116.5, 715.0, 36.0 ],
+									"patching_rect" : [ 10.0, 116.5, 590.0, 36.0 ],
 									"text" : "Almost all ears objects work on buffers.\nIn practices, this means that you introduce the buffer names in order to perform operation upon them."
 								}
 

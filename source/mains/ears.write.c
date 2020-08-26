@@ -54,6 +54,8 @@ typedef struct _buf_write {
     
     t_llll             *filenames;
     char                native_mp3_handling;
+    
+    t_symbol           *sampleformat;
 } t_buf_write;
 
 
@@ -78,6 +80,40 @@ EARSBUFOBJ_ADD_IO_METHODS(write)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
+
+t_max_err buf_write_setattr_format(t_buf_write *x, void *attr, long argc, t_atom *argv)
+{
+    t_max_err err = MAX_ERR_NONE;
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_LONG) {
+            long bitdepth = atom_getlong(argv);
+            if (bitdepth == 8)
+                x->sampleformat = _sym_int8;
+            else if (bitdepth == 16)
+                x->sampleformat = _sym_int16;
+            else if (bitdepth == 24)
+                x->sampleformat = _sym_int24;
+            else  if (bitdepth == 32)
+                x->sampleformat = _sym_int32;
+            else {
+                object_error((t_object *)x, "Unknown sample format.");
+                err = MAX_ERR_GENERIC;
+            }
+        } else if (atom_gettype(argv) == A_SYM) {
+            t_symbol *s = atom_getsym(argv);
+            if (s == _sym_int8 || s == _sym_int16 || s == _sym_int24 || s == _sym_int32 || s == _sym_float32 || s == _sym_float64 || s == _sym_mulaw || s == gensym("alaw"))
+                x->sampleformat = s;
+            else {
+                object_error((t_object *)x, "Unknown sample format.");
+                err = MAX_ERR_GENERIC;
+            }
+        } else {
+            object_error((t_object *)x, "Invalid sample format.");
+            err = MAX_ERR_GENERIC;
+        }
+    }
+    return err;
+}
 
 int C74_EXPORT main(void)
 {
@@ -106,6 +142,15 @@ int C74_EXPORT main(void)
     // When the list or llll in the leftmost inlet is received, each of the buffers is saved on disk on the
     // corresponding file name
     EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(write)
+
+    CLASS_ATTR_SYM(c, "format", 0, t_buf_write, sampleformat);
+    CLASS_ATTR_ENUM(c,"format", 0, "int8 int16 int24 int32 float32 float64 mulaw alaw");
+    CLASS_ATTR_ACCESSORS(c, "format", NULL, buf_write_setattr_format);
+    CLASS_ATTR_BASIC(c, "format", 0);
+    // @description Sets the bit depth or sample type, just like for the <o>buffer~</o> object.
+    // Accepted symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+    // 'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+    // 'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding)
 
     
 //    earsbufobj_class_add_outname_attr(c);
@@ -152,6 +197,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_write*)object_alloc_debug(s_tag_class);
     if (x) {
         x->native_mp3_handling = 1;
+        x->sampleformat = _sym_int16;
         
         // @arg 0 @name filenames @optional 1 @type symbol
         // @digest Output file names
@@ -234,7 +280,15 @@ void buf_write_bang(t_buf_write *x)
         t_object *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, i);
         if (buf) {
             t_symbol *filename = hatom_getsym(&el->l_hatom);
+            t_symbol *sampleformat = ears_buffer_get_sampleformat((t_object *)x, buf);
+            t_symbol *orig_format = NULL;
+            if (sampleformat != x->sampleformat) {
+                orig_format = sampleformat;
+                ears_buffer_set_sampleformat((t_object *)x, buf, x->sampleformat);
+            }
             ears_write_buffer(buf, filename, (t_object *)x);
+            if (orig_format)
+                ears_buffer_set_sampleformat((t_object *)x, buf, orig_format);
         } else {
             object_error((t_object *)x, EARS_ERROR_BUF_NO_BUFFER);
         }
@@ -253,7 +307,7 @@ void buf_write_anything(t_buf_write *x, t_symbol *msg, long ac, t_atom *av)
     if (parsed && parsed->l_head) {
         if (inlet == 0) {
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
-            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, true);
+            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, false);
             
             buf_write_bang(x);
             

@@ -41,11 +41,13 @@ CLASS_ATTR_ACCESSORS(c, "naming", NULL, earsbufobj_setattr_naming);
 CLASS_ATTR_BASIC(c, "naming", 0);
 // @description Chooses the output buffer naming policy: <br />
 // 0 (Copy): the buffer name is copied from the input (in-place modification).
-// This is only available for very few objects. <br />
+// Notice that some objects do not allow this policy. <br />
 // 1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
 // 2 (Dynamic): a new buffer (and buffer name) is created for each new command.
 // Beware! This may allocate a lot of memory!
 // You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
+// You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
+// <b>-</b> for static and <b>!</b> for dynamic.
 
 #define earsbufobj_class_add_outname_attr
 CLASS_ATTR_LLLL(c, "outname", 0, t_earsbufobj, l_outnames, earsbufobj_getattr_outname, earsbufobj_setattr_outname);

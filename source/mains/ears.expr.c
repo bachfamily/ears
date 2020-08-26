@@ -184,6 +184,28 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
         t_llll *names = NULL;
+        if (true_ac && atom_gettype(true_av) == A_SYM) {
+            t_symbol *s = atom_getsym(true_av);
+            t_atom av;
+            if (s == gensym("=")) {
+                atom_setsym(&av, gensym("copy"));
+                earsbufobj_setattr_naming((t_earsbufobj *)x, NULL, 1, &av);
+                true_av++;
+                true_ac--;
+            }
+            if (s == gensym("!")) {
+                atom_setsym(&av, gensym("dynamic"));
+                earsbufobj_setattr_naming((t_earsbufobj *)x, NULL, 1, &av);
+                true_av++;
+                true_ac--;
+            }
+            if (s == gensym("-")) {
+                atom_setsym(&av, gensym("static"));
+                earsbufobj_setattr_naming((t_earsbufobj *)x, NULL, 1, &av);
+                true_av++;
+                true_ac--;
+            }
+        }
         if (true_ac && atom_gettype(true_av) == A_SYM && is_all_alphanumerical(atom_getsym(true_av))) {
             // must not be a lexprable stuff!
             names = llll_get();

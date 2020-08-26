@@ -239,12 +239,15 @@ t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf);
 double ears_buffer_get_size_ms(t_object *ob, t_buffer_obj *buf);
 t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf);
 t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf);
+t_symbol *ears_buffer_get_sampleformat(t_object *ob, t_buffer_obj *buf);
+
 
 // SET properties
 t_ears_err ears_buffer_set_size(t_object *ob, t_buffer_obj *buf, long num_frames);
 t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr);
 t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels);
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels);
+t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbol *sampleformat);
 t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest);
 t_ears_err ears_buffer_crop_ms_inplace(t_object *ob, t_buffer_obj *buf, double ms_start, long ms_end);
 

@@ -46,6 +46,18 @@ t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf)
  */
 }
 
+t_symbol *ears_buffer_get_sampleformat(t_object *ob, t_buffer_obj *buf)
+{
+    return object_attr_getsym(buf, gensym("format"));
+}
+
+t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbol *sampleformat)
+{
+    object_attr_setsym(buf, gensym("format"), sampleformat);
+    return EARS_ERR_NONE;
+}
+
+
 t_ears_err ears_buffer_set_size(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
     t_atom a;
