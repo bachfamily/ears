@@ -144,6 +144,21 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="format" get="1" set="1" type="symbol" size="1">
+			<digest>
+				
+			</digest>
+			<description>
+				Sets the bit depth or sample type, just like for the <o>buffer~</o> object.
+				Accepted symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding)
+			</description>
+			<attributelist>
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="nativemp3" get="1" set="1" type="int" size="1">
 			<digest>
 				Native MP3 Handling

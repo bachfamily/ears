@@ -99,6 +99,23 @@
       "ears.repeat~"
     ]
   },
+  "ears.clip~": {
+    "digest": "Buffer hard clipping",
+    "module": "ears",
+    "category": [
+      "ears buffer operations"
+    ],
+    "keywords": [
+      "buffer",
+      "clip",
+      "distort",
+      "hard"
+    ],
+    "seealso": [
+      "ears.overdrive~",
+      "clip"
+    ]
+  },
   "ears.rubberband~": {
     "digest": "Rubber Band pitch and time processing",
     "module": "ears",
@@ -424,7 +441,7 @@
     ]
   },
   "ears.envelope~": {
-    "digest": "Fill a buffer with an envelope",
+    "digest": "Fill a buffer with an envelope or a number",
     "module": "ears",
     "category": [
       "ears buffer operations"
@@ -439,7 +456,8 @@
       "produce"
     ],
     "seealso": [
-      "ears.gain~"
+      "ears.gain~",
+      "ears.window~"
     ]
   },
   "ears.fade~": {
@@ -662,6 +680,23 @@
       "ears.convert~"
     ]
   },
+  "ears.overdrive~": {
+    "digest": "Buffer soft clipping",
+    "module": "ears",
+    "category": [
+      "ears buffer operations"
+    ],
+    "keywords": [
+      "buffer",
+      "overdrive",
+      "distort",
+      "hard"
+    ],
+    "seealso": [
+      "ears.clip~",
+      "overdrive"
+    ]
+  },
   "ears.mix~": {
     "digest": "Mix buffers",
     "module": "ears",
@@ -679,6 +714,25 @@
       "ears.crop~",
       "ears.read~",
       "ears.fade~"
+    ]
+  },
+  "ears.window~": {
+    "digest": "Apply an analysis window",
+    "module": "ears",
+    "category": [
+      "ears buffer operations"
+    ],
+    "keywords": [
+      "buffer",
+      "window",
+      "apply",
+      "hanning",
+      "hamming",
+      "triangular",
+      "tri"
+    ],
+    "seealso": [
+      "ears.envelope~"
     ]
   },
   "ears.gain~": {

@@ -303,8 +303,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 76.0, 372.0, 36.0 ],
-									"text" : "Second inlet is dedicated to receiving gain information, either as a single number, or as an envelope.",
+									"patching_rect" : [ 10.0, 76.0, 375.0, 36.0 ],
+									"text" : "Second inlet is dedicated to receiving clip threshold, either as a single number, or as an envelope.",
 									"textcolor" : [ 0.5, 0.5, 0.5, 1.0 ]
 								}
 
@@ -328,13 +328,13 @@
 									"filename" : "helpname.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.gain~" ],
+									"jsarguments" : [ "ears.clip~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 218.744003295898438, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 204.296005249023438, 57.599853515625 ]
 								}
 
 							}
@@ -544,13 +544,13 @@
 									"filename" : "helpargs.js",
 									"id" : "obj-1",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.gain~" ],
+									"jsarguments" : [ "ears.clip~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 198.0, 160.0, 195.22149658203125, 69.0 ]
+									"patching_rect" : [ 198.0, 160.0, 100.0, 24.0 ]
 								}
 
 							}
@@ -584,7 +584,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u285002276",
+									"buffername" : "u539000842",
 									"id" : "obj-21",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -627,14 +627,14 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 414.0, 301.0, 156.0, 23.0 ],
-									"text" : "ears.clip~ 0 @ampunit db"
+									"patching_rect" : [ 414.0, 301.0, 168.0, 23.0 ],
+									"text" : "ears.clip~ -12 @ampunit db"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u862001188",
+									"buffername" : "u242000888",
 									"id" : "obj-12",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -666,7 +666,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 201.0, 332.0, 90.0, 40.0 ],
+									"patching_rect" : [ 118.0, 334.0, 90.0, 40.0 ],
 									"text" : "Operate in-place!"
 								}
 
@@ -692,8 +692,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 340.5, 177.0, 23.0 ],
-									"text" : "ears.clip~ 0.1 @naming copy"
+									"patching_rect" : [ 17.0, 340.5, 97.0, 23.0 ],
+									"text" : "ears.clip~ = 0.1"
 								}
 
 							}
@@ -774,7 +774,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u683001166",
+									"buffername" : "u326000616",
 									"id" : "obj-31",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

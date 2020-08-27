@@ -1,6 +1,7 @@
 max db.addvirtual alias ears.lace ears.lace~;
 max db.addvirtual alias ears.join ears.join~;
 max db.addvirtual alias ears.crop ears.crop~;
+max db.addvirtual alias ears.clip ears.clip~;
 max db.addvirtual alias ears.rubberband ears.rubberband~;
 max db.addvirtual alias ears.fromfile ears.read~;
 max db.addvirtual alias ears.slice ears.slice~;
@@ -31,6 +32,8 @@ max db.addvirtual alias ears.trim ears.trim~;
 max db.addvirtual alias ears.normalize ears.normalize~;
 max db.addvirtual alias ears.process ears.process~;
 max db.addvirtual alias ears.reg ears.reg~;
+max db.addvirtual alias ears.overdrive ears.overdrive~;
 max db.addvirtual alias ears.mix ears.mix~;
+max db.addvirtual alias ears.window ears.window~;
 max db.addvirtual alias ears.gain ears.gain~;
 max db.addvirtual alias ears.split ears.split~;

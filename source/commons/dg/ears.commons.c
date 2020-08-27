@@ -1107,7 +1107,6 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
-    float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -1115,37 +1114,31 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
     } else {
         double factor = use_decibels ? ears_db_to_linear(gain_factor) : gain_factor;
         
-        t_atom_long	channelcount = buffer_getchannelcount(source);		// number of floats in a frame
-        t_atom_long	framecount   = buffer_getframecount(source);			// number of floats long the buffer is for a single channel
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
         
-        if (source == dest) { // inplace operation!
-            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
-            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
-        } else {
-            orig_sample_wk = orig_sample;
+        if (source != dest) {
             ears_buffer_copy_format(ob, source, dest);
             ears_buffer_set_size(ob, dest, framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
-
-            for (long i = 0; i < channelcount * framecount; i++)
-                dest_sample[i] = orig_sample_wk[i] * factor;
+            
+            for (long i = 0; i < channelcount * framecount; i++) {
+                dest_sample[i] = orig_sample[i] * factor;
+            }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            if (source != dest)
+                buffer_unlocksamples(dest);
         }
-
-        if (source == dest) // inplace operation!
-            bach_freeptr(orig_sample_wk);
-        else
-            buffer_unlocksamples(source);
+        
+        buffer_unlocksamples(source);
     }
     
     return err;
@@ -1160,7 +1153,6 @@ t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
-    float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -1171,17 +1163,12 @@ t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
         
-        if (source == dest) { // inplace operation!
-            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
-            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
-        } else {
-            orig_sample_wk = orig_sample;
+        if (source != dest) {
             ears_buffer_copy_format(ob, source, dest);
             ears_buffer_set_size(ob, dest, framecount);
         }
-        
-        float *dest_sample = buffer_locksamples(dest);
+
+        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -1189,24 +1176,73 @@ t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         } else {
             
             for (long i = 0; i < channelcount * framecount; i++) {
-                if (fabs(orig_sample_wk[i]) < threshold)
-                    dest_sample[i] = orig_sample_wk[i];
+                if (fabs(orig_sample[i]) < threshold)
+                    dest_sample[i] = orig_sample[i];
                 else
-                    dest_sample[i] = (orig_sample_wk[i] >= 0 ? 1 : -1) * threshold;
+                    dest_sample[i] = (orig_sample[i] >= 0 ? 1 : -1) * threshold;
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            if (source != dest)
+                buffer_unlocksamples(dest);
         }
         
-        if (source == dest) // inplace operation!
-            bach_freeptr(orig_sample_wk);
-        else
-            buffer_unlocksamples(source);
+        buffer_unlocksamples(source);
     }
     
     return err;
 }
+
+// like Max's [overdrive] object
+double ears_overdrive(double input, double drive)
+{
+    int signx = (input >= 0. ? 1 : -1);
+    return CLAMP(1 - exp(drive * log(1 - input * signx)), 0, 1) * signx;
+}
+
+// also supports inplace operations
+t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double drive)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *orig_sample = buffer_locksamples(source);
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        if (source != dest) {
+            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_set_size(ob, dest, framecount);
+        }
+        
+        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            for (long i = 0; i < channelcount * framecount; i++) {
+                dest_sample[i] = ears_overdrive(orig_sample[i], drive);
+            }
+            
+            buffer_setdirty(dest);
+            if (source != dest)
+                buffer_unlocksamples(dest);
+        }
+        
+        buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
+
 
 
 // also supports inplace operations
@@ -1962,7 +1998,6 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
-    float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -1972,17 +2007,12 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
         t_atom_long	channelcount = buffer_getchannelcount(source);		// number of floats in a frame
         t_atom_long	framecount   = buffer_getframecount(source);			// number of floats long the buffer is for a single channel
         
-        if (source == dest) { // inplace operation!
-            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
-            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
-        } else {
-            orig_sample_wk = orig_sample;
+        if (source != dest) {
             ears_buffer_copy_format(ob, source, dest);
             ears_buffer_set_size(ob, dest, framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2000,13 +2030,11 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            if (source != dest)
+                buffer_unlocksamples(dest);
         }
         
-        if (source == dest)  // inplace operation!
-            bach_freeptr(orig_sample_wk);
-        else
-            buffer_unlocksamples(source);
+        buffer_unlocksamples(source);
 
     }
     
@@ -2021,7 +2049,6 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
-    float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -2031,17 +2058,12 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
         
-        if (source == dest) { // inplace operation!
-            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
-            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
-        } else {
-            orig_sample_wk = orig_sample;
+        if (source != dest) {
             ears_buffer_copy_format(ob, source, dest);
             ears_buffer_set_size(ob, dest, framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2063,19 +2085,64 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            if (source != dest)
+                buffer_unlocksamples(dest);
         }
-        
-        if (source == dest)  // inplace operation!
-            bach_freeptr(orig_sample_wk);
-        else
-            buffer_unlocksamples(source);
-        
+        buffer_unlocksamples(source);
     }
     
     return err;
 }
 
+
+t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *drive)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *orig_sample = buffer_locksamples(source);
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        
+        if (source != dest) {
+            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_set_size(ob, dest, framecount);
+        }
+        
+        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(drive, 0., false);
+            for (long i = 0; i < framecount; i++) {
+                double this_drive = ears_envelope_iterator_walk_interp(&eei, i, framecount);
+                
+                for (long c = 0; c < channelcount; c++) {
+                    long idx = channelcount * i + c;
+                    dest_sample[idx] = ears_overdrive(orig_sample[idx], this_drive);
+                }
+            }
+            
+            buffer_setdirty(dest);
+            if (source != dest)
+                buffer_unlocksamples(dest);
+        }
+        buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
 
 
 

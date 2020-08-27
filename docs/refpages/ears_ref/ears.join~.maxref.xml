@@ -156,11 +156,13 @@
 			<description>
 				Chooses the output buffer naming policy: <br />
 				0 (Copy): the buffer name is copied from the input (in-place modification).
-				This is only available for very few objects. <br />
+				Notice that some objects do not allow this policy. <br />
 				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
 				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
 				Beware! This may allocate a lot of memory!
 				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
+				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
+				<b>-</b> for static and <b>!</b> for dynamic.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
@@ -196,6 +198,20 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="xfade" get="1" set="1" type="float" size="1">
+			<digest>
+				Crossfade Duration
+			</digest>
+			<description>
+				Sets the duration of the crossfade.
+				Unit is set via the <m>timeunit</m> attribute.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Duration" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="xfadecurve" get="1" set="1" type="float" size="1">
 			<digest>
 				Crossfade Curve
@@ -210,33 +226,6 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="xfadeleft" get="1" set="1" type="float" size="1">
-			<digest>
-				Left Crossfade Duration
-			</digest>
-			<description>
-				Sets the duration of the left portion of the crossfade (before junction point).
-				Unit is set via the <m>timeunit</m> attribute.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Left Crossfade Duration" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="xfaderight" get="1" set="1" type="float" size="1">
-			<digest>
-				Right Crossfade Duration
-			</digest>
-			<description>
-				Sets the duration of the right portion of the crossfade (after junction point).
-				Unit is set via the <m>timeunit</m> attribute.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Right Crossfade Duration" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
 		<attribute name="xfadetype" get="1" set="1" type="int" size="1">
 			<digest>
 				Crossfade Type
@@ -246,6 +235,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>

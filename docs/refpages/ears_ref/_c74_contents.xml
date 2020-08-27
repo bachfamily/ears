@@ -5,6 +5,7 @@
 <refpage name='ears.join~.maxref.xml'/>
 <refpage name='ears.playmp3~.maxref.xml'/>
 <refpage name='ears.crop~.maxref.xml'/>
+<refpage name='ears.clip~.maxref.xml'/>
 <refpage name='ears.rubberband~.maxref.xml'/>
 <refpage name='ears.read~.maxref.xml'/>
 <refpage name='ears.slice~.maxref.xml'/>
@@ -36,7 +37,9 @@
 <refpage name='ears.writetags.maxref.xml'/>
 <refpage name='ears.process~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
+<refpage name='ears.overdrive~.maxref.xml'/>
 <refpage name='ears.mix~.maxref.xml'/>
+<refpage name='ears.window~.maxref.xml'/>
 <refpage name='ears.gain~.maxref.xml'/>
 <refpage name='ears.split~.maxref.xml'/>
 </root>

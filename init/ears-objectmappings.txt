@@ -1,6 +1,7 @@
 max objectfile ears.lace ears.lace~;
 max objectfile ears.join ears.join~;
 max objectfile ears.crop ears.crop~;
+max objectfile ears.clip ears.clip~;
 max objectfile ears.rubberband ears.rubberband~;
 max objectfile ears.fromfile ears.read~;
 max objectfile ears.slice ears.slice~;
@@ -31,6 +32,8 @@ max objectfile ears.trim ears.trim~;
 max objectfile ears.normalize ears.normalize~;
 max objectfile ears.process ears.process~;
 max objectfile ears.reg ears.reg~;
+max objectfile ears.overdrive ears.overdrive~;
 max objectfile ears.mix ears.mix~;
+max objectfile ears.window ears.window~;
 max objectfile ears.gain ears.gain~;
 max objectfile ears.split ears.split~;

@@ -6,11 +6,11 @@
 <c74object name="ears.envelope~" module="ears">
 
 	<digest>
-		Fill a buffer with an envelope
+		Fill a buffer with an envelope or a number
 	</digest>
 
 	<description>
-		Generates a buffer from a breakpoint function
+		Generates a buffer from a number or a breakpoint function
 	</description>
 
 	<!--METADATA-->
@@ -158,6 +158,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -168,11 +169,13 @@
 			<description>
 				Chooses the output buffer naming policy: <br />
 				0 (Copy): the buffer name is copied from the input (in-place modification).
-				This is only available for very few objects. <br />
+				Notice that some objects do not allow this policy. <br />
 				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
 				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
 				Beware! This may allocate a lot of memory!
 				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
+				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
+				<b>-</b> for static and <b>!</b> for dynamic.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
@@ -213,6 +216,7 @@
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ears.gain~" />
+		<seealso name="ears.window~" />
 	</seealsolist>
 
 	<misc name = "Input">
