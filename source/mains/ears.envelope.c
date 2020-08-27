@@ -21,10 +21,10 @@
 	Daniele Ghisi
  
 	@digest
-    Fill a buffer with an envelope
+    Fill a buffer with an envelope or a number
  
 	@description
-	Generates a buffer from a breakpoint function
+	Generates a buffer from a number or a breakpoint function
  
 	@discussion
  
@@ -35,7 +35,7 @@
 	buffer, envelope, bpf, breakpoint, function, generate, produce
  
 	@seealso
-	ears.gain~
+	ears.gain~, ears.window~
 	
 	@owner
 	Daniele Ghisi
