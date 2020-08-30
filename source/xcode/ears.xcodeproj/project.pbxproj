@@ -1037,7 +1037,6 @@
 		1E5F7D7C24FC27EF00042C4B /* Hoa_Hrir.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hoa_Hrir.hpp; sourceTree = "<group>"; };
 		1E5F7D7D24FC27EF00042C4B /* Hoa_Defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hoa_Defs.hpp; sourceTree = "<group>"; };
 		1E5F7DC124FC4C6600042C4B /* ears.ambidecode~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.ambidecode~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E5F7DC224FC4C6600042C4B /* ears.ambiencode~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.ambiencode~ copy-Info.plist"; path = "/Users/danieleghisi/Documents/Max 7/Packages/ears/source/xcode/ears.ambiencode~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		1E5F7DC324FC4C8800042C4B /* ears.ambidecode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.ambidecode.c; path = ../mains/ears.ambidecode.c; sourceTree = "<group>"; };
 		1E667F631F5B6AF300A049BE /* ears.gain~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.gain~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E667F651F5B6B1E00A049BE /* ears.gain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.gain.c; path = ../mains/ears.gain.c; sourceTree = SOURCE_ROOT; };
@@ -1528,7 +1527,6 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
-				1E5F7DC224FC4C6600042C4B /* ears.ambiencode~ copy-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";

@@ -16,10 +16,11 @@ Dependencies
 =================
 
 • bach (https://github.com/bachfamily/bach)
-• a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
 • the mpg123 library 1.23.4 (released under LGPLv2.1)
-• a modified version of the id3 library (released under GPLv2)
-• the Rubberband library 1.8.2 (released under GPLv2)
+• for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
+• for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2)
+• for the [ears.rubberband~] module: the Rubberband library 1.8.2 (released under GPLv2)
+• for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 
 
 Related projects
