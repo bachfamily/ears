@@ -30,7 +30,29 @@ long ears_ambisonic_num_channels_to_order(int dimension, long num_channels)
     
     return -1;
 }
-t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, t_llll *azimuth, t_llll *elevation, t_llll *distance)
+
+
+void ears_coord_convert(e_ears_coordinate_type from, e_ears_coordinate_type to, double in1, double in2, double in3, double *out1, double *out2, double *out3)
+{
+    if (from == to) {
+        *out1 = in1;
+        *out2 = in2;
+        *out3 = in3;
+    } else if (from == EARS_COORDINATES_XYZ && to == EARS_COORDINATES_AED) {
+        // navigational orientation convention: azimuth 0 is at the front, angles increase clockwise
+        *out1 = - (atan2(in2, in1) - PIOVERTWO);
+        *out2 = PIOVERTWO - atan2(sqrt(in1*in1 + in2*in2), in3);
+        *out3 = sqrt(in1*in1 + in2*in2 + in3*in3);
+    } else if (from == EARS_COORDINATES_AED && to == EARS_COORDINATES_XYZ) {
+        // TO BE CHECKED! THESE ARE MOST LIKELY WRONG
+        in2 = PIOVERTWO - in2; // we use elevation, not inclination
+        *out1 = PIOVERTWO + in3 * sin(in2) * cos(-in1);
+        *out2 = in3 * sin(in2) * sin(-in1);
+        *out3 = in3 * cos(in2);
+    }
+}
+
+t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3)
 {
      
     if (!source || !dest)
@@ -46,18 +68,18 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
         return EARS_ERR_GENERIC;
     }
 
-    if (azimuth->l_size < 1 || azimuth->l_depth < 1) {
-        object_error(ob, "Invalid azimuth envelope.");
+    if (coord1->l_size < 1 || coord1->l_depth < 1) {
+        object_error(ob, "Invalid envelope for first coordinate.");
         return EARS_ERR_GENERIC;
     }
 
-    if (elevation->l_size < 1 || elevation->l_depth < 1) {
-        object_error(ob, "Invalid elevation envelope.");
+    if (coord2->l_size < 1 || coord2->l_depth < 1) {
+        object_error(ob, "Invalid envelope for second coordinate.");
         return EARS_ERR_GENERIC;
     }
     
-    if (distance->l_size < 1 || distance->l_depth < 1) {
-        object_error(ob, "Invalid distance envelope.");
+    if (dimension == 3 && (coord3->l_size < 1 || coord3->l_depth < 1)) {
+        object_error(ob, "Invalid envelope for third coordinate.");
         return EARS_ERR_GENERIC;
     }
 
@@ -95,35 +117,38 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
         if (dimension == 3) {
             hoa::Encoder<hoa::Hoa3d, float> encoder(order);
             
-            t_ears_envelope_iterator azimuth_eei, elevation_eei, distance_eei;
-            bool azimuth_is_envelope = (azimuth->l_depth > 1);
-            bool elevation_is_envelope = (elevation->l_depth > 1);
-            bool distance_is_envelope = (distance->l_depth > 1);
+            t_ears_envelope_iterator coord1_eei, coord2_eei, coord3_eei;
+            bool coord1_is_envelope = (coord1->l_depth > 1);
+            bool coord2_is_envelope = (coord2->l_depth > 1);
+            bool coord3_is_envelope = (coord3->l_depth > 1);
 
-            double prev_azimuth = 0, prev_elevation = 0, prev_distance = 1.;
+            double prev_coord1 = 0, prev_coord2 = 0, prev_coord3 = (coord_type == EARS_COORDINATES_AED ? 1. : 0.);
             
-            if (azimuth_is_envelope) {
-                azimuth_eei = ears_envelope_iterator_create(azimuth, 0., false);
+            if (coord1_is_envelope) {
+                coord1_eei = ears_envelope_iterator_create(coord1, 0., false);
             } else {
-                prev_azimuth = hatom_getdouble(&azimuth->l_head->l_hatom);
+                prev_coord1 = hatom_getdouble(&coord1->l_head->l_hatom);
             }
-            if (elevation_is_envelope) {
-                elevation_eei = ears_envelope_iterator_create(elevation, 0., false);
+            if (coord2_is_envelope) {
+                coord2_eei = ears_envelope_iterator_create(coord2, 0., false);
             } else {
-                prev_elevation = hatom_getdouble(&elevation->l_head->l_hatom);
+                prev_coord2 = hatom_getdouble(&coord2->l_head->l_hatom);
             }
-            if (distance_is_envelope) {
-                distance_eei = ears_envelope_iterator_create(distance, 0., false);
+            if (coord3_is_envelope) {
+                coord3_eei = ears_envelope_iterator_create(coord3, 0., false);
             } else {
-                prev_distance = hatom_getdouble(&distance->l_head->l_hatom);
+                prev_coord3 = hatom_getdouble(&coord3->l_head->l_hatom);
             }
             
+            double a, e, d;
+            ears_coord_convert(coord_type, EARS_COORDINATES_AED, prev_coord1, prev_coord2, prev_coord3, &a, &e, &d);
+
             // HOALibrary convention is that angle increase clockwise,
             // as in Mathematics; however, musical convention often goes the other way around (e.g. in Ircam's spat)
             // we choose the latter
-            encoder.setAzimuth(-prev_azimuth);
-            encoder.setElevation(prev_elevation);
-            encoder.setRadius(prev_distance);
+            encoder.setAzimuth(-a);
+            encoder.setElevation(e);
+            encoder.setRadius(d);
             
             float *dest_sample = buffer_locksamples(dest);
             
@@ -132,26 +157,39 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             } else {
                 for (long i = 0; i < framecount; i++) {
-                    if (azimuth_is_envelope) {
-                        double new_azimuth = ears_envelope_iterator_walk_interp(&azimuth_eei, i, framecount);
-                        if (new_azimuth != prev_azimuth) {
-                            encoder.setAzimuth(-new_azimuth);
-                            prev_azimuth = new_azimuth;
+                    bool changed = false;
+                    if (coord1_is_envelope) {
+                        double new_coord1 = ears_envelope_iterator_walk_interp(&coord1_eei, i, framecount);
+                        if (new_coord1 != prev_coord1) {
+                            if (coord_type == EARS_COORDINATES_AED)
+                                encoder.setAzimuth(-new_coord1);
+                            prev_coord1 = new_coord1;
+                            changed = true;
                         }
                     }
-                    if (elevation_is_envelope) {
-                        double new_elevation = ears_envelope_iterator_walk_interp(&elevation_eei, i, framecount);
-                        if (new_elevation != prev_elevation) {
-                            encoder.setElevation(new_elevation);
-                            prev_elevation = new_elevation;
+                    if (coord2_is_envelope) {
+                        double new_coord2 = ears_envelope_iterator_walk_interp(&coord2_eei, i, framecount);
+                        if (new_coord2 != prev_coord2) {
+                            if (coord_type == EARS_COORDINATES_AED)
+                                encoder.setElevation(new_coord2);
+                            prev_coord2 = new_coord2;
+                            changed = true;
                         }
                     }
-                    if (distance_is_envelope) {
-                        double new_distance = ears_envelope_iterator_walk_interp(&distance_eei, i, framecount);
-                        if (new_distance != prev_distance) {
-                            encoder.setElevation(new_distance);
-                            prev_distance = new_distance;
+                    if (coord3_is_envelope) {
+                        double new_coord3 = ears_envelope_iterator_walk_interp(&coord3_eei, i, framecount);
+                        if (new_coord3 != prev_coord3) {
+                            if (coord_type == EARS_COORDINATES_AED)
+                                encoder.setRadius(new_coord3);
+                            prev_coord3 = new_coord3;
+                            changed = true;
                         }
+                    }
+                    if (changed && coord_type == EARS_COORDINATES_XYZ) {
+                        ears_coord_convert(coord_type, EARS_COORDINATES_AED, prev_coord1, prev_coord2, prev_coord3, &a, &e, &d);
+                        encoder.setAzimuth(-a);
+                        encoder.setElevation(e);
+                        encoder.setRadius(d);
                     }
                     encoder.process(&orig_sample_wk[channelcount * i], &dest_sample[outchannelcount * i]);
                 }
@@ -164,25 +202,38 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
 
             hoa::Encoder<hoa::Hoa2d, float> encoder(order);
             
-            t_ears_envelope_iterator azimuth_eei, distance_eei;
-            bool azimuth_is_envelope = (azimuth->l_depth > 1);
-            bool distance_is_envelope = (distance->l_depth > 1);
+            t_ears_envelope_iterator coord1_eei, coord2_eei, coord3_eei;
+            bool coord1_is_envelope = (coord1->l_depth > 1);
+            bool coord2_is_envelope = (coord2->l_depth > 1);
+            bool coord3_is_envelope = (coord3->l_depth > 1);
+
+            double prev_coord1 = 0, prev_coord2 = 0, prev_coord3 = (coord_type == EARS_COORDINATES_AED ? 1. : 0.);
             
-            double prev_azimuth = 0, prev_distance = 1.;
-            
-            if (azimuth_is_envelope) {
-                azimuth_eei = ears_envelope_iterator_create(azimuth, 0., false);
+            if (coord1_is_envelope) {
+                coord1_eei = ears_envelope_iterator_create(coord1, 0., false);
             } else {
-                prev_azimuth = hatom_getdouble(&azimuth->l_head->l_hatom);
+                prev_coord1 = hatom_getdouble(&coord1->l_head->l_hatom);
             }
-            if (distance_is_envelope) {
-                distance_eei = ears_envelope_iterator_create(distance, 0., false);
+            if (coord2_is_envelope) {
+                coord2_eei = ears_envelope_iterator_create(coord2, 0., false);
             } else {
-                prev_distance = hatom_getdouble(&distance->l_head->l_hatom);
+                prev_coord2 = hatom_getdouble(&coord2->l_head->l_hatom);
+            }
+            if (coord3_is_envelope) {
+                coord3_eei = ears_envelope_iterator_create(coord3, 0., false);
+            } else {
+                prev_coord3 = hatom_getdouble(&coord3->l_head->l_hatom);
             }
             
-            encoder.setAzimuth(-prev_azimuth);
-            encoder.setRadius(prev_distance);
+            double a, e, d;
+            ears_coord_convert(coord_type, EARS_COORDINATES_AED, prev_coord1, prev_coord2, prev_coord3, &a, &e, &d);
+
+            // HOALibrary convention is that angle increase clockwise,
+            // as in Mathematics; however, musical convention often goes the other way around (e.g. in Ircam's spat)
+            // we choose the latter
+            encoder.setAzimuth(-a);
+//            encoder.setElevation(e);
+            encoder.setRadius(d);
             
             float *dest_sample = buffer_locksamples(dest);
             
@@ -191,19 +242,36 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             } else {
                 for (long i = 0; i < framecount; i++) {
-                    if (azimuth_is_envelope) {
-                        double new_azimuth = ears_envelope_iterator_walk_interp(&azimuth_eei, i, framecount);
-                        if (new_azimuth != prev_azimuth) {
-                            encoder.setAzimuth(-new_azimuth);
-                            prev_azimuth = new_azimuth;
+                    bool changed = false;
+                    if (coord1_is_envelope) {
+                        double new_coord1 = ears_envelope_iterator_walk_interp(&coord1_eei, i, framecount);
+                        if (new_coord1 != prev_coord1) {
+                            if (coord_type == EARS_COORDINATES_AED)
+                                encoder.setAzimuth(-new_coord1);
+                            prev_coord1 = new_coord1;
+                            changed = true;
                         }
                     }
-                    if (distance_is_envelope) {
-                        double new_distance = ears_envelope_iterator_walk_interp(&distance_eei, i, framecount);
-                        if (new_distance != prev_distance) {
-                            encoder.setElevation(new_distance);
-                            prev_distance = new_distance;
+                    if (coord2_is_envelope && coord_type == EARS_COORDINATES_XYZ) {
+                        double new_coord2 = ears_envelope_iterator_walk_interp(&coord2_eei, i, framecount);
+                        if (new_coord2 != prev_coord2) {
+                            prev_coord2 = new_coord2;
+                            changed = true;
                         }
+                    }
+                    if (coord3_is_envelope) {
+                        double new_coord3 = ears_envelope_iterator_walk_interp(&coord3_eei, i, framecount);
+                        if (new_coord3 != prev_coord3) {
+                            if (coord_type == EARS_COORDINATES_AED)
+                                encoder.setRadius(new_coord3);
+                            prev_coord3 = new_coord3;
+                            changed = true;
+                        }
+                    }
+                    if (changed && coord_type == EARS_COORDINATES_XYZ) {
+                        ears_coord_convert(coord_type, EARS_COORDINATES_AED, prev_coord1, prev_coord2, prev_coord3, &a, &e, &d);
+                        encoder.setAzimuth(-a);
+                        encoder.setRadius(d);
                     }
                     encoder.process(&orig_sample_wk[channelcount * i], &dest_sample[outchannelcount * i]);
                 }

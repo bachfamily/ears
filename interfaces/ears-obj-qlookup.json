@@ -265,6 +265,24 @@
       "ears.biquad~"
     ]
   },
+  "ears.ambiencode~": {
+    "digest": "Encode 2D or 3D higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears buffer operations"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "encode",
+      "decode",
+      "HOA",
+      "3D"
+    ],
+    "seealso": [
+      "ears.ambidecode~"
+    ]
+  },
   "ears.rot~": {
     "digest": "Circular rotation of a buffer",
     "module": "ears",
@@ -386,6 +404,24 @@
       "ears.biquad~",
       "ears.onepole~",
       "ears.paulstretch~"
+    ]
+  },
+  "ears.ambidecode~": {
+    "digest": "Decode higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears buffer operations"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "decode",
+      "binaural",
+      "hoa",
+      "3d"
+    ],
+    "seealso": [
+      "ears.ambiencode~"
     ]
   },
   "ears.repeat~": {

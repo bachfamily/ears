@@ -60,10 +60,12 @@ typedef struct _buf_ambiencode {
     
     t_symbol           *dimension;
     long               order;
-    
-    t_llll             *azimuth;
-    t_llll             *elevation;
-    t_llll             *distance;
+    t_symbol           *coordinate_type_sym;
+    e_ears_coordinate_type coordinate_type;
+
+    t_llll             *coord1;
+    t_llll             *coord2;
+    t_llll             *coord3;
 } t_buf_ambiencode;
 
 
@@ -83,6 +85,21 @@ static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
 EARSBUFOBJ_ADD_IO_METHODS(ambiencode)
+
+t_max_err buf_ambiencode_setattr_coordtype(t_buf_ambiencode *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_SYM) {
+            x->coordinate_type_sym = atom_getsym(argv);
+            if (x->coordinate_type_sym == gensym("xyz"))
+                x->coordinate_type = EARS_COORDINATES_XYZ;
+            else
+                x->coordinate_type = EARS_COORDINATES_AED;
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
 
 /**********************************************************************/
 // Class Definition and Life Cycle
@@ -133,6 +150,14 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "order", 0);
     // @description Sets the order
 
+    CLASS_ATTR_SYM(c, "coordtype", 0, t_buf_ambiencode, coordinate_type_sym);
+    CLASS_ATTR_STYLE_LABEL(c,"coordtype",0,"enum","Coordinate Type");
+    CLASS_ATTR_ENUM(c,"coordtype", 0, "aed xyz");
+    CLASS_ATTR_ACCESSORS(c, "coordtype", NULL, buf_ambiencode_setattr_coordtype);
+    CLASS_ATTR_BASIC(c, "coordtype", 0);
+    // @description Sets the input coordinate type: either "aed" (Azimuth-Elevation-Distance, i.e. spherical coordinates)
+    // or "xyz" (X-Y-Z cartesian coordinates).
+    // @copy EASR_DOC_COORDINATE_CONVENTION
 
     
     
@@ -148,11 +173,14 @@ void buf_ambiencode_assist(t_buf_ambiencode *x, void *b, long m, long a, char *s
         if (a == 0)
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
         else if (a == 1)
-            sprintf(s, "number/llll: Azimuth"); // @in 1 @type number/llll @digest Azimuth
+            sprintf(s, x->coordinate_type == EARS_COORDINATES_XYZ ?
+                    "number/llll: X Coordinate" : "number/llll: Azimuth"); // @in 1 @type number/llll @digest Azimuth or X coordinate
         else if (a == 2)
-            sprintf(s, "number/llll: Elevation"); // @in 2 @type number/llll @digest Elevation
+            sprintf(s, x->coordinate_type == EARS_COORDINATES_XYZ ?
+                    "number/llll: Y Coordinate" : "number/llll: Elevation"); // @in 2 @type number/llll @digest Elevation or Y coordinate
         else
-            sprintf(s, "number/llll: Distance"); // @in 3 @type number/llll @digest Distance
+            sprintf(s, x->coordinate_type == EARS_COORDINATES_XYZ ?
+                    "number/llll: Z Coordinate" : "number/llll: Distance"); // @in 3 @type number/llll @digest Distance or Z coordinate
     } else {
         sprintf(s, "symbol/list: Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names
     }
@@ -174,9 +202,11 @@ t_buf_ambiencode *buf_ambiencode_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->dimension = gensym("3D");
         x->order = 1;
-        x->azimuth = llll_from_text_buf("0.", false);
-        x->elevation = llll_from_text_buf("0.", false);
-        x->distance = llll_from_text_buf("1.", false);
+        x->coordinate_type_sym = gensym("aed");
+        x->coordinate_type = EARS_COORDINATES_AED;
+        x->coord1 = llll_from_text_buf("0.", false);
+        x->coord2 = llll_from_text_buf("0.", false);
+        x->coord3 = llll_from_text_buf("1.", false);
 
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -184,31 +214,22 @@ t_buf_ambiencode *buf_ambiencode_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
 
-        // @arg 1 @name azimuth @optional 1 @type number/llll
-        // @digest Azimuth
-        // @description Sets the initial azimuth
-
-        // @arg 1 @name elevation @optional 1 @type number/llll
-        // @digest Elevation
-        // @description Sets the initial elevation
-
-        // @arg 1 @name distance @optional 1 @type number/llll
-        // @digest Distance
-        // @description Sets the initial distance
-
+        // @arg 1 @name coordinates @optional 1 @type list/llll
+        // @digest Initial Coordinates
+        // @description Sets the initial coordinates, depending on the <m>coordtype</m> attribute (by default: azimuth, elevation, distance)
 
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
         if (args && args->l_head) {
-            llll_clear(x->azimuth);
-            llll_appendhatom_clone(x->azimuth, &args->l_head->l_hatom);
+            llll_clear(x->coord1);
+            llll_appendhatom_clone(x->coord1, &args->l_head->l_hatom);
             if (args->l_head->l_next) {
-                llll_clear(x->elevation);
-                llll_appendhatom_clone(x->elevation, &args->l_head->l_next->l_hatom);
+                llll_clear(x->coord2);
+                llll_appendhatom_clone(x->coord2, &args->l_head->l_next->l_hatom);
                 if (args->l_head->l_next->l_next) {
-                    llll_clear(x->distance);
-                    llll_appendhatom_clone(x->distance, &args->l_head->l_next->l_next->l_hatom);
+                    llll_clear(x->coord3);
+                    llll_appendhatom_clone(x->coord3, &args->l_head->l_next->l_next->l_hatom);
                 }
             }
         }
@@ -227,9 +248,9 @@ t_buf_ambiencode *buf_ambiencode_new(t_symbol *s, short argc, t_atom *argv)
 
 void buf_ambiencode_free(t_buf_ambiencode *x)
 {
-    llll_free(x->azimuth);
-    llll_free(x->elevation);
-    llll_free(x->distance);
+    llll_free(x->coord1);
+    llll_free(x->coord2);
+    llll_free(x->coord3);
     earsbufobj_free((t_earsbufobj *)x);
 }
 
@@ -251,33 +272,34 @@ void buf_ambiencode_bang(t_buf_ambiencode *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-    t_llllelem *azimuth_el = x->azimuth->l_head;
-    t_llllelem *elevation_el = x->elevation->l_head;
-    t_llllelem *distance_el = x->distance->l_head;
+    t_llllelem *coord1_el = x->coord1->l_head;
+    t_llllelem *coord2_el = x->coord2->l_head;
+    t_llllelem *coord3_el = x->coord3->l_head;
     for (long count = 0; count < num_buffers; count++,
-         azimuth_el = azimuth_el && azimuth_el->l_next ? azimuth_el->l_next : azimuth_el,
-         elevation_el = elevation_el && elevation_el->l_next ? elevation_el->l_next : elevation_el,
-         distance_el = distance_el && distance_el->l_next ? distance_el->l_next : distance_el) {
+         coord1_el = coord1_el && coord1_el->l_next ? coord1_el->l_next : coord1_el,
+         coord2_el = coord2_el && coord2_el->l_next ? coord2_el->l_next : coord2_el,
+         coord3_el = coord3_el && coord3_el->l_next ? coord3_el->l_next : coord3_el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-        t_llll *azimuth_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, azimuth_el, in);
-        t_llll *elevation_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, elevation_el, in);
-        t_llll *distance_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, distance_el, in);
+        t_llll *coord1_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, coord1_el, in);
+        t_llll *coord2_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, coord2_el, in);
+        t_llll *coord3_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, coord3_el, in);
 
-        if (azimuth_env->l_size == 0) {
-            object_error((t_object *)x, "No azimuth defined.");
-        } else if (elevation_env->l_size == 0) {
-            object_error((t_object *)x, "No elevation defined.");
-        } else if (distance_env->l_size == 0) {
-            object_error((t_object *)x, "No distance defined.");
+        if (coord1_env->l_size == 0) {
+            object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No X coordinate defined." : "No azimuth defined.");
+        } else if (coord2_env->l_size == 0) {
+            object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Y coordinate defined." : "No elevation defined.");
+        } else if (coord3_env->l_size == 0) {
+            object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Z coordinate defined." : "No distance defined.");
         } else {
-            ears_buffer_hoa_encode((t_object *)x, in, out, buf_ambiencode_get_dimension_as_long(x), x->order, azimuth_env, elevation_env, distance_env);
+            ears_buffer_hoa_encode((t_object *)x, in, out, buf_ambiencode_get_dimension_as_long(x), x->order,
+                                   x->coordinate_type, coord1_env, coord2_env, coord3_env);
         }
         
-        llll_free(azimuth_env);
-        llll_free(elevation_env);
-        llll_free(distance_env);
+        llll_free(coord1_env);
+        llll_free(coord2_env);
+        llll_free(coord3_env);
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
@@ -304,18 +326,18 @@ void buf_ambiencode_anything(t_buf_ambiencode *x, t_symbol *msg, long ac, t_atom
             
         } else if (inlet == 1) {
             earsbufobj_mutex_lock((t_earsbufobj *)x);
-            llll_free(x->azimuth);
-            x->azimuth = llll_clone(parsed);
+            llll_free(x->coord1);
+            x->coord1 = llll_clone(parsed);
             earsbufobj_mutex_unlock((t_earsbufobj *)x);
         } else if (inlet == 2) {
             earsbufobj_mutex_lock((t_earsbufobj *)x);
-            llll_free(x->elevation);
-            x->elevation = llll_clone(parsed);
+            llll_free(x->coord2);
+            x->coord2 = llll_clone(parsed);
             earsbufobj_mutex_unlock((t_earsbufobj *)x);
         } else if (inlet == 3) {
             earsbufobj_mutex_lock((t_earsbufobj *)x);
-            llll_free(x->distance);
-            x->distance = llll_clone(parsed);
+            llll_free(x->coord3);
+            x->coord3 = llll_clone(parsed);
             earsbufobj_mutex_unlock((t_earsbufobj *)x);
         }
     }

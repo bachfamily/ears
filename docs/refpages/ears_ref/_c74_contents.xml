@@ -14,6 +14,7 @@
 <refpage name='ears.fromsamps~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
 <refpage name='ears.onepole~.maxref.xml'/>
+<refpage name='ears.ambiencode~.maxref.xml'/>
 <refpage name='ears.rot~.maxref.xml'/>
 <refpage name='ears.write~.maxref.xml'/>
 <refpage name='ears.tosamps~.maxref.xml'/>
@@ -21,6 +22,7 @@
 <refpage name='ears.channel~.maxref.xml'/>
 <refpage name='ears.fromroll~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>
+<refpage name='ears.ambidecode~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.shift~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
