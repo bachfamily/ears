@@ -45,10 +45,17 @@ void ears_coord_convert(e_ears_coordinate_type from, e_ears_coordinate_type to, 
         *out3 = sqrt(in1*in1 + in2*in2 + in3*in3);
     } else if (from == EARS_COORDINATES_AED && to == EARS_COORDINATES_XYZ) {
         // TO BE CHECKED! THESE ARE MOST LIKELY WRONG
-        in2 = PIOVERTWO - in2; // we use elevation, not inclination
-        *out1 = PIOVERTWO + in3 * sin(in2) * cos(-in1);
-        *out2 = in3 * sin(in2) * sin(-in1);
-        *out3 = in3 * cos(in2);
+        *out1 = PIOVERTWO + in3 * cos(in2) * cos(-in1);
+        *out2 = in3 * cos(in2) * sin(-in1);
+        *out3 = in3 * sin(in2);
+    } else if (from == EARS_COORDINATES_AZR && to == EARS_COORDINATES_AED) {
+        *out1 = in1;
+        *out2 = atan2(in2, in3);
+        *out3 = sqrt(in3*in3 + in2*in2);
+    } else if (from == EARS_COORDINATES_AED && to == EARS_COORDINATES_AZR) {
+        *out1 = in1;
+        *out2 = in3 * cos(in2);
+        *out3 = in3 * sin(in2);
     }
 }
 
@@ -185,7 +192,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                             changed = true;
                         }
                     }
-                    if (changed && coord_type == EARS_COORDINATES_XYZ) {
+                    if (changed && coord_type != EARS_COORDINATES_AED) {
                         ears_coord_convert(coord_type, EARS_COORDINATES_AED, prev_coord1, prev_coord2, prev_coord3, &a, &e, &d);
                         encoder.setAzimuth(-a);
                         encoder.setElevation(e);
@@ -268,7 +275,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                             changed = true;
                         }
                     }
-                    if (changed && coord_type == EARS_COORDINATES_XYZ) {
+                    if (changed && coord_type != EARS_COORDINATES_AED) {
                         ears_coord_convert(coord_type, EARS_COORDINATES_AED, prev_coord1, prev_coord2, prev_coord3, &a, &e, &d);
                         encoder.setAzimuth(-a);
                         encoder.setRadius(d);

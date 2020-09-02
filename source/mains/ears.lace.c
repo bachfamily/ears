@@ -8,9 +8,6 @@
 	@realname
 	ears.lace~
  
-    @hiddenalias
-    ears.lace
-
 	@type
 	object
  

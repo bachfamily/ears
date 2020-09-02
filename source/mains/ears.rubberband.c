@@ -8,9 +8,6 @@
 	@realname
 	ears.rubberband~
  
-    @hiddenalias
-    ears.rubberband
-
 	@type
 	object
  

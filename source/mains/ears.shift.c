@@ -8,9 +8,6 @@
 	@realname
 	ears.shift~
  
-    @hiddenalias
-    ears.shift
-
 	@type
 	object
  

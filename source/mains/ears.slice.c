@@ -8,9 +8,6 @@
 	@realname
 	ears.slice~
  
-    @hiddenalias
-    ears.slice
-
     @type
 	object
  

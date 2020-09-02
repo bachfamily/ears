@@ -14,10 +14,12 @@
 #define EARS_AMBISONIC_MAX_LOUDSPEAKERS 512
 #define EARS_AMBISONIC_BINAURAL_SADIE /// < if defined the Sadie transfer function are used, otherwise the Listen ones (see HOALibrary)
 
+// azimuth always computed in navigational coordinates: 0 is at the front, angles increase clockwise
 typedef enum _ears_coordinate_type
 {
-    EARS_COORDINATES_AED = 0,
-    EARS_COORDINATES_XYZ = 1
+    EARS_COORDINATES_AED = 0, // spherical (azimuth, elevation, distance)
+    EARS_COORDINATES_XYZ = 1, // cartesian (x, y, z)
+    EARS_COORDINATES_AZR = 2, // cylindrical (azimuth, z, axial radius)
 } e_ears_coordinate_type;
 
 t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3);

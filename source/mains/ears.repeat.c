@@ -8,9 +8,6 @@
 	@realname
 	ears.repeat~
  
-    @hiddenalias
-    ears.repeat
-
     @type
 	object
  

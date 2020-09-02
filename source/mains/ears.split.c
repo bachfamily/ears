@@ -8,9 +8,6 @@
 	@realname
 	ears.split~
  
-    @hiddenalias
-    ears.split
-
     @type
 	object
  

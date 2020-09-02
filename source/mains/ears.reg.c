@@ -8,9 +8,6 @@
 	@realname
 	ears.reg~
  
-    @hiddenalias
-    ears.reg
-
 	@type
 	object
  

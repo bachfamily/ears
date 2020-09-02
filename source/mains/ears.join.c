@@ -8,9 +8,6 @@
 	@realname
 	ears.join~
  
-    @hiddenalias
-    ears.join
- 
 	@type
 	object
  

@@ -8,9 +8,6 @@
 	@realname
 	ears.fromsamps~
  
-    @hiddenalias
-    ears.fromsamps
-
 	@type
 	object
  

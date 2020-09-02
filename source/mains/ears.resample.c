@@ -8,9 +8,6 @@
 	@realname
 	ears.resample~
  
-    @hiddenalias
-    ears.resample
-
 	@type
 	object
  

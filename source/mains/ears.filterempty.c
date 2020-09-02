@@ -8,9 +8,6 @@
 	@realname
 	ears.filterempty~
  
-    @hiddenalias
-    ears.filterempty
-
 	@type
 	object
  

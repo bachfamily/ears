@@ -8,9 +8,6 @@
 	@realname
 	ears.process~
  
-    @hiddenalias
-    ears.process
-
 	@type
 	object
  

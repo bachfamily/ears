@@ -8,9 +8,6 @@
 	@realname
 	ears.rot~
  
-    @hiddenalias
-    ears.rot
-
     @type
 	object
  

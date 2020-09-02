@@ -8,9 +8,6 @@
 	@realname
 	ears.freeverb~
  
-    @hiddenalias
-    ears.freeverb
-
 	@type
 	object
  

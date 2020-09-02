@@ -8,9 +8,6 @@
 	@realname
 	ears.pan~
  
-    @hiddenalias
-    ears.pan
-
 	@type
 	object
  

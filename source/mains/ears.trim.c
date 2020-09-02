@@ -8,9 +8,6 @@
 	@realname
 	ears.trim~
  
-    @hiddenalias
-    ears.trim
-
 	@type
 	object
  

@@ -8,9 +8,6 @@
 	@realname
 	ears.unpack~
  
-    @hiddenalias
-    ears.unpack
-
 	@type
 	object
  

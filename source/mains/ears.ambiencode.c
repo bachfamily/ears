@@ -8,9 +8,6 @@
 	@realname
 	ears.ambiencode~
  
-    @hiddenalias
-    ears.ambiencode
-
 	@type
 	object
  
@@ -93,6 +90,8 @@ t_max_err buf_ambiencode_setattr_coordtype(t_buf_ambiencode *x, void *attr, long
             x->coordinate_type_sym = atom_getsym(argv);
             if (x->coordinate_type_sym == gensym("xyz"))
                 x->coordinate_type = EARS_COORDINATES_XYZ;
+            else if (x->coordinate_type_sym == gensym("azr"))
+                x->coordinate_type = EARS_COORDINATES_AZR;
             else
                 x->coordinate_type = EARS_COORDINATES_AED;
         }
@@ -152,11 +151,13 @@ int C74_EXPORT main(void)
 
     CLASS_ATTR_SYM(c, "coordtype", 0, t_buf_ambiencode, coordinate_type_sym);
     CLASS_ATTR_STYLE_LABEL(c,"coordtype",0,"enum","Coordinate Type");
-    CLASS_ATTR_ENUM(c,"coordtype", 0, "aed xyz");
+    CLASS_ATTR_ENUM(c,"coordtype", 0, "aed xyz azr");
     CLASS_ATTR_ACCESSORS(c, "coordtype", NULL, buf_ambiencode_setattr_coordtype);
     CLASS_ATTR_BASIC(c, "coordtype", 0);
-    // @description Sets the input coordinate type: either "aed" (Azimuth-Elevation-Distance, i.e. spherical coordinates)
-    // or "xyz" (X-Y-Z cartesian coordinates).
+    // @description Sets the input coordinate type: <br />
+    // - "aed": azimuth, Elevation, distance (spherical coordinates); <br />
+    // - "xyz": cartesian coordinates; <br />
+    // - "azr": azimuth, Z, axial radius (cylindrical coordinates). <br />
     // @copy EASR_DOC_COORDINATE_CONVENTION
 
     
@@ -177,10 +178,12 @@ void buf_ambiencode_assist(t_buf_ambiencode *x, void *b, long m, long a, char *s
                     "number/llll: X Coordinate" : "number/llll: Azimuth"); // @in 1 @type number/llll @digest Azimuth or X coordinate
         else if (a == 2)
             sprintf(s, x->coordinate_type == EARS_COORDINATES_XYZ ?
-                    "number/llll: Y Coordinate" : "number/llll: Elevation"); // @in 2 @type number/llll @digest Elevation or Y coordinate
+                    "number/llll: Y Coordinate" : (x->coordinate_type == EARS_COORDINATES_AZR ?
+                    "number/llll: Z Coordinate" : "number/llll: Elevation")); // @in 2 @type number/llll @digest Elevation or Y coordinate
         else
             sprintf(s, x->coordinate_type == EARS_COORDINATES_XYZ ?
-                    "number/llll: Z Coordinate" : "number/llll: Distance"); // @in 3 @type number/llll @digest Distance or Z coordinate
+                    "number/llll: Z Coordinate" : (x->coordinate_type == EARS_COORDINATES_AZR ?
+                    "number/llll: Axial radius" : "number/llll: Distance")); // @in 3 @type number/llll @digest Distance or Z coordinate
     } else {
         sprintf(s, "symbol/list: Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names
     }
@@ -289,9 +292,11 @@ void buf_ambiencode_bang(t_buf_ambiencode *x)
         if (coord1_env->l_size == 0) {
             object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No X coordinate defined." : "No azimuth defined.");
         } else if (coord2_env->l_size == 0) {
-            object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Y coordinate defined." : "No elevation defined.");
+            object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Y coordinate defined." :
+                         (x->coordinate_type == EARS_COORDINATES_AZR ? "No Z coordinate defined." : "No elevation defined."));
         } else if (coord3_env->l_size == 0) {
-            object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Z coordinate defined." : "No distance defined.");
+            object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Z coordinate defined." :
+                         (x->coordinate_type == EARS_COORDINATES_AZR ? "No axial radius defined." : "No distance defined."));
         } else {
             ears_buffer_hoa_encode((t_object *)x, in, out, buf_ambiencode_get_dimension_as_long(x), x->order,
                                    x->coordinate_type, coord1_env, coord2_env, coord3_env);

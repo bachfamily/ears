@@ -8,9 +8,6 @@
 	@realname
 	ears.normalize~
  
-    @hiddenalias
-    ears.normalize
-
 	@type
 	object
  

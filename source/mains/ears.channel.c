@@ -8,9 +8,6 @@
 	@realname
 	ears.channel~
  
-    @hiddenalias
- 	ears.channel
-
 	@type
 	object
  

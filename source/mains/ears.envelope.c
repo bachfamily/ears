@@ -8,9 +8,6 @@
 	@realname
 	ears.envelope~
  
-    @hiddenalias
-    ears.envelope
-
 	@type
 	object
  

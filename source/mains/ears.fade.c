@@ -8,9 +8,6 @@
 	@realname
 	ears.fade~
  
-    @hiddenalias
-    ears.fade
-
 	@type
 	object
  

@@ -8,9 +8,6 @@
 	@realname
 	ears.read~
  
-    @hiddenalias
-    ears.fromfile
-
 	@type
 	object
  

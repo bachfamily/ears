@@ -8,9 +8,6 @@
 	@realname
 	ears.paulstretch~
  
-    @hiddenalias
-    ears.paulstretch
-
 	@type
 	object
  

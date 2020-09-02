@@ -8,9 +8,6 @@
 	@realname
 	ears.biquad~
  
-    @hiddenalias
-    ears.biquad
-
 	@type
 	object
  

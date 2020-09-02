@@ -8,9 +8,6 @@
 	@realname
 	ears.clip~
  
-    @hiddenalias
-    ears.clip
-
 	@type
 	object
  

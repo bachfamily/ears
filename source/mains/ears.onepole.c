@@ -8,9 +8,6 @@
 	@realname
 	ears.onepole~
  
-    @hiddenalias
-    ears.onepole
-
 	@type
 	object
  

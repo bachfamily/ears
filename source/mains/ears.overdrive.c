@@ -8,9 +8,6 @@
 	@realname
 	ears.overdrive~
  
-    @hiddenalias
-    ears.overdrive
-
 	@type
 	object
  

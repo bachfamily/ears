@@ -8,9 +8,6 @@
 	@realname
 	ears.write~
  
-    @hiddenalias
-    ears.tofile
-
 	@type
 	object
  

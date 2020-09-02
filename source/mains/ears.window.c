@@ -8,9 +8,6 @@
 	@realname
 	ears.window~
  
-    @hiddenalias
-    ears.window
-
 	@type
 	object
  

@@ -8,9 +8,6 @@
 	@realname
 	ears.fromroll~
 
-    @hiddenalias
-    ears.fromroll
-
 	@type
 	object
  

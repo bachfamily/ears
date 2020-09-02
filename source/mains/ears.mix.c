@@ -8,9 +8,6 @@
 	@realname
 	ears.mix~
  
-    @hiddenalias
-    ears.mix
-
 	@type
 	object
  

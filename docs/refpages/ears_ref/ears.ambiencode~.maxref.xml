@@ -181,8 +181,10 @@
 				Coordinate Type
 			</digest>
 			<description>
-				Sets the input coordinate type: either "aed" (Azimuth-Elevation-Distance, i.e. spherical coordinates)
-				or "xyz" (X-Y-Z cartesian coordinates).
+				Sets the input coordinate type: <br />
+				- "aed": azimuth, Elevation, distance (spherical coordinates); <br />
+				- "xyz": cartesian coordinates; <br />
+				- "azr": azimuth, Z, axial radius (cylindrical coordinates). <br />
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Coordinate Type" />

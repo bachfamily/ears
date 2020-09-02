@@ -8,9 +8,6 @@
 	@realname
 	ears.ambidecode~
  
-    @hiddenalias
-    ears.ambidecode
-
 	@type
 	object
  

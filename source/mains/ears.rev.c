@@ -8,9 +8,6 @@
 	@realname
 	ears.rev~
  
-    @hiddenalias
-    ears.rev
-
 	@type
 	object
  

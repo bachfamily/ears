@@ -8,9 +8,6 @@
 	@realname
 	ears.info~
  
-    @hiddenalias
-    ears.info
- 
 	@type
 	object
  

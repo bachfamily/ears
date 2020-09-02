@@ -8,9 +8,6 @@
 	@realname
 	ears.gain~
  
-    @hiddenalias
-    ears.gain
-
 	@type
 	object
  

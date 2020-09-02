@@ -8,9 +8,6 @@
 	@realname
 	ears.tosamps~
  
-    @hiddenalias
-    ears.tosamps
-
 	@type
 	object
  
