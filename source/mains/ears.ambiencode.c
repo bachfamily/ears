@@ -158,7 +158,7 @@ int C74_EXPORT main(void)
     // - "aed": azimuth, Elevation, distance (spherical coordinates); <br />
     // - "xyz": cartesian coordinates; <br />
     // - "azr": azimuth, Z, axial radius (cylindrical coordinates). <br />
-    // @copy EASR_DOC_COORDINATE_CONVENTION
+    // @copy EARS_DOC_COORDINATE_CONVENTION
 
     
     

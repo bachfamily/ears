@@ -907,8 +907,8 @@ void earsbufobj_open(t_earsbufobj *e_ob)
     long i, j, s = 0;
     for (i = 0; i < e_ob->l_numbufouts && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; i++) {
         for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; j++, s++) {
-            //            t_symbol *fee = gensym("fee"); // 0x00000001056a5ce0
-            buffer_view(earsbufobj_get_outlet_buffer_obj(e_ob, i, j)); // 0x0000608005690dc0
+            //            t_symbol *fee = gensym("fee");
+            buffer_view(earsbufobj_get_outlet_buffer_obj(e_ob, i, j));
         }
     }
 }

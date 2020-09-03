@@ -119,34 +119,7 @@
 				used name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
-		<method name="writeaiff">
-			<arglist />
-			<digest>
-				Save output as WAV file
-			</digest>
-			<description>
-				See equivalent <o>buffer~</o> method.
-			</description>
-		</method>
-		<method name="writeaiff">
-			<arglist />
-			<digest>
-				Save output as FLAC file
-			</digest>
-			<description>
-				See equivalent <o>buffer~</o> method.
-			</description>
-		</method>
-		<method name="writeaiff">
-			<arglist />
-			<digest>
-				Save output as raw file with no header
-			</digest>
-			<description>
-				See equivalent <o>buffer~</o> method.
-			</description>
-		</method>
-		<method name="writeaiff">
+		<method name="write">
 			<arglist />
 			<digest>
 				Save output as audio file
@@ -159,6 +132,33 @@
 			<arglist />
 			<digest>
 				Save output as AIFF file
+			</digest>
+			<description>
+				See equivalent <o>buffer~</o> method.
+			</description>
+		</method>
+		<method name="writeflac">
+			<arglist />
+			<digest>
+				Save output as FLAC file
+			</digest>
+			<description>
+				See equivalent <o>buffer~</o> method.
+			</description>
+		</method>
+		<method name="writeraw">
+			<arglist />
+			<digest>
+				Save output as raw file with no header
+			</digest>
+			<description>
+				See equivalent <o>buffer~</o> method.
+			</description>
+		</method>
+		<method name="writewave">
+			<arglist />
+			<digest>
+				Save output as WAV file
 			</digest>
 			<description>
 				See equivalent <o>buffer~</o> method.
@@ -191,6 +191,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade In Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>

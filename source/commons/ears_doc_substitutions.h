@@ -6,7 +6,7 @@
 */
 
 
-#define EARSBUFOBJ_DECLARE_COMMON_METHODS
+#define EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER
 // @method (mouse) @digest Open the buffer display window
 // @description Double-clicking on the object will open the display window for the output buffer(s).
 // If more than 10 buffers are to be output, only the first 10 are displayed.
@@ -16,19 +16,19 @@ class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
 // the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
 // used name. This is especially useful in combination with iterative mechanisms.
 class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
-// @method writeaiff @digest Save output as audio file
+// @method write @digest Save output as audio file
 // @description See equivalent <o>buffer~</o> method.
 class_addmethod(c, (method)earsbufobj_writegeneral, "write", 0);
 // @method writeaiff @digest Save output as AIFF file
 // @description See equivalent <o>buffer~</o> method.
-class_addmethod(c, (method)earsbufobj_writegeneral, "writeaif", 0);
-// @method writeaiff @digest Save output as WAV file
+class_addmethod(c, (method)earsbufobj_writegeneral, "writeaiff", 0);
+// @method writewave @digest Save output as WAV file
 // @description See equivalent <o>buffer~</o> method.
 class_addmethod(c, (method)earsbufobj_writegeneral, "writewave", 0);
-// @method writeaiff @digest Save output as FLAC file
+// @method writeflac @digest Save output as FLAC file
 // @description See equivalent <o>buffer~</o> method.
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeflac", 0);
-// @method writeaiff @digest Save output as raw file with no header
+// @method writeraw @digest Save output as raw file with no header
 // @description See equivalent <o>buffer~</o> method.
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeraw", 0);
 
