@@ -6,7 +6,7 @@
 
 #include "revmodel.hpp"
 
-void revmodel::initstuff()
+void revmodel::initstuff(bool from_scratch)
 {
     // allocating buffers
     combf = (comb ***)malloc(numcombs * sizeof(comb **));
@@ -68,12 +68,16 @@ void revmodel::initstuff()
     }
     
     // Set default values
-    setwet(initialwet);
-    setroomsize(initialroom);
-    setdry(initialdry);
-    setdamp(initialdamp);
-    setwidth(initialwidth);
-    setmode(initialmode);
+    if (from_scratch) {
+        setwet(initialwet);
+        setroomsize(initialroom);
+        setdry(initialdry);
+        setdamp(initialdamp);
+        setwidth(initialwidth);
+        setmode(initialmode);
+    } else {
+        update();
+    }
     
     // Buffer will be full of rubbish - so we MUST mute them
     mute();
@@ -107,7 +111,7 @@ revmodel::revmodel()
 {
     sr = 44100;
     numchannels = 2; // default
-    initstuff();
+    initstuff(true);
 }
 
 revmodel::~revmodel()
@@ -121,7 +125,7 @@ void revmodel::setnumchannels(long num_channels)
     if (num_channels != numchannels) {
         numchannels = num_channels;
         freestuff();
-        initstuff();
+        initstuff(false);
     }
 }
 
@@ -130,7 +134,7 @@ void revmodel::setsr(long new_sr)
     if (new_sr != sr) {
         sr = new_sr;
         freestuff();
-        initstuff();
+        initstuff(false);
     }
 }
 

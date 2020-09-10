@@ -257,10 +257,10 @@ t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_ob
 t_ears_err ears_buffer_crop_ms_inplace(t_object *ob, t_buffer_obj *buf, double ms_start, long ms_end);
 
 // CONVERSIONS
-t_ears_err ears_buffer_convert_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels, e_ears_channel_convert_modes channelmode);
+t_ears_err ears_buffer_convert_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix);
 t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr);
 t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizeinsamps);
-t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode);
+t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix);
 t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampling_factor, long window_width);
 
 

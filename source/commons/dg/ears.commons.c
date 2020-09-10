@@ -364,7 +364,7 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr)
 }
 
 
-// keeps the buffer content while changing the nuber of channels
+// keeps the buffer content while changing the number of channels
 // REPAN mode is not supported by this function
 t_ears_err ears_buffer_set_numchannels_preserve(t_object *ob, t_buffer_obj *buf, long new_numchannels, e_ears_channel_convert_modes mode)
 {
@@ -389,6 +389,9 @@ t_ears_err ears_buffer_set_numchannels_preserve(t_object *ob, t_buffer_obj *buf,
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
+
+            memset(sample, 0, framecount * new_numchannels * sizeof(float));
+            
             switch (mode) {
                 case EARS_CHANNELCONVERTMODE_CLEAR:
                     break;
@@ -408,20 +411,38 @@ t_ears_err ears_buffer_set_numchannels_preserve(t_object *ob, t_buffer_obj *buf,
                     break;
 
                 case EARS_CHANNELCONVERTMODE_CYCLE:
-                    for (long c = 0; c < new_numchannels; c++) {
-                        long c_mod = c % channelcount;
-                        for (long i = 0; i < framecount; i++)
-                            sample[i*new_numchannels + c] = temp[i*channelcount + c_mod];
+                    if (new_numchannels > channelcount) { // upmixing
+                        for (long c = 0; c < new_numchannels; c++) {
+                            long c_mod = c % channelcount;
+                            for (long i = 0; i < framecount; i++)
+                                sample[i*new_numchannels + c] = temp[i*channelcount + c_mod];
+                        }
+                    } else { // downmixing
+                        for (long c = 0; c < channelcount; c++) {
+                            long c_mod = c % new_numchannels;
+                            for (long i = 0; i < framecount; i++)
+                                sample[i*new_numchannels + c_mod] += temp[i*channelcount + c];
+                        }
                     }
                     break;
-
+                    
                 case EARS_CHANNELCONVERTMODE_PALINDROME:
-                    for (long c = 0; c < new_numchannels; c++) {
-                        long c_mod = c % (2 * channelcount);
-                        if (c_mod >= channelcount)
-                            c_mod = 2 * channelcount - c_mod - 1;
-                        for (long i = 0; i < framecount; i++)
-                            sample[i*new_numchannels + c] = temp[i*channelcount + c_mod];
+                    if (new_numchannels > channelcount) { // upmixing
+                        for (long c = 0; c < new_numchannels; c++) {
+                            long c_mod = c % (2 * channelcount);
+                            if (c_mod >= channelcount)
+                                c_mod = 2 * channelcount - c_mod - 1;
+                            for (long i = 0; i < framecount; i++)
+                                sample[i*new_numchannels + c] = temp[i*channelcount + c_mod];
+                        }
+                    } else {
+                        for (long c = 0; c < channelcount; c++) {
+                            long c_mod = c % (2 * new_numchannels);
+                            if (c_mod >= new_numchannels)
+                                c_mod = 2 * new_numchannels - c_mod - 1;
+                            for (long i = 0; i < framecount; i++)
+                                sample[i*new_numchannels + c_mod] += temp[i*channelcount + c];
+                        }
                     }
                     break;
                     
@@ -436,30 +457,30 @@ t_ears_err ears_buffer_set_numchannels_preserve(t_object *ob, t_buffer_obj *buf,
     return err;
 }
 
-t_ears_err ears_buffer_convert_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels, e_ears_channel_convert_modes channelmode)
+t_ears_err ears_buffer_convert_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix)
 {
     t_ears_err err = EARS_ERR_NONE;
     long num_orig_channels = buffer_getchannelcount(buf);
 
     if (numchannels < num_orig_channels) {
-        switch (channelmode) {
+        switch (channelmode_downmix) {
             case EARS_CHANNELCONVERTMODE_PAN:
                 ears_buffer_pan1d(ob, buf, buf, numchannels, 0.5, EARS_PAN_MODE_LINEAR, EARS_PAN_LAW_COSINE, 1., true);
                 break;
                 
             default:
-                ears_buffer_set_numchannels_preserve(ob, buf, numchannels, channelmode);
+                ears_buffer_set_numchannels_preserve(ob, buf, numchannels, channelmode_downmix);
                 break;
         }
     } else if (numchannels > num_orig_channels) {
 
-        switch (channelmode) {
+        switch (channelmode_upmix) {
             case EARS_CHANNELCONVERTMODE_PAN:
                 ears_buffer_pan1d(ob, buf, buf, numchannels, 0.5, EARS_PAN_MODE_LINEAR, EARS_PAN_LAW_COSINE, 1., false);
                 break;
                 
             default:
-                ears_buffer_set_numchannels_preserve(ob, buf, numchannels, channelmode);
+                ears_buffer_set_numchannels_preserve(ob, buf, numchannels, channelmode_upmix);
                 break;
         }
     }
@@ -506,7 +527,7 @@ t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizein
 
 
 // Different from ears_buffer_copy_format() because it resamples and also downmixes/upmixes
-t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode)
+t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix)
 {
     if (!orig || !dest) {
         object_error((t_object *)ob, EARS_ERROR_BUF_NO_BUFFER);
@@ -523,7 +544,7 @@ t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer
         ears_buffer_convert_sr(ob, dest, orig_sr);
     
     if (dest_channelcount != orig_channelcount)
-        ears_buffer_convert_numchannels(ob, dest, orig_channelcount, channelmode);
+        ears_buffer_convert_numchannels(ob, dest, orig_channelcount, channelmode_upmix, channelmode_downmix);
     
 //    dest_channelcount = buffer_getchannelcount(dest);
 //    dest_sr = buffer_getsamplerate(dest);

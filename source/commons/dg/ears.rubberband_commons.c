@@ -6,6 +6,10 @@ using namespace RubberBand;
 
 t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *timestretch_factor, t_llll *pitchshift_factor, RubberBandStretcher::Options options, long blocksize_samps)
 {
+    int mask = (RubberBand::RubberBandStretcher::OptionPitchHighQuality |
+                RubberBand::RubberBandStretcher::OptionPitchHighSpeed |
+                RubberBand::RubberBandStretcher::OptionPitchHighConsistency);
+
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
     
@@ -64,6 +68,16 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         // STUDYING...
         for (long i = 0; i < numblocks; i++) {
+            if (!all_static) {
+                double new_time_ratio = ears_envelope_iterator_walk_interp(&ts_eei, i*blocksize, framecount);
+                double new_pitch_scale = pow(2.0, ears_envelope_iterator_walk_interp(&ps_eei, i*blocksize, framecount)/1200.);
+                // gotta ensure that new_time_ratio and new_pitch_scale are within reasonable limits, otherwise
+                new_time_ratio = CLAMP(new_time_ratio, 0., RUBBERBAND_MAX_RATIO);
+                new_pitch_scale = CLAMP(new_pitch_scale, 0., RUBBERBAND_MAX_RATIO);
+                rb.setTimeRatio(new_time_ratio);
+                rb.setPitchScale(new_pitch_scale);
+            }
+            
             long count = ((i+1)*blocksize > framecount ? framecount - i*blocksize : blocksize);
             for (long c = 0; c < channelcount; c++) {
                 for (long j = 0; j < count; j++)
@@ -71,12 +85,17 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
             }
             rb.study(ibuf, count, i==(numblocks-1));
         }
+        ears_envelope_iterator_reset(&ts_eei);
+        ears_envelope_iterator_reset(&ps_eei);
+        
 
         // PROCESSING...
         long outframecount = 0;
+        double old_pitch_scale = -1;
         long output_sample_wk_allocated_frames = framecount;
         float *output_sample_wk = (float *)bach_newptr(channelcount * output_sample_wk_allocated_frames * sizeof(float));
         for (long i = 0; i < numblocks; i++) {
+            char pitch_transit_across_1 = false;
             long count = ((i+1)*blocksize > framecount ? framecount - i*blocksize : blocksize);
             for (long c = 0; c < channelcount; c++) {
                 for (long j = 0; j < count; j++)
@@ -89,8 +108,16 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
                 // gotta ensure that new_time_ratio and new_pitch_scale are within reasonable limits, otherwise
                 new_time_ratio = CLAMP(new_time_ratio, 0., RUBBERBAND_MAX_RATIO);
                 new_pitch_scale = CLAMP(new_pitch_scale, 0., RUBBERBAND_MAX_RATIO);
+                
+                // This handles one particular case in which rubberband fails, ie. when the pitch goes from below to above 0
+                // the standard pitch modes have issues and create clicks; we force the consistency
+                if (old_pitch_scale > 0. && ((old_pitch_scale < 1 && new_pitch_scale >= 1.) || (old_pitch_scale >= 1. && new_pitch_scale < 1.))){                     pitch_transit_across_1 = true;
+                }
+                old_pitch_scale = new_pitch_scale;
+                
                 rb.setTimeRatio(new_time_ratio);
                 rb.setPitchScale(new_pitch_scale);
+                
             }
             
             rb.process(ibuf, count, i==(numblocks-1));
@@ -116,6 +143,28 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
                         output_sample_wk[(pivot + i)*channelcount + c] = obf[c][i];
                     }
                 }
+                
+                // rubberband doesn't seem to handle passage from negative to positive transposition smoothly, there's a click in here
+                // if would be nice to smooth it out but this doesn't seem to work. I am no expert in click removal
+                // it would be probably best to fix the rubberband library directly
+/*                if (pitch_transit_across_1 && !(options & RubberBand::RubberBandStretcher::OptionPitchHighConsistency)) {
+                    const int NUM_SAMPLES_TO_SMOOTH_ACROSS = 20;
+                    const int NUM_FILTER_APPLICATIONS = 20;
+                    int HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS = NUM_SAMPLES_TO_SMOOTH_ACROSS / 2;
+                    for (long c = 0; c < channelcount; c++) {
+                        float orig_channel[2 * HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS + 1];
+                        for (int r = 0; r < NUM_FILTER_APPLICATIONS; r++) {
+                            for (long j = MAX(0, pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS);
+                                 j < MIN(pivot + avail, pivot + HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS); j++)
+                                orig_channel[j - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)] = output_sample_wk[j*channelcount + c];
+                            for (long j = MAX(0, pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS) + 1;
+                                 j < MIN(pivot + avail, pivot + HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS) - 1; j++) {
+                                output_sample_wk[j*channelcount + c] = (orig_channel[(j-1) - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)] +
+                                                                        orig_channel[(j) - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)] + orig_channel[(j+1) - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)])/3.;
+                            }
+                        }
+                    }
+                } */
 
                 for (long c = 0; c < channelcount; c++)
                     delete[] obf[c];

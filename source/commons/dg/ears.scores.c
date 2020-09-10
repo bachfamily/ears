@@ -332,7 +332,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj
                 }
                 
                 if (buffer_getchannelcount(buf) != num_channels)
-                    ears_buffer_convert_numchannels((t_object *)e_ob, buf, num_channels, convertchannelsmode);
+                    ears_buffer_convert_numchannels((t_object *)e_ob, buf, num_channels, convertchannelsmode, convertchannelsmode);
                 
                 if (fadein_amount > 0 || fadeout_amount > 0)
                     ears_buffer_fade((t_object *)e_ob, buf, buf, earsbufobj_input_to_samps(e_ob, fadein_amount, buf), earsbufobj_input_to_samps(e_ob, fadeout_amount, buf), fade_in_type, fade_out_type, fade_in_curve, fade_out_curve);

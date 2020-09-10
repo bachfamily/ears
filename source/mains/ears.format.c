@@ -55,8 +55,9 @@ typedef struct _buf_format {
     double              sr;
     
     char                resample;
-    char                channelmode;
-    
+    char                channelmode_upmix;
+    char                channelmode_downmix;
+
     double             mix;
 } t_buf_format;
 
@@ -132,10 +133,10 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c, "resample", 0, "onoff", "Resample Buffers");
     // @description Toggles the ability to resample buffers when the sample rate has changed.
     
-    CLASS_ATTR_CHAR(c, "channelmode",	0,	t_buf_format, channelmode);
-    CLASS_ATTR_STYLE_LABEL(c, "channelmode", 0, "enumindex", "Channel Conversion Mode");
-    CLASS_ATTR_ENUMINDEX(c,"channelmode", 0, "Clear Keep Pad Cycle Palindrome Pan");
-    // @description Sets the channel conversion mode: <br />
+    CLASS_ATTR_CHAR(c, "channelmodeup",	0,	t_buf_format, channelmode_upmix);
+    CLASS_ATTR_STYLE_LABEL(c, "channelmodeup", 0, "enumindex", "Up-Mixing Channel Conversion");
+    CLASS_ATTR_ENUMINDEX(c,"channelmodeup", 0, "Clear Keep Pad Cycle Palindrome Pan");
+    // @description Sets the channel conversion mode while upmixing: <br />
     // 0 (Clear) = Delete all samples <br />
     // 1 (Keep) = Only keep existing channels <br />
     // 2 (Pad) = Pad last channel while upmixing <br />
@@ -143,6 +144,18 @@ int C74_EXPORT main(void)
     // 4 (Palindrome) = Palindrome cycling of channels while upmixing <br />
     // 5 (Pan) = Pan channels to new configuration <br />
     
+    CLASS_ATTR_CHAR(c, "channelmodedown",    0,    t_buf_format, channelmode_downmix);
+    CLASS_ATTR_STYLE_LABEL(c, "channelmodedown", 0, "enumindex", "Down-Mixing Channel Conversion");
+    CLASS_ATTR_ENUMINDEX(c,"channelmodedown", 0, "Clear Keep Pad Cycle Palindrome Pan");
+    // @description Sets the channel conversion mode while downmixing: <br />
+    // 0 (Clear) = Delete all samples <br />
+    // 1 (Keep) = Only keep existing channels <br />
+    // 2 (Pad) = Pad last channel while upmixing <br />
+    // 3 (Cycle, default) = Repeat all channels (cycling) while upmixing <br />
+    // 4 (Palindrome) = Palindrome cycling of channels while upmixing <br />
+    // 5 (Pan) = Pan channels to new configuration <br />
+    
+
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -176,8 +189,9 @@ t_buf_format *buf_format_new(t_symbol *s, short argc, t_atom *argv)
         x->duration = 0;
         x->sr = 0;
         x->resample = true;
-        x->channelmode = EARS_CHANNELCONVERTMODE_CYCLE;
-        
+        x->channelmode_upmix = EARS_CHANNELCONVERTMODE_CYCLE;
+        x->channelmode_downmix = EARS_CHANNELCONVERTMODE_CYCLE;
+
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
         // @arg 0 @name outnames @optional 1 @type symbol
@@ -212,7 +226,8 @@ void buf_format_bang(t_buf_format *x)
     double sr = x->sr;
     double duration = x->duration;
     long numchannels = x->numchannels;
-    long channelmode = x->channelmode;
+    long channelmode_upmix = x->channelmode_upmix;
+    long channelmode_downmix = x->channelmode_downmix;
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
@@ -241,7 +256,7 @@ void buf_format_bang(t_buf_format *x)
         if (numchannels > 0) {
             long curr_num_channels = ears_buffer_get_numchannels((t_object *)x, out);
             if (curr_num_channels != numchannels)
-                ears_buffer_convert_numchannels((t_object *)x, out, numchannels, (e_ears_channel_convert_modes)channelmode);
+                ears_buffer_convert_numchannels((t_object *)x, out, numchannels, (e_ears_channel_convert_modes)channelmode_upmix, (e_ears_channel_convert_modes)channelmode_downmix);
         }
     }
     

@@ -298,8 +298,9 @@ void buf_freeverb_bang(t_buf_freeverb *x)
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
         long numchans = ears_buffer_get_numchannels((t_object *)x, in);
-        if (numchans >= 1)
+        if (numchans >= 1) {
             x->e_model->setnumchannels(numchans);
+        }
         float sr = ears_buffer_get_sr((t_object *)x, in);
         if (sr > 0)
             x->e_model->setsr(sr);

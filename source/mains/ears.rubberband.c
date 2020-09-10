@@ -255,14 +255,14 @@ int C74_EXPORT main(void)
     CLASS_ATTR_DEFAULT(c, "pitchmode", 0, "0");
     // @description Control the method used for
     // pitch shifting.  Options are: <br />
-    // - <b>High Speed</b> (0, default): Use a method with a CPU cost
+    // - <b>High Speed</b> (0): Use a method with a CPU cost
     //   that is relatively moderate and predictable.  This may
     //   sound less clear than OptionPitchHighQuality, especially
     //   for large pitch shifts. <br />
     // - <b>High Quality</b> (1): Use the highest quality
     //   method for pitch shifting.  This method has a CPU cost
     //   approximately proportional to the required frequency shift.
-    // - <b>High Consistency</b> (2): Use the method that gives
+    // - <b>High Consistency</b> (2, default): Use the method that gives
     //   greatest consistency when used to create small variations in
     //   pitch around the 1.0-ratio level.  Unlike the previous two
     //   options, this avoids discontinuities when moving across the
@@ -330,19 +330,21 @@ t_buf_rubberband *buf_rubberband_new(t_symbol *s, short argc, t_atom *argv)
         x->e_detector = 0;
         x->e_smoothing = 0;
         x->e_formant = 0;
-        x->e_pitchmode = 0;
+        x->e_pitchmode = 2;
         x->e_blocksize = 20;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
-        // @arg 1 @type float/list/llll @digest Stretch factor or envelope
+        // @arg 1 @name stretch_factor @type float/list/llll
+        // @digest Stretch factor or envelope
         // @description Sets the stretch factor, either as a single number or as an llll
         // containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>] [<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
         // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
         
         x->e_timestretch_env = llll_from_text_buf("1.");
 
-        // @arg 2 @type float/list/llll @digest Pitch shift amount or envelope
+        // @arg 2 @name pitch_shift_amount @type float/list/llll
+        // @digest Pitch shift amount or envelope
         // @description Sets the pitch shift (unit defined via the <m>pitchunit</m> attribute), either as a single number or as an llll
         // containing an envelope in the form <b>[[<m>x</m> <m>shift</m> <m>slope</m>] [<m>x</m> <m>shift</m> <m>slope</m>]...]</b>,
         // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
@@ -384,6 +386,25 @@ RubberBand::RubberBandStretcher::Options buf_rubberband_get_options(t_buf_rubber
 {
     RubberBand::RubberBandStretcher::Options options = 0; 
 
+    switch (x->e_pitchmode) {
+        case 0:
+            options |= RubberBand::RubberBandStretcher::OptionPitchHighSpeed;
+            break;
+
+        case 1:
+            options |= RubberBand::RubberBandStretcher::OptionPitchHighQuality;
+            break;
+
+        case 2:
+            options |= RubberBand::RubberBandStretcher::OptionPitchHighConsistency;
+            break;
+
+        default:
+            options |= RubberBand::RubberBandStretcher::OptionPitchHighSpeed;
+            break;
+    }
+
+    
     switch (x->e_stretchmode) {
         case 0:
             options |= RubberBand::RubberBandStretcher::OptionStretchElastic;

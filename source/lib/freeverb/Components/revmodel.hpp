@@ -18,7 +18,7 @@ class revmodel
 public:
 					revmodel();
                     ~revmodel();
-            void    initstuff();
+            void    initstuff(bool from_scratch);
             void    freestuff();
 			void	mute();
 //			void	processmix(float *inputL, float *inputR, float *outputL, float *outputR, long numsamples, int skip);

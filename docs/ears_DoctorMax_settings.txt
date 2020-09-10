@@ -2,8 +2,8 @@
 /Users/danieleghisi/Documents/Max 7/Packages/ears/source/abstractions
 
 
-/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons/dg/bach_doc_commons_dg.h
-/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons/aa/bach_doc_commons_aa.h
+/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons/doc/bach_doc_commons.h
+/Users/danieleghisi/Documents/Max 7/Packages/ears/source/commons/ears_doc_commons.h
 /Users/danieleghisi/Documents/Max 7/Packages/ears/docs/refpages/ears_ref
 /Users/danieleghisi/Documents/Max 7/Packages/ears/init
 1
@@ -32,4 +32,4 @@ ears math
 ears.help
 /Users/danieleghisi/Documents/Max 7/Packages/ears/help/dada.help.json
 ears.help.home.maxpat, ears.help.search.maxpat, ears.help.searchtag.maxpat
-/Users/danieleghisi/Documents/Max 7/Packages/ears/source/commons/ears_doc_commons.h
+
