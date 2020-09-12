@@ -923,6 +923,11 @@ void earsbufobj_dblclick(t_earsbufobj *e_ob)
 // this lets us save the buffer
 void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom *av)
 {
+    // parse attrs
+    t_symbol *format = NULL;
+    t_llll *parsed = llll_parse(ac, av);
+    llll_parseargs_and_attrs_destructive((t_object *)e_ob, parsed, "s", gensym("format"), &format);
+    
     t_buffer_obj *buf = NULL;
     long which_buffer = 0;
     
@@ -932,8 +937,32 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
         av++;
     }
     
-    if ((buf = earsbufobj_get_outlet_buffer_obj(e_ob, 0, which_buffer)))
-        typedmess(buf, msg, ac, av);
+
+    
+    if ((buf = earsbufobj_get_outlet_buffer_obj(e_ob, 0, which_buffer))) {
+        t_symbol *orig_format = NULL;
+        if (format) {
+            orig_format = ears_buffer_get_sampleformat((t_object *)e_ob, buf);
+            if (orig_format != format) {
+                ears_buffer_set_sampleformat((t_object *)e_ob, buf, format);
+                // need to plug it back later
+            } else
+                orig_format = NULL; // don't care later
+        }
+        
+        if (parsed && parsed->l_size > 0) {
+            t_atom *true_av = NULL;
+            long true_ac = llll_deparse(parsed, &true_av, 0, 0);
+            typedmess(buf, msg, true_ac, true_av);
+            bach_freeptr(true_av);
+        } else
+            typedmess(buf, msg, 0, NULL);
+
+        if (orig_format)
+            ears_buffer_set_sampleformat((t_object *)e_ob, buf, orig_format);
+    }
+    
+    llll_free(parsed);
 }
 
 

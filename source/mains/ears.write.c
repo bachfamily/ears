@@ -145,9 +145,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_ACCESSORS(c, "format", NULL, buf_write_setattr_format);
     CLASS_ATTR_BASIC(c, "format", 0);
     // @description Sets the bit depth or sample type, just like for the <o>buffer~</o> object.
-    // Accepted symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
-    // 'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
-    // 'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding)
+    // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 
     
 //    earsbufobj_class_add_outname_attr(c);
