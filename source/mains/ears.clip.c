@@ -145,7 +145,7 @@ t_buf_clip *buf_clip_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->threshold = llll_from_text_buf("1.", false);
         
-        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names

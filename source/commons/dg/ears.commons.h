@@ -262,6 +262,7 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr);
 t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizeinsamps);
 t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix);
 t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampling_factor, long window_width);
+t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width);
 
 
 /// WRITE FILES
@@ -282,6 +283,8 @@ t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem 
 double ears_envelope_iterator_walk_interp(t_ears_envelope_iterator *eei, long sample_num, long tot_num_samples);
 void ears_envelope_get_max_x(t_llllelem *el, t_atom *a_max);
 void ears_envelope_iterator_reset(t_ears_envelope_iterator *eei);
+double ears_envelope_iterator_get_min_y(t_ears_envelope_iterator *eei);
+double ears_envelope_iterator_get_max_y(t_ears_envelope_iterator *eei);
 
 // conversions
 double ears_ratio_to_cents(double ratio);

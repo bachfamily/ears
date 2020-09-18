@@ -170,7 +170,7 @@ int C74_EXPORT main(void)
     // @description Sets the elevation of each loudspeaker
 
     
-    CLASS_ATTR_CHAR(c, "blocksamps", 0, t_buf_ambidecode, block_size_samps);
+    CLASS_ATTR_LONG(c, "blocksamps", 0, t_buf_ambidecode, block_size_samps);
     CLASS_ATTR_STYLE_LABEL(c,"blocksamps",0,"text","Block Size In Samples");
     // @description Sets the block size (in samples) for decoding
     

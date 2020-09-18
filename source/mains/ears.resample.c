@@ -199,19 +199,46 @@ void buf_resample_bang(t_buf_resample *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        double factor = el ? hatom_getdouble(&el->l_hatom) : 1.;
         if (in != out)
             ears_buffer_clone((t_object *)x, in, out);
-
-        if (factor < 0) {
-            ears_buffer_rev_inplace((t_object *)x, out);
-            factor *= -1;
-        }
         
-        if (factor == 0) {
-            object_error((t_object *)x, "Resampling factor cannot be zero.");
-        } else if (factor != 1) {
-            ears_buffer_resample((t_object *)x, out, factor, x->window_width);
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) { // factor is envelope
+            t_llll *env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, el, in);
+            
+            // check if envelope crosses zero or is constantly negative (and hence needs reverse)
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false);
+            double min_y = ears_envelope_iterator_get_min_y(&eei);
+            double max_y = ears_envelope_iterator_get_max_y(&eei);
+            
+            if (min_y == 0 || max_y == 0) {
+                object_error((t_object *)x, "Resampling envelopes cannot touch zero.");
+            } else if (min_y * max_y < 0) {
+                object_error((t_object *)x, "Resampling envelopes cannot cross zero.");
+            } else if (min_y < 0 && max_y < 0) {
+                ears_buffer_rev_inplace((t_object *)x, out);
+                for (t_llllelem *el = env->l_head; el; el = el->l_next) {
+                    t_llll *ll = hatom_getllll(&el->l_hatom);
+                    if (ll && ll->l_size >= 2 && is_hatom_number(&ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&ll->l_head->l_next->l_hatom, hatom_getdouble(&ll->l_head->l_next->l_hatom) * -1);
+                }
+                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width);
+            } else {
+                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width);
+            }
+
+            llll_free(env);
+        } else {
+            double factor = el ? hatom_getdouble(&el->l_hatom) : 1.;
+            if (factor < 0) {
+                ears_buffer_rev_inplace((t_object *)x, out);
+                factor *= -1;
+            }
+            
+            if (factor == 0) {
+                object_error((t_object *)x, "Resampling factor cannot be zero.");
+            } else if (factor != 1) {
+                ears_buffer_resample((t_object *)x, out, factor, x->window_width);
+            }
         }
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

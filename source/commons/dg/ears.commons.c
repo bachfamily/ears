@@ -266,7 +266,7 @@ long ears_resample(float *in, long num_in_frames, float **out, long num_out_fram
                 //rem calculate von Hann Window. Scale and calculate Sinc
                 r_w     = 0.5 - 0.5 * cos(TWOPI*(0.5 + (j - x)/window_width));
                 r_a     = TWOPI*(j - x)*fmax/sr;
-                r_snc   = (r_a != 0 ? r_snc = sin(r_a)/r_a : 1); ///<< sin(r_a) is incredibly slow. Do we have other options?
+                r_snc   = (r_a != 0 ? r_snc = sin(r_a)/r_a : 1); ///<< sin(r_a) is slow. Do we have other options?
                 if (j >= 0 && j < num_in_frames)
                     r_y   = r_y + r_g * r_w * r_snc * in[num_channels * j + ch];
             }
@@ -275,6 +275,46 @@ long ears_resample(float *in, long num_in_frames, float **out, long num_out_fram
     }
     return num_out_frames * num_channels;
 }
+
+// Could be improved
+// beware: <in> should be allocated with num_in_frames * num_channels floats, and <out> might be allocated with num_out_frames * num_channels float
+long ears_resample_env(float *in, long num_in_frames, float **out, long num_out_frames, t_ears_envelope_iterator *factor_env, double fmax, double sr, double window_width, long num_channels)
+{
+    double maxfactor = ears_envelope_iterator_get_max_y(factor_env);
+    if (num_out_frames <= 0)
+        num_out_frames = (long)ceil(num_in_frames * maxfactor);
+    if (out && !*out)
+        *out = (float *)bach_newptr(num_out_frames * num_channels * sizeof(float));
+    for (long ch = 0; ch < num_channels; ch++) {
+        long pivot_sample = 0;
+        double factor = ears_envelope_iterator_walk_interp(factor_env, pivot_sample, num_in_frames);
+        double x = 0;
+        for (long s = 0; s < num_out_frames; s++) {
+            long i, j;
+            double r_w, r_a, r_snc;
+            double r_g = 2 * fmax / sr; // Calc gain correction factor
+            double r_y = 0;
+            for (i = -window_width/2; i < window_width/2; i++) { // For 1 window width
+//                x = s / factor;
+                j = (long)(x + i);          // Calc input sample index
+                //rem calculate von Hann Window. Scale and calculate Sinc
+                r_w     = 0.5 - 0.5 * cos(TWOPI*(0.5 + (j - x)/window_width));
+                r_a     = TWOPI*(j - x)*fmax/sr;
+                r_snc   = (r_a != 0 ? r_snc = sin(r_a)/r_a : 1); ///<< sin(r_a) is slow. Do we have other options?
+                if (j >= 0 && j < num_in_frames)
+                    r_y   = r_y + r_g * r_w * r_snc * in[num_channels * j + ch];
+            }
+            (*out)[num_channels * s + ch] = r_y;                  // Return new filtered sample
+            x += 1 / factor;
+            if ((long)x > pivot_sample) {
+                factor = ears_envelope_iterator_walk_interp(factor_env, (long)x, num_in_frames);
+                pivot_sample = (long)x;
+            }
+        }
+    }
+    return num_out_frames * num_channels;
+}
+
 
 // resampling without converting sr
 t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampling_factor, long window_width)
@@ -320,6 +360,55 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
     
     return err;
 }
+
+
+// resampling without converting sr
+t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    t_ears_envelope_iterator eei = ears_envelope_iterator_create(resampling_factor, 1., false);
+    double curr_sr = buffer_getsamplerate(buf);
+    double maxfactor = ears_envelope_iterator_get_max_y(&eei);
+    double sr = curr_sr * maxfactor;
+    
+    double fmax = sr / 2.;
+    
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+        
+        long new_framecount = (long)ceil(framecount * maxfactor);
+        float *temp = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+        sysmem_copyptr(sample, temp, channelcount * framecount * sizeof(float));
+        
+        buffer_unlocksamples(buf);
+        ears_buffer_set_size(ob, buf, new_framecount);
+        sample = buffer_locksamples(buf);
+        
+        new_framecount = buffer_getframecount(buf);
+        
+        if (!sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            for (long c = 0; c < channelcount; c++) {
+                ears_envelope_iterator_reset(&eei);
+                ears_resample_env(temp, framecount, &sample, new_framecount, &eei, fmax, sr, window_width, channelcount);
+            }
+            buffer_setdirty(buf);
+            buffer_unlocksamples(buf);
+        }
+        bach_freeptr(temp);
+    }
+    
+    return err;
+}
+
 
 // resamples
 t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr)
@@ -1978,6 +2067,34 @@ void ears_envelope_iterator_reset(t_ears_envelope_iterator *eei)
     eei->right_el = eei->env ? eei->env->l_head : NULL;
     if (eei->right_el)
         eei->left_pts = eei->right_pts = elem_to_pts(eei->right_el);
+}
+
+double ears_envelope_iterator_get_max_y(t_ears_envelope_iterator *eei)
+{
+    double max_y = DBL_MIN;
+    for (t_llllelem *el = eei->env->l_head; el; el = el->l_next) {
+        t_llll *ll = hatom_getllll(&el->l_hatom);
+        if (ll && ll->l_head) {
+            double this_y = hatom_getdouble(&ll->l_head->l_next->l_hatom);
+            if (this_y > max_y)
+                max_y = this_y;
+        }
+    }
+    return max_y;
+}
+
+double ears_envelope_iterator_get_min_y(t_ears_envelope_iterator *eei)
+{
+    double min_y = DBL_MAX;
+    for (t_llllelem *el = eei->env->l_head; el; el = el->l_next) {
+        t_llll *ll = hatom_getllll(&el->l_hatom);
+        if (ll && ll->l_head) {
+            double this_y = hatom_getdouble(&ll->l_head->l_next->l_hatom);
+            if (this_y < min_y)
+                min_y = this_y;
+        }
+    }
+    return min_y;
 }
 
 

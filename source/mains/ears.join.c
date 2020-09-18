@@ -175,18 +175,9 @@ t_buf_join *buf_join_new(t_symbol *s, short argc, t_atom *argv)
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
         t_llll *args = llll_parse(true_ac, argv);
-        t_llll *names = NULL;
+        t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         t_llllelem *cur = args ? args->l_head : NULL;
         if (cur) {
-            if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
-                names = llll_clone(hatom_getllll(&cur->l_hatom));
-                cur = cur ? cur->l_next : NULL;
-            } else if (hatom_gettype(&cur->l_hatom) == H_SYM) {
-                names = llll_get();
-                llll_appendhatom_clone(names, &cur->l_hatom);
-                cur = cur ? cur->l_next : NULL;
-            }
-            
             // @arg 1 @name xfade_options @optional 1 @type list
             // @digest Crossfade options
             // @description If a single number is provided, it is the duration of the cross fade region, both at left and at right

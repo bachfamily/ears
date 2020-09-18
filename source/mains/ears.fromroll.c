@@ -337,18 +337,7 @@ t_buf_fromroll *buf_fromroll_new(t_symbol *s, short argc, t_atom *argv)
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
         t_llll *args = llll_parse(true_ac, argv);
-        t_llll *names = NULL;
-        t_llllelem *cur = args ? args->l_head : NULL;
-        if (cur) {
-            if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
-                names = llll_clone(hatom_getllll(&cur->l_hatom));
-                cur = cur ? cur->l_next : NULL;
-            } else if (hatom_gettype(&cur->l_hatom) == H_SYM) {
-                names = llll_get();
-                llll_appendhatom_clone(names, &cur->l_hatom);
-                cur = cur ? cur->l_next : NULL;
-            }
-        }
+        t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
         attr_args_process(x, argc, argv);
 
