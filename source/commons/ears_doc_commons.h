@@ -12,7 +12,7 @@
 
 #define EARS_DOC_COORDINATE_CONVENTION
 // Azimuth is considered 0 at the front, and increases clockwise.
-// X is the left-right axis while Y is front-back axis. <br />
+// X is the left-right axis (positive to the right) while Y is front-back axis (positive to the front). <br />
 
 #define EARS_DOC_ACCEPTED_SAMPLETYPES
 // Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),

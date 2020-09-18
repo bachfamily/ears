@@ -123,8 +123,8 @@ revmodel::~revmodel()
 void revmodel::setnumchannels(long num_channels)
 {
     if (num_channels != numchannels) {
-        numchannels = num_channels;
         freestuff();
+        numchannels = num_channels;
         initstuff(false);
     }
 }

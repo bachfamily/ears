@@ -145,31 +145,21 @@ t_buf_shift *buf_shift_new(t_symbol *s, short argc, t_atom *argv)
         // @description @copy EARS_DOC_OUTNAME_ATTR
         
         t_llll *args = llll_parse(true_ac, argv);
-        t_llll *names = NULL;
+        t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         t_llllelem *cur = args ? args->l_head : NULL;
+
+        // @arg 1 @name initial_amount @optional 1 @type number
+        // @digest Initial Shift Amount
+        // @description Initial amount of shifting (unit depends on the <m>timeunit</m> attribute).
         if (cur) {
             if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
-                names = llll_clone(hatom_getllll(&cur->l_hatom));
-                cur = cur ? cur->l_next : NULL;
-            } else if (hatom_gettype(&cur->l_hatom) == H_SYM) {
-                names = llll_get();
-                llll_appendhatom_clone(names, &cur->l_hatom);
-                cur = cur ? cur->l_next : NULL;
+                llll_free(x->amount);
+                x->amount = llll_clone(hatom_getllll(&cur->l_hatom));
+            } else {
+                llll_clear(x->amount);
+                llll_appendhatom_clone(x->amount, &cur->l_hatom);
             }
-            
-            // @arg 1 @name initial_amount @optional 1 @type number
-            // @digest Initial Shift Amount
-            // @description Initial amount of shifting (unit depends on the <m>timeunit</m> attribute).
-            if (cur) {
-                if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
-                    llll_free(x->amount);
-                    x->amount = llll_clone(hatom_getllll(&cur->l_hatom));
-                } else {
-                    llll_clear(x->amount);
-                    llll_appendhatom_clone(x->amount, &cur->l_hatom);
-                }
-                cur = cur ? cur->l_next : NULL;
-            }
+            cur = cur ? cur->l_next : NULL;
         }
         
         attr_args_process(x, argc, argv);

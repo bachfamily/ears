@@ -254,6 +254,8 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
                     llll_appendlong(*start, this_samp);
                 }
             }
+            if ((*end)->l_size < (*start)->l_size)
+                llll_appendlong(*end, size_samps);
         }
             break;
             
@@ -321,6 +323,15 @@ void buf_split_bang(t_buf_split *x)
         long *start_array = NULL, *end_array = NULL;
         llll_to_long_array(start, &start_array);
         llll_to_long_array(end, &end_array);
+        
+        if (!start_array || !end_array) {
+            object_error((t_object *)x, "Error while splitting");
+            if (start_array)
+                bach_freeptr(start_array);
+            if (end_array)
+                bach_freeptr(end_array);
+            return;
+        }
         
         t_buffer_obj *dest[num_out_buffers];
         for (long i = 0; i < num_out_buffers; i++)
