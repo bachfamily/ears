@@ -69,7 +69,7 @@
 			</digest>
 			<description>
 				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'.
+				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
 		<objarg name="stretch_factor" optional="0" type="float/list/llll">
@@ -133,7 +133,14 @@
 				Save output as audio file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeaiff">
@@ -142,7 +149,14 @@
 				Save output as AIFF file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeflac">
@@ -151,7 +165,14 @@
 				Save output as FLAC file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeraw">
@@ -160,7 +181,14 @@
 				Save output as raw file with no header
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writewave">
@@ -169,7 +197,14 @@
 				Save output as WAV file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 	</methodlist>
@@ -226,6 +261,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -272,6 +308,7 @@
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Preserve Formants" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -341,14 +378,14 @@
 			<description>
 				Control the method used for
 				pitch shifting.  Options are: <br />
-				- <b>High Speed</b> (0, default): Use a method with a CPU cost
+				- <b>High Speed</b> (0): Use a method with a CPU cost
 				that is relatively moderate and predictable.  This may
 				sound less clear than OptionPitchHighQuality, especially
 				for large pitch shifts. <br />
 				- <b>High Quality</b> (1): Use the highest quality
 				method for pitch shifting.  This method has a CPU cost
 				approximately proportional to the required frequency shift.
-				- <b>High Consistency</b> (2): Use the method that gives
+				- <b>High Consistency</b> (2, default): Use the method that gives
 				greatest consistency when used to create small variations in
 				pitch around the 1.0-ratio level.  Unlike the previous two
 				options, this avoids discontinuities when moving across the

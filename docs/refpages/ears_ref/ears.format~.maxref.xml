@@ -49,7 +49,7 @@
 			</digest>
 			<description>
 				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'.
+				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
 	</objarglist>
@@ -93,7 +93,14 @@
 				Save output as audio file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeaiff">
@@ -102,7 +109,14 @@
 				Save output as AIFF file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeflac">
@@ -111,7 +125,14 @@
 				Save output as FLAC file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeraw">
@@ -120,7 +141,14 @@
 				Save output as raw file with no header
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writewave">
@@ -129,19 +157,26 @@
 				Save output as WAV file
 			</digest>
 			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
 				See equivalent <o>buffer~</o> method.
+				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 	</methodlist>
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="channelmode" get="1" set="1" type="int" size="1">
+		<attribute name="channelmodedown" get="1" set="1" type="int" size="1">
 			<digest>
-				Channel Conversion Mode
+				Down-Mixing Channel Conversion
 			</digest>
 			<description>
-				Sets the channel conversion mode: <br />
+				Sets the channel conversion mode while downmixing: <br />
 				0 (Clear) = Delete all samples <br />
 				1 (Keep) = Only keep existing channels <br />
 				2 (Pad) = Pad last channel while upmixing <br />
@@ -150,7 +185,26 @@
 				5 (Pan) = Pan channels to new configuration <br />
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Channel Conversion Mode" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Down-Mixing Channel Conversion" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="channelmodeup" get="1" set="1" type="int" size="1">
+			<digest>
+				Up-Mixing Channel Conversion
+			</digest>
+			<description>
+				Sets the channel conversion mode while upmixing: <br />
+				0 (Clear) = Delete all samples <br />
+				1 (Keep) = Only keep existing channels <br />
+				2 (Pad) = Pad last channel while upmixing <br />
+				3 (Cycle, default) = Repeat all channels (cycling) while upmixing <br />
+				4 (Palindrome) = Palindrome cycling of channels while upmixing <br />
+				5 (Pan) = Pan channels to new configuration <br />
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Up-Mixing Channel Conversion" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -198,6 +252,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number Of Output Channels" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
