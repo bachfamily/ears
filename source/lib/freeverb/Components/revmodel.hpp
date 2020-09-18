@@ -23,6 +23,7 @@ public:
 			void	mute();
 //			void	processmix(float *inputL, float *inputR, float *outputL, float *outputR, long numsamples, int skip);
             void    processreplace(float *input, float *output, long numsamples);
+            void    processreplace_envelopes(float *input, float *output, long numsamples, float *dry, float *wet);
 			void	setroomsize(float value);
 			float	getroomsize();
 			void	setdamp(float value);

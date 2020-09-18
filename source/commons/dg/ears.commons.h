@@ -278,6 +278,7 @@ void ears_writeraw(t_object *buf, t_symbol *filename);
 
 /// Helper tools
 t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double default_val, char use_decibels);
+t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem *envelope, double fallback_val, char use_decibels); // also accounts for static numbers
 double ears_envelope_iterator_walk_interp(t_ears_envelope_iterator *eei, long sample_num, long tot_num_samples);
 void ears_envelope_get_max_x(t_llllelem *el, t_atom *a_max);
 void ears_envelope_iterator_reset(t_ears_envelope_iterator *eei);

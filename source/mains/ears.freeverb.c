@@ -51,8 +51,8 @@
 typedef struct _buf_freeverb {
     t_earsbufobj       e_ob;
     
-    double             e_wet;
-    double             e_dry;
+    t_llll             *e_wet;
+    t_llll             *e_dry;
     double             e_room_size;
     double             e_damp;
     double             e_width;
@@ -87,27 +87,10 @@ EARSBUFOBJ_ADD_IO_METHODS(freeverb)
 
 
 
-t_max_err buf_freeverb_setattr_wet(t_buf_freeverb *x, void *attr, long argc, t_atom *argv)
-{
-    if (argc && argv) {
-        if (is_atom_number(argv)) {
-            x->e_wet = atom_getfloat(argv);
-            x->e_model->setwet(x->e_wet);
-        }
-    }
-    return MAX_ERR_NONE;
-}
-
-t_max_err buf_freeverb_setattr_dry(t_buf_freeverb *x, void *attr, long argc, t_atom *argv)
-{
-    if (argc && argv) {
-        if (is_atom_number(argv)) {
-            x->e_dry = atom_getfloat(argv);
-            x->e_model->setdry(x->e_dry);
-        }
-    }
-    return MAX_ERR_NONE;
-}
+DEFINE_LLLL_ATTR_DEFAULT_GETTER(t_buf_freeverb, e_wet, buf_freeverb_getattr_wet);
+DEFINE_LLLL_ATTR_DEFAULT_GETTER(t_buf_freeverb, e_dry, buf_freeverb_getattr_dry);
+DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_freeverb, e_wet, buf_freeverb_setattr_wet);
+DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_freeverb, e_dry, buf_freeverb_setattr_dry);
 
 t_max_err buf_freeverb_setattr_roomsize(t_buf_freeverb *x, void *attr, long argc, t_atom *argv)
 {
@@ -183,17 +166,15 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     
-    CLASS_ATTR_DOUBLE(c, "wet", 0, t_buf_freeverb, e_wet);
+    CLASS_ATTR_LLLL(c, "wet", 0, t_buf_freeverb, e_wet, buf_freeverb_getattr_wet, buf_freeverb_setattr_wet);
     CLASS_ATTR_STYLE_LABEL(c,"wet",0,"text","Wet");
-    CLASS_ATTR_ACCESSORS(c, "wet", NULL, buf_freeverb_setattr_wet);
     CLASS_ATTR_BASIC(c, "wet", 0);
-    // @description Sets the amount of wet output.
+    // @description Sets the amount of wet output, either as a single number or as an envelope
 
-    CLASS_ATTR_DOUBLE(c, "dry", 0, t_buf_freeverb, e_dry);
+    CLASS_ATTR_LLLL(c, "dry", 0, t_buf_freeverb, e_dry, buf_freeverb_getattr_dry, buf_freeverb_setattr_dry);
     CLASS_ATTR_STYLE_LABEL(c,"dry",0,"text","Dry");
-    CLASS_ATTR_ACCESSORS(c, "dry", NULL, buf_freeverb_setattr_dry);
     CLASS_ATTR_BASIC(c, "dry", 0);
-    // @description Sets the amount of wet output.
+    // @description Sets the amount of wet output, either as a single number or as an envelope
 
     CLASS_ATTR_DOUBLE(c, "roomsize", 0, t_buf_freeverb, e_room_size);
     CLASS_ATTR_STYLE_LABEL(c,"roomsize",0,"text","Room Size");
@@ -227,7 +208,12 @@ int C74_EXPORT main(void)
 void buf_freeverb_assist(t_buf_freeverb *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
+        if (a == 0)
+            sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
+        else if (a == 1)
+            sprintf(s, "number/llll: Dry amount or envelope"); // @in 0 @type number/llll @digest Dry amount or envelope
+        else
+            sprintf(s, "number/llll: Wet amount or envelope"); // @in 0 @type number/llll @digest Wet amount or envelope
     } else {
         sprintf(s, "symbol/list: Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names
     }
@@ -247,8 +233,10 @@ t_buf_freeverb *buf_freeverb_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_freeverb*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->e_wet = initialwet;
-        x->e_dry = initialdry;
+        x->e_wet = llll_get();
+        llll_appenddouble(x->e_wet, initialwet);
+        x->e_dry = llll_get();
+        llll_appenddouble(x->e_dry, initialdry);
         x->e_room_size = initialroom;
         x->e_damp = initialdamp;
         x->e_mode = initialmode;
@@ -268,7 +256,7 @@ t_buf_freeverb *buf_freeverb_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
 
-        earsbufobj_setup((t_earsbufobj *)x, "E", "E", names);
+        earsbufobj_setup((t_earsbufobj *)x, "E44", "E", names);
 
         llll_free(args);
         llll_free(names);
@@ -293,10 +281,16 @@ void buf_freeverb_bang(t_buf_freeverb *x)
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
 
-    for (long count = 0; count < num_buffers; count++) {
+    t_llllelem *dry_el = x->e_dry->l_head;
+    t_llllelem *wet_el = x->e_wet->l_head;
+    for (long count = 0; count < num_buffers; count++,
+         dry_el = dry_el && dry_el->l_next ? dry_el->l_next : dry_el,
+         wet_el = dry_el && wet_el->l_next ? wet_el->l_next : wet_el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
+        // to do: set wet set dry
+        
         long numchans = ears_buffer_get_numchannels((t_object *)x, in);
         if (numchans >= 1) {
             x->e_model->setnumchannels(numchans);
@@ -304,7 +298,20 @@ void buf_freeverb_bang(t_buf_freeverb *x)
         float sr = ears_buffer_get_sr((t_object *)x, in);
         if (sr > 0)
             x->e_model->setsr(sr);
-        ears_buffer_freeverb((t_object *)x, in, out, x->e_model, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_tail, in));
+        if (hatom_gettype(&dry_el->l_hatom) == H_LLLL || hatom_gettype(&wet_el->l_hatom) == H_LLLL) {
+            t_llll *dry_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, dry_el, in);
+            t_llll *wet_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, wet_el, in);
+            double dry_default = is_hatom_number(&dry_el->l_hatom) ? hatom_getdouble(&dry_el->l_hatom) : 1.;
+            double wet_default = is_hatom_number(&wet_el->l_hatom) ? hatom_getdouble(&wet_el->l_hatom) : 0.;
+            ears_buffer_freeverb_envelope((t_object *)x, in, out, x->e_model, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_tail, in),
+                                          dry_env, wet_env, dry_default, wet_default);
+            llll_free(dry_env);
+            llll_free(wet_env);
+        } else {
+            x->e_model->setwet(hatom_getdouble(&wet_el->l_hatom));
+            x->e_model->setdry(hatom_getdouble(&dry_el->l_hatom));
+            ears_buffer_freeverb((t_object *)x, in, out, x->e_model, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_tail, in));
+        }
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
@@ -329,6 +336,17 @@ void buf_freeverb_anything(t_buf_freeverb *x, t_symbol *msg, long ac, t_atom *av
             
             buf_freeverb_bang(x);
             
+        } else if (inlet == 1) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            llll_free(x->e_dry);
+            x->e_dry = llll_clone(parsed);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+            
+        } else if (inlet == 2) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            llll_free(x->e_wet);
+            x->e_wet = llll_clone(parsed);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
         }
     }
     llll_free(parsed);

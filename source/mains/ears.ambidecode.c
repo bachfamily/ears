@@ -59,6 +59,8 @@ typedef struct _buf_ambidecode {
     
     char               binaural;
     
+    long               block_size_samps;
+    
     long               num_loudspeakers;
     t_atom_float       loudspeakers_azimuth[EARS_AMBISONIC_MAX_LOUDSPEAKERS];
     t_atom_float       loudspeakers_elevation[EARS_AMBISONIC_MAX_LOUDSPEAKERS];
@@ -168,6 +170,12 @@ int C74_EXPORT main(void)
     // @description Sets the elevation of each loudspeaker
 
     
+    CLASS_ATTR_CHAR(c, "blocksamps", 0, t_buf_ambidecode, block_size_samps);
+    CLASS_ATTR_STYLE_LABEL(c,"blocksamps",0,"text","Block Size In Samples");
+    // @description Sets the block size (in samples) for decoding
+    
+
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -199,6 +207,8 @@ t_buf_ambidecode *buf_ambidecode_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_ambidecode*)object_alloc_debug(s_tag_class);
     if (x) {
         x->dimension = gensym("3D");
+        x->block_size_samps = 64;
+        
         for (long i = 0; i < EARS_AMBISONIC_MAX_LOUDSPEAKERS; i++) {
             x->loudspeakers_azimuth[i] = 0;
             x->loudspeakers_elevation[i] = 0;
@@ -256,10 +266,10 @@ void buf_ambidecode_bang(t_buf_ambidecode *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-            if (x->binaural)
-                ears_buffer_hoa_decode_binaural((t_object *)x, in, out, buf_ambidecode_get_dimension_as_long(x));
-            else
-                ears_buffer_hoa_decode((t_object *)x, in, out, buf_ambidecode_get_dimension_as_long(x), x->num_loudspeakers, x->loudspeakers_azimuth, x->loudspeakers_elevation);
+        if (x->binaural)
+            ears_buffer_hoa_decode_binaural((t_object *)x, in, out, buf_ambidecode_get_dimension_as_long(x), x->block_size_samps);
+        else
+            ears_buffer_hoa_decode((t_object *)x, in, out, buf_ambidecode_get_dimension_as_long(x), x->num_loudspeakers, x->loudspeakers_azimuth, x->loudspeakers_elevation);
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

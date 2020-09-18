@@ -206,6 +206,63 @@ void revmodel::processreplace(float *input, float *output, long numsamples)
     free(out);
 }
 
+// sample accurate envelope version for wet and dry
+void revmodel::processreplace_envelopes(float *input, float *output, long numsamples, float *thisdry, float *thiswet)
+{
+    float *out = (float *)malloc(numchannels * sizeof(float));
+    float inputmix;
+    
+    while (numsamples-- > 0)
+    {
+        setdry(*thisdry);
+        setwet(*thiswet);
+
+        wet1 = wet*(width/2 + 0.5f);
+        wet2 = wet*((1-width)/2);
+
+        double w1 = wet * ((1 - width) * 1 + width * 1./numchannels);
+        double w2 = numchannels <= 1 ? 0. : (wet - w1)/(numchannels - 1);
+        
+
+        for (int c = 0; c < numchannels; c++)
+            out[c] = 0;
+        
+        inputmix = 0;
+        for (int c = 0; c < numchannels; c++)
+            inputmix += *(input + c);
+        inputmix *= (2./numchannels) * gain; // normalize as if stereo was the default
+        
+        // Accumulate comb filters in parallel
+        for (int i=0; i<numcombs; i++){
+            for (int c=0; c < numchannels; c++)
+                out[c] += combf[i][c]->process(inputmix);
+        }
+        
+        // Feed through allpasses in series
+        for (int i=0; i<numallpasses; i++) {
+            for (int c=0; c < numchannels; c++)
+                out[c] = allpassf[i][c]->process(out[c]);
+        }
+        
+        // Calculate output REPLACING anything already there
+        for (int c=0; c < numchannels; c++) {
+            *(output + c) = *(input + c) * dry;
+            for (int d=0; d < numchannels; d++) {
+                *(output + c) += out[c] * (c==d ? w1 : w2);
+            }
+        }
+        
+        // Increment sample pointers, allowing for interleave (if any)
+        input += numchannels;
+        output += numchannels;
+        thiswet ++;
+        thisdry ++;
+    }
+    
+    free(out);
+}
+
+
 
 void revmodel::update()
 {

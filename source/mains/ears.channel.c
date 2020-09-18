@@ -51,6 +51,7 @@ typedef struct _buf_channel {
     t_earsbufobj       e_ob;
     
     t_llll             *channel;
+    char               all_channels_mode;
 } t_buf_channel;
 
 
@@ -103,6 +104,11 @@ int C74_EXPORT main(void)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
+
+    CLASS_ATTR_CHAR(c, "all", 0, t_buf_channel, all_channels_mode);
+    CLASS_ATTR_STYLE_LABEL(c,"all",0,"onoff","All-channels mode");
+    CLASS_ATTR_BASIC(c, "all", 0);
+    // @description Toggles the ability to output all the channels of the first incoming buffer as separate buffers.
 
     
     class_register(CLASS_BOX, c);
@@ -183,15 +189,42 @@ void buf_channel_bang(t_buf_channel *x)
     earsbufobj_mutex_lock((t_earsbufobj *)x);
     channel = llll_clone(x->channel);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
-    
-    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
-    
-    for (long count = 0; count < num_buffers; count++) {
-        t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
-        t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-        ears_buffer_extractchannels_from_llll((t_object *)x, in, out, channel);
+    char all_channels_mode = x->all_channels_mode;
+    
+    if (all_channels_mode) {
+        // only process first incoming buffer and output all of its channels one by one
+        if (num_buffers > 0) {
+            t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
+            long num_channels = ears_buffer_get_numchannels((t_object *)x, in);
+            
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_channels, true);
+            earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+            
+            for (long count = 0; count < num_channels; count++) {
+                t_llll *temp = llll_get();
+                llll_appendlong(temp, count + 1);
+                t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
+                ears_buffer_extractchannels_from_llll((t_object *)x, in, out, temp);
+                llll_free(temp);
+            }
+            
+            if (num_buffers > 1) {
+                object_warn((t_object *)x, "More than one buffer input while object is in 'all channels' mode:");
+                object_warn((t_object *)x, "    buffers other than the first one are ignored.");
+            }
+        }
+        
+    } else {
+        earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
+        
+        for (long count = 0; count < num_buffers; count++) {
+            t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+            t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
+            
+            ears_buffer_extractchannels_from_llll((t_object *)x, in, out, channel);
+        }
     }
     llll_free(channel);
     

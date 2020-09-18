@@ -402,7 +402,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
     return err;
 }
 
-t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension)
+t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long blockSize)
 {
     
     if (!source || !dest)
@@ -445,7 +445,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         
-        long block_size = 64;
+        long block_size = blockSize;
         float **inputs = (float **) bach_newptr(channelcount * sizeof(float *));
         float **outputs = (float **) bach_newptr(2 * sizeof(float *));
         for (long c = 0; c < channelcount; c++)
