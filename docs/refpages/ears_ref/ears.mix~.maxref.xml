@@ -28,6 +28,20 @@
 			<description>
 			</description>
 		</inlet>
+		<inlet id="1" type="INLET_TYPE">
+			<digest>
+				Gains
+			</digest>
+			<description>
+			</description>
+		</inlet>
+		<inlet id="2" type="INLET_TYPE">
+			<digest>
+				Offsets
+			</digest>
+			<description>
+			</description>
+		</inlet>
 	</inletlist>
 
 	<!--OUTLETS-->
@@ -41,14 +55,7 @@
 		</outlet>
 		<outlet id="1" type="INLET_TYPE">
 			<digest>
-				Gains
-			</digest>
-			<description>
-			</description>
-		</outlet>
-		<outlet id="2" type="INLET_TYPE">
-			<digest>
-				Offsets
+				
 			</digest>
 			<description>
 				Name of the output buffer
@@ -112,7 +119,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -128,7 +135,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -144,7 +151,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -160,7 +167,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -176,7 +183,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -208,7 +215,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Amplitude Values Are In" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -304,6 +310,16 @@
 				Names of the buffers to be mixed.
 			</description>
 		</entry>
+		<entry name ="Inlet 2 (number)">
+			<description>
+				Gains.
+			</description>
+		</entry>
+		<entry name ="Inlet 3 (number)">
+			<description>
+				Offsets.
+			</description>
+		</entry>
 	</misc>
 
 	<misc name = "Output">
@@ -312,14 +328,9 @@
 				.
 			</description>
 		</entry>
-		<entry name ="Outlet 2 (number)">
+		<entry name ="Outlet 2 (symbol/list)">
 			<description>
-				Gains.
-			</description>
-		</entry>
-		<entry name ="Outlet 3 (number)">
-			<description>
-				Offsets.
+				.
 				Name of the output buffer
 			</description>
 		</entry>

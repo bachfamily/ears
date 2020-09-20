@@ -50,7 +50,7 @@ typedef struct _buf_write {
     t_earsbufobj       e_ob;
     
     t_llll             *filenames;
-    char                native_mp3_handling;
+//    char                native_mp3_handling;
     
     t_symbol           *sampleformat;
 } t_buf_write;
@@ -152,9 +152,9 @@ int C74_EXPORT main(void)
 //    earsbufobj_class_add_timeunit_attr(c);
 //    earsbufobj_class_add_naming_attr(c);
 
-    CLASS_ATTR_LONG(c, "nativemp3",	0,	t_buf_write, native_mp3_handling);
-    CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
-    // @description Toggles native MP3 handling.
+//    CLASS_ATTR_LONG(c, "nativemp3",	0,	t_buf_write, native_mp3_handling);
+//    CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
+//    // @description Toggles native MP3 handling.
 
     
     class_register(CLASS_BOX, c);
@@ -191,7 +191,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_write*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->native_mp3_handling = 1;
+//        x->native_mp3_handling = 1;
         x->sampleformat = _sym_int16;
         
         // @arg 0 @name filenames @optional 1 @type symbol

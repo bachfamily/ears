@@ -286,6 +286,8 @@ long ears_resample_env(float *in, long num_in_frames, float **out, long num_out_
     if (out && !*out)
         *out = (float *)bach_newptr(num_out_frames * num_channels * sizeof(float));
     for (long ch = 0; ch < num_channels; ch++) {
+        ears_envelope_iterator_reset(factor_env);
+        
         long pivot_sample = 0;
         double factor = ears_envelope_iterator_walk_interp(factor_env, pivot_sample, num_in_frames);
         double x = 0;
@@ -349,9 +351,7 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
-            for (long c = 0; c < channelcount; c++) {
-                ears_resample(temp, framecount, &sample, new_framecount, factor, fmax, sr, window_width, channelcount);
-            }
+            ears_resample(temp, framecount, &sample, new_framecount, factor, fmax, sr, window_width, channelcount);
             buffer_setdirty(buf);
             buffer_unlocksamples(buf);
         }
@@ -396,10 +396,8 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
-            for (long c = 0; c < channelcount; c++) {
-                ears_envelope_iterator_reset(&eei);
-                ears_resample_env(temp, framecount, &sample, new_framecount, &eei, fmax, sr, window_width, channelcount);
-            }
+            ears_envelope_iterator_reset(&eei);
+            ears_resample_env(temp, framecount, &sample, new_framecount, &eei, fmax, sr, window_width, channelcount);
             buffer_setdirty(buf);
             buffer_unlocksamples(buf);
         }

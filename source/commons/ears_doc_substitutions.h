@@ -18,31 +18,31 @@ class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
 class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
 // @method write @digest Save output as audio file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 // @mattr format @type symbol @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "write", A_GIMME, 0);
 // @method writeaiff @digest Save output as AIFF file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 // @mattr format @type symbol @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeaiff", A_GIMME, 0);
 // @method writewave @digest Save output as WAV file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 // @mattr format @type symbol @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writewave", A_GIMME, 0);
 // @method writeflac @digest Save output as FLAC file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 // @mattr format @type symbol @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeflac", A_GIMME, 0);
 // @method writeraw @digest Save output as raw file with no header
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 // @mattr format @type symbol @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeraw", A_GIMME, 0);

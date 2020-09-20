@@ -98,7 +98,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -114,7 +114,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -130,7 +130,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -146,7 +146,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -162,7 +162,7 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format<m> message attribute specifies the output sample type, if applicable. <br />
+				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />

@@ -98,7 +98,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 370.0, 35.5, 209.0, 36.0 ],
-									"text" : "ears.tofile is handy in combination with ears.fromfile ",
+									"text" : "ears.write~ is handy in combination with ears.read~ ",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ],
 									"varname" : "u360001384[1]"
 								}
@@ -455,7 +455,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 274.0, 281.0, 156.0, 25.0 ],
-									"presentation_linecount" : 3,
 									"text" : "Choose sample format"
 								}
 

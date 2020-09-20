@@ -54,6 +54,8 @@ typedef struct _buf_split {
     char                e_partial_segments; // output partial segments (for duration split)
     char                e_keep_silence; // keep silence (For silence split)
 
+    double              e_overlap; // < Overlap amount (depending on the time unit)
+    
     t_llll              *params; // either the segment_duration, or  num_segments, or a threshold, depending on the e_mode
 } t_buf_split;
 
@@ -77,6 +79,32 @@ EARSBUFOBJ_ADD_IO_METHODS(split)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
+
+t_max_err buf_split_setattr_mode(t_buf_split *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_SYM) {
+            t_symbol *s = atom_getsym(argv);
+            if (s == gensym("list") || s == gensym("List"))
+                x->e_mode = EARS_SPLIT_MODE_LIST;
+            else if (s == gensym("duration") || s == gensym("Duration"))
+                x->e_mode = EARS_SPLIT_MODE_DURATION;
+            else if (s == gensym("number") || s == gensym("Number"))
+                x->e_mode = EARS_SPLIT_MODE_NUMBER;
+            else if (s == gensym("silence") || s == gensym("Silence"))
+                x->e_mode = EARS_SPLIT_MODE_SILENCE;
+            else if (s == gensym("onset") || s == gensym("Onset"))
+                x->e_mode = EARS_SPLIT_MODE_ONSET;
+            else
+                object_error((t_object *)x, "Unsupported attribute value.");
+        } else if (atom_gettype(argv) == A_LONG){
+            x->e_mode = atom_getlong(argv);
+        } else {
+            object_error((t_object *)x, "Unsupported attribute value.");
+        }
+    }
+    return MAX_ERR_NONE;
+}
 
 int C74_EXPORT main(void)
 {
@@ -115,12 +143,14 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "mode", 0, t_buf_split, e_mode);
     CLASS_ATTR_STYLE_LABEL(c,"mode",0,"enumindex","Split Mode");
     CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Duration Number List Silence");
+    CLASS_ATTR_ACCESSORS(c, "mode", NULL, buf_split_setattr_mode);
     CLASS_ATTR_BASIC(c, "mode", 0);
     // @description Sets the split mode: <br />
     // 0 (Duration): buffer is split into equally long chunks, whose duration is set; <br />
     // 1 (Number): buffer is split into a fixed number of buffers (such number is set); <br />
     // 2 (List): buffer is split via a series of split points given as parameter (right inlet); <br />
-    // 3 (Silence): buffer is split according to silence regions.
+    // 3 (Silence): buffer is split according to silence regions. <br />
+    // Symbols: "duration", "number", "list" and "silence" can be used while defining the attribute in the object box.
 
     CLASS_ATTR_CHAR(c, "partials", 0, t_buf_split, e_partial_segments);
     CLASS_ATTR_STYLE_LABEL(c,"partials",0,"onoff","Output Partial Segments");
@@ -131,6 +161,12 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c,"keepsilence",0,"onoff","Keep Silence");
     CLASS_ATTR_BASIC(c, "keepsilence", 0);
     // @description Toggles the ability to keep the trailing silence in <b>Silence</b> <m>mode</m>.
+
+    CLASS_ATTR_DOUBLE(c, "overlap", 0, t_buf_split, e_overlap);
+    CLASS_ATTR_STYLE_LABEL(c,"overlap",0,"text","Overlap Time");
+    CLASS_ATTR_BASIC(c, "overlap", 0);
+    // @description Sets the overlap time (for <b>Duration</b>, <b>Number</b> modes only),
+    // in the unit specified by the <m>timeunit</m> attribute.
 
     
     class_register(CLASS_BOX, c);
@@ -145,7 +181,9 @@ void buf_split_assist(t_buf_split *x, void *b, long m, long a, char *s)
         if (a == 0)
             sprintf(s, "symbol/list/llll: Incoming Buffer Name"); // @in 0 @type symbol/llll @digest Incoming buffer name
         else
-            sprintf(s, "number/list/llll: Algorithm parameters (segment duration, or number, or list of split points, or algorithm threshold"); // @in 1 @type number/llll @digest Depending on the <m>mode</m> this can be the segment duration, the number of segments, the list of split point the threshold
+            sprintf(s, "number/list/llll: Algorithm parameters (segment duration, or number, or list of split points, or algorithm threshold"); // @in 1 @type number/llll @digest Depending on the <m>mode</m> this can be the segment duration,
+                            // the number of segments, the list of split points (either a plain list, or a list of wrapped elements
+                            // defining the start and the end of each segment), or the silence threshold
     } else {
         if (a == 0)
             sprintf(s, "symbol/list: Segmented Buffer Names"); // @out 0 @type symbol/list @digest Outputs a list with buffer names for each segmented buffer
@@ -222,12 +260,29 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
         {
             long num_buffers = x->params && x->params->l_head ? hatom_getlong(&x->params->l_head->l_hatom) : 0;
 
+            if (num_buffers <= 0) {
+                object_error((t_object *)e_ob, "Cannot set number of segments to a negative number or zero.");
+                object_error((t_object *)e_ob, "    Defaulting to a single segment.");
+                num_buffers = 1;
+            }
+
             *start = llll_get();
             *end = llll_get();
             llll_appendlong(*start, 0);
+
+            double overlap_samps = earsbufobj_input_to_fsamps(e_ob, x->e_overlap, buf);
+            double duration_samps = (size_samps + (num_buffers - 1) * overlap_samps)/num_buffers;
+            
+            if (overlap_samps >= duration_samps) {
+                object_error((t_object *)e_ob, "Overlap duration cannot be greater than or equal to the segment duration.");
+                object_error((t_object *)e_ob, "    Setting overlap to zero.");
+                overlap_samps = 0;
+                duration_samps = size_samps/num_buffers;
+            }
+
             for (long i = 1; i < num_buffers; i++) {
-                long this_samp = (long)round(i * size_samps/num_buffers);
-                llll_appendlong(*end, this_samp);
+                long this_samp = (long)round(i * (duration_samps - overlap_samps));
+                llll_appendlong(*end, this_samp + overlap_samps);
                 llll_appendlong(*start, this_samp);
             }
             llll_appendlong(*end, size_samps);
@@ -237,20 +292,27 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
         case EARS_SPLIT_MODE_DURATION:
         {
             double duration_samps = earsbufobj_input_to_fsamps(e_ob, x->params && x->params->l_head ? hatom_getdouble(&x->params->l_head->l_hatom) : 0, buf);
+            double overlap_samps = earsbufobj_input_to_fsamps(e_ob, x->e_overlap, buf);
+            
+            if (overlap_samps >= duration_samps) {
+                object_error((t_object *)e_ob, "Overlap duration cannot be greater than or equal to the segment duration.");
+                object_error((t_object *)e_ob, "    Setting overlap to zero.");
+                overlap_samps = 0;
+            }
 
             *start = llll_get();
             *end = llll_get();
             llll_appendlong(*start, 0);
-            for (double c = duration_samps; c < size_samps; c+=duration_samps) {
+            for (double c = duration_samps - overlap_samps; c < size_samps; c += duration_samps - overlap_samps) {
                 long this_samp = (long)round(c);
                 if (this_samp + duration_samps > size_samps) { // last shorter one
                     llll_appendlong(*end, this_samp);
-                    if (x->e_partial_segments) {
-                        llll_appendlong(*start, this_samp);
+                    if (x->e_partial_segments && this_samp + overlap_samps < size_samps) {
+                        llll_appendlong(*start, this_samp + overlap_samps);
                         llll_appendlong(*end, size_samps);
                     }
                 } else {
-                    llll_appendlong(*end, this_samp);
+                    llll_appendlong(*end, this_samp + overlap_samps);
                     llll_appendlong(*start, this_samp);
                 }
             }
@@ -263,7 +325,7 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
         {
             *start = llll_get();
             *end = llll_get();
-            if (x->params && x->params->l_size > 0) {
+            if (x->params && x->params->l_size > 0 && x->params->l_depth == 1) { // plain list of elements
                 double prev_samp = 0;
                 double this_samp = 0;
                 for (t_llllelem *el = x->params->l_head; el; el = el->l_next) {
@@ -283,6 +345,27 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
                 if (this_samp < size_samps) {
                     llll_appendlong(*start, this_samp);
                     llll_appendlong(*end, size_samps);
+                }
+            } else if (x->params && x->params->l_size > 0 && x->params->l_depth == 2) { // list with start/end
+                for (t_llllelem *el = x->params->l_head; el; el = el->l_next) {
+                    if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                        t_llll *ll = hatom_getllll(&el->l_hatom);
+                        if (ll && ll->l_head && ll->l_head->l_next) {
+                            double start_samp = earsbufobj_input_to_fsamps(e_ob, hatom_getdouble(&ll->l_head->l_hatom), buf);
+                            double end_samp = earsbufobj_input_to_fsamps(e_ob, hatom_getdouble(&ll->l_head->l_next->l_hatom), buf);
+                            if (start_samp < end_samp) {
+                                llll_appendlong(*start, start_samp);
+                                llll_appendlong(*end, end_samp);
+                            } else {
+                                object_warn((t_object *)e_ob, "End point comes before (or coincides with) starting point.");
+                                object_warn((t_object *)e_ob, "    Ignoring segment.");
+                            }
+                        } else {
+                            object_warn((t_object *)e_ob, "Wrong syntax in split point list.");
+                        }
+                    } else {
+                        object_warn((t_object *)e_ob, "Wrong syntax in split point list.");
+                    }
                 }
             }
         }

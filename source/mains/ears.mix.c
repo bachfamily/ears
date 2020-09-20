@@ -135,13 +135,13 @@ void buf_mix_assist(t_buf_mix *x, void *b, long m, long a, char *s)
     if (m == ASSIST_INLET) {
         if (a == 0) // @in 0 @type list @digest Names of the buffers to be mixed
             sprintf(s, "list: Buffer Names");
-        else if (a == 1) // @out 1 @type number @digest Gains
+        else if (a == 1) // @in 1 @type number @digest Gains
             sprintf(s, "list/float: Gains");
-        else if (a == 2) // @out 2 @type number @digest Offsets
+        else if (a == 2) // @in 2 @type number @digest Offsets
             sprintf(s, "list/float: Offsets");
 
     } else {
-        sprintf(s, "Output Buffer Name"); // @description Name of the output buffer
+        sprintf(s, "Output Buffer Name"); // @out 1 @type symbol/list @description Name of the output buffer
     }
 }
 
