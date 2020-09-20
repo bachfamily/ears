@@ -3383,7 +3383,46 @@ void ears_writeraw(t_object *buf, t_symbol *filename)
 
 
 
-void ears_writemp3(t_object *buf, t_symbol *filename)
+void ears_set_mp3encodingsettings(lame_t lame, t_ears_mp3encoding_settings *settings)
+{
+    if (!settings) {
+        lame_set_VBR(lame, vbr_default);
+        return;
+    }
+    
+    switch (settings->vbr_type) {
+        case EARS_MP3_VBRMODE_CBR:
+            // Constant Bitrate
+            lame_set_VBR(lame, vbr_off);
+            if (settings->bitrate > 0)
+                lame_set_brate(lame, settings->bitrate);
+            break;
+        case EARS_MP3_VBRMODE_ABR:
+            // Average Bitrate
+            lame_set_VBR(lame, vbr_abr);
+            if (settings->bitrate > 0)
+                lame_set_VBR_mean_bitrate_kbps(lame, settings->bitrate);
+            if (settings->bitrate_min > 0)
+                lame_set_VBR_min_bitrate_kbps(lame, settings->bitrate_min);
+            if (settings->bitrate_max > 0)
+                lame_set_VBR_max_bitrate_kbps(lame, settings->bitrate_max);
+            break;
+        case EARS_MP3_VBRMODE_VBR:
+            // Variable Bitrate (new)
+            lame_set_VBR(lame, vbr_default);
+            if (settings->bitrate_min > 0)
+                lame_set_VBR_min_bitrate_kbps(lame, settings->bitrate_min);
+            if (settings->bitrate_max > 0)
+                lame_set_VBR_min_bitrate_kbps(lame, settings->bitrate_max);
+            break;
+        default:
+            lame_set_VBR(lame, vbr_default);
+            break;
+    }
+
+}
+
+void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_mp3encoding_settings *settings)
 {
     int write;
     t_symbol *resolved_path = filename;
@@ -3400,7 +3439,7 @@ void ears_writemp3(t_object *buf, t_symbol *filename)
     }
     
     const int PCM_SIZE = 8192;
-    const int MP3_SIZE = 8192;
+    const int MP3_SIZE = PCM_SIZE*2;
     
     float pcm_buffer_l[PCM_SIZE];
     float pcm_buffer_r[PCM_SIZE];
@@ -3409,7 +3448,7 @@ void ears_writemp3(t_object *buf, t_symbol *filename)
     
     lame_t lame = lame_init();
     lame_set_in_samplerate(lame, sr);
-    lame_set_VBR(lame, vbr_default);
+    ears_set_mp3encodingsettings(lame, settings);
     lame_init_params(lame);
     
     float *sample = buffer_locksamples(buf);
@@ -3446,7 +3485,7 @@ const char *get_filename_ext(const char *filename)
     return dot + 1;
 }
 
-void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit)
+void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_mp3encoding_settings *settings)
 {
     const char *ext = get_filename_ext(filename->s_name);
     if (!strcmp(ext, "aif") || !strcmp(ext, "aiff"))
@@ -3458,7 +3497,7 @@ void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit)
     else if (!strcmp(ext, "data"))
         ears_writeraw(buf, filename);
     else if (!strcmp(ext, "mp3"))
-        ears_writemp3(buf, filename);
+        ears_writemp3(buf, filename, settings);
     else {
         object_error(culprit, "Could not determine file tipe from extension.");
         object_error(culprit, "       Please use one of the following extensions: aif(f), wav(e), mp3, flac or data.");

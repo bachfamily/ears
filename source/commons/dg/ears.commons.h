@@ -46,6 +46,27 @@
 
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
 
+
+/** VBR Enconding types for mp3's
+    @ingroup mp3 */
+typedef enum {
+    EARS_MP3_VBRMODE_CBR,    ///< Constant bit rate
+    EARS_MP3_VBRMODE_ABR,    ///< Average bit rate
+    EARS_MP3_VBRMODE_VBR,    ///< Variable bit rate
+} e_ears_mp3encoding_vbrmode;
+
+
+/** Enconding settings for mp3's
+    @ingroup mp3 */
+typedef struct _ears_mp3encoding_settings
+{
+    e_ears_mp3encoding_vbrmode  vbr_type;
+    int                         bitrate;
+    int                         bitrate_max;
+    int                         bitrate_min;
+} t_ears_mp3encoding_settings;
+
+
 /** Standard values returned by function calls with a return type of #t_ears_err
 	@ingroup misc */
 typedef enum {
@@ -268,7 +289,7 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
 /// WRITE FILES
 
 
-void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit);
+void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_mp3encoding_settings *settings);
 void ears_writeaiff(t_object *buf, t_symbol *filename);
 void ears_writeflac(t_object *buf, t_symbol *filename);
 void ears_writewave(t_object *buf, t_symbol *filename);

@@ -330,6 +330,9 @@ void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long stor
 
 long substitute_polybuffers(t_llll *ll)
 {
+    if (!ll)
+        return 1;
+    
     t_llll_stack *stack = llll_stack_new();
     t_llllelem *el = ll->l_head;
     while (1) {

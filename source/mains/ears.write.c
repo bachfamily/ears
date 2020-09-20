@@ -50,9 +50,13 @@ typedef struct _buf_write {
     t_earsbufobj       e_ob;
     
     t_llll             *filenames;
-//    char                native_mp3_handling;
     
     t_symbol           *sampleformat;
+    
+    t_symbol           *mp3_vbrmode;
+    long               mp3_bitrate;
+    long               mp3_bitrate_min;
+    long               mp3_bitrate_max;
 } t_buf_write;
 
 
@@ -141,20 +145,34 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(write)
 
     CLASS_ATTR_SYM(c, "format", 0, t_buf_write, sampleformat);
+    CLASS_ATTR_STYLE_LABEL(c, "format", 0, "enum", "Sample Format");
     CLASS_ATTR_ENUM(c,"format", 0, "int8 int16 int24 int32 float32 float64 mulaw alaw");
     CLASS_ATTR_ACCESSORS(c, "format", NULL, buf_write_setattr_format);
     CLASS_ATTR_BASIC(c, "format", 0);
     // @description Sets the bit depth or sample type, just like for the <o>buffer~</o> object.
     // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 
-    
-//    earsbufobj_class_add_outname_attr(c);
-//    earsbufobj_class_add_timeunit_attr(c);
-//    earsbufobj_class_add_naming_attr(c);
+    CLASS_ATTR_SYM(c, "vbrmode", 0, t_buf_write, mp3_vbrmode);
+    CLASS_ATTR_STYLE_LABEL(c, "vbrmode", 0, "enum", "MP3 Variable Bitrate Mode");
+    CLASS_ATTR_ENUM(c,"vbrmode", 0, "CBR ABR VBR");
+    // @description Sets the variable bitrate mode for MP3 encoding: <br />
+    // "CBR": constant bit rate (set via the <m>bitrate</m> attribute); <br />
+    // "ABR": average bit rate (set via the <m>bitrate</m> attribute, possibly with
+    // maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes); <br />
+    // "VBR" (default): variable bit rate (with
+    // maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes).
 
-//    CLASS_ATTR_LONG(c, "nativemp3",	0,	t_buf_write, native_mp3_handling);
-//    CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
-//    // @description Toggles native MP3 handling.
+    CLASS_ATTR_LONG(c, "bitrate", 0, t_buf_write, mp3_bitrate);
+    CLASS_ATTR_STYLE_LABEL(c, "bitrate", 0, "text", "MP3 Bitrate in kbps");
+    // @description Sets the constant or average bitrate for MP3 encoding, in kbps.
+
+    CLASS_ATTR_LONG(c, "minbitrate", 0, t_buf_write, mp3_bitrate_min);
+    CLASS_ATTR_STYLE_LABEL(c, "minbitrate", 0, "text", "MP3 Minimum Bitrate in kbps");
+    // @description Sets the minimum bitrate for MP3 encoding (if applicable), in kbps.
+
+    CLASS_ATTR_LONG(c, "maxbitrate", 0, t_buf_write, mp3_bitrate_max);
+    CLASS_ATTR_STYLE_LABEL(c, "maxbitrate", 0, "text", "MP3 Maximum Bitrate in kbps");
+    // @description Sets the minimum bitrate for MP3 encoding (if applicable), in kbps.
 
     
     class_register(CLASS_BOX, c);
@@ -191,7 +209,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_write*)object_alloc_debug(s_tag_class);
     if (x) {
-//        x->native_mp3_handling = 1;
+        x->mp3_vbrmode = gensym("VBR");
         x->sampleformat = _sym_int16;
         
         // @arg 0 @name filenames @optional 1 @type symbol
@@ -240,6 +258,30 @@ t_symbol *increment_symbol(t_symbol *base, long index)
     }
 }
 
+void buf_write_fill_encode_settings(t_buf_write *x, t_ears_mp3encoding_settings *settings)
+{
+    // default:
+    settings->vbr_type = EARS_MP3_VBRMODE_VBR;
+    // 0 = use LAME defaults
+    settings->bitrate = 0;
+    settings->bitrate_min = 0;
+    settings->bitrate_max = 0;
+
+    if (x->mp3_vbrmode == gensym("CBR"))
+        settings->vbr_type = EARS_MP3_VBRMODE_CBR;
+    else if (x->mp3_vbrmode == gensym("ABR"))
+        settings->vbr_type = EARS_MP3_VBRMODE_ABR;
+    else
+        settings->vbr_type = EARS_MP3_VBRMODE_VBR;
+    
+    if (x->mp3_bitrate > 0)
+        settings->bitrate = x->mp3_bitrate;
+    if (x->mp3_bitrate_min > 0)
+        settings->bitrate_min = x->mp3_bitrate_min;
+    if (x->mp3_bitrate_min > 0)
+        settings->bitrate_max = x->mp3_bitrate_max;
+}
+
 void buf_write_bang(t_buf_write *x)
 {
     long num_buffers = earsbufobj_get_num_inlet_stored_buffers((t_earsbufobj *)x, 0, false);
@@ -281,7 +323,12 @@ void buf_write_bang(t_buf_write *x)
                 orig_format = sampleformat;
                 ears_buffer_set_sampleformat((t_object *)x, buf, x->sampleformat);
             }
-            ears_write_buffer(buf, filename, (t_object *)x);
+            
+            t_ears_mp3encoding_settings settings;
+            buf_write_fill_encode_settings(x, &settings);
+            
+            ears_write_buffer(buf, filename, (t_object *)x, &settings);
+            
             if (orig_format)
                 ears_buffer_set_sampleformat((t_object *)x, buf, orig_format);
         } else {
