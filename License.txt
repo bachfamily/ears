@@ -5,13 +5,13 @@ ears is distributed under the terms of the GNU General Public License version 3 
 The source code of ears can be obtained at the following URL:
 https://github.com/bachfamily/ears
 
-ears includes:
-- the bach library (https://github.com/bachfamily/bach)
-- a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain) 
-- the mpg123 library (released under LGPLv2.1) for the ears.playmp3~ module
-- a modified version of id3lib (released under LGPLv2) for ears.readtags and ears.writetags 
-- the HOALibrary (released under GPLv3)
-- the Eigen library (released under GPLv3)
+ears has the following dependencies
+• bach (https://github.com/bachfamily/bach)
+• the mpg123 library 1.23.4 (released under LGPLv2.1)
+• for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
+• for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2)
+• for the [ears.rubberband~] module: the Rubberband library 1.8.2 (released under GPLv2)
+• for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 
 License for ears and its non-public-domain dependencies are listed below.
 

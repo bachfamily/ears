@@ -213,10 +213,10 @@ t_buf_pack *buf_pack_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_pack*)object_alloc_debug(s_tag_class);
     if (x) {
+        earsbufobj_init((t_earsbufobj *)x, 0);
+        
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
-
-        earsbufobj_init((t_earsbufobj *)x, 0);
         
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
