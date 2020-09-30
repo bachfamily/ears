@@ -3224,7 +3224,9 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
 
 
 
-t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr, t_buffer_obj **arguments, long num_arguments, t_buffer_obj *dest, e_ears_normalization_modes normalization_mode)
+t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
+                            t_hatom *arguments, long num_arguments,
+                            t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -3233,46 +3235,96 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr, t_buffer_obj **argument
         return EARS_ERR_NONE;
     }
     
+    // find reference buffer index (first introduced buffer)
+    long ref_i = -1;
+    for (long i = 0; i < num_arguments; i++)
+        if (hatom_gettype(arguments+i) == H_OBJ) {
+            ref_i = i;
+            break;
+        }
     
-    long i, num_locked = 0;
+    if (ref_i < 0) {
+        object_error(ob, "At least one buffer must be introduced as variable");
+        ears_buffer_set_size(ob, dest, 0);
+        return EARS_ERR_GENERIC;
+    }
+
+    long i = 0;
     float **samples = (float **)bach_newptr(num_arguments * sizeof(float *));
     long *num_samples = (long *)bach_newptr(num_arguments * sizeof(long));
     long *num_channels = (long *)bach_newptr(num_arguments * sizeof(long));
-    
+    long *locked = (long *)bach_newptrclear(num_arguments * sizeof(long));
+    long *argtype = (long *)bach_newptrclear(num_arguments * sizeof(long));
+    double *numericargs = (double *)bach_newptrclear(num_arguments * sizeof(double));
+    t_ears_envelope_iterator *eei = (t_ears_envelope_iterator *)bach_newptrclear(num_arguments * sizeof(t_ears_envelope_iterator));
+    t_llll **eei_envs = (t_llll **)bach_newptrclear(num_arguments * sizeof(t_llll*));
+
+    for (long i = 0; i < num_arguments; i++) {
+        if (hatom_gettype(arguments+i) == H_OBJ) {
+            argtype[i] = 0; // buffer
+        } else if (is_hatom_number(arguments+i)) {
+            argtype[i] = 1; // number
+            numericargs[i] = hatom_getdouble(arguments + i);
+        } else if (hatom_gettype(arguments + i) == H_LLLL){
+            argtype[i] = 2; // breakpoint function
+        } else {
+            object_warn(ob, "Unknown argument type!");
+            argtype[i] = -1;
+        }
+    }
+
     t_atom_long    channelcount = 0;
-    double total_length = 0;
+    long total_length_samps = 0;
     float *dest_sample = NULL;
+    double sr = 0;
     
-    channelcount = buffer_getchannelcount(arguments[0]);        // number of floats in a frame
-    for (i = 0, num_locked = 0; i < num_arguments; i++, num_locked++) {
-        samples[i] = buffer_locksamples(arguments[i]);
-        if (!samples[i]) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            goto end;
+    channelcount = ears_buffer_get_numchannels(ob, (t_buffer_obj *)hatom_getobj(arguments+ref_i));
+    sr = ears_buffer_get_sr(ob, (t_buffer_obj *)hatom_getobj(arguments+ref_i));
+    for (i = 0; i < num_arguments; i++) {
+        if (argtype[i] == 0) {
+            samples[i] = buffer_locksamples((t_buffer_obj *)hatom_getobj(arguments+i));
+            locked[i] = true;
+            if (!samples[i]) {
+                err = EARS_ERR_CANT_WRITE;
+                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+                goto end;
+            }
         }
     }
     
     
     /// All buffers have been locked. Now we need to harmonize numchannels and sampsize.
     /// As a rule: we take the property of the first one.
-    num_samples[0] = buffer_getframecount(arguments[0]);
-    num_channels[0] = channelcount;
-    for (i = 1; i < num_arguments; i++) {
-        num_channels[i] = ears_buffer_get_numchannels(ob, arguments[i]); // it happens that copy_format doesn't work in changing the number of channels
-        num_samples[i] = ears_buffer_get_size_samps(ob, arguments[i]);
+    for (i = 0; i < num_arguments; i++) {
+        if (argtype[i] == 0) {
+            num_channels[i] = ears_buffer_get_numchannels(ob, (t_buffer_obj *)hatom_getobj(arguments+i)); // it happens that copy_format doesn't work in changing the number of channels
+            num_samples[i] = ears_buffer_get_size_samps(ob, (t_buffer_obj *)hatom_getobj(arguments+i));
+        } else {
+            // not a buffer
+            num_channels[i] = 0;
+            num_samples[i] = -1;
+        }
     }
     
     // Getting max num samples and max num channels
-    total_length = num_samples[0];
-    for (i = 1; i < num_arguments; i++) {
-        if (num_samples[i] > total_length)
-            total_length = num_samples[i];
+    total_length_samps = 0;
+    channelcount = 0;
+    for (i = 0; i < num_arguments; i++) {
+        if (num_samples[i] > total_length_samps)
+            total_length_samps = num_samples[i];
         if (num_channels[i] > channelcount)
             channelcount = num_channels[i];
     }
     
-    ears_buffer_set_size_and_numchannels(ob, dest, total_length, channelcount);
+    ears_buffer_set_size_and_numchannels(ob, dest, total_length_samps, channelcount);
+    
+    // changing envelopes due to the fact tha
+    for (long i = 0; i < num_arguments; i++) {
+        if (argtype[i] == 2) {
+            eei_envs[i] = ears_llll_to_env_samples(hatom_getllll(arguments + i), total_length_samps, sr, envtimeunit);
+            eei[i] = ears_envelope_iterator_create(eei_envs[i], 0., false);
+        }
+    }
     
     dest_sample = buffer_locksamples(dest);
     if (!dest_sample) {
@@ -3280,7 +3332,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr, t_buffer_obj **argument
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
     } else {
         // erasing samples
-        memset(dest_sample, 0, total_length * channelcount * sizeof(float));
+        memset(dest_sample, 0, total_length_samps * channelcount * sizeof(float));
         
         t_hatom vars[LEXPR_MAX_VARS];
         t_hatom stack[L_MAX_TOKENS];
@@ -3289,14 +3341,36 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr, t_buffer_obj **argument
         // writing samples
         if (expr) {
             long j, c;
-            for (j = 0; j < total_length; j++) {
-                for (c = 0; c < channelcount; c++) {
+            // first: setting all numeric args which are going to be constant
+            for (long i = 0; i < num_arguments && i < LEXPR_MAX_VARS; i++) {
+                if (argtype[i] == 1) // number
+                    hatom_setdouble(vars+i, numericargs[i]);
+            }
+            
+
+            for (c = 0; c < channelcount; c++) {
+                for (long i = 0; i < num_arguments; i++)
+                    if (argtype[i] == 2) // function
+                        ears_envelope_iterator_reset(eei+i);
+                
+                for (j = 0; j < total_length_samps; j++) {
                     // setting variables
-                    for (long i = 0; i < num_arguments && i < LEXPR_MAX_VARS; i++)
-                        if (c < num_channels[i] && j < num_samples[i])
-                            hatom_setdouble(vars+i, samples[i][j * num_channels[i] + c]);
-                        else
-                            hatom_setdouble(vars+i, 0.);
+                    for (long i = 0; i < num_arguments && i < LEXPR_MAX_VARS; i++) {
+                        // could be optimized by stripping the numeric arguments from the cycle, this is not the bottleneck though
+                        switch (argtype[i]) {
+                            case 0: // buffer
+                                hatom_setdouble(vars+i, (c < num_channels[i] && j < num_samples[i]) ?
+                                                samples[i][j * num_channels[i] + c] : 0);
+                                break;
+                                
+                            case 2: // envelope
+                                hatom_setdouble(vars+i, ears_envelope_iterator_walk_interp(eei+i, j, total_length_samps));
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
                     
                     // used to be like this:
                     // TO DO: optimize this stuff, should not be like this
@@ -3314,12 +3388,18 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr, t_buffer_obj **argument
     }
     
 end:
-    for (i = 0; i < num_locked; i++)
-        buffer_unlocksamples(arguments[i]);
+    for (i = 0; i < num_arguments; i++)
+        if (locked[i])
+            buffer_unlocksamples((t_buffer_obj *)hatom_getobj(arguments+i));
     
     bach_freeptr(samples);
     bach_freeptr(num_samples);
     bach_freeptr(num_channels);
+    bach_freeptr(locked);
+    bach_freeptr(argtype);
+    bach_freeptr(numericargs);
+    bach_freeptr(eei);
+    bach_freeptr(eei_envs);
     
     // Finally, we normalize if needed
     switch (normalization_mode) {

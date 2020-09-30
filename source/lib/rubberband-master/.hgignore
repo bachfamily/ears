@@ -1,0 +1,24 @@
+syntax: glob
+Makefile
+autom4te*
+bin/*
+lib/*
+obj/*
+.vs/*
+*.user
+*.nupkg
+*.a
+*.so
+*.o
+*.orig
+*.log
+*.bak
+config.status
+doc/html
+*.rej
+cov-int
+*~
+re:^x64/Debug/
+re:^x64/Release/
+re:^Release/
+re:^Debug/

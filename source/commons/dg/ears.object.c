@@ -1925,19 +1925,11 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
 }
 
 
-// llllelem must be an envelope (llll)
-t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
+void earsbufobj_to_env_samples_do(t_llll *out, double dur_samps, double sr, char envtimeunit)
 {
-    t_llll *out = llll_get();
-    llll_appendhatom_clone(out, &elem->l_hatom);
-    llll_flatten(out, 1, 0);
-    
-    double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
-    double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
-    
     for (t_llllelem *el = out->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
-            switch (e_ob->l_envtimeunit) {
+            switch (envtimeunit) {
                 case EARSBUFOBJ_TIMEUNIT_MS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
@@ -1957,7 +1949,25 @@ t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem,
             }
         }
     }
+}
+
+t_llll *ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit)
+{
+    t_llll *out = llll_clone(ll);
+    earsbufobj_to_env_samples_do(out, dur_samps, sr, envtimeunit);
+    return out;
+}
+
+t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
+{
+    t_llll *out = llll_get();
+    llll_appendhatom_clone(out, &elem->l_hatom);
+    llll_flatten(out, 1, 0);
     
+    double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
+    double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    
+    earsbufobj_to_env_samples_do(out, dur_samps, sr, e_ob->l_envtimeunit);
     return out;
 }
 

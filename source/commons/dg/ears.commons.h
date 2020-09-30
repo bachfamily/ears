@@ -46,6 +46,10 @@
 
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
 
+// lexpr substitutions for ears.expr~
+//static char *ears_expr_lexpr_subs[] = {"t", "T", "s"};
+//static long ears_expr_lexpr_subs_count = 3;
+
 
 /** VBR Enconding types for mp3's
     @ingroup mp3 */
@@ -216,7 +220,9 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
 t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *addend);
 t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *factor);
 
-t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr, t_buffer_obj **arguments, long num_arguments, t_buffer_obj *dest, e_ears_normalization_modes normalization_mode);
+t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
+                            t_hatom *arguments, long num_arguments,
+                            t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit);
 
 
 // Buffers <-> llll or array conversions

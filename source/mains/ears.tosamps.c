@@ -128,7 +128,7 @@ void buf_tosamps_inletinfo(t_buf_tosamps *x, void *b, long a, char *t)
 t_buf_tosamps *buf_tosamps_new(t_symbol *s, short argc, t_atom *argv)
 {
     t_buf_tosamps *x;
-    long true_ac = attr_args_offset(argc, argv);
+//    long true_ac = attr_args_offset(argc, argv);
     
     x = (t_buf_tosamps*)object_alloc_debug(s_tag_class);
     if (x) {

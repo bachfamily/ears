@@ -48,6 +48,11 @@
 #include "ears.rubberband_commons.h"
 
 
+// Rubberband options via define
+#define HAVE_VDSP
+#define NO_THREADING
+// #define USE_PTHREADS
+
 typedef struct _buf_rubberband {
     t_earsbufobj       e_ob;
     

@@ -276,6 +276,10 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 
+// convenience utility
+t_llll *ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit);
+
+
 double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value);
 
 t_llll *earsbufobj_llllelem_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, double orig_from, double orig_to, char convert_from_decibels);
