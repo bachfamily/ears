@@ -460,6 +460,7 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_envampunit = EARSBUFOBJ_AMPUNIT_LINEAR;
     e_ob->l_envtimeunit = EARSBUFOBJ_TIMEUNIT_DURATION_RATIO;
     e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_CENTS;
+    e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_RADIANS;
     e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
 
     systhread_mutex_new_debug(&e_ob->l_mutex, 0);
@@ -1017,6 +1018,8 @@ t_max_err earsbufobj_setattr_ampunit(t_earsbufobj *e_ob, void *attr, long argc, 
                 e_ob->l_ampunit = EARSBUFOBJ_AMPUNIT_DECIBEL;
             else if (s == gensym("lin") || s == gensym("linear"))
                 e_ob->l_ampunit = EARSBUFOBJ_AMPUNIT_LINEAR;
+            else
+                object_error((t_object *)e_ob, "Unknown amplitude unit!");
         }
     }
     return MAX_ERR_NONE;
@@ -1046,6 +1049,8 @@ t_max_err earsbufobj_setattr_envampunit(t_earsbufobj *e_ob, void *attr, long arg
                 e_ob->l_envampunit = EARSBUFOBJ_AMPUNIT_DECIBEL;
             else if (s == gensym("lin") || s == gensym("linear"))
                 e_ob->l_envampunit = EARSBUFOBJ_AMPUNIT_LINEAR;
+            else
+                object_error((t_object *)e_ob, "Unknown amplitude unit!");
         }
     }
     return MAX_ERR_NONE;
@@ -1077,6 +1082,8 @@ t_max_err earsbufobj_setattr_timeunit(t_earsbufobj *e_ob, void *attr, long argc,
                 e_ob->l_timeunit = EARSBUFOBJ_TIMEUNIT_DURATION_RATIO;
             else if (s == gensym("samps") || s == gensym("samples"))
                 e_ob->l_timeunit = EARSBUFOBJ_TIMEUNIT_SAMPS;
+            else
+                object_error((t_object *)e_ob, "Unknown time unit!");
         }
     }
     return MAX_ERR_NONE;
@@ -1107,10 +1114,13 @@ t_max_err earsbufobj_setattr_pitchunit(t_earsbufobj *e_ob, void *attr, long argc
                 e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_MIDI;
             else if (s == gensym("freqratio") || s == gensym("fr") || s == gensym("ratio"))
                 e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_FREQRATIO;
+            else
+                object_error((t_object *)e_ob, "Unknown pitch unit!");
         }
     }
     return MAX_ERR_NONE;
 }
+
 
                      
 void earsbufobj_class_add_pitchunit_attr(t_class *c)
@@ -1125,6 +1135,36 @@ void earsbufobj_class_add_pitchunit_attr(t_class *c)
 }
 
 
+t_max_err earsbufobj_setattr_angleunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_LONG)
+            e_ob->l_angleunit = atom_getlong(argv);
+        else if (atom_gettype(argv) == A_SYM) {
+            t_symbol *s = atom_getsym(argv);
+            if (s == gensym("radians") || s == gensym("radian") || s == gensym("rad"))
+                e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_RADIANS;
+            else if (s == gensym("degrees") || s == gensym("degree") || s == gensym("deg"))
+                e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_DEGREES;
+            else if (s == gensym("turns") || s == gensym("turn"))
+                e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_TURNS;
+            else
+                object_error((t_object *)e_ob, "Unknown angle unit!");
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
+void earsbufobj_class_add_angleunit_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "angleunit", 0, t_earsbufobj, l_angleunit);
+    CLASS_ATTR_STYLE_LABEL(c,"angleunit",0,"enumindex","Angle Values Are In");
+    CLASS_ATTR_ENUMINDEX(c,"angleunit", 0, "Radians Degrees Turns");
+    CLASS_ATTR_ACCESSORS(c, "angleunit", NULL, earsbufobj_setattr_angleunit);
+    CLASS_ATTR_BASIC(c, "angleunit", 0);
+    CLASS_ATTR_CATEGORY(c, "angleunit", 0, "Units");
+    // @description Sets the unit for angles: Radians (default), Degrees, or Turns.
+}
 
 t_max_err earsbufobj_setattr_envtimeunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
@@ -1139,6 +1179,8 @@ t_max_err earsbufobj_setattr_envtimeunit(t_earsbufobj *e_ob, void *attr, long ar
                 e_ob->l_envtimeunit = EARSBUFOBJ_TIMEUNIT_DURATION_RATIO;
             else if (s == gensym("samps") || s == gensym("samples"))
                 e_ob->l_envtimeunit = EARSBUFOBJ_TIMEUNIT_SAMPS;
+            else
+                object_error((t_object *)e_ob, "Unknown time unit!");
         }
     }
     return MAX_ERR_NONE;
@@ -1832,6 +1874,25 @@ double earsbufobj_input_to_db(t_earsbufobj *e_ob, double value)
     }
 }
 
+double earsbufobj_input_to_radians(t_earsbufobj *e_ob, double value)
+{
+    switch (e_ob->l_ampunit) {
+        case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+            return ears_deg_to_rad(value);
+            break;
+
+        case EARSBUFOBJ_ANGLEUNIT_TURNS:
+            return value * TWOPI;
+            break;
+
+        case EARSBUFOBJ_ANGLEUNIT_RADIANS:
+        default:
+            return value;
+            break;
+    }
+}
+
+
 
 // llllelem can be either a number or a t_pts
 t_llll *earsbufobj_llllelem_to_linear(t_earsbufobj *e_ob, t_llllelem *elem)
@@ -1925,9 +1986,49 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
 }
 
 
-void earsbufobj_to_env_samples_do(t_llll *out, double dur_samps, double sr, char envtimeunit)
+void ears_llll_to_radians(t_llll *out, char angleunit)
 {
     for (t_llllelem *el = out->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+            // envelopes values
+            switch (angleunit) {
+                case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_deg_to_rad(hatom_getdouble(&sub_ll->l_head->l_next->l_hatom)));
+                }
+                    break;
+                case EARSBUFOBJ_ANGLEUNIT_TURNS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, TWOPI * hatom_getdouble(&sub_ll->l_head->l_next->l_hatom));
+                }
+                    break;
+                default:
+                    break;
+            }
+        } else if (is_hatom_number(&el->l_hatom)) {
+            // single values
+            switch (angleunit) {
+                case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+                    hatom_setdouble(&el->l_hatom, ears_deg_to_rad(hatom_getdouble(&el->l_hatom)));
+                    break;
+                case EARSBUFOBJ_ANGLEUNIT_TURNS:
+                    hatom_setdouble(&el->l_hatom, hatom_getdouble(&el->l_hatom)*TWOPI);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+// inplace, destructive! will alter ll
+void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit)
+{
+    for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             switch (envtimeunit) {
                 case EARSBUFOBJ_TIMEUNIT_MS:
@@ -1951,12 +2052,6 @@ void earsbufobj_to_env_samples_do(t_llll *out, double dur_samps, double sr, char
     }
 }
 
-t_llll *ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit)
-{
-    t_llll *out = llll_clone(ll);
-    earsbufobj_to_env_samples_do(out, dur_samps, sr, envtimeunit);
-    return out;
-}
 
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
 {
@@ -1967,7 +2062,7 @@ t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem,
     double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
     double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
     
-    earsbufobj_to_env_samples_do(out, dur_samps, sr, e_ob->l_envtimeunit);
+    ears_llll_to_env_samples(out, dur_samps, sr, e_ob->l_envtimeunit);
     return out;
 }
 

@@ -164,6 +164,7 @@ typedef struct _earsbufobj
     char                    l_envtimeunit;      ///< Time unit for envelopes
     char                    l_envampunit;      ///< Amplitude unit for envelopes
     char                    l_pitchunit;      ///< Pitch unit
+    char                    l_angleunit;      ///< Angle unit
 
     t_systhread_mutex       l_mutex;        ///< A mutex
     
@@ -201,6 +202,7 @@ void earsbufobj_class_add_ampunit_attr(t_class *c);
 void earsbufobj_class_add_envtimeunit_attr(t_class *c);
 void earsbufobj_class_add_envampunit_attr(t_class *c);
 void earsbufobj_class_add_pitchunit_attr(t_class *c);
+void earsbufobj_class_add_angleunit_attr(t_class *c);
 void earsbufobj_class_add_naming_attr(t_class *c);
 
 
@@ -271,13 +273,15 @@ void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf,
 
 double earsbufobj_input_to_linear(t_earsbufobj *e_ob, double value);
 double earsbufobj_input_to_db(t_earsbufobj *e_ob, double value);
+double earsbufobj_input_to_radians(t_earsbufobj *e_ob, double value);
 t_llll *earsbufobj_llllelem_to_linear(t_earsbufobj *e_ob, t_llllelem *elem);
 t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 
 // convenience utility
-t_llll *ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit);
+void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit);
+void ears_llll_to_radians(t_llll *ll, char angleunit);
 
 
 double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value);

@@ -3321,7 +3321,8 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
     // changing envelopes due to the fact tha
     for (long i = 0; i < num_arguments; i++) {
         if (argtype[i] == 2) {
-            eei_envs[i] = ears_llll_to_env_samples(hatom_getllll(arguments + i), total_length_samps, sr, envtimeunit);
+            eei_envs[i] = llll_clone(hatom_getllll(arguments + i));
+            ears_llll_to_env_samples(eei_envs[i], total_length_samps, sr, envtimeunit);
             eei[i] = ears_envelope_iterator_create(eei_envs[i], 0., false);
         }
     }
@@ -3338,6 +3339,11 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         t_hatom stack[L_MAX_TOKENS];
         hatom_setdouble(stack, 0);
         
+/*        // clearing all variables
+        for (long i = 0; i < LEXPR_MAX_VARS; i++)
+            hatom_setdouble(vars + i, 0.);
+  */
+        
         // writing samples
         if (expr) {
             long j, c;
@@ -3349,6 +3355,9 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
             
 
             for (c = 0; c < channelcount; c++) {
+                
+//                hatom_setdouble(vars+251, c+1);
+                
                 for (long i = 0; i < num_arguments; i++)
                     if (argtype[i] == 2) // function
                         ears_envelope_iterator_reset(eei+i);
@@ -3377,6 +3386,10 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
                     //                    t_hatom *res = lexpr_eval(expr, vars);
 //                    bach_freeptr(res);
 
+//                    hatom_setdouble(vars+254, ((double)j)/sr);
+  //                  hatom_setdouble(vars+253, total_length_samps > 0 ? ((double)j)/(total_length_samps - 1) : 0);
+    //                hatom_setdouble(vars+252, j + 1);
+
                     lexpr_eval_upon(expr, vars, stack); // optimized version of lexpr_eval for many evaluations
                     dest_sample[j * channelcount + c] = hatom_getdouble(stack);
                 }
@@ -3391,6 +3404,12 @@ end:
     for (i = 0; i < num_arguments; i++)
         if (locked[i])
             buffer_unlocksamples((t_buffer_obj *)hatom_getobj(arguments+i));
+    
+    for (long i = 0; i < num_arguments; i++) {
+        if (argtype[i] == 2) {
+            llll_free(eei_envs[i]);
+        }
+    }
     
     bach_freeptr(samples);
     bach_freeptr(num_samples);

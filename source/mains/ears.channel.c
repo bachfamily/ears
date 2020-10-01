@@ -248,8 +248,10 @@ void buf_channel_anything(t_buf_channel *x, t_symbol *msg, long ac, t_atom *av)
             buf_channel_bang(x);
             
         } else if (inlet == 1) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
             llll_free(x->channel);
             x->channel = llll_clone(parsed);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
         }
     }
     llll_free(parsed);

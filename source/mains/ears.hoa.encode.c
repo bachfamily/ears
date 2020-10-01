@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.ambiencode.c
+	ears.hoa.encode.c
  
 	@name
-	ears.ambiencode~
+	ears.hoa.encode~
  
 	@realname
-	ears.ambiencode~
+	ears.hoa.encode~
  
 	@type
 	object
@@ -30,13 +30,13 @@
     the channel order is ACN.
  
 	@category
-	ears buffer operations
+	ears ambisonic
  
 	@keywords
 	buffer, ambisonic, encode, decode, HOA, 3D
  
 	@seealso
-	ears.ambidecode~
+	ears.hoa.decode~, ears.hoa.rotate~
 	
 	@owner
 	Daniele Ghisi
@@ -48,11 +48,11 @@
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
-#include "ears.ambisonic.h"
+#include "ears.hoa.h"
 
 
 
-typedef struct _buf_ambiencode {
+typedef struct _buf_hoaencode {
     t_earsbufobj       e_ob;
     
     t_symbol           *dimension;
@@ -63,27 +63,27 @@ typedef struct _buf_ambiencode {
     t_llll             *coord1;
     t_llll             *coord2;
     t_llll             *coord3;
-} t_buf_ambiencode;
+} t_buf_hoaencode;
 
 
 
 // Prototypes
-t_buf_ambiencode*         buf_ambiencode_new(t_symbol *s, short argc, t_atom *argv);
-void			buf_ambiencode_free(t_buf_ambiencode *x);
-void			buf_ambiencode_bang(t_buf_ambiencode *x);
-void			buf_ambiencode_anything(t_buf_ambiencode *x, t_symbol *msg, long ac, t_atom *av);
+t_buf_hoaencode*         buf_hoaencode_new(t_symbol *s, short argc, t_atom *argv);
+void			buf_hoaencode_free(t_buf_hoaencode *x);
+void			buf_hoaencode_bang(t_buf_hoaencode *x);
+void			buf_hoaencode_anything(t_buf_hoaencode *x, t_symbol *msg, long ac, t_atom *av);
 
-void buf_ambiencode_assist(t_buf_ambiencode *x, void *b, long m, long a, char *s);
-void buf_ambiencode_inletinfo(t_buf_ambiencode *x, void *b, long a, char *t);
+void buf_hoaencode_assist(t_buf_hoaencode *x, void *b, long m, long a, char *s);
+void buf_hoaencode_inletinfo(t_buf_hoaencode *x, void *b, long a, char *t);
 
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
-EARSBUFOBJ_ADD_IO_METHODS(ambiencode)
+EARSBUFOBJ_ADD_IO_METHODS(hoaencode)
 
-t_max_err buf_ambiencode_setattr_coordtype(t_buf_ambiencode *x, void *attr, long argc, t_atom *argv)
+t_max_err buf_hoaencode_setattr_coordtype(t_buf_hoaencode *x, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
         if (atom_gettype(argv) == A_SYM) {
@@ -115,10 +115,10 @@ int C74_EXPORT main(void)
     
     t_class *c;
     
-    CLASS_NEW_CHECK_SIZE(c, "ears.ambiencode~",
-                         (method)buf_ambiencode_new,
-                         (method)buf_ambiencode_free,
-                         sizeof(t_buf_ambiencode),
+    CLASS_NEW_CHECK_SIZE(c, "ears.hoa.encode~",
+                         (method)buf_hoaencode_new,
+                         (method)buf_hoaencode_free,
+                         sizeof(t_buf_hoaencode),
                          (method)NULL,
                          A_GIMME,
                          0L);
@@ -126,33 +126,34 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
-    // A number or an llll in the second inlet is expected to contain a ambiencode parameter (depending on the <m>ampunit</m>) or
+    // A number or an llll in the second inlet is expected to contain a hoaencode parameter (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(ambiencode)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(hoaencode)
 
-    // @method number @digest Set ambiencode
-    // @description A number in the second inlet sets the ambiencode parameter (depending on the <m>ampunit</m>).
+    // @method number @digest Set hoaencode
+    // @description A number in the second inlet sets the hoaencode parameter (depending on the <m>ampunit</m>).
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_angleunit_attr(c);
 
     
-    CLASS_ATTR_SYM(c, "dimension", 0, t_buf_ambiencode, dimension);
+    CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoaencode, dimension);
     CLASS_ATTR_STYLE_LABEL(c,"dimension",0,"enum","Dimension");
     CLASS_ATTR_ENUM(c,"dimension", 0, "2D 3D");
     CLASS_ATTR_BASIC(c, "dimension", 0);
     // @description Sets the dimension
     
-    CLASS_ATTR_LONG(c, "order", 0, t_buf_ambiencode, order);
+    CLASS_ATTR_LONG(c, "order", 0, t_buf_hoaencode, order);
     CLASS_ATTR_STYLE_LABEL(c,"order",0,"text","Order");
     CLASS_ATTR_BASIC(c, "order", 0);
     // @description Sets the order
 
-    CLASS_ATTR_SYM(c, "coordtype", 0, t_buf_ambiencode, coordinate_type_sym);
+    CLASS_ATTR_SYM(c, "coordtype", 0, t_buf_hoaencode, coordinate_type_sym);
     CLASS_ATTR_STYLE_LABEL(c,"coordtype",0,"enum","Coordinate Type");
     CLASS_ATTR_ENUM(c,"coordtype", 0, "aed xyz azr");
-    CLASS_ATTR_ACCESSORS(c, "coordtype", NULL, buf_ambiencode_setattr_coordtype);
+    CLASS_ATTR_ACCESSORS(c, "coordtype", NULL, buf_hoaencode_setattr_coordtype);
     CLASS_ATTR_BASIC(c, "coordtype", 0);
     // @description Sets the input coordinate type: <br />
     // - "aed": azimuth, Elevation, distance (spherical coordinates); <br />
@@ -168,7 +169,7 @@ int C74_EXPORT main(void)
     return 0;
 }
 
-void buf_ambiencode_assist(t_buf_ambiencode *x, void *b, long m, long a, char *s)
+void buf_hoaencode_assist(t_buf_hoaencode *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0)
@@ -189,19 +190,19 @@ void buf_ambiencode_assist(t_buf_ambiencode *x, void *b, long m, long a, char *s
     }
 }
 
-void buf_ambiencode_inletinfo(t_buf_ambiencode *x, void *b, long a, char *t)
+void buf_hoaencode_inletinfo(t_buf_hoaencode *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
 
-t_buf_ambiencode *buf_ambiencode_new(t_symbol *s, short argc, t_atom *argv)
+t_buf_hoaencode *buf_hoaencode_new(t_symbol *s, short argc, t_atom *argv)
 {
-    t_buf_ambiencode *x;
+    t_buf_hoaencode *x;
     long true_ac = attr_args_offset(argc, argv);
     
-    x = (t_buf_ambiencode*)object_alloc_debug(s_tag_class);
+    x = (t_buf_hoaencode*)object_alloc_debug(s_tag_class);
     if (x) {
         x->dimension = gensym("3D");
         x->order = 1;
@@ -249,7 +250,7 @@ t_buf_ambiencode *buf_ambiencode_new(t_symbol *s, short argc, t_atom *argv)
 }
 
 
-void buf_ambiencode_free(t_buf_ambiencode *x)
+void buf_hoaencode_free(t_buf_hoaencode *x)
 {
     llll_free(x->coord1);
     llll_free(x->coord2);
@@ -258,7 +259,7 @@ void buf_ambiencode_free(t_buf_ambiencode *x)
 }
 
 
-long buf_ambiencode_get_dimension_as_long(t_buf_ambiencode *x)
+long buf_hoaencode_get_dimension_as_long(t_buf_hoaencode *x)
 {
     if (x->dimension == gensym("2D"))
         return 2;
@@ -267,7 +268,7 @@ long buf_ambiencode_get_dimension_as_long(t_buf_ambiencode *x)
     return 0;
 }
 
-void buf_ambiencode_bang(t_buf_ambiencode *x)
+void buf_hoaencode_bang(t_buf_hoaencode *x)
 {
     long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
     
@@ -289,6 +290,20 @@ void buf_ambiencode_bang(t_buf_ambiencode *x)
         t_llll *coord2_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, coord2_el, in);
         t_llll *coord3_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, coord3_el, in);
 
+        switch (x->coordinate_type) {
+            case EARS_COORDINATES_AED:
+                ears_llll_to_radians(coord1_env, x->e_ob.l_angleunit);
+                ears_llll_to_radians(coord2_env, x->e_ob.l_angleunit);
+                break;
+
+            case EARS_COORDINATES_AZR:
+                ears_llll_to_radians(coord1_env, x->e_ob.l_angleunit);
+                break;
+
+            default:
+                break;
+        }
+        
         if (coord1_env->l_size == 0) {
             object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No X coordinate defined." : "No azimuth defined.");
         } else if (coord2_env->l_size == 0) {
@@ -298,7 +313,7 @@ void buf_ambiencode_bang(t_buf_ambiencode *x)
             object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Z coordinate defined." :
                          (x->coordinate_type == EARS_COORDINATES_AZR ? "No axial radius defined." : "No distance defined."));
         } else {
-            ears_buffer_hoa_encode((t_object *)x, in, out, buf_ambiencode_get_dimension_as_long(x), x->order,
+            ears_buffer_hoa_encode((t_object *)x, in, out, buf_hoaencode_get_dimension_as_long(x), x->order,
                                    x->coordinate_type, coord1_env, coord2_env, coord3_env);
         }
         
@@ -312,7 +327,7 @@ void buf_ambiencode_bang(t_buf_ambiencode *x)
 }
 
 
-void buf_ambiencode_anything(t_buf_ambiencode *x, t_symbol *msg, long ac, t_atom *av)
+void buf_hoaencode_anything(t_buf_hoaencode *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = proxy_getinlet((t_object *) x);
 
@@ -327,7 +342,7 @@ void buf_ambiencode_anything(t_buf_ambiencode *x, t_symbol *msg, long ac, t_atom
             
             earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, true);
             
-            buf_ambiencode_bang(x);
+            buf_hoaencode_bang(x);
             
         } else if (inlet == 1) {
             earsbufobj_mutex_lock((t_earsbufobj *)x);

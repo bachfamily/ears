@@ -1,18 +1,18 @@
 /**
 	@file
-	ears.ambisonic.h
-	Ambisonic bridge with HoaLibrary
+	ears.hoa.h
+	Higher-Order Ambisonic bridge with HoaLibrary
  
 	by Daniele Ghisi
  */
 
-#ifndef _EARS_BUF_AMBISONIC_H_
-#define _EARS_BUF_AMBISONIC_H_
+#ifndef _EARS_BUF_HOA_H_
+#define _EARS_BUF_HOA_H_
 
 #include "ears.commons.h"
 
-#define EARS_AMBISONIC_MAX_LOUDSPEAKERS 512
-#define EARS_AMBISONIC_BINAURAL_SADIE /// < if defined the Sadie transfer function are used, otherwise the Listen ones (see HOALibrary)
+#define EARS_HOA_MAX_LOUDSPEAKERS 512
+#define EARS_HOA_BINAURAL_SADIE /// < if defined the Sadie transfer function are used, otherwise the Listen ones (see HOALibrary)
 
 // azimuth always computed in navigational coordinates: 0 is at the front, angles increase clockwise
 typedef enum _ears_coordinate_type
@@ -30,4 +30,6 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
 
 t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long blockSize);
 
-#endif // _EARS_BUF_AMBISONIC_H_
+t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *yaw, t_llll *pitch, t_llll *roll);
+
+#endif // _EARS_BUF_HOA_H_

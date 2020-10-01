@@ -1,4 +1,4 @@
-#include "ears.ambisonic.h"
+#include "ears.hoa.h"
 #include <Hoa.hpp>
 
 long ears_buffer_hoa_get_channel_count(int dimension, long order)
@@ -10,7 +10,7 @@ long ears_buffer_hoa_get_channel_count(int dimension, long order)
     return 0;
 }
 
-long ears_ambisonic_num_channels_to_order(int dimension, long num_channels)
+long ears_hoa_num_channels_to_order(int dimension, long num_channels)
 {
     if (dimension == 2) {
         if (num_channels % 2 == 0)
@@ -326,7 +326,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
         
-        long order = ears_ambisonic_num_channels_to_order(dimension, channelcount);
+        long order = ears_hoa_num_channels_to_order(dimension, channelcount);
         
         if (order <= 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
@@ -335,7 +335,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
         }
         
         if (num_out_channels < ears_buffer_hoa_get_channel_count(dimension, order)) {
-            object_warn(ob, "The number of output channels is insufficient for ambisonic decoding");
+            object_warn(ob, "The number of output channels is insufficient for decoding");
         }
 
         
@@ -425,7 +425,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
         
-        long order = ears_ambisonic_num_channels_to_order(dimension, channelcount);
+        long order = ears_hoa_num_channels_to_order(dimension, channelcount);
         
         if (order <= 0) {
             object_error(ob, "Buffer has the wrong number of channels!");
@@ -454,7 +454,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
             outputs[c] = (float *)bach_newptr(block_size * sizeof(float));
 
         if (dimension == 3) {
-#ifdef EARS_AMBISONIC_BINAURAL_SADIE
+#ifdef EARS_HOA_BINAURAL_SADIE
             hoa::DecoderBinaural<hoa::Hoa3d, float, hoa::hrir::Sadie_D2_3D> decoder(order);
 #else
             hoa::DecoderBinaural<hoa::Hoa3d, float, hoa::hrir::Listen_1002C_3D> decoder(order);
@@ -484,7 +484,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
             buffer_setdirty(dest);
             buffer_unlocksamples(dest);
         } else {
-#ifdef EARS_AMBISONIC_BINAURAL_SADIE
+#ifdef EARS_HOA_BINAURAL_SADIE
             hoa::DecoderBinaural<hoa::Hoa2d, float, hoa::hrir::Sadie_D2_2D> decoder(order);
 #else
             hoa::DecoderBinaural<hoa::Hoa2d, float, hoa::hrir::Listen_1002C_2D> decoder(order);
@@ -519,3 +519,130 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
     
     return err;
 }
+
+
+
+
+
+t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *yaw, t_llll *pitch, t_llll *roll)
+{
+    
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    if (dimension != 2 && dimension != 3) {
+        object_error(ob, "Dimension must be either 2 or 3.");
+        return EARS_ERR_GENERIC;
+    }
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample_wk = NULL;
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        long order = ears_hoa_num_channels_to_order(dimension, channelcount);
+        
+        if (order <= 0) {
+            object_error(ob, "Buffer has the wrong number of channels.");
+            buffer_unlocksamples(source);
+            return EARS_ERR_GENERIC;
+        }
+        
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
+            buffer_unlocksamples(source);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format(ob, source, dest);
+        }
+        
+        ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
+        
+        if (dimension == 3) {
+            hoa::Rotate<hoa::Hoa3d, float> rotator(order);
+            
+
+            bool yaw_is_envelope = (yaw->l_depth > 1);
+            bool pitch_is_envelope = (pitch->l_depth > 1);
+            bool roll_is_envelope = (roll->l_depth > 1);
+            bool at_least_one_is_envelope = (yaw_is_envelope || pitch_is_envelope || roll_is_envelope);
+            
+            double y = 0, p = 0, r = 0;
+            t_ears_envelope_iterator y_eei, p_eei, r_eei;
+            if (yaw_is_envelope)
+                y_eei = ears_envelope_iterator_create(yaw, 0., false);
+            else
+                y = hatom_getdouble(&yaw->l_head->l_hatom);
+            
+            if (pitch_is_envelope)
+                p_eei = ears_envelope_iterator_create(pitch, 0., false);
+            else
+                p = hatom_getdouble(&pitch->l_head->l_hatom);
+
+            if (roll_is_envelope)
+                r_eei = ears_envelope_iterator_create(roll, 0., false);
+            else
+                r = hatom_getdouble(&roll->l_head->l_hatom);
+
+            rotator.setYawPitchRoll(-y, p, r);
+
+            float *dest_sample = buffer_locksamples(dest);
+            
+            if (!dest_sample) {
+                err = EARS_ERR_CANT_WRITE;
+                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            } else {
+                for (long i = 0; i < framecount; i++) {
+                    if (at_least_one_is_envelope) {
+                        if (yaw_is_envelope)
+                            y = ears_envelope_iterator_walk_interp(&y_eei, i, framecount);
+                        if (pitch_is_envelope)
+                            p = ears_envelope_iterator_walk_interp(&p_eei, i, framecount);
+                        if (roll_is_envelope)
+                            r = ears_envelope_iterator_walk_interp(&r_eei, i, framecount);
+                        rotator.setYawPitchRoll(-y, p, r);
+                    }
+                    rotator.process(&orig_sample_wk[channelcount * i], &dest_sample[channelcount * i]);
+                }
+                
+            }
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        } else {
+            hoa::Rotate<hoa::Hoa2d, float> rotator(order);
+            
+            rotator.setYaw(0);
+            if (yaw && yaw->l_head)
+                rotator.setYaw(-hatom_getdouble(&yaw->l_head->l_hatom));
+            
+            float *dest_sample = buffer_locksamples(dest);
+            
+            if (!dest_sample) {
+                err = EARS_ERR_CANT_WRITE;
+                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            } else {
+                for (long i = 0; i < framecount; i++) {
+                    rotator.process(&orig_sample_wk[channelcount * i], &dest_sample[channelcount * i]);
+                }
+                
+            }
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        }
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
+

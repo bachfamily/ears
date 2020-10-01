@@ -24,3 +24,13 @@ double ears_linear_to_db(double amp)
 {
     return 20 * log10(amp);
 }
+
+double ears_deg_to_rad(double deg)
+{
+    return deg * 0.01745329252;
+}
+
+double ears_rad_to_deg(double rad)
+{
+    return rad / 0.01745329252;
+}

@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.ambidecode.c
+	ears.hoadecode.c
  
 	@name
-	ears.ambidecode~
+	ears.hoadecode~
  
 	@realname
-	ears.ambidecode~
+	ears.hoadecode~
  
 	@type
 	object
@@ -30,13 +30,13 @@
     the channel order is ACN.
 
 	@category
-	ears buffer operations
+	ears ambisonic
  
 	@keywords
 	buffer, ambisonic, decode, binaural, hoa, 3d
  
 	@seealso
-	ears.ambiencode~
+	ears.hoa.encode~, ears.hoa.rotate~
 	
 	@owner
 	Daniele Ghisi
@@ -48,11 +48,11 @@
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
-#include "ears.ambisonic.h"
+#include "ears.hoa.h"
 
 
 
-typedef struct _buf_ambidecode {
+typedef struct _buf_hoadecode {
     t_earsbufobj       e_ob;
     
     t_symbol           *dimension;
@@ -62,30 +62,30 @@ typedef struct _buf_ambidecode {
     long               block_size_samps;
     
     long               num_loudspeakers;
-    t_atom_float       loudspeakers_azimuth[EARS_AMBISONIC_MAX_LOUDSPEAKERS];
-    t_atom_float       loudspeakers_elevation[EARS_AMBISONIC_MAX_LOUDSPEAKERS];
-} t_buf_ambidecode;
+    t_atom_float       loudspeakers_azimuth[EARS_HOA_MAX_LOUDSPEAKERS];
+    t_atom_float       loudspeakers_elevation[EARS_HOA_MAX_LOUDSPEAKERS];
+} t_buf_hoadecode;
 
 
 
 // Prototypes
-t_buf_ambidecode*         buf_ambidecode_new(t_symbol *s, short argc, t_atom *argv);
-void			buf_ambidecode_free(t_buf_ambidecode *x);
-void			buf_ambidecode_bang(t_buf_ambidecode *x);
-void			buf_ambidecode_anything(t_buf_ambidecode *x, t_symbol *msg, long ac, t_atom *av);
+t_buf_hoadecode*         buf_hoadecode_new(t_symbol *s, short argc, t_atom *argv);
+void			buf_hoadecode_free(t_buf_hoadecode *x);
+void			buf_hoadecode_bang(t_buf_hoadecode *x);
+void			buf_hoadecode_anything(t_buf_hoadecode *x, t_symbol *msg, long ac, t_atom *av);
 
-void buf_ambidecode_assist(t_buf_ambidecode *x, void *b, long m, long a, char *s);
-void buf_ambidecode_inletinfo(t_buf_ambidecode *x, void *b, long a, char *t);
+void buf_hoadecode_assist(t_buf_hoadecode *x, void *b, long m, long a, char *s);
+void buf_hoadecode_inletinfo(t_buf_hoadecode *x, void *b, long a, char *t);
 
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
-EARSBUFOBJ_ADD_IO_METHODS(ambidecode)
+EARSBUFOBJ_ADD_IO_METHODS(hoadecode)
 
 
-t_max_err buf_ambidecode_setattr_binaural(t_buf_ambidecode *x, void *attr, long argc, t_atom *argv)
+t_max_err buf_hoadecode_setattr_binaural(t_buf_hoadecode *x, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
         if (is_atom_number(argv)) {
@@ -97,7 +97,7 @@ t_max_err buf_ambidecode_setattr_binaural(t_buf_ambidecode *x, void *attr, long 
     return MAX_ERR_NONE;
 }
 
-t_max_err buf_ambidecode_setattr_dimension(t_buf_ambidecode *x, void *attr, long argc, t_atom *argv)
+t_max_err buf_hoadecode_setattr_dimension(t_buf_hoadecode *x, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
         if (atom_gettype(argv) == A_SYM) {
@@ -124,10 +124,10 @@ int C74_EXPORT main(void)
     
     t_class *c;
     
-    CLASS_NEW_CHECK_SIZE(c, "ears.ambidecode~",
-                         (method)buf_ambidecode_new,
-                         (method)buf_ambidecode_free,
-                         sizeof(t_buf_ambidecode),
+    CLASS_NEW_CHECK_SIZE(c, "ears.hoa.decode~",
+                         (method)buf_hoadecode_new,
+                         (method)buf_hoadecode_free,
+                         sizeof(t_buf_hoadecode),
                          (method)NULL,
                          A_GIMME,
                          0L);
@@ -135,42 +135,43 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
-    // A number or an llll in the second inlet is expected to contain a ambidecode parameter (depending on the <m>ampunit</m>) or
+    // A number or an llll in the second inlet is expected to contain a hoadecode parameter (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(ambidecode)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(hoadecode)
 
-    // @method number @digest Set ambidecode
-    // @description A number in the second inlet sets the ambidecode parameter (depending on the <m>ampunit</m>).
+    // @method number @digest Set hoadecode
+    // @description A number in the second inlet sets the hoadecode parameter (depending on the <m>ampunit</m>).
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_angleunit_attr(c);
 
-    CLASS_ATTR_CHAR(c, "binaural", 0, t_buf_ambidecode, binaural);
+    CLASS_ATTR_CHAR(c, "binaural", 0, t_buf_hoadecode, binaural);
     CLASS_ATTR_STYLE_LABEL(c,"binaural",0,"onoff","Binaural Decoding");
-    CLASS_ATTR_ACCESSORS(c, "binaural", NULL, buf_ambidecode_setattr_binaural);
+    CLASS_ATTR_ACCESSORS(c, "binaural", NULL, buf_hoadecode_setattr_binaural);
     CLASS_ATTR_BASIC(c, "binaural", 0);
     // @description Toggles the ability to decode into a binaural buffer
 
-    CLASS_ATTR_SYM(c, "dimension", 0, t_buf_ambidecode, dimension);
+    CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoadecode, dimension);
     CLASS_ATTR_STYLE_LABEL(c,"dimension",0,"enum","Dimension");
-    CLASS_ATTR_ACCESSORS(c, "dimension", NULL, buf_ambidecode_setattr_dimension);
+    CLASS_ATTR_ACCESSORS(c, "dimension", NULL, buf_hoadecode_setattr_dimension);
     CLASS_ATTR_ENUM(c,"dimension", 0, "2D 3D");
     CLASS_ATTR_BASIC(c, "dimension", 0);
     // @description Sets the dimension (order will then be inferred from the number of input channels).
     
     
-    CLASS_ATTR_DOUBLE_VARSIZE(c, "azimuth", 0, t_buf_ambidecode, loudspeakers_azimuth, num_loudspeakers, EARS_AMBISONIC_MAX_LOUDSPEAKERS);
+    CLASS_ATTR_DOUBLE_VARSIZE(c, "azimuth", 0, t_buf_hoadecode, loudspeakers_azimuth, num_loudspeakers, EARS_HOA_MAX_LOUDSPEAKERS);
     CLASS_ATTR_STYLE_LABEL(c,"azimuth",0,"text_large","Loudspeakers Azimuth");
     CLASS_ATTR_BASIC(c, "azimuth", 0);
-    // @description Sets the azimuth of each loudspeaker
+    // @description Sets the azimuth of each loudspeaker (in the unit defined by the <m>angleunit</m> attribute)
     
-    CLASS_ATTR_DOUBLE_VARSIZE(c, "elevation", 0, t_buf_ambidecode, loudspeakers_elevation, num_loudspeakers, EARS_AMBISONIC_MAX_LOUDSPEAKERS);
+    CLASS_ATTR_DOUBLE_VARSIZE(c, "elevation", 0, t_buf_hoadecode, loudspeakers_elevation, num_loudspeakers, EARS_HOA_MAX_LOUDSPEAKERS);
     CLASS_ATTR_STYLE_LABEL(c,"elevation",0,"text_large","Loudspeakers Elevation");
     CLASS_ATTR_BASIC(c, "elevation", 0);
-    // @description Sets the elevation of each loudspeaker
+    // @description Sets the elevation of each loudspeaker (in the unit defined by the <m>angleunit</m> attribute)
 
     
-    CLASS_ATTR_LONG(c, "blocksamps", 0, t_buf_ambidecode, block_size_samps);
+    CLASS_ATTR_LONG(c, "blocksamps", 0, t_buf_hoadecode, block_size_samps);
     CLASS_ATTR_STYLE_LABEL(c,"blocksamps",0,"text","Block Size In Samples");
     // @description Sets the block size (in samples) for decoding
     
@@ -182,7 +183,7 @@ int C74_EXPORT main(void)
     return 0;
 }
 
-void buf_ambidecode_assist(t_buf_ambidecode *x, void *b, long m, long a, char *s)
+void buf_hoadecode_assist(t_buf_hoadecode *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0)
@@ -192,24 +193,24 @@ void buf_ambidecode_assist(t_buf_ambidecode *x, void *b, long m, long a, char *s
     }
 }
 
-void buf_ambidecode_inletinfo(t_buf_ambidecode *x, void *b, long a, char *t)
+void buf_hoadecode_inletinfo(t_buf_hoadecode *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
 
-t_buf_ambidecode *buf_ambidecode_new(t_symbol *s, short argc, t_atom *argv)
+t_buf_hoadecode *buf_hoadecode_new(t_symbol *s, short argc, t_atom *argv)
 {
-    t_buf_ambidecode *x;
+    t_buf_hoadecode *x;
     long true_ac = attr_args_offset(argc, argv);
     
-    x = (t_buf_ambidecode*)object_alloc_debug(s_tag_class);
+    x = (t_buf_hoadecode*)object_alloc_debug(s_tag_class);
     if (x) {
         x->dimension = gensym("3D");
         x->block_size_samps = 64;
         
-        for (long i = 0; i < EARS_AMBISONIC_MAX_LOUDSPEAKERS; i++) {
+        for (long i = 0; i < EARS_HOA_MAX_LOUDSPEAKERS; i++) {
             x->loudspeakers_azimuth[i] = 0;
             x->loudspeakers_elevation[i] = 0;
         }
@@ -239,13 +240,13 @@ t_buf_ambidecode *buf_ambidecode_new(t_symbol *s, short argc, t_atom *argv)
 }
 
 
-void buf_ambidecode_free(t_buf_ambidecode *x)
+void buf_hoadecode_free(t_buf_hoadecode *x)
 {
     earsbufobj_free((t_earsbufobj *)x);
 }
 
 
-long buf_ambidecode_get_dimension_as_long(t_buf_ambidecode *x)
+long buf_hoadecode_get_dimension_as_long(t_buf_hoadecode *x)
 {
     if (x->dimension == gensym("2D"))
         return 2;
@@ -254,7 +255,7 @@ long buf_ambidecode_get_dimension_as_long(t_buf_ambidecode *x)
     return 0;
 }
 
-void buf_ambidecode_bang(t_buf_ambidecode *x)
+void buf_hoadecode_bang(t_buf_hoadecode *x)
 {
     long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
     
@@ -262,14 +263,22 @@ void buf_ambidecode_bang(t_buf_ambidecode *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    
+    t_atom_float  ls_az[EARS_HOA_MAX_LOUDSPEAKERS];
+    t_atom_float  ls_el[EARS_HOA_MAX_LOUDSPEAKERS];
+    for (long i = 0; i < x->num_loudspeakers; i++) {
+        ls_az[i] = earsbufobj_input_to_radians((t_earsbufobj *)x, x->loudspeakers_azimuth[i]);
+        ls_el[i] = earsbufobj_input_to_radians((t_earsbufobj *)x, x->loudspeakers_elevation[i]);
+    }
+    
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
         if (x->binaural)
-            ears_buffer_hoa_decode_binaural((t_object *)x, in, out, buf_ambidecode_get_dimension_as_long(x), x->block_size_samps);
+            ears_buffer_hoa_decode_binaural((t_object *)x, in, out, buf_hoadecode_get_dimension_as_long(x), x->block_size_samps);
         else
-            ears_buffer_hoa_decode((t_object *)x, in, out, buf_ambidecode_get_dimension_as_long(x), x->num_loudspeakers, x->loudspeakers_azimuth, x->loudspeakers_elevation);
+            ears_buffer_hoa_decode((t_object *)x, in, out, buf_hoadecode_get_dimension_as_long(x), x->num_loudspeakers, ls_az, ls_el);
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
@@ -277,7 +286,7 @@ void buf_ambidecode_bang(t_buf_ambidecode *x)
 }
 
 
-void buf_ambidecode_anything(t_buf_ambidecode *x, t_symbol *msg, long ac, t_atom *av)
+void buf_hoadecode_anything(t_buf_hoadecode *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = proxy_getinlet((t_object *) x);
 
@@ -292,7 +301,7 @@ void buf_ambidecode_anything(t_buf_ambidecode *x, t_symbol *msg, long ac, t_atom
             
             earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, true);
             
-            buf_ambidecode_bang(x);
+            buf_hoadecode_bang(x);
             
         }
     }

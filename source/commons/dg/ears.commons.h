@@ -46,10 +46,6 @@
 
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
 
-// lexpr substitutions for ears.expr~
-//static char *ears_expr_lexpr_subs[] = {"t", "T", "s"};
-//static long ears_expr_lexpr_subs_count = 3;
-
 
 /** VBR Enconding types for mp3's
     @ingroup mp3 */

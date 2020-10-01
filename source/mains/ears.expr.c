@@ -112,7 +112,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
-    
+    earsbufobj_class_add_envtimeunit_attr(c);
+
     CLASS_ATTR_CHAR(c, "normalize", 0, t_buf_expr, normalization_mode);
     CLASS_ATTR_STYLE_LABEL(c,"normalize",0,"enumindex","Normalize Output");
     CLASS_ATTR_ENUMINDEX(c,"normalize", 0, "Never Always Overload Protection Only");
@@ -223,7 +224,25 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
         // For a complete list of the mathematical operators and functions supported please refer to <o>expr</o>'s help file.
         
         if (true_ac) {
-//            x->n_lexpr = lexpr_new(true_ac, true_av, ears_expr_lexpr_subs_count, ears_expr_lexpr_subs, (t_object *) x);
+            /*
+            // lexpr substitutions for ears.expr~
+            const char *ears_expr_lexpr_subs[] = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                                                    "", "", "", "", "", "", "", "", "", "", "", "c", "s", "T", "t"};
+            const long ears_expr_lexpr_subs_count = 255;
+
+            x->n_lexpr = lexpr_new(true_ac, true_av, ears_expr_lexpr_subs_count, ears_expr_lexpr_subs, (t_object *) x);
+             */
             x->n_lexpr = lexpr_new(true_ac, true_av, 0, NULL, (t_object *) x);
         }
 
@@ -231,11 +250,21 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
             object_error((t_object *) x, "Bad expression");
             return NULL;
         }
-        
+
+/*        t_lexpr *dummy = lexpr_new(true_ac, true_av, 0, NULL, (t_object *) x);
+
+        if (!dummy) {
+            object_error((t_object *) x, "Bad expression");
+            return NULL;
+        }
+        x->n_maxvars = dummy->l_numvars; // workaround to get the right number of variables
+        lexpr_free(dummy);
+*/
         x->n_maxvars = x->n_lexpr->l_numvars;
-        if (x->n_lexpr->l_numvars > 0) {
-            x->arguments = (t_hatom *)bach_newptr(x->n_lexpr->l_numvars * sizeof(t_hatom));
-            for (long i = 0; i < x->n_lexpr->l_numvars; i++)
+        
+        if (x->n_maxvars > 0) {
+            x->arguments = (t_hatom *)bach_newptr(x->n_maxvars * sizeof(t_hatom));
+            for (long i = 0; i < x->n_maxvars; i++)
                 hatom_setdouble(x->arguments + i, 0);
         }
 
@@ -309,7 +338,7 @@ void buf_expr_free(t_buf_expr *x)
     
 //    t_llll *stored = x->e_ob.l_ob.l_incache[0].s_ll;
     lexpr_free(x->n_lexpr);
-    for (long i = 0; i < x->n_lexpr->l_numvars; i++)
+    for (long i = 0; i < x->n_maxvars; i++)
         if (hatom_gettype(x->arguments + i) == H_LLLL)
             llll_free(hatom_getllll(x->arguments + i));
     bach_freeptr(x->arguments);

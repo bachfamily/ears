@@ -111,3 +111,11 @@ CLASS_ATTR_ENUMINDEX(c,"pitchunit", 0, "Cents MIDI Frequency Ratio");
 CLASS_ATTR_ACCESSORS(c, "pitchunit", NULL, earsbufobj_setattr_pitchunit);
 CLASS_ATTR_BASIC(c, "pitchunit", 0);
 // @description Sets the unit for pitch values: Cents (default), MIDI, or frequency ratio.
+
+#define earsbufobj_class_add_angleunit_attr
+CLASS_ATTR_CHAR(c, "angleunit", 0, t_earsbufobj, l_angleunit);
+CLASS_ATTR_STYLE_LABEL(c,"angleunit",0,"enumindex","Angle Values Are In");
+CLASS_ATTR_ENUMINDEX(c,"angleunit", 0, "Radians Degrees Turns");
+CLASS_ATTR_ACCESSORS(c, "angleunit", NULL, earsbufobj_setattr_angleunit);
+CLASS_ATTR_BASIC(c, "angleunit", 0);
+// @description Sets the unit for angles: Radians (default), Degrees, or Turns.
