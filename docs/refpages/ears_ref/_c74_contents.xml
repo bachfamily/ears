@@ -14,7 +14,6 @@
 <refpage name='ears.fromsamps~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
 <refpage name='ears.onepole~.maxref.xml'/>
-<refpage name='ears.ambiencode~.maxref.xml'/>
 <refpage name='ears.rot~.maxref.xml'/>
 <refpage name='ears.write~.maxref.xml'/>
 <refpage name='ears.tosamps~.maxref.xml'/>
@@ -22,16 +21,17 @@
 <refpage name='ears.channel~.maxref.xml'/>
 <refpage name='ears.fromroll~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>
-<refpage name='ears.ambidecode~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.shift~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
 <refpage name='ears.envelope~.maxref.xml'/>
 <refpage name='ears.fade~.maxref.xml'/>
+<refpage name='ears.hoadecode~.maxref.xml'/>
 <refpage name='ears.biquad~.maxref.xml'/>
 <refpage name='ears.filterempty~.maxref.xml'/>
 <refpage name='ears.pack~.maxref.xml'/>
 <refpage name='ears.rev~.maxref.xml'/>
+<refpage name='ears.hoa.encode~.maxref.xml'/>
 <refpage name='ears.expr~.maxref.xml'/>
 <refpage name='ears.paulstretch~.maxref.xml'/>
 <refpage name='ears.trim~.maxref.xml'/>
@@ -44,4 +44,5 @@
 <refpage name='ears.window~.maxref.xml'/>
 <refpage name='ears.gain~.maxref.xml'/>
 <refpage name='ears.split~.maxref.xml'/>
+<refpage name='ears.hoarotate~.maxref.xml'/>
 </root>

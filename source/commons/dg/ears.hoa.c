@@ -646,3 +646,11 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
     return err;
 }
 
+void quaternion_to_yawpitchroll(double w, double x, double y, double z, double *yaw, double *pitch, double *roll)
+{
+    Quaternion<double> q(w, x, y, z);
+    Vector3d euler = hoa::QuaternionToEuler(q, 2, 1, 0);
+    *yaw = euler[0];
+    *pitch = euler[1];
+    *roll = euler[2];
+}

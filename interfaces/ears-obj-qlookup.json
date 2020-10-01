@@ -265,24 +265,6 @@
       "ears.biquad~"
     ]
   },
-  "ears.ambiencode~": {
-    "digest": "Encode 2D or 3D higher-order ambisonic buffers",
-    "module": "ears",
-    "category": [
-      "ears buffer operations"
-    ],
-    "keywords": [
-      "buffer",
-      "ambisonic",
-      "encode",
-      "decode",
-      "HOA",
-      "3D"
-    ],
-    "seealso": [
-      "ears.ambidecode~"
-    ]
-  },
   "ears.rot~": {
     "digest": "Circular rotation of a buffer",
     "module": "ears",
@@ -406,24 +388,6 @@
       "ears.paulstretch~"
     ]
   },
-  "ears.ambidecode~": {
-    "digest": "Decode higher-order ambisonic buffers",
-    "module": "ears",
-    "category": [
-      "ears buffer operations"
-    ],
-    "keywords": [
-      "buffer",
-      "ambisonic",
-      "decode",
-      "binaural",
-      "hoa",
-      "3d"
-    ],
-    "seealso": [
-      "ears.ambiencode~"
-    ]
-  },
   "ears.repeat~": {
     "digest": "Repeat buffer",
     "module": "ears",
@@ -514,6 +478,25 @@
       "ears.join~"
     ]
   },
+  "ears.hoadecode~": {
+    "digest": "Decode higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "decode",
+      "binaural",
+      "hoa",
+      "3d"
+    ],
+    "seealso": [
+      "ears.hoa.encode~",
+      "ears.hoa.rotate~"
+    ]
+  },
   "ears.biquad~": {
     "digest": "Two-pole two-zero filter for buffers",
     "module": "ears",
@@ -593,6 +576,25 @@
       "ears.rot~",
       "ears.repeat~",
       "ears.slice~"
+    ]
+  },
+  "ears.hoa.encode~": {
+    "digest": "Encode 2D or 3D higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "encode",
+      "decode",
+      "HOA",
+      "3D"
+    ],
+    "seealso": [
+      "ears.hoa.decode~",
+      "ears.hoa.rotate~"
     ]
   },
   "ears.expr~": {
@@ -804,6 +806,25 @@
     "seealso": [
       "ears.slice~",
       "ears.trim~"
+    ]
+  },
+  "ears.hoarotate~": {
+    "digest": "Rotate higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "rotate",
+      "hoa",
+      "3d",
+      "rotation"
+    ],
+    "seealso": [
+      "ears.hoa.encode~",
+      "ears.hoa.decode~"
     ]
   }
 }

@@ -20,6 +20,39 @@ using namespace Eigen;
 
 namespace hoa
 {
+    
+    // ================================================================================ //
+    // CONVERSIONS //
+    // ================================================================================ //
+
+    template <typename T>
+    Quaternion<T> EulerToQuaternion(T angle_axis1, T angle_axis2, T angle_axis3, int axis1, int axis2, int axis3)
+    {
+        Quaternion<T> q = AngleAxisf(angle_axis1, axis1 == 0 ? Vector3f::UnitX() : (axis1 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
+        AngleAxis<T>(angle_axis2, axis2 == 0 ? Vector3f::UnitX() : (axis2 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
+        AngleAxis<T>(angle_axis3, axis3 == 0 ? Vector3f::UnitX() : (axis3 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ()));
+        return q;
+    }
+    
+    template <typename T>
+    Vector3f QuaternionToEuler(Quaternion<T> q, int axis1, int axis2, int axis3)
+    {
+        return q.toRotationMatrix().eulerAngles(axis1, axis2, axis3);
+    }
+    
+    template <typename T>
+    void YawPitchRollToZYZ(const T yaw, const T pitch, const T roll, T* alpha, T* beta, T* gamma)
+    {
+        Quaternion<T> q = EulerToQuaternion(yaw, pitch, roll, 2, 1, 0);
+        Vector3f euler = QuaternionToEuler(q, 2, 1, 2);
+        *alpha = euler[0];
+        *beta = euler[1];
+        *gamma = euler[2];
+    }
+    
+    
+    
+    
     // ================================================================================ //
     // ROTATE //
     // ================================================================================ //
@@ -248,29 +281,6 @@ namespace hoa
         {
             return math<T>::wrap_two_pi(m_pitch);
         }
-        
-        Quaternion<T> EulerToQuaternion(T angle_axis1, T angle_axis2, T angle_axis3, int axis1, int axis2, int axis3)
-        {
-            Quaternion<T> q = AngleAxisf(angle_axis1, axis1 == 0 ? Vector3f::UnitX() : (axis1 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
-            AngleAxisf(angle_axis2, axis2 == 0 ? Vector3f::UnitX() : (axis2 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
-            AngleAxisf(angle_axis3, axis3 == 0 ? Vector3f::UnitX() : (axis3 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ()));
-            return q;
-        }
-        
-        Vector3f QuaternionToEuler(Quaternion<T> q, int axis1, int axis2, int axis3)
-        {
-            return q.toRotationMatrix().eulerAngles(axis1, axis2, axis3);
-        }
-        
-        void YawPitchRollToZYZ(const T yaw, const T pitch, const T roll, T* alpha, T* beta, T* gamma)
-        {
-            Quaternion<T> q = EulerToQuaternion(yaw, pitch, roll, 2, 1, 0);
-            Vector3f euler = QuaternionToEuler(q, 2, 1, 2);
-            *alpha = euler[0];
-            *beta = euler[1];
-            *gamma = euler[2];
-        }
-
         
         //! @brief This method performs a 90° rotation around the y axis.
         //! @details This is most often useful only in combination with process_Z in

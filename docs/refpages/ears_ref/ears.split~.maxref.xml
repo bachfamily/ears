@@ -30,7 +30,7 @@
 		</inlet>
 		<inlet id="1" type="INLET_TYPE">
 			<digest>
-				Depending on the <m>mode</m> this can be the segment duration, the number of segments, the list of split point the thres
+				Depending on the <m>mode</m> this can be the segment duration,
 			</digest>
 			<description>
 			</description>
@@ -236,7 +236,8 @@
 				0 (Duration): buffer is split into equally long chunks, whose duration is set; <br />
 				1 (Number): buffer is split into a fixed number of buffers (such number is set); <br />
 				2 (List): buffer is split via a series of split points given as parameter (right inlet); <br />
-				3 (Silence): buffer is split according to silence regions.
+				3 (Silence): buffer is split according to silence regions. <br />
+				Symbols: "duration", "number", "list" and "silence" can be used while defining the attribute in the object box.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Split Mode" />
@@ -334,7 +335,7 @@
 		</entry>
 		<entry name ="Inlet 2 (number/llll)">
 			<description>
-				Depending on the <m>mode</m> this can be the segment duration, the number of segments, the list of split point the thres.
+				Depending on the <m>mode</m> this can be the segment duration,.
 			</description>
 		</entry>
 	</misc>

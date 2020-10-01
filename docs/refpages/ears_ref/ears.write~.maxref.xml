@@ -179,9 +179,22 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="bitrate" get="1" set="1" type="int" size="1">
+			<digest>
+				MP3 Bitrate in kbps
+			</digest>
+			<description>
+				Sets the constant or average bitrate for MP3 encoding, in kbps.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="MP3 Bitrate in kbps" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="format" get="1" set="1" type="symbol" size="1">
 			<digest>
-				
+				Sample Format
 			</digest>
 			<description>
 				Sets the bit depth or sample type, just like for the <o>buffer~</o> object.
@@ -190,21 +203,52 @@
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Sample Format" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
+			</attributelist>
+		</attribute>
+		<attribute name="maxbitrate" get="1" set="1" type="int" size="1">
+			<digest>
+				MP3 Maximum Bitrate in kbps
+			</digest>
+			<description>
+				Sets the minimum bitrate for MP3 encoding (if applicable), in kbps.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="MP3 Maximum Bitrate in kbps" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="nativemp3" get="1" set="1" type="int" size="1">
+		<attribute name="minbitrate" get="1" set="1" type="int" size="1">
 			<digest>
-				Native MP3 Handling
+				MP3 Minimum Bitrate in kbps
 			</digest>
 			<description>
-				Toggles native MP3 handling.
+				Sets the minimum bitrate for MP3 encoding (if applicable), in kbps.
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Native MP3 Handling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="MP3 Minimum Bitrate in kbps" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="vbrmode" get="1" set="1" type="symbol" size="1">
+			<digest>
+				MP3 Variable Bitrate Mode
+			</digest>
+			<description>
+				Sets the variable bitrate mode for MP3 encoding: <br />
+				"CBR": constant bit rate (set via the <m>bitrate</m> attribute); <br />
+				"ABR": average bit rate (set via the <m>bitrate</m> attribute, possibly with
+				maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes); <br />
+				"VBR" (default): variable bit rate (with
+				maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="MP3 Variable Bitrate Mode" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 	</attributelist>

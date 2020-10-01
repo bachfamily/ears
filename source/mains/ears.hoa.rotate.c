@@ -118,6 +118,17 @@ int C74_EXPORT main(void)
     // @method number @digest Set yaw, pitch, roll
     // @description A number in the second, third or fourth inlet respectively sets the yaw, pitch and roll
 
+    
+    // @method quaternion @digest Define rotation from quaternion
+    // @description A <m>quaternion</m> message, followed by four arguments (W, X, Y, Z) sets the rotation
+    // from a quaternion (W being the real part).
+    // @marg 0 @name w @optional 0 @type float
+    // @marg 1 @name x @optional 0 @type float
+    // @marg 2 @name y @optional 0 @type float
+    // @marg 3 @name z @optional 0 @type float
+    class_addmethod(c, (method)buf_hoarotate_anything_deferred, "quaternion", A_GIMME, 0);
+
+    
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
@@ -209,6 +220,7 @@ long buf_hoarotate_get_dimension_as_long(t_buf_hoarotate *x)
     return 0;
 }
 
+
 void buf_hoarotate_bang(t_buf_hoarotate *x)
 {
     long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
@@ -256,32 +268,54 @@ void buf_hoarotate_anything(t_buf_hoarotate *x, t_symbol *msg, long ac, t_atom *
     if (!parsed) return;
     
     if (parsed && parsed->l_head) {
-        if (inlet == 0) {
-            
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
-            
-            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, true);
-            
-            buf_hoarotate_bang(x);
-            
-        } else if (inlet == 1) {
-            earsbufobj_mutex_lock((t_earsbufobj *)x);
-            llll_free(x->yaw);
-            x->yaw = llll_clone(parsed);
-            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+        if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM && hatom_getsym(&parsed->l_head->l_hatom) == gensym("quaternion")){
+            if (parsed->l_size < 5) {
+                object_error((t_object *)x, "Not enough arguments; quaterion is expected in the form W X Y Z");
+            } else {
+                double yaw = 0, pitch = 0, roll = 0;
+                quaternion_to_yawpitchroll(hatom_getdouble(&parsed->l_head->l_hatom),
+                                           hatom_getdouble(&parsed->l_head->l_next->l_hatom),
+                                           hatom_getdouble(&parsed->l_head->l_next->l_next->l_hatom),
+                                           hatom_getdouble(&parsed->l_head->l_next->l_next->l_next->l_hatom),
+                                           &yaw, &pitch, &roll);
 
-        } else if (inlet == 2) {
-            earsbufobj_mutex_lock((t_earsbufobj *)x);
-            llll_free(x->pitch);
-            x->pitch = llll_clone(parsed);
-            earsbufobj_mutex_unlock((t_earsbufobj *)x);
-
-        } else if (inlet == 3) {
-            earsbufobj_mutex_lock((t_earsbufobj *)x);
-            llll_free(x->roll);
-            x->roll = llll_clone(parsed);
-            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+                earsbufobj_mutex_lock((t_earsbufobj *)x);
+                llll_clear(x->yaw);
+                llll_clear(x->pitch);
+                llll_clear(x->roll);
+                llll_appenddouble(x->yaw, yaw);
+                llll_appenddouble(x->pitch, pitch);
+                llll_appenddouble(x->roll, roll);
+                earsbufobj_mutex_unlock((t_earsbufobj *)x);
+            }
+        } else {
+            if (inlet == 0) {
+                
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
+                
+                earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, true);
+                
+                buf_hoarotate_bang(x);
+                
+            } else if (inlet == 1) {
+                earsbufobj_mutex_lock((t_earsbufobj *)x);
+                llll_free(x->yaw);
+                x->yaw = llll_clone(parsed);
+                earsbufobj_mutex_unlock((t_earsbufobj *)x);
+                
+            } else if (inlet == 2) {
+                earsbufobj_mutex_lock((t_earsbufobj *)x);
+                llll_free(x->pitch);
+                x->pitch = llll_clone(parsed);
+                earsbufobj_mutex_unlock((t_earsbufobj *)x);
+                
+            } else if (inlet == 3) {
+                earsbufobj_mutex_lock((t_earsbufobj *)x);
+                llll_free(x->roll);
+                x->roll = llll_clone(parsed);
+                earsbufobj_mutex_unlock((t_earsbufobj *)x);
+            }
         }
     }
     llll_free(parsed);

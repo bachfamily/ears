@@ -32,4 +32,6 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
 
 t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *yaw, t_llll *pitch, t_llll *roll);
 
+void quaternion_to_yawpitchroll(double w, double x, double y, double z, double *yaw, double *pitch, double *roll);
+
 #endif // _EARS_BUF_HOA_H_
