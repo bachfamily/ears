@@ -17,6 +17,7 @@
 #include "Hoa_MultiEncoder.hpp"
 #include "Hoa_Optim.hpp"
 #include "Hoa_Rotate.hpp"
+#include "Hoa_Shift.hpp"
 #include "Hoa_Decoder.hpp"
 #include "Hoa_Vector.hpp"
 #include "Hoa_Wider.hpp"

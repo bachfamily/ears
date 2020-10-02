@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.hoadecode.c
+	ears.hoa.decode.c
  
 	@name
-	ears.hoadecode~
+	ears.hoa.decode~
  
 	@realname
-	ears.hoadecode~
+	ears.hoa.decode~
  
 	@type
 	object
@@ -36,7 +36,7 @@
 	buffer, ambisonic, decode, binaural, hoa, 3d
  
 	@seealso
-	ears.hoa.encode~, ears.hoa.rotate~
+	ears.hoa.encode~, ears.hoa.rotate~, ears.hoa.mirror~
 	
 	@owner
 	Daniele Ghisi
@@ -246,14 +246,6 @@ void buf_hoadecode_free(t_buf_hoadecode *x)
 }
 
 
-long buf_hoadecode_get_dimension_as_long(t_buf_hoadecode *x)
-{
-    if (x->dimension == gensym("2D"))
-        return 2;
-    if (x->dimension == gensym("3D"))
-        return 3;
-    return 0;
-}
 
 void buf_hoadecode_bang(t_buf_hoadecode *x)
 {
@@ -270,15 +262,21 @@ void buf_hoadecode_bang(t_buf_hoadecode *x)
         ls_az[i] = earsbufobj_input_to_radians((t_earsbufobj *)x, x->loudspeakers_azimuth[i]);
         ls_el[i] = earsbufobj_input_to_radians((t_earsbufobj *)x, x->loudspeakers_elevation[i]);
     }
-    
+
+    // HoaLibrary decoding has a weird quirk on the decoding convention for the angles, which makes it important to reverse the azimuth location
+    // so that everything works
+    for (long i = 0; i < x->num_loudspeakers; i++) {
+//        ls_az[i] *= -1;
+    }
+
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
         if (x->binaural)
-            ears_buffer_hoa_decode_binaural((t_object *)x, in, out, buf_hoadecode_get_dimension_as_long(x), x->block_size_samps);
+            ears_buffer_hoa_decode_binaural((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->block_size_samps);
         else
-            ears_buffer_hoa_decode((t_object *)x, in, out, buf_hoadecode_get_dimension_as_long(x), x->num_loudspeakers, ls_az, ls_el);
+            ears_buffer_hoa_decode((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->num_loudspeakers, ls_az, ls_el);
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

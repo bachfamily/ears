@@ -187,7 +187,7 @@ namespace hoa
     public:
         
         //! @brief Constructor.
-        //! @param order The order (minimum 1).
+        //! @param order The order (minimum 1, maximum 21).
         Rotate(const size_t order)
         : ProcessorHarmonics<Hoa3d, T>(order)
         {}
@@ -355,10 +355,23 @@ namespace hoa
         inline void preprocess()
         {
             int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
-            YawPitchRollToZYZ(m_yaw, m_pitch, m_roll, &m_alpha, &m_beta, &m_gamma);
-
             T angle;
             
+            // this one is used only for pure Z-axis rotation to optimize this common case
+            angle = m_yaw;
+            angle = -angle; // rotational convention...
+            for (int o = 0; o < order; o++) {
+                m_sins_yaw[o] = std::sin((o+1)*angle);
+                m_coss_yaw[o] = std::cos((o+1)*angle);
+            }
+
+            if ((getPitch() == 0 && getRoll() == 0))
+                return; // optimized version for a simple Z-axis rotation case
+            
+            // otherwise, let's get into the weeds:
+            
+            YawPitchRollToZYZ(m_yaw, m_pitch, m_roll, &m_alpha, &m_beta, &m_gamma);
+
             angle = m_gamma + HOA_PI2;
             angle = -angle; // rotational convention...
             for (int o = 0; o < order; o++) {
@@ -379,14 +392,6 @@ namespace hoa
                 m_sins_alpha_pi2[o] = std::sin((o+1)*angle);
                 m_coss_alpha_pi2[o] = std::cos((o+1)*angle);
             }
-
-            // this one is used only for pure Z-axis rotation to optimize this common case
-            angle = m_yaw;
-            angle = -angle; // rotational convention...
-            for (int o = 0; o < order; o++) {
-                m_sins_yaw[o] = std::sin((o+1)*angle);
-                m_coss_yaw[o] = std::cos((o+1)*angle);
-            }
         }
         
         //! @brief This method performs the rotation.
@@ -404,10 +409,11 @@ namespace hoa
                     outputs[i] = inputs[i];
                 }
             } else if (getPitch() == 0 && getRoll() == 0) {
-                // Z-axis rotation only
+                // Z-axis rotation only, optimized version for this simple case
                 process_Z(inputs, outputs, m_sins_yaw, m_coss_yaw);
             } else {
-                // full 3d rotation
+                // full 3d rotation:
+                // performs R(alpha, beta, gamma), with alpha, beta, gamma ZYZ euler angles
                 // see https://ambisonics.iem.at/xchange/fileformat/docs/spherical-harmonics-rotation
                 // R(alpha, beta, gamma) = Rz(alpha+90°) Ry90 Rz(beta+180°) Ry90 Rz(gamma+90°)
                 T* temp = new T[numharmonics];

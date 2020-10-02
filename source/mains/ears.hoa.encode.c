@@ -36,7 +36,7 @@
 	buffer, ambisonic, encode, decode, HOA, 3D
  
 	@seealso
-	ears.hoa.decode~, ears.hoa.rotate~
+	ears.hoa.decode~, ears.hoa.rotate~, ears.hoa.mirror~
 	
 	@owner
 	Daniele Ghisi
@@ -259,15 +259,6 @@ void buf_hoaencode_free(t_buf_hoaencode *x)
 }
 
 
-long buf_hoaencode_get_dimension_as_long(t_buf_hoaencode *x)
-{
-    if (x->dimension == gensym("2D"))
-        return 2;
-    if (x->dimension == gensym("3D"))
-        return 3;
-    return 0;
-}
-
 void buf_hoaencode_bang(t_buf_hoaencode *x)
 {
     long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
@@ -313,7 +304,7 @@ void buf_hoaencode_bang(t_buf_hoaencode *x)
             object_error((t_object *)x, x->coordinate_type == EARS_COORDINATES_XYZ ? "No Z coordinate defined." :
                          (x->coordinate_type == EARS_COORDINATES_AZR ? "No axial radius defined." : "No distance defined."));
         } else {
-            ears_buffer_hoa_encode((t_object *)x, in, out, buf_hoaencode_get_dimension_as_long(x), x->order,
+            ears_buffer_hoa_encode((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->order,
                                    x->coordinate_type, coord1_env, coord2_env, coord3_env);
         }
         

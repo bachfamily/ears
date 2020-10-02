@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.hoarotate.c
+	ears.hoa.rotate.c
  
 	@name
-	ears.hoarotate~
+	ears.hoa.rotate~
  
 	@realname
-	ears.hoarotate~
+	ears.hoa.rotate~
  
 	@type
 	object
@@ -38,7 +38,7 @@
 	buffer, ambisonic, rotate, hoa, 3d, rotation
  
 	@seealso
-	ears.hoa.encode~, ears.hoa.decode~
+	ears.hoa.encode~, ears.hoa.decode~, ears.hoa.mirror~
 	
 	@owner
 	Daniele Ghisi
@@ -191,6 +191,19 @@ t_buf_hoarotate *buf_hoarotate_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
+        if (args && args->l_head) {
+            llll_clear(x->yaw);
+            llll_appendhatom_clone(x->yaw, &args->l_head->l_hatom);
+            if (args->l_head->l_next) {
+                llll_clear(x->pitch);
+                llll_appendhatom_clone(x->pitch, &args->l_head->l_next->l_hatom);
+                if (args->l_head->l_next->l_next) {
+                    llll_clear(x->roll);
+                    llll_appendhatom_clone(x->roll, &args->l_head->l_next->l_next->l_hatom);
+                }
+            }
+        }
+        
         attr_args_process(x, argc, argv);
         
         earsbufobj_setup((t_earsbufobj *)x, "E444", "E", names);
@@ -210,15 +223,6 @@ void buf_hoarotate_free(t_buf_hoarotate *x)
     earsbufobj_free((t_earsbufobj *)x);
 }
 
-
-long buf_hoarotate_get_dimension_as_long(t_buf_hoarotate *x)
-{
-    if (x->dimension == gensym("2D"))
-        return 2;
-    if (x->dimension == gensym("3D"))
-        return 3;
-    return 0;
-}
 
 
 void buf_hoarotate_bang(t_buf_hoarotate *x)
@@ -248,7 +252,7 @@ void buf_hoarotate_bang(t_buf_hoarotate *x)
         ears_llll_to_radians(pitch_env, x->e_ob.l_angleunit);
         ears_llll_to_radians(roll_env, x->e_ob.l_angleunit);
 
-        ears_buffer_hoa_rotate((t_object *)x, in, out, buf_hoarotate_get_dimension_as_long(x), yaw_env, pitch_env, roll_env);
+        ears_buffer_hoa_rotate((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), yaw_env, pitch_env, roll_env);
         
         llll_free(yaw_env);
         llll_free(pitch_env);
