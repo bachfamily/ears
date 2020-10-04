@@ -1,6 +1,6 @@
 /*
  // Author : Daniele Ghisi
- // This is a tentative
+ // This is a failed attempt... for now...
  // For information on usage and redistribution, and for a DISCLAIMER OF ALL
  // WARRANTIES, see the file, "LICENSE.txt," in this distribution.
  */
@@ -9,12 +9,13 @@
 
 #include "Hoa_Processor.hpp"
 #include "Hoa_Y90RotationMatrices.hpp"
+#include "Hoa_Rotate.hpp"
 
 #include <Eigen/Geometry>
 #include <boost/math/special_functions/bessel.hpp>
 
 #define HOA_SHIFT_FFT_SIZE 512
-
+#define HOA_SOUND_SPEED 343
 using namespace Eigen;
 
 namespace hoa
@@ -155,10 +156,16 @@ namespace hoa
         //! @param order The order (minimum 1, maximum 21).
         Shift(const size_t order, const T _samplerate)
         : ProcessorHarmonics<Hoa3d, T>(order), samplerate(_samplerate)
-        { }
+        {
+            rotator = new hoa::Rotate<hoa::Hoa3d, float>(order);
+            invRotator = new hoa::Rotate<hoa::Hoa3d, float>(order);
+        }
         
         //! @brief Destructor.
-        Shift() = default;
+        ~Shift() {
+            delete rotator;
+            delete invRotator;
+        }
         
         inline void setShiftAmount(const T delta_x, const T delta_y, const T delta_z)
         {
@@ -194,50 +201,9 @@ namespace hoa
             return (idx % 2 == 0) ? idx / 2 : N - ((idx - 1) / 2);
         }
         
-        //! @brief This method performs the rotation around the z axis.
-        //! @details You should use this method for in-place or not-in-place processing and sample by sample.
-        //! The inputs array and outputs array contains the spherical harmonics samples.
-        //! The minimum size must be the number of harmonics.
-        //! @param inputs   The input array.
-        //! @param outputs  The output array.
-        //! @param yaw  The yaw (to be optimized!).
-        inline void process_Z(const T* inputs, T* outputs, T* angle_sines, T* angle_cosines) noexcept
-        {
-            int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
-
-            // also see Jerome Daniel's thesis
-            // http://gyronymo.free.fr/audio3D/download_Thesis_PwPt.html#Thesis_download
-            // ...but we need index remapping, cause Daniel's thesis does not follow ACN convention
-            
-            int offset = 0;
-            for (int o = 0; o <= order; o++) {
-                long num_harm_o = o*2 + 1;
-
-                int idxLast = offset + remapIdx(num_harm_o, num_harm_o) - 1;
-                outputs[idxLast] = inputs[idxLast];  // last coefficient always stays the same
-
-                // apply block-wise rotation matrix
-                for (int b = 0; b < o; b++) { // iteration on blocks of the z-axis rotation matrix
-                    int idxA = offset + remapIdx(num_harm_o - 2*b - 1, num_harm_o) - 1;
-                    int idxB = offset + remapIdx(num_harm_o - 2*b - 2, num_harm_o) - 1;
-                    // THIS IS JUST A ROUGH IMPLEMENTATION
-                    // TO BE MASSIVELY OPTIMIZED: cos() and sin() computation can be pre-computed and sin(mt)=... sin(t)
-                    outputs[idxA] = inputs[idxA] * angle_cosines[b] - inputs[idxB] * angle_sines[b];
-                    outputs[idxB] = inputs[idxA] * angle_sines[b] + inputs[idxB] * angle_cosines[b];
-                }
-                
-                offset += num_harm_o;
-            }
-        }
-        
-        inline void copy(const T* inputs, T* outputs, int num_harmonics)
-        {
-            memcpy(outputs, inputs, num_harmonics * sizeof(T));
-        }
-        
         inline double spherical_bessel_function(int n, double x)
         {
-            return sqrt(3.1415926536 / (2 * x)) * boost::math::cyl_bessel_j(n+0.5, x);
+            return sqrt(HOA_PI / (2 * x)) * boost::math::cyl_bessel_j(n+0.5, x);
         }
         
         void print_Zmat(int k)
@@ -274,21 +240,56 @@ namespace hoa
             return b;
         }
         
+        inline void car2pol(T x, T y, T z, T *azimuth, T *elevation, T *distance)
+        {
+            *azimuth = atan2(y,x);
+            *elevation = atan2(z,sqrt(x*x + y*y));
+            *distance = sqrt(x*x + y*y + z*z);
+        }
+        
         inline void preprocess()
         {
-            for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE; bin++) {
+            // setting up rotators
+            T az, el, dist;
+            car2pol(m_delta_x, m_delta_y, m_delta_z, &az, &el, &d);
+            
+            if (d == 0) {
+                // Easy case: no displacement; essentially nothing to do
+                rotator->setYawPitchRoll(0, 0, 0);
+                invRotator->setYawPitchRoll(0, 0, 0);
+                long N = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
+                for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE / 2 + 1; bin++) {
+                    Zmat[bin].resize(N,N);
+                    for (long i = 0; i < N; i++)
+                        for (long j = 0; j < N; j++)
+                            Zmat[bin](i,j) = (i==j ? 1. : 0.); // identity
+                }
+                return;
+            }
+            
+            rotator->setYawPitchRoll(az, el, 0);
+            invRotator->setYawPitchRoll(-az, -el, 0);
+            
+            // precomputing matrices
+            for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE / 2 + 1; bin++) {
+                double freq = samplerate * ((double)bin) / HOA_SHIFT_FFT_SIZE;
+                double k = HOA_2PI * freq / HOA_SOUND_SPEED; // wavenumber
+                
                 if (bin > HOA_SHIFT_FFT_SIZE/2) { // this ensures that the output solutions will be conjug-symmetric and hence will give a real value
                     Zmat[bin] = Zmat[HOA_SHIFT_FFT_SIZE-bin];
+                } else if (k*d == 0) { //} || k*d < (2 * HOA_PI *10/HOA_SOUND_SPEED)*0.001) {
+                    long N = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
+                    Zmat[bin].resize(N,N);
+                    for (long i = 0; i < N; i++)
+                        for (long j = 0; j < N; j++)
+                            Zmat[bin](i,j) = (i==j ? 1. : 0.); // identity
                 } else {
                     int L = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
                     long N = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
-                    long NN = (2*L+2)*(2*L+2);
+                    long NN = (2*L+1)*(2*L+1);
                     
-                    double d = sqrt(((double)m_delta_x) * ((double)m_delta_x) + ((double)m_delta_y) * ((double)m_delta_y) + ((double)m_delta_z) * ((double)m_delta_z));
                     
                     Zmat[bin].resize(N,NN);
-                    a.resize(NN,1);
-                    b.resize(NN,1);
                     
                     // 0) zeroing out stuff
                     inputs_vec.resize(N, 1);
@@ -296,53 +297,18 @@ namespace hoa
                     for (long i = 0; i < N; i++)
                         for (long j = 0; j < NN; j++)
                             Zmat[bin](i,j) = 0.;
-                    for (long i = 0; i < NN; i++) {
-                        a(i,0) = 0.;
-                        b(i,0) = 0.;
-                    }
-                    
-                    //                print_Zmat(bin);
-                    
-                    // 0b) getting recurrence coefficients
-                    for (long l = 0; l <= 2*L+1; l++) { // TODO checbin if L is enough or 2L is needed
-                        for (long m = -l; m <= l; m++) {
-                            long i = ACN(l,m);
-                            a(i,0) = sqrt( ((T)((l - abs(m) + 1) * (l + abs(m) + 1))) / ((2*l+1) * (2*l + 3)) );
-                        }
-                    }
-                    for (long l = 0; l <= 2*L+1; l++) { // TODO checbin if L is enough or 2L is needed
-                        for (long m = 0; m <= l; m++) {
-                            long i = ACN(l,m);
-                            b(i,0) = sqrt( ((T)((l-m-1)*(l-m)))/((2*l-1)*(2*l+1)) );
-                        }
-                        for (long m = -l; m < 0; m++) {
-                            long i = ACN(l,m);
-                            b(i,0) = -sqrt( ((T)((l-m-1)*(l-m)))/((2*l-1)*(2*l+1)) );
-                        }
-                    }
-                    
-                    //               print_Zmat(bin);
-                    
                     
                     // 1) Find terms T^{0,0}_{0,l'}
-                    double freq = samplerate * ((double)bin) / HOA_SHIFT_FFT_SIZE;
-                    double k = HOA_2PI * freq / 343.; // wavenumber
                     for (long lp = 0; lp <= 2*L; lp++) {
-                        Zmat[bin](ACN(0,0), ACN(lp,0)) = (lp % 2 == 0 ? 1 : -1) * sqrt(2*lp + 1)*(k == 0 ? 1. : spherical_bessel_function(lp, k*d));
+                        Zmat[bin](ACN(0,0), ACN(lp,0)) = (lp % 2 == 0 ? 1 : -1) * sqrt(2*lp + 1) * (k*d == 0. ? 1. : spherical_bessel_function(lp, k*d));
                     }
-                    
-                    //                print_Zmat(bin);
-                    
-                    T a41 = coeffA(4,1);
-                    T a2m1 = coeffA(2,-1);
-                    T a50 = coeffA(5,0);
 
                     // 2)
                     for (long l = 1; l <= L; l++) {
+                        long m = l;
                         for (long lp = l; lp <= 2*L-l; lp++) {
-                            long m = l;
-                            Zmat[bin](ACN(l,m), ACN(lp,m)) = (-b(ACN(lp+1,m-1),0) * Zmat[bin](ACN(l-1, m-1), ACN(lp+1, m-1)) +
-                                                              b(ACN(lp,-m),0) * Zmat[bin](ACN(l-1, m-1), ACN(lp-1, m-1))) / (b(ACN(l,-m), 0));
+                            Zmat[bin](ACN(l,m), ACN(lp,m)) = (-(coeffB(lp+1,m-1) * Zmat[bin](ACN(l-1, m-1), ACN(lp+1, m-1))) +
+                                                              (coeffB(lp,-m) * Zmat[bin](ACN(l-1, m-1), ACN(lp-1, m-1)))) / (coeffB(l,-m));
                         }
                     }
                     
@@ -353,13 +319,14 @@ namespace hoa
                     for (long m = 0; m <= L - 1; m++) {
                         for (long l = m+1; l <= L; l++) {
                             for (long lp = l; lp <= 2*L - l; lp++) {
-                                Zmat[bin](ACN(l,m), ACN(lp,m)) = (-a(ACN(lp,m),0) * Zmat[bin](ACN(l-1,m),ACN(lp+1,m)) +
-                                                                  a(ACN(lp-1,m),0) * Zmat[bin](ACN(l-1,m),ACN(lp-1,m)) +
-                                                                  (m <= l-2 ?
-                                                                   a(ACN(lp-2,m),0) * Zmat[bin](ACN(l-2,m),ACN(lp,m)) : 0));
+                                Zmat[bin](ACN(l,m), ACN(lp,m)) = (-(coeffA(lp,m) * Zmat[bin](ACN(l-1,m),ACN(lp+1,m))) +
+                                                                  (coeffA(lp-1,m) * Zmat[bin](ACN(l-1,m),ACN(lp-1,m))) +
+                                                                  (coeffA(l-2,m) != 0 ? coeffA(l-2,m) * Zmat[bin](ACN(l-2,m),ACN(lp,m)) : 0)) /
+                                                                    (coeffA(l-1,m));
                             }
                         }
                     }
+                   
                     
                     //                print_Zmat(bin);
                     
@@ -372,6 +339,7 @@ namespace hoa
                             }
                         }
                     }
+                  
                     
                     //                print_Zmat(bin);
                     
@@ -410,8 +378,9 @@ namespace hoa
                     }
                     
                     Zmat[bin].transposeInPlace();
+                    Zmat[bin] = Zmat[bin].inverse(); // the listener moves up, hence the sound moves down; we gotta do the opposite thing.
                 }
-                print_Zmat(bin);
+//                print_Zmat(bin);
             }
         }
         
@@ -425,6 +394,7 @@ namespace hoa
         //! @details You should use this method for in-place or not-in-place processing and sample by sample.
         //! The inputs array and outputs array contains the spherical harmonics samples.
         //! The minimum size must be the number of harmonics.
+        //! The input array must be in the shape (samples, bins)
         //! @param inputs   The input array.
         //! @param outputs  The output array.
         inline void spectral_process(std::vector<std::vector<std::complex<T>>> &inputs, std::vector<std::vector<std::complex<T>>> &outputs) noexcept
@@ -436,52 +406,42 @@ namespace hoa
                 for (long i = 0; i < N; i++) {
                     outputs.push_back(inputs[i]);
                 }
+
             } else if (m_delta_x == 0 && m_delta_y == 0) {
                 // Z-axis shift only, optimized version for this simple case
-
-                // Copy
+                
+                // Copy // TO DO OPTIMIZE, NOT NEEDED
                 outputs.clear();
                 for (long i = 0; i < N; i++) {
                     outputs.push_back(inputs[i]);
                 }
                 
                 // Processing
-                for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE; bin++) {
+                std::complex<T> temp_in[N], temp_out[N];
+                for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE / 2 + 1; bin++) {
+                    
+                    // rotating
                     for (long i = 0; i < N; i++)
-                        inputs_vec[i] = inputs[i][bin];
+                        temp_in[i] = inputs[i][bin];
+                    rotator->process_cpx(temp_in, temp_out);
+                    for (long i = 0; i < N; i++)
+                        inputs_vec[i] = temp_out[i];
+                    
+                    // translating along Z axis
                     outputs_vec = Zmat[bin] * inputs_vec;
+                        
+                    // inverse rotation again
                     for (long i = 0; i < N; i++)
-                        outputs[i][bin] = outputs_vec[i];
+                        temp_in[i] = outputs_vec[i];
+                        rotator->process_cpx(temp_in, temp_out);
+                    for (long i = 0; i < N; i++)
+                        outputs[i][bin] = temp_out[i];
+                }
+                for (int bin = HOA_SHIFT_FFT_SIZE / 2 + 1; bin < HOA_SHIFT_FFT_SIZE; bin++) {
+                    for (long i = 0; i < N; i++)
+                        outputs[i][bin] = std::conj(outputs[i][HOA_SHIFT_FFT_SIZE - bin]);
                 }
 
-/*                for (long i = 0; i < N; i++) {
-                    // TO DO, optimize heavily!
-                    
-                    // TO DO: this should not be needed, normalization conversion is a diagonal matrix
-                    // we should not care about it, it commutes.
-                    long order = floor(sqrt(N));
-                    T normalization_conversion = sqrt(2*order + 1);
-                    
-                    inputs_vec(i,0) = inputs[i] * normalization_conversion; // convert to N3D, because I'm following a N3D convention
-                }
-                */
-//                outputs_vec = Zmat * inputs_vec;
-
-/*                print_Zmat();
-                
-                std::cout << "Inputs: " << std::endl;
-                std::cout << inputs_vec(0,0) << ", " << inputs_vec(1,0) << ", " << inputs_vec(2,0) << ", " << inputs_vec(3,0) << std::endl;
-
-                std::cout << "Outputs: " << std::endl;
-                std::cout << outputs_vec(0,0) << ", " << outputs_vec(1,0) << ", " << outputs_vec(2,0) << ", " << outputs_vec(3,0) << std::endl;
-  */
-                /*
-                for (long i = 0; i < N; i++) {
-                    // TO DO, optimize heavily!
-                    long order = floor(sqrt(N));
-                    T normalization_conversion = sqrt(2*order + 1);
-                    outputs[i] = outputs_vec(i,0).real() / normalization_conversion;  // convert back to SN3D, because the paper I'm following uses a N3D convention ---> NOT NEEDED I think, diagonal matrices commute
-                }; */
             } else {
                 // TO DO
             }
@@ -495,12 +455,12 @@ namespace hoa
         T m_delta_y = 0.;
         T m_delta_z = 0.;
         
-        // recurrence coefficients
-        Matrix<T, Dynamic, 1> a;
-        Matrix<T, Dynamic, 1> b;
+        // rotators
+        Rotate<Hoa3d, T> *rotator;
+        Rotate<Hoa3d, T> *invRotator;
 
         // matrices
-        Matrix<std::complex<T>, Dynamic, Dynamic> Zmat[HOA_SHIFT_FFT_SIZE];
+        Matrix<std::complex<T>, Dynamic, Dynamic> Zmat[HOA_SHIFT_FFT_SIZE/2 + 1];
         Matrix<std::complex<T>, Dynamic, 1> inputs_vec, outputs_vec;
     };
 

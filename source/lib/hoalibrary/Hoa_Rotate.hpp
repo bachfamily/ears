@@ -301,6 +301,18 @@ namespace hoa
                 offset += num_harm_o;
             }
         }
+
+        // complex version
+        inline void process_Y90_cpx(const std::complex<T>* inputs, std::complex<T>* outputs) noexcept
+        {
+            int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
+            int offset = 0;
+            for (int o = 0; o <= order; o++) {
+                long num_harm_o = o*2 + 1;
+                matmul_cpx(inputs + offset, outputs + offset, o);
+                offset += num_harm_o;
+            }
+        }
         
         
         // remapping of Daniel's convention to ACN
@@ -347,9 +359,19 @@ namespace hoa
             }
         }
         
+        inline void process_Z(const std::complex<T>* inputs, std::complex<T>* outputs, T* angle_sines, T* angle_cosines) noexcept
+        {
+        
+        }
+        
         inline void copy(const T* inputs, T* outputs, int num_harmonics)
         {
             memcpy(outputs, inputs, num_harmonics * sizeof(T));
+        }
+
+        inline void copy_cpx(const std::complex<T>* inputs, std::complex<T>* outputs, int num_harmonics)
+        {
+            memcpy(outputs, inputs, num_harmonics * sizeof(std::complex<T>));
         }
         
         inline void preprocess()
@@ -428,6 +450,38 @@ namespace hoa
                 copy(outputs, temp, numharmonics);
                 process_Z(temp, outputs, m_sins_alpha_pi2, m_coss_alpha_pi2);
 
+                delete [] temp;
+            }
+        }
+
+        inline void process_cpx(const std::complex<T>* inputs, std::complex<T>* outputs) noexcept override
+        {
+            int numharmonics = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
+            if (getPitch() == 0 && getRoll() == 0 && getYaw() == 0) {
+                // Copy
+                for (int i = 0; i < numharmonics; i++) {
+                    outputs[i] = inputs[i];
+                }
+            } else if (getPitch() == 0 && getRoll() == 0) {
+                // Z-axis rotation only, optimized version for this simple case
+                process_Z_cpx(inputs, outputs, m_sins_yaw, m_coss_yaw);
+            } else {
+                // full 3d rotation:
+                // performs R(alpha, beta, gamma), with alpha, beta, gamma ZYZ euler angles
+                // see https://ambisonics.iem.at/xchange/fileformat/docs/spherical-harmonics-rotation
+                // R(alpha, beta, gamma) = Rz(alpha+90°) Ry90 Rz(beta+180°) Ry90 Rz(gamma+90°)
+                T* temp = new std::complex<T>[numharmonics];
+                
+                process_Z_cpx(inputs, outputs, m_sins_gamma_pi2, m_coss_gamma_pi2);
+                copy_cpx(outputs, temp, numharmonics);
+                process_Y90_cpx(temp, outputs);
+                copy_cpx(outputs, temp, numharmonics);
+                process_Z_cpx(temp, outputs, m_sins_beta_pi, m_coss_beta_pi);
+                copy_cpx(outputs, temp, numharmonics);
+                process_Y90_cpx(temp, outputs);
+                copy_cpx(outputs, temp, numharmonics);
+                process_Z_cpx(temp, outputs, m_sins_alpha_pi2, m_coss_alpha_pi2);
+                
                 delete [] temp;
             }
         }

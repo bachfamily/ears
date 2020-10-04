@@ -598,4 +598,45 @@ namespace hoa
             }
         }
     }
+
+    template <typename T>
+    inline void matmul_cpx(const std::complex<T>* inputs, std::complex<T>* outputs, int order) noexcept
+    {
+        int n = order*2 + 1;
+        const double (*matrix_ptr)[HOA_ROTATION_3D_MAXMATDIM][HOA_ROTATION_3D_MAXMATDIM];
+        
+        switch (order) {
+            case 0: matrix_ptr = &mat0; break;
+            case 1: matrix_ptr = &mat1; break;
+            case 2: matrix_ptr = &mat2; break;
+            case 3: matrix_ptr = &mat3; break;
+            case 4: matrix_ptr = &mat4; break;
+            case 5: matrix_ptr = &mat5; break;
+            case 6: matrix_ptr = &mat6; break;
+            case 7: matrix_ptr = &mat7; break;
+            case 8: matrix_ptr = &mat8; break;
+            case 9: matrix_ptr = &mat9; break;
+            case 10: matrix_ptr = &mat10; break;
+            case 11: matrix_ptr = &mat11; break;
+            case 12: matrix_ptr = &mat12; break;
+            case 13: matrix_ptr = &mat13; break;
+            case 14: matrix_ptr = &mat14; break;
+            case 15: matrix_ptr = &mat15; break;
+            case 16: matrix_ptr = &mat16; break;
+            case 17: matrix_ptr = &mat17; break;
+            case 18: matrix_ptr = &mat18; break;
+            case 19: matrix_ptr = &mat19; break;
+            case 20: matrix_ptr = &mat20; break;
+            case 21: matrix_ptr = &mat21; break;
+        }
+        
+        
+        for (int i = 0; i < n; i++) {
+            outputs[i] = 0;
+            for (int j = 0; j < n; j++) {
+                outputs[i] += inputs[j] * (*matrix_ptr)[i][j];
+            }
+        }
+    }
+    
 }

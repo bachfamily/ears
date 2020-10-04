@@ -24,6 +24,9 @@ typedef enum _ears_coordinate_type
 
 
 long ears_hoa_get_dimension_as_long(t_symbol *s);
+long ears_hoa_order_and_index_to_ACN(int order, int index);
+int ears_ACN_to_order(long ACN);
+void ears_ACN_to_order_and_index(long ACN, int *order, int *index);
 
 
 t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3);

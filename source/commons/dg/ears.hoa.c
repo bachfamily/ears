@@ -42,6 +42,22 @@ long ears_hoa_num_channels_to_order(int dimension, long num_channels)
 }
 
 
+long ears_hoa_order_and_index_to_ACN(int order, int index)
+{
+    return order * order + order + index;
+}
+
+int ears_ACN_to_order(long ACN)
+{
+    return (int)floor(sqrt(ACN));
+}
+
+void ears_ACN_to_order_and_index(long ACN, int *order, int *index)
+{
+    *order = ears_ACN_to_order(ACN);
+    *index = ACN - (*order) * (*order) - *order;
+}
+
 void ears_coord_convert(e_ears_coordinate_type from, e_ears_coordinate_type to, double in1, double in2, double in3, double *out1, double *out2, double *out3)
 {
     if (from == to) {
@@ -812,11 +828,17 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                     // FFT
                     std::vector<std::vector<std::complex<float>>> shifter_input, shifter_output;
                     for (int c = 0; c < channelcount; c++) {
-                        for (long j = 0; j < fftsize; j++)
+                        for (long j = 0; j < fftsize; j++) {
+                            fin[j].i = 0;
                             fin[j].r = (i+j >= framecount ? 0. : orig_sample_wk[(i+j)*channelcount+c]) * window[j];
-                        
+                        }
+
+                        // from SN3D to N3D normalization
+                        for (long j = 0; j < fftsize; j++)
+                            fin[j].r *= sqrt(2*ears_ACN_to_order(c) + 1);
+
                         bach_fft_kiss(cfg, fftsize, false, fin, fout);
-                        
+
                         std::vector<std::complex<float>> this_component_spectrum(fftsize);
                         for (long j = 0; j < fftsize; j++) {
                             std::complex<float> c(fout[j].r, fout[j].i);
@@ -828,7 +850,9 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
 
                     // PROCESS
                     shifter.spectral_process(shifter_input, shifter_output);
-//                    shifter_output = shifter_input;
+//       std::cout << "INPUT: " << shifter_input[0][0] << shifter_input[0][1]  << shifter_input[0][2]  << shifter_input[0][3] << std::endl;
+//       std::cout << "OUTPUT: " << shifter_output[0][0] << shifter_output[0][1]  << shifter_output[0][2]  << shifter_output[0][3] << std::endl;
+//       shifter_output = shifter_input;
 
                     // IFFT
                     for (int c = 0; c < channelcount; c++) {
@@ -843,8 +867,9 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                         for (long j = 0; j < fftsize; j++)
                             fin[j].r *= window[j];
 
-//                        for (long j = 0; j < fftsize; j++)
-//                            fin[j].r /= 2.;
+                        // from N3D to SN3D normalization
+                        for (long j = 0; j < fftsize; j++)
+                            fin[j].r /= sqrt(2*ears_ACN_to_order(c) + 1);
 
                         // overlap-add
                         for (long j = 0; j < fftsize; j++)
@@ -862,27 +887,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
             buffer_unlocksamples(dest);
         } else {
             // TO DO
-/*            hoa::Rotate<hoa::Hoa2d, float> rotator(order);
-            
-            rotator.setYaw(0);
-            if (yaw && yaw->l_head)
-                rotator.setYaw(-hatom_getdouble(&yaw->l_head->l_hatom));
-            
-            float *dest_sample = buffer_locksamples(dest);
-            
-            if (!dest_sample) {
-                err = EARS_ERR_CANT_WRITE;
-                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            } else {
-                for (long i = 0; i < framecount; i++) {
-                    rotator.process(&orig_sample_wk[channelcount * i], &dest_sample[channelcount * i]);
-                }
-                
-            }
-            
-            buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
- */
+
         }
         
         if (source == dest) // inplace operation!
