@@ -359,9 +359,28 @@ namespace hoa
             }
         }
         
-        inline void process_Z(const std::complex<T>* inputs, std::complex<T>* outputs, T* angle_sines, T* angle_cosines) noexcept
+        inline void process_Z_cpx(const std::complex<T>* inputs, std::complex<T>* outputs, T* angle_sines, T* angle_cosines) noexcept
         {
-        
+            int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
+            int offset = 0;
+            for (int o = 0; o <= order; o++) {
+                long num_harm_o = o*2 + 1;
+                
+                int idxLast = offset + remapIdx(num_harm_o, num_harm_o) - 1;
+                outputs[idxLast] = inputs[idxLast];  // last coefficient always stays the same
+                
+                // apply block-wise rotation matrix
+                for (int b = 0; b < o; b++) { // iteration on blocks of the z-axis rotation matrix
+                    int idxA = offset + remapIdx(num_harm_o - 2*b - 1, num_harm_o) - 1;
+                    int idxB = offset + remapIdx(num_harm_o - 2*b - 2, num_harm_o) - 1;
+                    // THIS IS JUST A ROUGH IMPLEMENTATION
+                    // TO BE MASSIVELY OPTIMIZED: cos() and sin() computation can be pre-computed and sin(mt)=... sin(t)
+                    outputs[idxA] = inputs[idxA] * angle_cosines[b] - inputs[idxB] * angle_sines[b];
+                    outputs[idxB] = inputs[idxA] * angle_sines[b] + inputs[idxB] * angle_cosines[b];
+                }
+                
+                offset += num_harm_o;
+            }
         }
         
         inline void copy(const T* inputs, T* outputs, int num_harmonics)
@@ -454,7 +473,7 @@ namespace hoa
             }
         }
 
-        inline void process_cpx(const std::complex<T>* inputs, std::complex<T>* outputs) noexcept override
+        inline void process_cpx(const std::complex<T>* inputs, std::complex<T>* outputs) noexcept
         {
             int numharmonics = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
             if (getPitch() == 0 && getRoll() == 0 && getYaw() == 0) {
@@ -470,7 +489,7 @@ namespace hoa
                 // performs R(alpha, beta, gamma), with alpha, beta, gamma ZYZ euler angles
                 // see https://ambisonics.iem.at/xchange/fileformat/docs/spherical-harmonics-rotation
                 // R(alpha, beta, gamma) = Rz(alpha+90°) Ry90 Rz(beta+180°) Ry90 Rz(gamma+90°)
-                T* temp = new std::complex<T>[numharmonics];
+                std::complex<T>* temp = new std::complex<T>[numharmonics];
                 
                 process_Z_cpx(inputs, outputs, m_sins_gamma_pi2, m_coss_gamma_pi2);
                 copy_cpx(outputs, temp, numharmonics);

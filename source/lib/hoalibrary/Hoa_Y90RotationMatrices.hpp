@@ -634,7 +634,7 @@ namespace hoa
         for (int i = 0; i < n; i++) {
             outputs[i] = 0;
             for (int j = 0; j < n; j++) {
-                outputs[i] += inputs[j] * (*matrix_ptr)[i][j];
+                outputs[i] += inputs[j] * (T)((*matrix_ptr)[i][j]);
             }
         }
     }

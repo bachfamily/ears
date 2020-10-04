@@ -250,7 +250,7 @@ namespace hoa
         inline void preprocess()
         {
             // setting up rotators
-            T az, el, dist;
+            T az, el, d;
             car2pol(m_delta_x, m_delta_y, m_delta_z, &az, &el, &d);
             
             if (d == 0) {
@@ -267,8 +267,11 @@ namespace hoa
                 return;
             }
             
-            rotator->setYawPitchRoll(az, el, 0);
-            invRotator->setYawPitchRoll(-az, -el, 0);
+            T theta = HOA_PI2 - el;
+            if (theta < 0.000001)
+                theta = 0;
+            rotator->setYawPitchRoll(az, theta, 0);
+            invRotator->setYawPitchRoll(-az, -theta, 0);
             
             // precomputing matrices
             for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE / 2 + 1; bin++) {
@@ -312,9 +315,6 @@ namespace hoa
                         }
                     }
                     
-                    //                print_Zmat(bin);
-                    
-                    
                     // 3)
                     for (long m = 0; m <= L - 1; m++) {
                         for (long l = m+1; l <= L; l++) {
@@ -327,10 +327,6 @@ namespace hoa
                         }
                     }
                    
-                    
-                    //                print_Zmat(bin);
-                    
-                    
                     // 4)
                     for (long l = 1; l <= L; l++) {
                         for (long lp = l; lp <= L; lp++) {
@@ -339,9 +335,6 @@ namespace hoa
                             }
                         }
                     }
-                  
-                    
-                    //                print_Zmat(bin);
                     
                     // 5)
                     for (long lp = 0; lp <= L-1; lp++) {
@@ -351,8 +344,6 @@ namespace hoa
                             }
                         }
                     }
-                    
-                    //                print_Zmat(bin);
                     
                     Zmat[bin].conservativeResize(N, N);
                     
@@ -378,7 +369,6 @@ namespace hoa
                     }
                     
                     Zmat[bin].transposeInPlace();
-                    Zmat[bin] = Zmat[bin].inverse(); // the listener moves up, hence the sound moves down; we gotta do the opposite thing.
                 }
 //                print_Zmat(bin);
             }
@@ -407,9 +397,7 @@ namespace hoa
                     outputs.push_back(inputs[i]);
                 }
 
-            } else if (m_delta_x == 0 && m_delta_y == 0) {
-                // Z-axis shift only, optimized version for this simple case
-                
+            } else {
                 // Copy // TO DO OPTIMIZE, NOT NEEDED
                 outputs.clear();
                 for (long i = 0; i < N; i++) {
@@ -423,27 +411,28 @@ namespace hoa
                     // rotating
                     for (long i = 0; i < N; i++)
                         temp_in[i] = inputs[i][bin];
-                    rotator->process_cpx(temp_in, temp_out);
+                    rotator->process_cpx(temp_in, temp_out); // WHY DOESN'T THIS ROTATE???
                     for (long i = 0; i < N; i++)
                         inputs_vec[i] = temp_out[i];
                     
-                    // translating along Z axis
+
+                    // translation along Z axis
                     outputs_vec = Zmat[bin] * inputs_vec;
-                        
+                    
+                    
                     // inverse rotation again
                     for (long i = 0; i < N; i++)
                         temp_in[i] = outputs_vec[i];
-                        rotator->process_cpx(temp_in, temp_out);
+                    invRotator->process_cpx(temp_in, temp_out);
                     for (long i = 0; i < N; i++)
                         outputs[i][bin] = temp_out[i];
+                     
                 }
-                for (int bin = HOA_SHIFT_FFT_SIZE / 2 + 1; bin < HOA_SHIFT_FFT_SIZE; bin++) {
+                for (int bin = HOA_SHIFT_FFT_SIZE / 2 + 1; bin < HOA_SHIFT_FFT_SIZE; bin++) { // enforcing conjugate-consistency
                     for (long i = 0; i < N; i++)
                         outputs[i][bin] = std::conj(outputs[i][HOA_SHIFT_FFT_SIZE - bin]);
                 }
 
-            } else {
-                // TO DO
             }
         }
         
