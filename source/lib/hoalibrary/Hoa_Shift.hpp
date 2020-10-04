@@ -1,5 +1,6 @@
 /*
  // Author : Daniele Ghisi
+ // This is a tentative
  // For information on usage and redistribution, and for a DISCLAIMER OF ALL
  // WARRANTIES, see the file, "LICENSE.txt," in this distribution.
  */
@@ -11,6 +12,8 @@
 
 #include <Eigen/Geometry>
 #include <boost/math/special_functions/bessel.hpp>
+
+#define HOA_SHIFT_FFT_SIZE 512
 
 using namespace Eigen;
 
@@ -51,10 +54,13 @@ namespace hoa
         //! @details You should use this method for in-place or not-in-place processing and sample by sample.
         //! The inputs array and outputs array contains the spherical harmonics samples
         //! and the minimum size must be the number of harmonics.
-        //! @param inputs The input array.
-        //! @param outputs The output array.
-        virtual void process(const T* inputs, T* outputs) noexcept;
-    };
+        //! @param inputs A window of input arrays.
+        //! @param outputs A window of output arrays.
+        virtual void spectral_process(std::vector<std::vector<std::complex<T>>> &inputs, std::vector<std::vector<std::complex<T>>> &outputs) noexcept;
+
+        // unused
+        virtual void process(T *inputs, T *outputs) noexcept;
+};
     
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     
@@ -147,9 +153,9 @@ namespace hoa
         
         //! @brief Constructor.
         //! @param order The order (minimum 1, maximum 21).
-        Shift(const size_t order)
-        : ProcessorHarmonics<Hoa3d, T>(order)
-        {}
+        Shift(const size_t order, const T _samplerate)
+        : ProcessorHarmonics<Hoa3d, T>(order), samplerate(_samplerate)
+        { }
         
         //! @brief Destructor.
         Shift() = default;
@@ -234,167 +240,232 @@ namespace hoa
             return sqrt(3.1415926536 / (2 * x)) * boost::math::cyl_bessel_j(n+0.5, x);
         }
         
-        void print_Zmat()
+        void print_Zmat(int k)
         {
-            std::cout << "Zmat: " << std::endl;
-            std::cout << Zmat(0,0) << ", " << Zmat(0,1) << ", " << Zmat(0,2) << ", " << Zmat(0,3) << std::endl;
-            std::cout << Zmat(1,0) << ", " << Zmat(1,1) << ", " << Zmat(1,2) << ", " << Zmat(1,3) << std::endl;
-            std::cout << Zmat(2,0) << ", " << Zmat(2,1) << ", " << Zmat(2,2) << ", " << Zmat(2,3) << std::endl;
-            std::cout << Zmat(3,0) << ", " << Zmat(3,1) << ", " << Zmat(3,2) << ", " << Zmat(3,3) << std::endl;
+            std::cout << "Zmat[" << k << "]" << std::endl;
+            std::cout << Zmat[k](0,0) << ", " << Zmat[k](0,1) << ", " << Zmat[k](0,2) << ", " << Zmat[k](0,3) << std::endl;
+            std::cout << Zmat[k](1,0) << ", " << Zmat[k](1,1) << ", " << Zmat[k](1,2) << ", " << Zmat[k](1,3) << std::endl;
+            std::cout << Zmat[k](2,0) << ", " << Zmat[k](2,1) << ", " << Zmat[k](2,2) << ", " << Zmat[k](2,3) << std::endl;
+            std::cout << Zmat[k](3,0) << ", " << Zmat[k](3,1) << ", " << Zmat[k](3,2) << ", " << Zmat[k](3,3) << std::endl;
+        }
+        
+        inline unsigned positive_mod(int value, unsigned m) {
+            int mod = value % (int)m;
+            if (mod < 0) {
+                mod += m;
+            }
+            return mod;
+        }
+        
+        inline T coeffA(long l, long m)
+        {
+            if ((l >= 0) && (abs(m) <= l))
+                return sqrt((( ((T)l) - abs(m) + 1)*(l + abs(m) + 1))/((2*((T)l) + 1)*(2*l + 3)));
+            return 0;
+        }
+
+        inline T coeffB(long l, long m)
+        {
+            T b = 0;
+            if ((l >= 0) && (abs(m) <= l))
+                b = sqrt(((((T)l) - m - 1)*(l - m))/((2*((T)l) - 1)*(2*l + 1)));
+            if (m < 0)
+                b = -b;
+            return b;
         }
         
         inline void preprocess()
         {
-            int L = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
-            long N = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
-            long NN = (2*L+2)*(2*L+2);
-
-            double d = sqrt(((double)m_delta_x) * ((double)m_delta_x) + ((double)m_delta_y) * ((double)m_delta_y) + ((double)m_delta_z) * ((double)m_delta_z));
-            
-            Zmat.resize(N,NN);
-            a.resize(NN,1);
-            b.resize(NN,1);
-
-            // 0) zeroing out stuff
-            inputs_vec.resize(N, 1);
-            outputs_vec.resize(N, 1);
-            for (long i = 0; i < N; i++)
-                for (long j = 0; j < NN; j++)
-                    Zmat(i,j) = 0.;
-            for (long i = 0; i < NN; i++) {
-                a(i,0) = 0.;
-                b(i,0) = 0.;
-            }
-            
-            print_Zmat();
-            
-            // 0b) getting recurrence coefficients
-            for (long l = 0; l <= 2*L+1; l++) { // TODO check if L is enough or 2L is needed
-                for (long m = -l; m <= l; m++) {
-                    long i = ACN(l,m);
-                    a(i,0) = sqrt( ((T)((l - abs(m) + 1) * (l + abs(m) + 1))) / ((2*l+1) * (2*l + 3)) );
-                }
-            }
-            for (long l = 0; l <= 2*L+1; l++) { // TODO check if L is enough or 2L is needed
-                for (long m = 0; m <= l; m++) {
-                    long i = ACN(l,m);
-                    b(i,0) = sqrt( ((T)((l-m-1)*(l-m)))/((2*l-1)*(2*l+1)) );
-                }
-                for (long m = -l; m < 0; m++) {
-                    long i = ACN(l,m);
-                    b(i,0) = -sqrt( ((T)((l-m-1)*(l-m)))/((2*l-1)*(2*l+1)) );
-                }
-            }
-
-            print_Zmat();
-
-
-            // 1) Find terms T^{0,0}_{0,l'}
-            double freq = 880;
-            double k = HOA_2PI * freq / 343.; // 1.; // WHY DO WE PUT k HERE???? WHAT DO WE DO?? IS k the wave number? or the speed? or what
-            for (long lp = 0; lp <= 2*L; lp++) {
-                Zmat(ACN(0,0), ACN(lp,0)) = (lp % 2 == 0 ? 1 : -1) * sqrt(2*lp + 1)*spherical_bessel_function(lp, k*d); // k
-            }
-            
-            print_Zmat();
-
-            // 2)
-            for (long l = 1; l <= L; l++) {
-                for (long lp = l; lp <= 2*L-l; lp++) {
-                    long m = l;
-                    Zmat(ACN(l,m), ACN(lp,m)) = (-b(ACN(lp+1,m-1),0) * Zmat(ACN(l-1, m-1), ACN(lp+1, m-1)) +
-                                                 b(ACN(lp,-m),0) * Zmat(ACN(l-1, m-1), ACN(lp-1, m-1))) / (b(ACN(l,-m), 0));
-                }
-            }
-            
-            print_Zmat();
-
-            
-            // 3)
-            for (long m = 0; m <= L - 1; m++) {
-                for (long l = m+1; l <= L; l++) {
-                    for (long lp = l; lp <= 2*L - l; lp++) {
-                        Zmat(ACN(l,m), ACN(lp,m)) = (-a(ACN(lp,m),0) * Zmat(ACN(l-1,m),ACN(lp+1,m)) +
-                                                     a(ACN(lp-1,m),0) * Zmat(ACN(l-1,m),ACN(lp-1,m)) +
-                                                     (abs(m) <= lp-2 && abs(m) <= l-2 ?
-                                                      a(ACN(lp-2,m),0) * Zmat(ACN(l-2,m),ACN(lp,m)) : 0));
+            for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE; bin++) {
+                if (bin > HOA_SHIFT_FFT_SIZE/2) { // this ensures that the output solutions will be conjug-symmetric and hence will give a real value
+                    Zmat[bin] = Zmat[HOA_SHIFT_FFT_SIZE-bin];
+                } else {
+                    int L = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
+                    long N = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
+                    long NN = (2*L+2)*(2*L+2);
+                    
+                    double d = sqrt(((double)m_delta_x) * ((double)m_delta_x) + ((double)m_delta_y) * ((double)m_delta_y) + ((double)m_delta_z) * ((double)m_delta_z));
+                    
+                    Zmat[bin].resize(N,NN);
+                    a.resize(NN,1);
+                    b.resize(NN,1);
+                    
+                    // 0) zeroing out stuff
+                    inputs_vec.resize(N, 1);
+                    outputs_vec.resize(N, 1);
+                    for (long i = 0; i < N; i++)
+                        for (long j = 0; j < NN; j++)
+                            Zmat[bin](i,j) = 0.;
+                    for (long i = 0; i < NN; i++) {
+                        a(i,0) = 0.;
+                        b(i,0) = 0.;
                     }
-                }
-            }
-            
-            print_Zmat();
-
-            
-            // 4)
-            for (long l = 1; l <= L; l++) {
-                for (long lp = l; lp <= L; lp++) {
-                    for (long m = 1; m <= l; m++) {
-                        Zmat(ACN(l,-m), ACN(lp,-m)) = Zmat(ACN(l,m), ACN(lp,m));
+                    
+                    //                print_Zmat(bin);
+                    
+                    // 0b) getting recurrence coefficients
+                    for (long l = 0; l <= 2*L+1; l++) { // TODO checbin if L is enough or 2L is needed
+                        for (long m = -l; m <= l; m++) {
+                            long i = ACN(l,m);
+                            a(i,0) = sqrt( ((T)((l - abs(m) + 1) * (l + abs(m) + 1))) / ((2*l+1) * (2*l + 3)) );
+                        }
                     }
-                }
-            }
-            
-            print_Zmat();
-
-            // 5)
-            for (long lp = 0; lp <= L-1; lp++) {
-                for (long l = lp+1; l<=L; l++) {
-                    for (long m = -lp; m <= lp; m++) {
-                        Zmat(ACN(l,m), ACN(lp,m)) = ((T)(((l+lp) % 2 == 0) ? 1. : -1.)) * Zmat(ACN(lp,m), ACN(l,m));
+                    for (long l = 0; l <= 2*L+1; l++) { // TODO checbin if L is enough or 2L is needed
+                        for (long m = 0; m <= l; m++) {
+                            long i = ACN(l,m);
+                            b(i,0) = sqrt( ((T)((l-m-1)*(l-m)))/((2*l-1)*(2*l+1)) );
+                        }
+                        for (long m = -l; m < 0; m++) {
+                            long i = ACN(l,m);
+                            b(i,0) = -sqrt( ((T)((l-m-1)*(l-m)))/((2*l-1)*(2*l+1)) );
+                        }
                     }
-                }
-            }
-            
-            print_Zmat();
-            
-            Zmat.conservativeResize(N, N);
+                    
+                    //               print_Zmat(bin);
+                    
+                    
+                    // 1) Find terms T^{0,0}_{0,l'}
+                    double freq = samplerate * ((double)bin) / HOA_SHIFT_FFT_SIZE;
+                    double k = HOA_2PI * freq / 343.; // wavenumber
+                    for (long lp = 0; lp <= 2*L; lp++) {
+                        Zmat[bin](ACN(0,0), ACN(lp,0)) = (lp % 2 == 0 ? 1 : -1) * sqrt(2*lp + 1)*(k == 0 ? 1. : spherical_bessel_function(lp, k*d));
+                    }
+                    
+                    //                print_Zmat(bin);
+                    
+                    T a41 = coeffA(4,1);
+                    T a2m1 = coeffA(2,-1);
+                    T a50 = coeffA(5,0);
 
-            // finally
-            std::complex<T> img1 (0,-1);
-            for (long l = 0; l <= L; l++) {
-                for (long m = -l; m <= l; m++) {
-                    for (long lp = 0; lp <= L; lp++) {
-                        if (abs(m) <= lp) {
-                            if (Zmat(ACN(l,m), ACN(lp,m)) != (T)0.) {
-                                if ((lp-l) % 4 == 1) {
-                                    Zmat(ACN(l,m), ACN(lp,m)) = Zmat(ACN(l,m), ACN(lp,m)) * img1;
-                                } else if ((lp-l) % 4 == 2) {
-                                    Zmat(ACN(l,m), ACN(lp,m)) = Zmat(ACN(l,m), ACN(lp,m)) * img1 * img1;
-                                } else if ((lp-l) % 4 == 3) {
-                                    Zmat(ACN(l,m), ACN(lp,m)) = Zmat(ACN(l,m), ACN(lp,m)) * img1 * img1 * img1;
+                    // 2)
+                    for (long l = 1; l <= L; l++) {
+                        for (long lp = l; lp <= 2*L-l; lp++) {
+                            long m = l;
+                            Zmat[bin](ACN(l,m), ACN(lp,m)) = (-b(ACN(lp+1,m-1),0) * Zmat[bin](ACN(l-1, m-1), ACN(lp+1, m-1)) +
+                                                              b(ACN(lp,-m),0) * Zmat[bin](ACN(l-1, m-1), ACN(lp-1, m-1))) / (b(ACN(l,-m), 0));
+                        }
+                    }
+                    
+                    //                print_Zmat(bin);
+                    
+                    
+                    // 3)
+                    for (long m = 0; m <= L - 1; m++) {
+                        for (long l = m+1; l <= L; l++) {
+                            for (long lp = l; lp <= 2*L - l; lp++) {
+                                Zmat[bin](ACN(l,m), ACN(lp,m)) = (-a(ACN(lp,m),0) * Zmat[bin](ACN(l-1,m),ACN(lp+1,m)) +
+                                                                  a(ACN(lp-1,m),0) * Zmat[bin](ACN(l-1,m),ACN(lp-1,m)) +
+                                                                  (m <= l-2 ?
+                                                                   a(ACN(lp-2,m),0) * Zmat[bin](ACN(l-2,m),ACN(lp,m)) : 0));
+                            }
+                        }
+                    }
+                    
+                    //                print_Zmat(bin);
+                    
+                    
+                    // 4)
+                    for (long l = 1; l <= L; l++) {
+                        for (long lp = l; lp <= L; lp++) {
+                            for (long m = 1; m <= l; m++) {
+                                Zmat[bin](ACN(l,-m), ACN(lp,-m)) = Zmat[bin](ACN(l,m), ACN(lp,m));
+                            }
+                        }
+                    }
+                    
+                    //                print_Zmat(bin);
+                    
+                    // 5)
+                    for (long lp = 0; lp <= L-1; lp++) {
+                        for (long l = lp+1; l<=L; l++) {
+                            for (long m = -lp; m <= lp; m++) {
+                                Zmat[bin](ACN(l,m), ACN(lp,m)) = ((T)(((l+lp) % 2 == 0) ? 1. : -1.)) * Zmat[bin](ACN(lp,m), ACN(l,m));
+                            }
+                        }
+                    }
+                    
+                    //                print_Zmat(bin);
+                    
+                    Zmat[bin].conservativeResize(N, N);
+                    
+                    // finally
+                    std::complex<T> img1 (0,-1);
+                    for (long l = 0; l <= L; l++) {
+                        for (long m = -l; m <= l; m++) {
+                            for (long lp = 0; lp <= L; lp++) {
+                                for (long mp = -lp; mp <= lp; mp++) {
+                                    if (Zmat[bin](ACN(l,m), ACN(lp,mp)) != (T)0.) {
+                                        unsigned mod = positive_mod(l-lp, 4);
+                                        if (mod == 1) {
+                                            Zmat[bin](ACN(l,m), ACN(lp,m)) = Zmat[bin](ACN(l,m), ACN(lp,m)) * img1;
+                                        } else if (mod == 2) {
+                                            Zmat[bin](ACN(l,m), ACN(lp,m)) = Zmat[bin](ACN(l,m), ACN(lp,m)) * img1 * img1;
+                                        } else if (mod == 3) {
+                                            Zmat[bin](ACN(l,m), ACN(lp,m)) = Zmat[bin](ACN(l,m), ACN(lp,m)) * img1 * img1 * img1;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    
+                    Zmat[bin].transposeInPlace();
                 }
+                print_Zmat(bin);
             }
         }
         
+        // dummy
+        inline void process(T *inputs, T *outputs) noexcept
+        {
+            return;
+        }
+
         //! @brief This method performs the shift.
         //! @details You should use this method for in-place or not-in-place processing and sample by sample.
         //! The inputs array and outputs array contains the spherical harmonics samples.
         //! The minimum size must be the number of harmonics.
         //! @param inputs   The input array.
         //! @param outputs  The output array.
-        inline void process(const T* inputs, T* outputs) noexcept override
+        inline void spectral_process(std::vector<std::vector<std::complex<T>>> &inputs, std::vector<std::vector<std::complex<T>>> &outputs) noexcept
         {
-            int numharmonics = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
+            int N = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
             if (m_delta_x == 0 && m_delta_y == 0 && m_delta_z == 0) {
                 // Copy
-                for (int i = 0; i < numharmonics; i++) {
-                    outputs[i] = inputs[i];
+                outputs.clear();
+                for (long i = 0; i < N; i++) {
+                    outputs.push_back(inputs[i]);
                 }
             } else if (m_delta_x == 0 && m_delta_y == 0) {
                 // Z-axis shift only, optimized version for this simple case
-                int N = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
+
+                // Copy
+                outputs.clear();
                 for (long i = 0; i < N; i++) {
-                    // TO DO, optimize heavily!
-                    long order = floor(sqrt(N));
-                    T normalization_conversion = sqrt(2*order + 1);
-                    inputs_vec(i,0) = inputs[i] * normalization_conversion; // convert to N3D, because I'm following a N3D convention
+                    outputs.push_back(inputs[i]);
                 }
                 
-                outputs_vec = Zmat * inputs_vec;
+                // Processing
+                for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE; bin++) {
+                    for (long i = 0; i < N; i++)
+                        inputs_vec[i] = inputs[i][bin];
+                    outputs_vec = Zmat[bin] * inputs_vec;
+                    for (long i = 0; i < N; i++)
+                        outputs[i][bin] = outputs_vec[i];
+                }
+
+/*                for (long i = 0; i < N; i++) {
+                    // TO DO, optimize heavily!
+                    
+                    // TO DO: this should not be needed, normalization conversion is a diagonal matrix
+                    // we should not care about it, it commutes.
+                    long order = floor(sqrt(N));
+                    T normalization_conversion = sqrt(2*order + 1);
+                    
+                    inputs_vec(i,0) = inputs[i] * normalization_conversion; // convert to N3D, because I'm following a N3D convention
+                }
+                */
+//                outputs_vec = Zmat * inputs_vec;
 
 /*                print_Zmat();
                 
@@ -404,19 +475,21 @@ namespace hoa
                 std::cout << "Outputs: " << std::endl;
                 std::cout << outputs_vec(0,0) << ", " << outputs_vec(1,0) << ", " << outputs_vec(2,0) << ", " << outputs_vec(3,0) << std::endl;
   */
-                
+                /*
                 for (long i = 0; i < N; i++) {
                     // TO DO, optimize heavily!
                     long order = floor(sqrt(N));
                     T normalization_conversion = sqrt(2*order + 1);
-                    outputs[i] = outputs_vec(i,0).real() / normalization_conversion;  // convert back to SN3D, because I'm following a N3D convention
-                };
+                    outputs[i] = outputs_vec(i,0).real() / normalization_conversion;  // convert back to SN3D, because the paper I'm following uses a N3D convention ---> NOT NEEDED I think, diagonal matrices commute
+                }; */
             } else {
                 // TO DO
             }
         }
         
     private:
+        
+        T samplerate;
         
         T m_delta_x = 0.;
         T m_delta_y = 0.;
@@ -427,7 +500,7 @@ namespace hoa
         Matrix<T, Dynamic, 1> b;
 
         // matrices
-        Matrix<std::complex<T>, Dynamic, Dynamic> Zmat;
+        Matrix<std::complex<T>, Dynamic, Dynamic> Zmat[HOA_SHIFT_FFT_SIZE];
         Matrix<std::complex<T>, Dynamic, 1> inputs_vec, outputs_vec;
     };
 

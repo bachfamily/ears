@@ -1,4 +1,5 @@
 #include "ears.hoa.h"
+#include "ears.spectral.h"
 #include <Hoa.hpp>
 
 long ears_hoa_get_dimension_as_long(t_symbol *s)
@@ -70,7 +71,6 @@ void ears_coord_convert(e_ears_coordinate_type from, e_ears_coordinate_type to, 
 
 t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3)
 {
-     
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
     
@@ -79,8 +79,8 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
         return EARS_ERR_GENERIC;
     }
 
-    if (order < 1) {
-        object_error(ob, "Order must be at least 1.");
+    if (order < 0) {
+        object_error(ob, "Order must be at least 0.");
         return EARS_ERR_GENERIC;
     }
 
@@ -98,8 +98,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
         object_error(ob, "Invalid envelope for third coordinate.");
         return EARS_ERR_GENERIC;
     }
-
-
+    
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
     float *orig_sample_wk = NULL;
@@ -130,7 +129,19 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
         long outchannelcount = ears_hoa_get_channel_count(dimension, order);
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, outchannelcount);
 
-        if (dimension == 3) {
+        if (order == 0) {
+            // special case, not much to do
+            float *dest_sample = buffer_locksamples(dest);
+            if (!dest_sample) {
+                err = EARS_ERR_CANT_WRITE;
+                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            } else {
+                for (long i = 0; i < framecount; i++)
+                    dest_sample[i] = orig_sample_wk[channelcount * i];
+            }
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        } else if (dimension == 3) {
             hoa::Encoder<hoa::Hoa3d, float> encoder(order);
             
             t_ears_envelope_iterator coord1_eei, coord2_eei, coord3_eei;
@@ -337,7 +348,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         long order = ears_hoa_num_channels_to_order(dimension, channelcount);
         
-        if (order <= 0) {
+        if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
             buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
@@ -438,7 +449,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
         
         long order = ears_hoa_num_channels_to_order(dimension, channelcount);
         
-        if (order <= 0) {
+        if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels!");
             buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
@@ -559,7 +570,7 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         long order = ears_hoa_num_channels_to_order(dimension, channelcount);
         
-        if (order <= 0) {
+        if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
             buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
@@ -582,7 +593,11 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         
-        if (dimension == 3) {
+        if (order == 0) {
+            // nothing to rotate
+            ears_buffer_clone(ob, source, dest);
+            buffer_setdirty(dest);
+        } else if (dimension == 3) {
             hoa::Rotate<hoa::Hoa3d, float> rotator(order);
             
 
@@ -688,8 +703,12 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
+    float sr = ears_buffer_get_sr(ob, source);
     float *orig_sample_wk = NULL;
     
+    long fftsize = HOA_SHIFT_FFT_SIZE;
+    long hopsize = HOA_SHIFT_FFT_SIZE / 2;
+
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -699,7 +718,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
         
         long order = ears_hoa_num_channels_to_order(dimension, channelcount);
         
-        if (order <= 0) {
+        if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
             buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
@@ -720,11 +739,15 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
             ears_buffer_copy_format(ob, source, dest);
         }
         
-        ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
+        long outframecount = framecount + fftsize; // maximum pad we will need for spectral processing
+        ears_buffer_set_size_and_numchannels(ob, dest, outframecount, channelcount);
         
-        if (dimension == 3) {
-            hoa::Shift<hoa::Hoa3d, float> shifter(order);
-            
+        if (order == 0) {
+            // nothing to shift
+            ears_buffer_clone(ob, source, dest);
+            buffer_setdirty(dest);
+        } else if (dimension == 3) {
+            hoa::Shift<hoa::Hoa3d, float> shifter(order, sr);
             
             bool delta_x_is_envelope = (delta_x->l_depth > 1);
             bool delta_y_is_envelope = (delta_y->l_depth > 1);
@@ -757,7 +780,25 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             } else {
-                for (long i = 0; i < framecount; i++) {
+                
+                kiss_fft_cpx *fin = (kiss_fft_cpx *)bach_newptrclear(fftsize * sizeof(kiss_fft_cpx));
+                kiss_fft_cpx *fout = (kiss_fft_cpx *)bach_newptr(fftsize * sizeof(kiss_fft_cpx));
+                kiss_fft_cfg cfg = kiss_fft_alloc(fftsize, false, NULL, NULL);
+                kiss_fft_cfg cfginv = kiss_fft_alloc(fftsize, true, NULL, NULL);
+                
+
+                // clearing destination buffer
+                for (long c = 0; c < channelcount; c++)
+                    for (long i = 0; i < outframecount; i++)
+                        dest_sample[i * channelcount + c] = 0;
+                
+                // create window function
+                float *window = (float *)bach_newptr(fftsize * sizeof(float));
+                for (long i = 0; i < fftsize; i++)
+                    window[i] = sqrt(0.5 * (1 - cos(TWOPI * i / (fftsize - 1)))); // square root of h should give perfect reconstruction
+//                    window[i] = pow(1 - pow(rescale(i, 0, fftsize - 1, -1., 1.), 2.), 1.25);
+
+                for (long i = 0; i < framecount; i += hopsize) { // cycle on frames
                     if (at_least_one_is_envelope) {
                         if (delta_x_is_envelope)
                             dx = ears_envelope_iterator_walk_interp(&dx_eei, i, framecount);
@@ -767,9 +808,55 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                             dz = ears_envelope_iterator_walk_interp(&dz_eei, i, framecount);
                         shifter.setShiftAmount(dx, dy, dz);
                     }
-                    shifter.process(&orig_sample_wk[channelcount * i], &dest_sample[channelcount * i]);
+                    
+                    // FFT
+                    std::vector<std::vector<std::complex<float>>> shifter_input, shifter_output;
+                    for (int c = 0; c < channelcount; c++) {
+                        for (long j = 0; j < fftsize; j++)
+                            fin[j].r = (i+j >= framecount ? 0. : orig_sample_wk[(i+j)*channelcount+c]) * window[j];
+                        
+                        bach_fft_kiss(cfg, fftsize, false, fin, fout);
+                        
+                        std::vector<std::complex<float>> this_component_spectrum(fftsize);
+                        for (long j = 0; j < fftsize; j++) {
+                            std::complex<float> c(fout[j].r, fout[j].i);
+                            this_component_spectrum[j] = c;
+                        }
+                        
+                        shifter_input.push_back(this_component_spectrum);
+                    }
+
+                    // PROCESS
+                    shifter.spectral_process(shifter_input, shifter_output);
+//                    shifter_output = shifter_input;
+
+                    // IFFT
+                    for (int c = 0; c < channelcount; c++) {
+                        for (long j = 0; j < fftsize; j++) {
+                            fout[j].r = shifter_output[c][j].real();
+                            fout[j].i = shifter_output[c][j].imag();
+                        }
+
+                        bach_fft_kiss(cfginv, fftsize, true, fout, fin);
+
+                        // applying window again
+                        for (long j = 0; j < fftsize; j++)
+                            fin[j].r *= window[j];
+
+//                        for (long j = 0; j < fftsize; j++)
+//                            fin[j].r /= 2.;
+
+                        // overlap-add
+                        for (long j = 0; j < fftsize; j++)
+                            dest_sample[(i + j) * channelcount + c] += fin[j].r;
+                    }
                 }
                 
+                free(cfg);
+                free(cfginv);
+                bach_freeptr(fin);
+                bach_freeptr(fout);
+                bach_freeptr(window);
             }
             buffer_setdirty(dest);
             buffer_unlocksamples(dest);
@@ -845,7 +932,7 @@ t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         long order = ears_hoa_num_channels_to_order(dimension, channelcount);
         
-        if (order <= 0) {
+        if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
             buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
@@ -855,64 +942,69 @@ t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_o
             ears_buffer_copy_format(ob, source, dest);
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         }
-
-        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
-
-        if (!dest_sample) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-        } else {
-            if (dimension == 3) {
-                long degree, order;
-                for (long c = 0; c < channelcount; c++) {
-                    ACN_channel_number_to_order_and_degree_3d(c, &order, &degree);
-                    double mul = 1.;
-                    switch (axis) {
-                        case 1: // X: left-right
-                            if (degree < 0)
-                                mul = -1;
-                            break;
-                        case 2: // Y: front-back
-                            if (((degree < 0) && (degree % 2 == 0)) || ((degree > 0) && (degree % 2 != 0)))
-                                mul = -1;
-                            break;
-                        case 3: // Z: top-bottom
-                            if ((order + degree) % 2 != 0)
-                                mul = -1;
-                            break;
-                        default:
-                            break;
-                    }
-                    for (long i = 0; i < framecount; i++) {
-                        dest_sample[i * channelcount + c] = mul * orig_sample[i * channelcount + c];
-                    }
-                }
-            } else {
-                for (long c = 0; c < channelcount; c++) {
-                    double mul = 1.;
-                    switch (axis) {
-                        case 1: // X: left-right
-                            if (c % 2 == 1)
-                                mul = -1;
-                            break;
-                        case 2: // Y: front-back
-                            if (c % 4 >= 2)
-                                mul = -1;
-                            break;
-                        default:
-                            break;
-                    }
-                    for (long i = 0; i < framecount; i++) {
-                        dest_sample[i * channelcount + c] = mul * orig_sample[i * channelcount + c];
-                    }
-                }
-            }
-
-            buffer_setdirty(dest);
+        if (order == 0) {
+            // special case, nothing to mirror
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_clone(ob, source, dest);
+            buffer_setdirty(dest);
+        } else {
+            float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+            
+            if (!dest_sample) {
+                err = EARS_ERR_CANT_WRITE;
+                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            } else {
+                if (dimension == 3) {
+                    long degree, order;
+                    for (long c = 0; c < channelcount; c++) {
+                        ACN_channel_number_to_order_and_degree_3d(c, &order, &degree);
+                        double mul = 1.;
+                        switch (axis) {
+                            case 1: // X: left-right
+                                if (degree < 0)
+                                    mul = -1;
+                                break;
+                            case 2: // Y: front-back
+                                if (((degree < 0) && (degree % 2 == 0)) || ((degree > 0) && (degree % 2 != 0)))
+                                    mul = -1;
+                                break;
+                            case 3: // Z: top-bottom
+                                if ((order + degree) % 2 != 0)
+                                    mul = -1;
+                                break;
+                            default:
+                                break;
+                        }
+                        for (long i = 0; i < framecount; i++) {
+                            dest_sample[i * channelcount + c] = mul * orig_sample[i * channelcount + c];
+                        }
+                    }
+                } else {
+                    for (long c = 0; c < channelcount; c++) {
+                        double mul = 1.;
+                        switch (axis) {
+                            case 1: // X: left-right
+                                if (c % 2 == 1)
+                                    mul = -1;
+                                break;
+                            case 2: // Y: front-back
+                                if (c % 4 >= 2)
+                                    mul = -1;
+                                break;
+                            default:
+                                break;
+                        }
+                        for (long i = 0; i < framecount; i++) {
+                            dest_sample[i * channelcount + c] = mul * orig_sample[i * channelcount + c];
+                        }
+                    }
+                }
+                
+                buffer_setdirty(dest);
+                if (source != dest)
+                    buffer_unlocksamples(dest);
+            }
         }
-    
         buffer_unlocksamples(source);
     }
     

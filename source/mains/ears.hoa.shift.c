@@ -14,6 +14,9 @@
 	@module
 	ears
  
+    @status
+    experimental
+ 
 	@author
 	Daniele Ghisi
  
@@ -24,10 +27,8 @@
 	Performs a translation in the higher-order ambisonic domain
  
 	@discussion
-    The object uses the HOALibrary (https://github.com/CICM/HoaLibrary-Light)
-    in turns using the Eigen library (http://eigen.tuxfamily.org)
-    (the translation capabilities have been added to the HOALibrary by Daniele Ghisi,
-    with the purpose of having this ears object).
+    Experimental, doesn't work!!!
+    I've tried to add translational capabilities to the HOA library, without success
     The normalization convention is SN2D or SN3D (depending on the dimension),
     the channel order is ACN.
 

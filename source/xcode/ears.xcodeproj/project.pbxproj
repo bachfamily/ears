@@ -13,7 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
-				1E32C5AC252763CD00280DC4 /* PBXTargetDependency */,
+				1E4A5455252A1ABD00EE9AC6 /* PBXTargetDependency */,
 				1EDF170E25273B9E00047C71 /* PBXTargetDependency */,
 				1E0E732A2525E7AA0026FD5C /* PBXTargetDependency */,
 				1E46D684251CA4360049B6A5 /* PBXTargetDependency */,
@@ -666,13 +666,6 @@
 			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
 			remoteInfo = lib_dada;
 		};
-		1E32C5AB252763CD00280DC4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1E32C57B2527621E00280DC4;
-			remoteInfo = "ears.hoa.shift~";
-		};
 		1E35B8471FE56798002B2876 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
@@ -728,6 +721,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
 			remoteInfo = lib_dada;
+		};
+		1E4A5454252A1ABD00EE9AC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1E32C57B2527621E00280DC4;
+			remoteInfo = "ears.hoa.shift~";
 		};
 		1E5993F222F32AFE00E2EC64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -5072,11 +5072,6 @@
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
 			targetProxy = 1E32C57D2527621E00280DC4 /* PBXContainerItemProxy */;
 		};
-		1E32C5AC252763CD00280DC4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1E32C57B2527621E00280DC4 /* ears.hoa.shift~ */;
-			targetProxy = 1E32C5AB252763CD00280DC4 /* PBXContainerItemProxy */;
-		};
 		1E35B8461FE56798002B2876 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
@@ -5116,6 +5111,11 @@
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
 			targetProxy = 1E4939871FDEE3BA0048410E /* PBXContainerItemProxy */;
+		};
+		1E4A5455252A1ABD00EE9AC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1E32C57B2527621E00280DC4 /* ears.hoa.shift~ */;
+			targetProxy = 1E4A5454252A1ABD00EE9AC6 /* PBXContainerItemProxy */;
 		};
 		1E5993F122F32AFE00E2EC64 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

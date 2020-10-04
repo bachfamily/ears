@@ -79,8 +79,9 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
         
         // create window function
         float *window = (float *)bach_newptr(winsize_samps * sizeof(float));
-        for (long i = 0; i < winsize_samps; i++)
-            window[i] = pow(1 - pow(rescale(i, 0, winsize_samps - 1, -1., 1.), 2.), 1.25);
+        for (long i = 0; i < winsize_samps; i++)                                // this window is not in the original paulstretch algorithm
+            window[i] = sqrt(0.5 * (1 - cos(TWOPI * i / (winsize_samps - 1)))); // square root of hann should ensure perfect reconstruction
+//            window[i] = pow(1 - pow(rescale(i, 0, winsize_samps - 1, -1., 1.), 2.), 1.25); // < this was the previously used window
         
         float *dest_sample = buffer_locksamples(dest);
         
