@@ -25,31 +25,40 @@ namespace hoa
     // CONVERSIONS //
     // ================================================================================ //
 
-    template <typename T>
-    Quaternion<T> EulerToQuaternion(T angle_axis1, T angle_axis2, T angle_axis3, int axis1, int axis2, int axis3)
+    template <typename S>
+    Quaternion<S> EulerToQuaternion(S angle_axis1, S angle_axis2, S angle_axis3, int axis1, int axis2, int axis3)
     {
-        Quaternion<T> q = AngleAxisf(angle_axis1, axis1 == 0 ? Vector3f::UnitX() : (axis1 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
-        AngleAxis<T>(angle_axis2, axis2 == 0 ? Vector3f::UnitX() : (axis2 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
-        AngleAxis<T>(angle_axis3, axis3 == 0 ? Vector3f::UnitX() : (axis3 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ()));
+        Quaternion<S> q = AngleAxisf(angle_axis1, axis1 == 0 ? Vector3f::UnitX() : (axis1 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
+        AngleAxis<S>(angle_axis2, axis2 == 0 ? Vector3f::UnitX() : (axis2 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ())) *
+        AngleAxis<S>(angle_axis3, axis3 == 0 ? Vector3f::UnitX() : (axis3 == 1 ? Vector3f::UnitY(): Vector3f::UnitZ()));
         return q;
     }
     
-    template <typename T>
-    Vector3f QuaternionToEuler(Quaternion<T> q, int axis1, int axis2, int axis3)
+    template <typename S>
+    Vector3f QuaternionToEuler(Quaternion<S> q, int axis1, int axis2, int axis3)
     {
         return q.toRotationMatrix().eulerAngles(axis1, axis2, axis3);
     }
     
-    template <typename T>
-    void YawPitchRollToZYZ(const T yaw, const T pitch, const T roll, T* alpha, T* beta, T* gamma)
+    template <typename S>
+    void YawPitchRollToZYZ(const S yaw, const S pitch, const S roll, S* alpha, S* beta, S* gamma)
     {
-        Quaternion<T> q = EulerToQuaternion(yaw, pitch, roll, 2, 1, 0);
+        Quaternion<S> q = EulerToQuaternion(yaw, pitch, roll, 2, 1, 0);
         Vector3f euler = QuaternionToEuler(q, 2, 1, 2);
         *alpha = euler[0];
         *beta = euler[1];
         *gamma = euler[2];
     }
-    
+
+    template <typename S>
+    void ZYZToYawPitchRoll(const S alpha, const S beta, const S gamma, S* yaw, S* pitch, S* roll)
+    {
+        Quaternion<S> q = EulerToQuaternion(alpha, beta, gamma, 2, 1, 2);
+        Vector3f ypr = QuaternionToEuler(q, 2, 1, 0);
+        *yaw = ypr[0];
+        *pitch = ypr[1];
+        *roll = ypr[2];
+    }
     
     
     
@@ -59,7 +68,9 @@ namespace hoa
     
     //! @brief The rotate class rotates a sound field in the harmonics domain (2d available only).
     //! @details Rotate a sound field by weighting the harmonics depending on the rotation.
-    template <Dimension D, typename T>
+    //! D is the dimension, T is the sample type, S is the scalar type, which may differ from the sampletype
+    //! for instance for complex samples
+    template <Dimension D, typename T, typename S>
     class Rotate
     : public ProcessorHarmonics<D, T>
     {
@@ -81,7 +92,7 @@ namespace hoa
         //! @brief Get the angle of the rotation around the z axis, the yaw value.
         //! @details The method returns the angle of the rotation around the z axis, the yaw value \f$\theta\f$, in radian between \f$0\f$ and \f$2\pi\f$.
         //! @return The yaw value.
-        virtual T getYaw() const noexcept;
+        virtual S getYaw() const noexcept;
         
         //! @brief This method performs the rotation.
         //! @details You should use this method for in-place or not-in-place processing and sample by sample.
@@ -106,8 +117,8 @@ namespace hoa
     // ================================================================================ //
     
     //! @brief 2d specialisation.
-    template <typename T>
-    class Rotate<Hoa2d, T>
+    template <typename T, typename S>
+    class Rotate<Hoa2d, T, S>
     : public ProcessorHarmonics<Hoa2d, T>
     {
     public:
@@ -125,7 +136,7 @@ namespace hoa
         //! @details The yaw is equivalent to a rotation around the z axis,
         //! the value is in radian and should be between 0 and 2π.
         //! @param yaw The yaw value.
-        inline void setYaw(const T yaw)
+        inline void setYaw(const S yaw)
         {
             m_yaw     =	yaw;
             m_cosyaw    = std::cos(m_yaw);
@@ -136,9 +147,9 @@ namespace hoa
         //! @details Returns the angle of the rotation around the z axis.
         //! The yaw value is in radian between 0 and 2π.
         //! @return The yaw value.
-        inline T getYaw() const noexcept
+        inline S getYaw() const noexcept
         {
-            return math<T>::wrap_two_pi(m_yaw);
+            return math<S>::wrap_two_pi(m_yaw);
         }
         
         //! @brief This method performs the rotation.
@@ -149,9 +160,9 @@ namespace hoa
         //! @param outputs  The output array.
         inline void process(const T* inputs, T* outputs) noexcept override
         {
-            T cos_x = m_cosyaw;
-            T sin_x = m_sinyaw;
-            T tcos_x = cos_x;
+            S cos_x = m_cosyaw;
+            S sin_x = m_sinyaw;
+            S tcos_x = cos_x;
             
             (*outputs++) = (*inputs++);
             T sig = (*inputs++);
@@ -170,9 +181,9 @@ namespace hoa
         
     private:
         
-        T m_yaw = 0.;
-        T m_cosyaw = 0.;
-        T m_sinyaw = 0.;
+        S m_yaw = 0.;
+        S m_cosyaw = 0.;
+        S m_sinyaw = 0.;
     };
     
     // ================================================================================ //
@@ -180,8 +191,8 @@ namespace hoa
     // ================================================================================ //
     
     //! @brief 3d specialisation.
-    template <typename T>
-    class Rotate<Hoa3d, T>
+    template <typename T, typename S>
+    class Rotate<Hoa3d, T, S>
     : public ProcessorHarmonics<Hoa3d, T>
     {
     public:
@@ -199,7 +210,7 @@ namespace hoa
         //! @details The yaw is equivalent to a rotation around the z axis,
         //! the value is in radian and should be between 0 and 2π.
         //! @param yaw The yaw value.
-        inline void setYaw(const T yaw)
+        inline void setYaw(const S yaw)
         {
             m_yaw     =    yaw;
             preprocess();
@@ -232,7 +243,7 @@ namespace hoa
         //! @param yaw The yaw value.
         //! @param pitch The pitch value.
         //! @param roll The roll value.
-        inline void setYawPitchRoll(const T yaw, const T pitch, const T roll)
+        inline void setYawPitchRoll(const S yaw, const S pitch, const S roll)
         {
             m_yaw     =    yaw;
             m_pitch   =    pitch;
@@ -248,38 +259,52 @@ namespace hoa
         //! @param x The i component of the quaternion.
         //! @param y The j component of the quaternion.
         //! @param z The k component of the quaternion.
-        inline void setQuaternion(const T w, const T x, const T y, const T z)
+        inline void setQuaternion(const S w, const S x, const S y, const S z)
         {
-            Quaternion<T> q(w, x, y, z);
+            Quaternion<S> q(w, x, y, z);
             Vector3f euler = QuaternionToEuler(q, 2, 1, 0);
             setYawPitchRoll(euler[0], euler[1], euler[2]);
+        }
+
+        //! @brief This method sets the angle of the rotation as ZYZ euler angles.
+        //! @details It is slower than setting yaw pitch roll, because in the
+        //! current implementation it falls back to computing yaw/pitch/roll angles
+        //! (this can definitely be optimized!).
+        //! @param alpha The Z rotation angle.
+        //! @param beta The Y rotation angle.
+        //! @param gamma The other Z rotation angle.
+        inline void setZYZ(const S alpha, const S beta, const S gamma)
+        {
+            S yaw, pitch, roll;
+            ZYZToYawPitchRoll(alpha, beta, gamma, &yaw, &pitch, &roll);
+            setYawPitchRoll(yaw, pitch, roll);
         }
         
         //! @brief Get the angle of the rotation around the z axis, the yaw value.
         //! @details Returns the angle of the rotation around the z axis.
         //! The yaw value is in radian between 0 and 2π.
         //! @return The yaw value.
-        inline T getYaw() const noexcept
+        inline S getYaw() const noexcept
         {
-            return math<T>::wrap_two_pi(m_yaw);
+            return math<S>::wrap_two_pi(m_yaw);
         }
 
         //! @brief Get the angle of the rotation around the y axis, the roll value.
         //! @details Returns the angle of the rotation around the y axis.
         //! The roll value is in radian between 0 and 2π.
         //! @return The roll value.
-        inline T getRoll() const noexcept
+        inline S getRoll() const noexcept
         {
-            return math<T>::wrap_two_pi(m_roll);
+            return math<S>::wrap_two_pi(m_roll);
         }
 
         //! @brief Get the angle of the rotation around the x axis, the pitch value.
         //! @details Returns the angle of the rotation around the x axis.
         //! The pitch value is in radian between 0 and 2π.
         //! @return The pitch value.
-        inline T getPitch() const noexcept
+        inline S getPitch() const noexcept
         {
-            return math<T>::wrap_two_pi(m_pitch);
+            return math<S>::wrap_two_pi(m_pitch);
         }
         
         //! @brief This method performs a 90° rotation around the y axis.
@@ -297,22 +322,11 @@ namespace hoa
             int offset = 0;
             for (int o = 0; o <= order; o++) {
                 long num_harm_o = o*2 + 1;
-                matmul(inputs + offset, outputs + offset, o);
+                matmul<T,S>(inputs + offset, outputs + offset, o);
                 offset += num_harm_o;
             }
         }
 
-        // complex version
-        inline void process_Y90_cpx(const std::complex<T>* inputs, std::complex<T>* outputs) noexcept
-        {
-            int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
-            int offset = 0;
-            for (int o = 0; o <= order; o++) {
-                long num_harm_o = o*2 + 1;
-                matmul_cpx(inputs + offset, outputs + offset, o);
-                offset += num_harm_o;
-            }
-        }
         
         
         // remapping of Daniel's convention to ACN
@@ -330,7 +344,7 @@ namespace hoa
         //! @param inputs   The input array.
         //! @param outputs  The output array.
         //! @param yaw  The yaw (to be optimized!).
-        inline void process_Z(const T* inputs, T* outputs, T* angle_sines, T* angle_cosines) noexcept
+        inline void process_Z(const T* inputs, T* outputs, S* angle_sines, S* angle_cosines) noexcept
         {
             int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
 
@@ -359,44 +373,15 @@ namespace hoa
             }
         }
         
-        inline void process_Z_cpx(const std::complex<T>* inputs, std::complex<T>* outputs, T* angle_sines, T* angle_cosines) noexcept
-        {
-            int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
-            int offset = 0;
-            for (int o = 0; o <= order; o++) {
-                long num_harm_o = o*2 + 1;
-                
-                int idxLast = offset + remapIdx(num_harm_o, num_harm_o) - 1;
-                outputs[idxLast] = inputs[idxLast];  // last coefficient always stays the same
-                
-                // apply block-wise rotation matrix
-                for (int b = 0; b < o; b++) { // iteration on blocks of the z-axis rotation matrix
-                    int idxA = offset + remapIdx(num_harm_o - 2*b - 1, num_harm_o) - 1;
-                    int idxB = offset + remapIdx(num_harm_o - 2*b - 2, num_harm_o) - 1;
-                    // THIS IS JUST A ROUGH IMPLEMENTATION
-                    // TO BE MASSIVELY OPTIMIZED: cos() and sin() computation can be pre-computed and sin(mt)=... sin(t)
-                    outputs[idxA] = inputs[idxA] * angle_cosines[b] - inputs[idxB] * angle_sines[b];
-                    outputs[idxB] = inputs[idxA] * angle_sines[b] + inputs[idxB] * angle_cosines[b];
-                }
-                
-                offset += num_harm_o;
-            }
-        }
-        
         inline void copy(const T* inputs, T* outputs, int num_harmonics)
         {
             memcpy(outputs, inputs, num_harmonics * sizeof(T));
         }
 
-        inline void copy_cpx(const std::complex<T>* inputs, std::complex<T>* outputs, int num_harmonics)
-        {
-            memcpy(outputs, inputs, num_harmonics * sizeof(std::complex<T>));
-        }
-        
         inline void preprocess()
         {
             int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
-            T angle;
+            S angle;
             
             // this one is used only for pure Z-axis rotation to optimize this common case
             angle = m_yaw;
@@ -472,65 +457,33 @@ namespace hoa
                 delete [] temp;
             }
         }
-
-        inline void process_cpx(const std::complex<T>* inputs, std::complex<T>* outputs) noexcept
-        {
-            int numharmonics = ProcessorHarmonics<Hoa3d, T>::getNumberOfHarmonics();
-            if (getPitch() == 0 && getRoll() == 0 && getYaw() == 0) {
-                // Copy
-                for (int i = 0; i < numharmonics; i++) {
-                    outputs[i] = inputs[i];
-                }
-            } else if (getPitch() == 0 && getRoll() == 0) {
-                // Z-axis rotation only, optimized version for this simple case
-                process_Z_cpx(inputs, outputs, m_sins_yaw, m_coss_yaw);
-            } else {
-                // full 3d rotation:
-                // performs R(alpha, beta, gamma), with alpha, beta, gamma ZYZ euler angles
-                // see https://ambisonics.iem.at/xchange/fileformat/docs/spherical-harmonics-rotation
-                // R(alpha, beta, gamma) = Rz(alpha+90°) Ry90 Rz(beta+180°) Ry90 Rz(gamma+90°)
-                std::complex<T>* temp = new std::complex<T>[numharmonics];
-                
-                process_Z_cpx(inputs, outputs, m_sins_gamma_pi2, m_coss_gamma_pi2);
-                copy_cpx(outputs, temp, numharmonics);
-                process_Y90_cpx(temp, outputs);
-                copy_cpx(outputs, temp, numharmonics);
-                process_Z_cpx(temp, outputs, m_sins_beta_pi, m_coss_beta_pi);
-                copy_cpx(outputs, temp, numharmonics);
-                process_Y90_cpx(temp, outputs);
-                copy_cpx(outputs, temp, numharmonics);
-                process_Z_cpx(temp, outputs, m_sins_alpha_pi2, m_coss_alpha_pi2);
-                
-                delete [] temp;
-            }
-        }
         
     private:
         
-        T m_yaw = 0.;
-        T m_cosyaw = 0.; // used in 2d rotations
-        T m_sinyaw = 0.; // used in 2d rotations
+        S m_yaw = 0.;
+        S m_cosyaw = 0.; // used in 2d rotations
+        S m_sinyaw = 0.; // used in 2d rotations
 
-        T m_pitch = 0.;
-        T m_roll = 0.;
+        S m_pitch = 0.;
+        S m_roll = 0.;
 
         // these are the ZYZ euler angles into which we will convert our yaw/pitch/roll:
-        T m_alpha;
-        T m_beta;
-        T m_gamma;
+        S m_alpha;
+        S m_beta;
+        S m_gamma;
         
         // These fields are used in 3d rotation and, once the preprocess() function has been called
         // contain the sin((i+1)*angle) and cos((i+1)*angle) for i = 0...order-1
         // and for the 3 angles that actually appear in the rotational decomposition as Z-axis rotations,
         // namely: gamma+pi/2, beta+pi, alpha+pi/2
-        T m_sins_yaw[HOA_ROTATION_3D_MAXORDER];
-        T m_coss_yaw[HOA_ROTATION_3D_MAXORDER];
-        T m_sins_gamma_pi2[HOA_ROTATION_3D_MAXORDER];
-        T m_sins_beta_pi[HOA_ROTATION_3D_MAXORDER];
-        T m_sins_alpha_pi2[HOA_ROTATION_3D_MAXORDER];
-        T m_coss_gamma_pi2[HOA_ROTATION_3D_MAXORDER];
-        T m_coss_beta_pi[HOA_ROTATION_3D_MAXORDER];
-        T m_coss_alpha_pi2[HOA_ROTATION_3D_MAXORDER];
+        S m_sins_yaw[HOA_ROTATION_3D_MAXORDER];
+        S m_coss_yaw[HOA_ROTATION_3D_MAXORDER];
+        S m_sins_gamma_pi2[HOA_ROTATION_3D_MAXORDER];
+        S m_sins_beta_pi[HOA_ROTATION_3D_MAXORDER];
+        S m_sins_alpha_pi2[HOA_ROTATION_3D_MAXORDER];
+        S m_coss_gamma_pi2[HOA_ROTATION_3D_MAXORDER];
+        S m_coss_beta_pi[HOA_ROTATION_3D_MAXORDER];
+        S m_coss_alpha_pi2[HOA_ROTATION_3D_MAXORDER];
     };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

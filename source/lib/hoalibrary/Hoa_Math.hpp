@@ -11,8 +11,17 @@
 
 #pragma once
 
+#include <type_traits>
+
 namespace hoa
 {
+    template<typename T>
+    struct is_complex_t : public std::false_type {};
+    
+    template<typename T>
+    struct is_complex_t<std::complex<T>> : public std::true_type {};
+
+    
     //! Math utilities and funtions.
     template<typename T>
     class math
@@ -26,28 +35,36 @@ namespace hoa
         static constexpr T pi() { return 3.14159265358979323846264338327950288; }
         
         //! @brief Returns 2π
-        static constexpr T two_pi() { return pi() * 2.; }
+        static constexpr T two_pi() { return pi() * (T)2.; }
         
         //! @brief Returns π/2
-        static constexpr T pi_over_two() { return pi() * 0.5; }
+        static constexpr T pi_over_two() { return pi() * (T)0.5; }
         
         //! @brief Returns π/4
-        static constexpr T pi_over_four() { return pi() * 0.25; }
+        static constexpr T pi_over_four() { return pi() * (T)0.25; }
         
         //! @brief Wraps the value between 0 and π
-        static T wrap_pi(T value)
+        static T wrap_pi(T val)
         {
-            while(value < -pi()) { value += two_pi(); }
-            while(value >= pi()) { value -= two_pi(); }
-            return value;
+            while(val < -pi()) { val += two_pi(); }
+            while(val >= pi()) { val -= two_pi(); }
+            return val;
         }
         
         //! @brief Wraps the value between 0 and 2π
-        static T wrap_two_pi(T value)
+        static T wrap_two_pi(T val)
         {
-            while(value < 0.) { value += two_pi(); }
-            while(value >= two_pi()) { value -= two_pi(); }
-            return value;
+            while(val < 0.) { val += two_pi(); }
+            while(val >= two_pi()) { val -= two_pi(); }
+            return val;
+        }
+
+        //! @brief Wraps the value between -π and π
+        static T wrap_pm_pi(T val)
+        {
+            while(val < 0.) { val += two_pi(); }
+            while(val >= two_pi()) { val -= two_pi(); }
+            return val <= pi() ? val : val - two_pi();
         }
         
     };

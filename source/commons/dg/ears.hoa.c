@@ -614,7 +614,7 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
             ears_buffer_clone(ob, source, dest);
             buffer_setdirty(dest);
         } else if (dimension == 3) {
-            hoa::Rotate<hoa::Hoa3d, float> rotator(order);
+            hoa::Rotate<hoa::Hoa3d, float, float> rotator(order);
             
 
             bool yaw_is_envelope = (yaw->l_depth > 1);
@@ -664,7 +664,7 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
             buffer_setdirty(dest);
             buffer_unlocksamples(dest);
         } else {
-            hoa::Rotate<hoa::Hoa2d, float> rotator(order);
+            hoa::Rotate<hoa::Hoa2d, float, float> rotator(order);
             
             rotator.setYaw(0);
             if (yaw && yaw->l_head)
