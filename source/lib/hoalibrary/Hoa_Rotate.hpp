@@ -201,10 +201,15 @@ namespace hoa
         //! @param order The order (minimum 1, maximum 21).
         Rotate(const size_t order)
         : ProcessorHarmonics<Hoa3d, T>(order)
-        {}
+        {
+            make_Y90_matrices();
+        }
         
         //! @brief Destructor.
-        ~Rotate() = default;
+        ~Rotate()
+        {
+            free_Y90_matrices();
+        };
         
         //! @brief This method sets the angle of the rotation around the z axis.
         //! @details The yaw is equivalent to a rotation around the z axis,
@@ -306,6 +311,37 @@ namespace hoa
         {
             return math<S>::wrap_two_pi(m_pitch);
         }
+        
+        void free_Y90_matrices()
+        {
+            for (int o = 0; o < m_num_y90mat; o++) {
+                long size = 2*o+1;
+                for (int row = 0; row < size; row++)
+                    free(m_y90mat[o][row]);
+                free(m_y90mat[o]);
+            }
+            free(m_y90mat);
+        }
+
+        void allocate_Y90_matrices()
+        {
+            int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
+            m_y90mat = (S***)malloc((order+1) * sizeof(S**));
+            for (int o = 0; o < order+1; o++) {
+                long size = 2*o+1;
+                m_y90mat[0] = (S**)malloc(size * sizeof(S*));
+                for (int row = 0; row < size; row++)
+                    m_y90mat[0][row] = (S*)malloc(size * sizeof(S));
+            }
+        }
+        
+        void make_Y90_matrices()
+        {
+            free_Y90_matrices();
+            allocate_Y90_matrices();
+            int order = ProcessorHarmonics<Hoa3d, T>::getDecompositionOrder();
+        }
+        
         
         //! @brief This method performs a 90° rotation around the y axis.
         //! @details This is most often useful only in combination with process_Z in
@@ -484,6 +520,10 @@ namespace hoa
         S m_coss_gamma_pi2[HOA_ROTATION_3D_MAXORDER];
         S m_coss_beta_pi[HOA_ROTATION_3D_MAXORDER];
         S m_coss_alpha_pi2[HOA_ROTATION_3D_MAXORDER];
+        
+        // Y90 rotation matrices
+        long m_num_y90mat = 0;
+        S ***m_y90mat;
     };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
