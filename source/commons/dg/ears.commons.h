@@ -29,11 +29,9 @@
 #include "ext_buffer.h"
 #include "ext_strings.h"
 
-#include "llllobj.h"
-#include "llll_commons_ext.h"
+#include "ears.conversions.h" // llllstuff is included in here
 #include "lexpr.h"
 #include "bach_math_utilities.h"
-#include "ears.conversions.h"
 #include "ears.object.h" // already included in previous one
 #include "ears.utils.h"
 #include "notation.h"
@@ -87,8 +85,8 @@ typedef enum {
 	@ingroup misc */
 typedef enum {
     EARS_FADE_NONE =          0,	///< No fade
-    EARS_FADE_LINEAR =        1,	///< Linear fade
-    EARS_FADE_EQUALPOWER =    2,	///< Equal power fade
+    EARS_FADE_LINEAR =        1,	///< Linear fade (or cross fade)
+    EARS_FADE_SINE =    2,	///< Equal power fade (or crossfade)
     EARS_FADE_CURVE =         3,	///< Generic curve fade. One additional parameter (-1 to 1, 0. being linear) is needed for the slope
     EARS_FADE_SCURVE =        4,	///< S-shaped curve fade. One additional parameter (-1 to 1, 0. being linear) is needed for the slope
 } e_ears_fade_types;
@@ -122,7 +120,7 @@ typedef enum _ears_split_modes {
 
 
 /** Velocity to amplitude conversions
-	@ingroup misc */
+	@ingroup velocity */
 typedef enum {
     EARS_VELOCITY_IGNORE =          0,	///< Ignore velocity
     EARS_VELOCITY_TO_AMPLITUDE =    1, ///< Map velocity on amplitude range
@@ -309,15 +307,16 @@ void ears_envelope_iterator_reset(t_ears_envelope_iterator *eei);
 double ears_envelope_iterator_get_min_y(t_ears_envelope_iterator *eei);
 double ears_envelope_iterator_get_max_y(t_ears_envelope_iterator *eei);
 
-// conversions
-double ears_ratio_to_cents(double ratio);
-double ears_cents_to_ratio(double cents);
 
 
 
-
-// use with caution, does not create a buffer reference, only a buffer object, to be used and then freed
+// These two functions are to be uses with caution, they do not create a buffer reference, only a buffer object, to be used and then freed:
 t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, double sr, long buffer_idx);
+t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **dest,
+                                                double midicents, double duration_ms, double velocity, t_llll *breakpoints,
+                                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
+                                                double middleAtuning, double sr, long buffer_idx);
+
 long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start_sample, double end_sample, t_buffer_obj *buf);
 
 

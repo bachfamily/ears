@@ -1607,15 +1607,24 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
-    
+    float *orig_sample_wk = NULL;
+
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
     } else {
         t_atom_long	channelcount = buffer_getchannelcount(source);
         t_atom_long	framecount   = buffer_getframecount(source);
+
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
+            buffer_unlocksamples(source);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format(ob, source, dest);
+        }
         
-        ears_buffer_copy_format(ob, source, dest);
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         
         float *dest_sample = buffer_locksamples(dest);
@@ -1631,7 +1640,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
                 for (long i = 0; i < framecount; i++) {
                     double pan = ears_envelope_iterator_walk_interp(&eei, i, framecount);
                     for (long c = 0; c < num_out_channels; c++)
-                        dest_sample[i*num_out_channels + c] = orig_sample[i] * ears_get_pan_factor(c, num_out_channels, pan, pan_mode, pan_law);
+                        dest_sample[i*num_out_channels + c] = orig_sample_wk[i] * ears_get_pan_factor(c, num_out_channels, pan, pan_mode, pan_law);
                 }
             } else {
                 if (multichannel_pan_aperture == 0) {
@@ -1640,7 +1649,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
                         // mixdown to mono before panning
                         double s = 0;
                         for (long c = 0; c < channelcount; c++)
-                            s += orig_sample[i*channelcount + c];
+                            s += orig_sample_wk[i*channelcount + c];
                         if (compensate_gain_for_multichannel_to_avoid_clipping)
                             s /= channelcount;
                         
@@ -1656,7 +1665,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
                             adjusted_pan[d] = multichannel_pan(pan, pan_mode, channelcount, d, multichannel_pan_aperture);
                         for (long c = 0; c < num_out_channels; c++)
                             for (long d = 0; d < channelcount; d++)
-                                dest_sample[i * num_out_channels + c] += orig_sample[i * channelcount + d] * ears_get_pan_factor(c, num_out_channels, adjusted_pan[d], pan_mode, pan_law) / (compensate_gain_for_multichannel_to_avoid_clipping ? channelcount : 1);
+                                dest_sample[i * num_out_channels + c] += orig_sample_wk[i * channelcount + d] * ears_get_pan_factor(c, num_out_channels, adjusted_pan[d], pan_mode, pan_law) / (compensate_gain_for_multichannel_to_avoid_clipping ? channelcount : 1);
                     }
                 }
             }
@@ -1664,7 +1673,11 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
             buffer_setdirty(dest);
             buffer_unlocksamples(dest);
         }
-        buffer_unlocksamples(source);
+
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            buffer_unlocksamples(source);
     }
     
     return err;
@@ -1679,7 +1692,8 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
     
     t_ears_err err = EARS_ERR_NONE;
     float *source_sample = buffer_locksamples(source);
-    
+    float *source_sample_wk = NULL;
+
     if (!source_sample) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -1687,7 +1701,15 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
         t_atom_long    source_channelcount = buffer_getchannelcount(source);
         t_atom_long    source_framecount   = buffer_getframecount(source);
         
-        ears_buffer_copy_format(ob, source, dest);
+        if (source == dest) { // inplace operation!
+            source_sample_wk = (float *)bach_newptr(source_channelcount * source_framecount * sizeof(float));
+            sysmem_copyptr(source_sample, source_sample_wk, source_channelcount * source_framecount * sizeof(float));
+            buffer_unlocksamples(source);
+        } else {
+            source_sample_wk = source_sample;
+            ears_buffer_copy_format(ob, source, dest);
+        }
+        
         ears_buffer_set_size_and_numchannels(ob, dest, source_framecount, num_out_channels);
 
 //        t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
@@ -1716,7 +1738,7 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
                         for (long i = 0; i < max_sample; i++) {
                             double pan = pan_sample[i];
                             for (long c = 0; c < num_out_channels; c++)
-                                dest_sample[i*num_out_channels + c] = source_sample[i] * ears_get_pan_factor(c, num_out_channels, pan, pan_mode, pan_law);
+                                dest_sample[i*num_out_channels + c] = source_sample_wk[i] * ears_get_pan_factor(c, num_out_channels, pan, pan_mode, pan_law);
                         }
                     } else {
                         if (multichannel_pan_aperture == 0) {
@@ -1725,7 +1747,7 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
                                 // mixdown to mono before panning
                                 double s = 0;
                                 for (long c = 0; c < source_channelcount; c++)
-                                    s += source_sample[i*source_channelcount + c];
+                                    s += source_sample_wk[i*source_channelcount + c];
                                 if (compensate_gain_for_multichannel_to_avoid_clipping)
                                     s /= source_channelcount;
                                 
@@ -1741,7 +1763,7 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
                                     adjusted_pan[d] = multichannel_pan(pan, pan_mode, source_channelcount, d, multichannel_pan_aperture);
                                 for (long c = 0; c < num_out_channels; c++)
                                     for (long d = 0; d < source_channelcount; d++)
-                                        dest_sample[i * num_out_channels + c] += source_sample[i * source_channelcount + d] * ears_get_pan_factor(c, num_out_channels, adjusted_pan[d], pan_mode, pan_law) / (compensate_gain_for_multichannel_to_avoid_clipping ? source_channelcount : 1);
+                                        dest_sample[i * num_out_channels + c] += source_sample_wk[i * source_channelcount + d] * ears_get_pan_factor(c, num_out_channels, adjusted_pan[d], pan_mode, pan_law) / (compensate_gain_for_multichannel_to_avoid_clipping ? source_channelcount : 1);
                             }
                         }
                     }
@@ -1752,7 +1774,11 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
             buffer_setdirty(dest);
             buffer_unlocksamples(dest);
         }
-        buffer_unlocksamples(source);
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(source_sample_wk);
+        else
+            buffer_unlocksamples(source);
     }
     
     return err;
@@ -2335,7 +2361,7 @@ float ears_get_fade_factor(char in_or_out, e_ears_fade_types fade, double positi
         case EARS_FADE_LINEAR:
             return position;
             break;
-        case EARS_FADE_EQUALPOWER:
+        case EARS_FADE_SINE:
             return sin(PIOVERTWO * position);
             break;
         case EARS_FADE_CURVE: // could find a faster formula, this is CPU consuming
@@ -2755,6 +2781,12 @@ t_symbol *default_filepath2buffername(t_symbol *filepath, long buffer_index)
     return gensym(temp);
 }
 
+t_symbol *default_synth2buffername(long buffer_index)
+{
+    char temp[MAX_PATH_CHARS * 2];
+    snprintf_zero(temp, MAX_PATH_CHARS * 2, "synth_%ld_earsbuf", buffer_index);
+    return gensym(temp);
+}
 
 
 long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start_sample, double end_sample, t_buffer_obj *buf)
@@ -2900,6 +2932,114 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
         object_error(ob, EARS_ERROR_BUF_NO_FILE_NAMED, filepath ? filepath->s_name : (file ? file->s_name : "???"));
     }
     
+    return err;
+}
+
+
+
+t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **dest,
+                                                double midicents, double duration_ms, double velocity, t_llll *breakpoints,
+                                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
+                                                double middleAtuning, double sr, long buffer_idx)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    long duration_samps = (long)ceil(duration_ms * (sr/1000.));
+    t_symbol *name = default_synth2buffername(buffer_idx);
+    t_atom a;
+    atom_setsym(&a, name);
+    
+    *dest = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
+
+    ears_buffer_set_size_and_numchannels(e_ob, *dest, duration_samps, 1);
+
+    float *sample = buffer_locksamples(*dest);
+
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error(e_ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    framecount   = buffer_getframecount(*dest);            // number of floats long the buffer is for a single channel
+        
+        // building envelope iterators
+        t_llll *pitchenv = NULL;
+        t_llll *velocityenv = NULL;
+        
+        if (breakpoints) {
+            pitchenv = llll_clone(breakpoints);
+            velocityenv = llll_clone(breakpoints);
+            if (breakpoints->l_head && hatom_gettype(&breakpoints->l_head->l_hatom) == H_SYM) {
+                // removing "breakpoints" symbol
+                llll_behead(pitchenv);
+                llll_behead(velocityenv);
+            }
+            for (t_llllelem *el = pitchenv->l_head; el; el = el->l_next) {
+                if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                    t_llll *ll = hatom_getllll(&el->l_hatom);
+                    if (ll->l_size == 4)
+                        llll_destroyelem(ll->l_tail);
+                }
+            }
+            
+            ears_llll_to_env_samples(pitchenv, duration_samps, sr, EARSBUFOBJ_TIMEUNIT_DURATION_RATIO);
+            
+            bool has_no_velocity = false;
+            for (t_llllelem *el = pitchenv->l_head; el; el = el->l_next) {
+                if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                    t_llll *ll = hatom_getllll(&el->l_hatom);
+                    if (ll->l_size <= 4) {
+                        has_no_velocity = true;
+                        break;
+                    } else if (ll->l_size == 4) {
+                        llll_swapelems(ll->l_head, ll->l_tail);
+                        llll_destroyelem(ll->l_tail);
+                    }
+                }
+            }
+            if (has_no_velocity) {
+                llll_clear(velocityenv);
+                llll_appenddouble(velocityenv, velocity);
+            } else {
+                ears_llll_to_env_samples(velocityenv, duration_samps, sr, EARSBUFOBJ_TIMEUNIT_DURATION_RATIO);
+            }
+        }
+
+        // building envelope iterators
+        t_ears_envelope_iterator eei_deltapitch = ears_envelope_iterator_create(pitchenv, 0, false);
+        t_ears_envelope_iterator eei_vel = ears_envelope_iterator_create(velocityenv, velocity, false);
+
+        // synthesizing
+        double running_phase = 0;
+        double t_step = (1./sr);
+        for (long i = 0; i < framecount; i++) {
+            double cents = ears_envelope_iterator_walk_interp(&eei_deltapitch, i, framecount) + midicents;
+            double vel = ears_envelope_iterator_walk_interp(&eei_vel, i, framecount);
+            double freq = ears_cents_to_freq(cents, middleAtuning);
+            double amp = 1;
+            
+            switch (veltoamp_mode) {
+                case EARS_VELOCITY_TO_AMPLITUDE:
+                    amp = rescale(vel, 0., 127., amp_vel_min, amp_vel_max);
+                    break;
+                case EARS_VELOCITY_TO_DECIBEL:
+                    amp = ears_db_to_linear(rescale(vel, 0., 127., amp_vel_min, amp_vel_max));
+                    break;
+                default:
+                    break;
+            }
+            
+            sample[i] = amp * sin(running_phase);
+
+            running_phase += TWOPI * freq * t_step;
+            while (running_phase > TWOPI)
+                running_phase -= TWOPI;
+            
+        }
+        
+        buffer_setdirty(*dest);
+        buffer_unlocksamples(*dest);
+        llll_free(pitchenv);
+        llll_free(velocityenv);
+    }
     return err;
 }
 
@@ -3727,17 +3867,4 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
     return err;
 }
 
-
-
-
-
-double ears_ratio_to_cents(double ratio)
-{
-    return 1200 * log2(ratio);
-}
-
-double ears_cents_to_ratio(double cents)
-{
-    return pow(2, cents/1200.);
-}
 

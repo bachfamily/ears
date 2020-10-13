@@ -279,9 +279,6 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 
-// convenience utility
-void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit);
-void ears_llll_to_radians(t_llll *ll, char angleunit);
 
 
 double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value);

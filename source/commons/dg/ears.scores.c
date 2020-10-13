@@ -228,7 +228,10 @@ char is_slot_in_decibel(t_llll *header, long slotnum)
 }
 
 
-t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj *dest,
+
+                                          
+// mode == 0: SINUSOIDS; mode == 1: SAMPLES
+t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, t_llll *roll_gs, t_buffer_obj *dest,
                                char use_mute_solos, char use_durations,
                                long num_channels,
                                long filename_slot, long offset_slot, long gain_slot, long pan_slot,
@@ -237,7 +240,8 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj
                                double fade_in_curve, double fade_out_curve,
                                e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
-                               e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max)
+                               e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
+                               double middleAtuning)
 {
     t_ears_err err = EARS_ERR_NONE;
     t_llll *body = llll_clone(roll_gs);
@@ -248,6 +252,12 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj
     t_llll *offset_samps = llll_get();
     
     char there_are_solos = ears_roll_there_are_solos(body);
+    
+    if (mode != EARS_SCORETOBUF_MODE_SINUSOIDS && mode != EARS_SCORETOBUF_MODE_SAMPLING) {
+        object_error((t_object *)e_ob, "Unsupported mode!");
+        return EARS_ERR_GENERIC;
+    }
+
     
     double pan_min = 0, pan_max = 1;
     if (pan_slot)
@@ -291,6 +301,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj
                     continue;
                 
                 t_llll *note_ll = hatom_getllll(&note_el->l_hatom);
+                double note_pitch_cents = note_ll->l_head ? hatom_getdouble(&note_ll->l_head->l_hatom) : 6000;
                 double note_duration_ms = note_ll->l_head && note_ll->l_head->l_next ? hatom_getdouble(&note_ll->l_head->l_next->l_hatom) : 0;
                 double note_velocity = note_ll->l_head && note_ll->l_head->l_next && note_ll->l_head->l_next->l_next ? hatom_getdouble(&note_ll->l_head->l_next->l_next->l_hatom) : 0;
                 long note_flag = chord_flag | ((note_ll->l_tail && hatom_gettype(&note_ll->l_tail->l_hatom) == H_LONG) ? hatom_getlong(&note_ll->l_tail->l_hatom) : 0);
@@ -301,11 +312,31 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj
                 t_buffer_obj *buf = NULL;
                 double start = offset_slot ? get_slot_from_note_as_double(note_ll, offset_slot) : 0;
                 double end = use_durations ? start + note_duration_ms : -1;
-                t_symbol *filename = get_filename_from_note_llll(note_ll, filename_slot);
                 
-                t_ears_err this_err = ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, sr, buffer_index++);
+                // find breakpoints
+                t_llll *breakpoints = NULL;
+                for (t_llllelem *el = note_ll->l_head; el; el = el->l_next) {
+                    if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                        t_llll *ll = hatom_getllll(&el->l_hatom);
+                        if (ll && ll->l_head && hatom_gettype(&ll->l_head->l_hatom) == H_SYM &&
+                            hatom_getsym(&ll->l_head->l_hatom) == _llllobj_sym_breakpoints) {
+                            breakpoints = ll;
+                            break;
+                        }
+                    }
+                }
+                
+                t_ears_err this_err = EARS_ERR_NONE;
+                
+                if (mode == EARS_SCORETOBUF_MODE_SINUSOIDS) {
+                    this_err = ears_buffer_synth_from_duration_line((t_object *)e_ob, &buf,
+                                                                    note_pitch_cents, note_duration_ms, note_velocity, breakpoints,
+                                                                    veltoamp_mode, amp_vel_min, amp_vel_max, middleAtuning, sr, buffer_index++);
+                } else if (mode == EARS_SCORETOBUF_MODE_SAMPLING) {
+                    t_symbol *filename = get_filename_from_note_llll(note_ll, filename_slot);
+                    this_err = ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, sr, buffer_index++);
+                }
 
-                
                 // Now a sequence of in-place operations to modify the buffer
                 
                 if (buffer_getsamplerate(buf) != sr)
@@ -343,17 +374,19 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj
                 llll_appendobj(sources, buf);
 
                 double note_gain = 1.;
-                switch (veltoamp_mode) {
-                    case EARS_VELOCITY_TO_AMPLITUDE:
-                        note_gain = rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max);
-                        break;
-
-                    case EARS_VELOCITY_TO_DECIBEL:
-                        note_gain = ears_db_to_linear(rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max));
-                        break;
-
-                    default:
-                        break;
+                if (mode == EARS_SCORETOBUF_MODE_SAMPLING) { // otherwise it's already encoded by ears_buffer_synth_from_duration_line()
+                    switch (veltoamp_mode) {
+                        case EARS_VELOCITY_TO_AMPLITUDE:
+                            note_gain = rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max);
+                            break;
+                            
+                        case EARS_VELOCITY_TO_DECIBEL:
+                            note_gain = ears_db_to_linear(rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max));
+                            break;
+                            
+                        default:
+                            break;
+                    }
                 }
                 llll_appenddouble(gains, note_gain);
                 
@@ -361,24 +394,18 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, t_llll *roll_gs, t_buffer_obj
             }
         }
     }
+
     
-    /*
-    float *sample1 = buffer_locksamples((t_buffer_obj *)hatom_getobj(&sources->l_head->l_hatom));
-    cpost("sample[1000]: %.2f", sample1[1000]);
-    buffer_unlocksamples((t_buffer_obj *)hatom_getobj(&sources->l_head->l_hatom));
-    
-    float *sample2 = buffer_locksamples((t_buffer_obj *)hatom_getobj(&sources->l_head->l_next->l_hatom));
-    cpost("sample[1000]: %.2f", sample2[1000]);
-    buffer_unlocksamples((t_buffer_obj *)hatom_getobj(&sources->l_head->l_next->l_hatom));
-    */
-    
+    // mixing
     ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode);
     
+    // freeing buffers
     for (t_llllelem *el = sources->l_head; el; el = el->l_next) {
         t_buffer_obj *buf = (t_buffer_obj *)hatom_getobj(&el->l_hatom);
         object_free(buf);
     }
     
+    // freeing lllls
     llll_free(sources);
     llll_free(gains);
     llll_free(offset_samps);

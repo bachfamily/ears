@@ -159,7 +159,7 @@ t_buf_mix *buf_mix_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_mix*)object_alloc_debug(s_tag_class);
     if (x) {
-/*        x->xfade_type = EARS_FADE_EQUALPOWER;
+/*        x->xfade_type = EARS_FADE_SINE;
         x->xfade_left = x->xfade_right = 0;
         x->xfade_amount_mode = EARS_mix_XFADE_AMOUNT_MS;
 */

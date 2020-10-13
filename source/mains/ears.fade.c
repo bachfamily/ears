@@ -112,16 +112,13 @@ int C74_EXPORT main(void)
     
     CLASS_ATTR_CHAR(c, "fadeintype", 0, t_buf_fade, fadein_type);
     CLASS_ATTR_STYLE_LABEL(c,"fadeintype",0,"enumindex","Fade In Type");
-    CLASS_ATTR_ENUMINDEX(c,"fadeintype", 0, "None Linear Equal Power Curve S-Curve");
-    CLASS_ATTR_BASIC(c, "fadeintype", 0);
-    // @description Sets the fade in type: 0 = None, 1 = Linear, 2 = Equal Power (default).
-
+    CLASS_ATTR_ENUMINDEX(c,"fadeintype", 0, "None Linear Sine Curve S-Curve");
+    // @description Sets the fade in type: 0 = None, 1 = Linear (default), 2 = Sine, 3 = Curve, 4 = S-Curve;
     
     CLASS_ATTR_CHAR(c, "fadeouttype", 0, t_buf_fade, fadeout_type);
     CLASS_ATTR_STYLE_LABEL(c,"fadeouttype",0,"enumindex","Fade Out Type");
-    CLASS_ATTR_ENUMINDEX(c,"fadeouttype", 0, "None Linear Equal Power Curve S-Curve");
-    CLASS_ATTR_BASIC(c, "fadeouttype", 0);
-    // @description Sets the fade out type: 0 = None, 1 = Linear, 2 = Equal Power (default).
+    CLASS_ATTR_ENUMINDEX(c,"fadeouttype", 0, "None Linear Sine Curve S-Curve");
+    // @description Sets the fade in type: 0 = None, 1 = Linear (default), 2 = Sine, 3 = Curve, 4 = S-Curve;
 
     
     CLASS_ATTR_DOUBLE(c, "fadeincurve", 0, t_buf_fade, fadein_curve);

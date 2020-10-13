@@ -9,6 +9,9 @@
 #ifndef _EARS_CONVERSIONS_H_
 #define _EARS_CONVERSIONS_H_
 
+#include "llllobj.h"
+#include "llll_commons_ext.h"
+
 typedef enum _ears_timeunit
 {
     EARSBUFOBJ_TIMEUNIT_MS = 0,
@@ -49,7 +52,16 @@ double ears_db_to_linear(double db);
 double ears_deg_to_rad(double deg);
 double ears_rad_to_deg(double rad);
 
+double ears_ratio_to_cents(double ratio);
+double ears_cents_to_ratio(double cents);
 
+double ears_freq_to_cents(double freq, double middleAtuning);
+double ears_cents_to_freq(double cents, double middleAtuning);
+
+
+// convenience utility
+void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit);
+void ears_llll_to_radians(t_llll *ll, char angleunit);
 
 
 

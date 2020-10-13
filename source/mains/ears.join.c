@@ -110,9 +110,9 @@ int C74_EXPORT main(void)
     
     CLASS_ATTR_CHAR(c, "xfadetype", 0, t_buf_join, xfade_type);
     CLASS_ATTR_STYLE_LABEL(c,"xfadetype",0,"enumindex","Crossfade Type");
-    CLASS_ATTR_ENUMINDEX(c,"xfadetype", 0, "None Linear Equal Power Curve S-Curve");
+    CLASS_ATTR_ENUMINDEX(c,"xfadetype", 0, "None Linear Sine (Equal Power) Curve S-Curve");
     CLASS_ATTR_BASIC(c, "xfadetype", 0);
-    // @description Sets the cross fade type: 0 = None, 1 = Linear, 2 = Equal Power (default).
+    // @description Sets the cross fade type: 0 = None, 1 = Linear, 2 = Sine (Equal Power, default), 3 = Curve, 4 = S-Curve
 
     
     CLASS_ATTR_DOUBLE(c, "xfadecurve", 0, t_buf_join, xfade_curve);
@@ -164,7 +164,7 @@ t_buf_join *buf_join_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_join*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->xfade_type = EARS_FADE_EQUALPOWER;
+        x->xfade_type = EARS_FADE_SINE;
         x->xfade = 0;
         x->also_fade_first_and_last = true;
         
