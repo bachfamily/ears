@@ -149,7 +149,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_ENUM(c,"format", 0, "int8 int16 int24 int32 float32 float64 mulaw alaw");
     CLASS_ATTR_ACCESSORS(c, "format", NULL, buf_write_setattr_format);
     CLASS_ATTR_BASIC(c, "format", 0);
-    // @description Sets the bit depth or sample type, just like for the <o>buffer~</o> object.
+    // @description Sets the bit depth or sample type, just like for the <o>buffer~</o> object. <br />
     // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
 
     CLASS_ATTR_SYM(c, "vbrmode", 0, t_buf_write, mp3_vbrmode);

@@ -26,10 +26,20 @@
 				Incoming buffer name
 			</digest>
 			<description>
-				Samples
 			</description>
 		</inlet>
 	</inletlist>
+
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" type="INLET_TYPE">
+			<digest>
+				Samples
+			</digest>
+			<description>
+			</description>
+		</outlet>
+	</outletlist>
 
 	<!--ARGUMENTS-->
 	<objarglist>
@@ -178,7 +188,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Outlet Types" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
@@ -194,7 +203,14 @@
 		<entry name ="Inlet 1 (symbol/llll)">
 			<description>
 				Incoming buffer name.
-				Samples
+			</description>
+		</entry>
+	</misc>
+
+	<misc name = "Output">
+		<entry name ="Outlet 1 (llll)">
+			<description>
+				Samples.
 			</description>
 		</entry>
 	</misc>

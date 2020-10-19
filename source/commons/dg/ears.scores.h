@@ -24,11 +24,25 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                long num_channels,
                                long filename_slot, long offset_slot, long gain_slot, long pan_slot,
                                double sr, e_ears_normalization_modes normalization_mode, e_ears_channel_convert_modes convertchannelsmode,
-                               double fadein_amount, double fadeout_amount, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type,
+                               double fadein_amount, double fadeout_amount,
+                               e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type,
                                double fade_in_curve, double fade_out_curve,
                                e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
                                double middleAtuning);
+
+
+t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_symbol *reaper_header,
+                               e_ears_scoretobuf_mode mode, t_llll *roll_gs,
+                               char use_durations, char pitch_is_transposition, long base_midicents,
+                               long filename_slot, long offset_slot, long gain_slot, long pan_slot,
+                               long transp_slot, long timestretch_slot, long fade_slot, long color_slot,
+                               double default_fadein_amount, double default_fadeout_amount,
+                               e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type,
+                               double fade_in_curve, double fade_out_curve,
+                               e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
+                               t_llll *number_of_channels_per_voice, char auto_xfade,
+                               char copy_media, t_symbol *media_folder_name, t_symbol *buffer_format, t_symbol *buffer_filetype);
 
 #endif // _EARS_BUF_SCORES_H_

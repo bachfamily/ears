@@ -357,7 +357,7 @@ void buf_pan_bang(t_buf_pan *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-        t_llll *pans01 = earsbufobj_llllelem_remap_y_to_0_1_and_x_to_samples((t_earsbufobj *)x, el, in, x->pan_range[0], x->pan_range[1], false);
+        t_llll *pans01 = earsbufobj_llllelem_convert_envtimeunit_and_normalize_range((t_earsbufobj *)x, el, in, EARSBUFOBJ_TIMEUNIT_SAMPS, x->pan_range[0], x->pan_range[1], false);
         
 
         

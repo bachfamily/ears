@@ -924,6 +924,32 @@ void earsbufobj_dblclick(t_earsbufobj *e_ob)
     earsbufobj_open(e_ob);
 }
 
+
+
+void earsbufobj_write_buffer(t_earsbufobj *e_ob, t_object *buf, t_symbol *msg, t_symbol *exportpath, t_symbol *format)
+{
+    t_symbol *orig_format = NULL;
+    if (format) {
+        orig_format = ears_buffer_get_sampleformat((t_object *)e_ob, buf);
+        if (orig_format != format) {
+            ears_buffer_set_sampleformat((t_object *)e_ob, buf, format);
+            // need to plug it back later
+        } else
+            orig_format = NULL; // don't care later
+    }
+    
+    if (!exportpath) {
+        typedmess(buf, msg, 0, NULL);
+    } else {
+        t_atom av;
+        atom_setsym(&av, exportpath);
+        typedmess(buf, msg, 1, &av);
+    }
+    
+    if (orig_format)
+        ears_buffer_set_sampleformat((t_object *)e_ob, buf, orig_format);
+}
+
 // this lets us save the buffer
 void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom *av)
 {
@@ -961,7 +987,7 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
             bach_freeptr(true_av);
         } else
             typedmess(buf, msg, 0, NULL);
-
+        
         if (orig_format)
             ears_buffer_set_sampleformat((t_object *)e_ob, buf, orig_format);
     }
@@ -1002,6 +1028,7 @@ void earsbufobj_class_add_outname_attr(t_class *c)
     CLASS_ATTR_LLLL(c, "outname", 0, t_earsbufobj, l_outnames, earsbufobj_getattr_outname, earsbufobj_setattr_outname);
     CLASS_ATTR_STYLE_LABEL(c,"outname",0,"text","Output Buffer Names");
     CLASS_ATTR_BASIC(c, "outname", 0);
+    CLASS_ATTR_CATEGORY(c, "outname", 0, "Behavior");
     // @description Sets the name for each one of the buffer outlets. Leave blank to auto-assign
     // unique names.
 }
@@ -1264,6 +1291,7 @@ void earsbufobj_class_add_naming_attr(t_class *c)
     CLASS_ATTR_ENUMINDEX(c,"naming", 0, "Copy Static Dynamic");
     CLASS_ATTR_ACCESSORS(c, "naming", NULL, earsbufobj_setattr_naming);
     CLASS_ATTR_BASIC(c, "naming", 0);
+    CLASS_ATTR_CATEGORY(c, "naming", 0, "Behavior");
     // @description Chooses the output buffer naming policy
 }
 
@@ -1764,6 +1792,25 @@ void earsbufobj_mutex_unlock(t_earsbufobj *e_ob)
 
 
 
+double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf)
+{
+    double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
+    switch (e_ob->l_timeunit) {
+        case EARSBUFOBJ_TIMEUNIT_SAMPS:
+            return (1000. * value / buffer_getsamplerate(buf)) / size_ms;
+            break;
+            
+        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+            return value;
+            break;
+            
+        case EARSBUFOBJ_TIMEUNIT_MS:
+        default:
+            return value / size_ms;
+            break;
+    }
+}
+
 
 double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf)
 {
@@ -1806,6 +1853,25 @@ long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *b
 {
     return round(earsbufobj_input_to_fsamps(e_ob, value, buf));
 }
+
+double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit)
+{
+    switch (new_timeunit) {
+        case EARSBUFOBJ_TIMEUNIT_SAMPS:
+            return earsbufobj_input_to_fsamps(e_ob, value, buf);
+            break;
+            
+        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+            return earsbufobj_input_to_ratio(e_ob, value, buf);
+            break;
+            
+        case EARSBUFOBJ_TIMEUNIT_MS:
+        default:
+            return earsbufobj_input_to_ms(e_ob, value, buf);
+            break;
+    }
+}
+
 
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf)
 {
@@ -2021,7 +2087,9 @@ double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value)
 
 
 
-void earsbufobj_remap_y_to_0_1_and_x_to_samples_do(t_earsbufobj *e_ob, t_llll *out, t_buffer_obj *buf, double orig_from, double orig_to, char convert_from_decibels)
+void earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(t_earsbufobj *e_ob, t_llll *out, t_buffer_obj *buf,
+                                                                e_ears_timeunit dest_envtimeunit,
+                                                                double orig_from, double orig_to, char convert_from_decibels)
 {
     double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
     double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
@@ -2046,31 +2114,21 @@ void earsbufobj_remap_y_to_0_1_and_x_to_samples_do(t_earsbufobj *e_ob, t_llll *o
     }
     
     
-    for (t_llllelem *el = out->l_head; el; el = el->l_next) {
-        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
-            switch (e_ob->l_envtimeunit) {
-                case EARSBUFOBJ_TIMEUNIT_MS:
-                {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
-                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
-                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
-                }
-                    break;
-                case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
-                {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
-                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
-                        hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
-                }
-                    break;
-                default:
-                    break;
+    if (e_ob->l_timeunit != dest_envtimeunit) {
+        for (t_llllelem *el = out->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                    hatom_setdouble(&sub_ll->l_head->l_hatom,
+                                    earsbufobj_input_convert_timeunit(e_ob, hatom_getdouble(&sub_ll->l_head->l_hatom), buf, dest_envtimeunit));
             }
         }
     }
 }
 
-t_llll *earsbufobj_llll_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf, double orig_from, double orig_to, char convert_from_decibels)
+t_llll *earsbufobj_llll_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf,
+                                                                e_ears_timeunit dest_envtimeunit,
+                                                                double orig_from, double orig_to, char convert_from_decibels)
 {
     if (!ll)
         return NULL;
@@ -2079,7 +2137,7 @@ t_llll *earsbufobj_llll_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, t_ll
     llll_appendllll_clone(out, ll);
     llll_flatten(out, 1, 0);
     
-    earsbufobj_remap_y_to_0_1_and_x_to_samples_do(e_ob, out, buf, orig_from, orig_to, convert_from_decibels);
+    earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(e_ob, out, buf, dest_envtimeunit, orig_from, orig_to, convert_from_decibels);
     
     return out;
 }
@@ -2087,13 +2145,15 @@ t_llll *earsbufobj_llll_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, t_ll
 
 
 // llllelem can be either a number or a t_pts
-t_llll *earsbufobj_llllelem_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, double orig_from, double orig_to, char convert_from_decibels)
+t_llll *earsbufobj_llllelem_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf,
+                                                                    e_ears_timeunit dest_envtimeunit,
+                                                                    double orig_from, double orig_to, char convert_from_decibels)
 {
     t_llll *out = llll_get();
     llll_appendhatom_clone(out, &elem->l_hatom);
     llll_flatten(out, 1, 0);
     
-    earsbufobj_remap_y_to_0_1_and_x_to_samples_do(e_ob, out, buf, orig_from, orig_to, convert_from_decibels);
+    earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(e_ob, out, buf, dest_envtimeunit, orig_from, orig_to, convert_from_decibels);
     
     return out;
 }

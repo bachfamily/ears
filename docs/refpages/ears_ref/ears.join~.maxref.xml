@@ -26,10 +26,21 @@
 				Names of the buffers to joinenate
 			</digest>
 			<description>
-				Name of the output buffer
 			</description>
 		</inlet>
 	</inletlist>
+
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" type="INLET_TYPE">
+			<digest>
+				Output buffer names(s)
+			</digest>
+			<description>
+				Name of the output buffer
+			</description>
+		</outlet>
+	</outletlist>
 
 	<!--ARGUMENTS-->
 	<objarglist>
@@ -215,7 +226,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -257,7 +267,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Curve" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -266,7 +275,7 @@
 				Crossfade Type
 			</digest>
 			<description>
-				Sets the cross fade type: 0 = None, 1 = Linear, 2 = Equal Power (default).
+				Sets the cross fade type: 0 = None, 1 = Linear, 2 = Sine (Equal Power, default), 3 = Curve, 4 = S-Curve
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Type" />
@@ -287,6 +296,14 @@
 		<entry name ="Inlet 1 (list)">
 			<description>
 				Names of the buffers to joinenate.
+			</description>
+		</entry>
+	</misc>
+
+	<misc name = "Output">
+		<entry name ="Outlet 1 (symbol/list)">
+			<description>
+				Output buffer names(s).
 				Name of the output buffer
 			</description>
 		</entry>

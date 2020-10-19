@@ -249,7 +249,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Dimension" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -310,7 +309,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -328,6 +326,7 @@
 	<seealsolist>
 		<seealso name="ears.hoa.decode~" />
 		<seealso name="ears.hoa.rotate~" />
+		<seealso name="ears.hoa.mirror~" />
 	</seealsolist>
 
 	<misc name = "Input">

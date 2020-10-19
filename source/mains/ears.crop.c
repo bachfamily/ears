@@ -116,12 +116,13 @@ void buf_crop_assist(t_buf_crop *x, void *b, long m, long a, char *s)
     if (m == ASSIST_INLET) {
         if (a == 0) // @in 0 @type symbol @digest Buffer name(s)
             sprintf(s, "symbol/llll: Buffer Names");
-        else if (a == 1) // @out 1 @type number @digest Starting point
+        else if (a == 1) // @in 1 @type number @digest Starting point
             sprintf(s, "float: Start"); // @description Starting point for cropping
-        else if (a == 2) // @out 2 @type number @digest Ending point
+        else if (a == 2) // @in 2 @type number @digest Ending point
             sprintf(s, "float: End"); // @description Ending point for cropping
     } else {
-        sprintf(s, "Cropped Buffer Names"); // @description Name of the cropped buffer
+        sprintf(s, "Cropped Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names(s)
+                                            // @description Name of the cropped buffer
     }
 }
 

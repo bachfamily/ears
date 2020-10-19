@@ -149,7 +149,8 @@ void buf_fade_assist(t_buf_fade *x, void *b, long m, long a, char *s)
         else if (a == 2) // @out 2 @type number @digest Fade out duration
             sprintf(s, "float: Fade Out Duration"); // @description Duration of the fade out
     } else {
-        sprintf(s, "Output Buffer Names"); // @description Name of the output buffer
+        sprintf(s, "Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names(s)
+                                            // @description Name of the output buffer
     }
 }
 

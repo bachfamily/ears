@@ -114,7 +114,7 @@ void buf_tosamps_assist(t_buf_tosamps *x, void *b, long m, long a, char *s)
     } else {
         char *type = NULL;
         llllobj_get_llll_outlet_type_as_string((t_object *) x, LLLL_OBJ_VANILLA, a, &type);
-        sprintf(s, "llll (%s): Samples", type); // @description Samples
+        sprintf(s, "llll (%s): Samples", type); // @out 0 @type llll @digest Samples
     }
 }
 

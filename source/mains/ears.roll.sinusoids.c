@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears export
  
 	@keywords
 	buffer, roll, bounce, export, sinusoids, cycle
@@ -67,10 +67,10 @@ typedef struct _buf_roll_sinusoids {
     double      fadeout_curve;
     
     // panning
-    e_ears_pan_modes    pan_mode;
-    e_ears_pan_laws     pan_law;
-    double              multichannel_spread;
-    char                compensate_multichannel_gain_to_avoid_clipping;
+    long        pan_mode; // one of e_ears_pan_modes
+    long        pan_law; // one of e_ears_pan_laws
+    double      multichannel_spread;
+    char        compensate_multichannel_gain_to_avoid_clipping;
     
     // velocity to gain
     e_ears_veltoamp_modes veltoamp_mode;
@@ -267,7 +267,8 @@ void buf_roll_sinusoids_assist(t_buf_roll_sinusoids *x, void *b, long m, long a,
         if (a == 0) // @in 0 @type llll @digest Gathered Syntax of <o>bach.roll</o>
             sprintf(s, "llll: Gathered Syntax");
     } else {
-        sprintf(s, "Output Buffer Name"); // @description Name of the bounced buffer
+        sprintf(s, "Output Buffer Name"); // @out 0 @type symbol/list @digest Output buffer names(s)
+                                            // @description Name of the bounced buffer
     }
 }
 
@@ -348,7 +349,7 @@ void buf_roll_sinusoids_bang(t_buf_roll_sinusoids *x)
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     
-    llll_free(roll_gs);
+    llll_release(roll_gs);
     
 }
 

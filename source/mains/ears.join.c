@@ -146,7 +146,8 @@ void buf_join_assist(t_buf_join *x, void *b, long m, long a, char *s)
         if (a == 0) // @in 0 @type list @digest Names of the buffers to joinenate
             sprintf(s, "list: Buffer Names");
     } else {
-        sprintf(s, "Output Buffer Name"); // @description Name of the output buffer
+        sprintf(s, "Output Buffer Name"); // @out 0 @type symbol/list @digest Output buffer names(s)
+                                            // @description Name of the output buffer
     }
 }
 

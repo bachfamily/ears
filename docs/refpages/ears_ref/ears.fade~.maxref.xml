@@ -34,9 +34,10 @@
 	<outletlist>
 		<outlet id="0" type="INLET_TYPE">
 			<digest>
-				
+				Output buffer names(s)
 			</digest>
 			<description>
+				Name of the output buffer
 			</description>
 		</outlet>
 		<outlet id="1" type="INLET_TYPE">
@@ -52,7 +53,7 @@
 				Fade out duration
 			</digest>
 			<description>
-				Name of the output buffer
+				Duration of the fade out
 			</description>
 		</outlet>
 	</outletlist>
@@ -222,7 +223,7 @@
 				Fade In Type
 			</digest>
 			<description>
-				Sets the fade in type: 0 = None, 1 = Linear, 2 = Equal Power (default).
+				Sets the fade in type: 0 = None, 1 = Linear (default), 2 = Sine, 3 = Curve, 4 = S-Curve;
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade In Type" />
@@ -247,11 +248,10 @@
 				Fade Out Type
 			</digest>
 			<description>
-				Sets the fade out type: 0 = None, 1 = Linear, 2 = Equal Power (default).
+				Sets the fade in type: 0 = None, 1 = Linear (default), 2 = Sine, 3 = Curve, 4 = S-Curve;
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Type" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -286,7 +286,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -320,9 +319,10 @@
 	</misc>
 
 	<misc name = "Output">
-		<entry name ="Outlet 1">
+		<entry name ="Outlet 1 (symbol/list)">
 			<description>
-				.
+				Output buffer names(s).
+				Name of the output buffer
 			</description>
 		</entry>
 		<entry name ="Outlet 2 (number)">
@@ -334,7 +334,7 @@
 		<entry name ="Outlet 3 (number)">
 			<description>
 				Fade out duration.
-				Name of the output buffer
+				Duration of the fade out
 			</description>
 		</entry>
 	</misc>

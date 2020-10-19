@@ -28,28 +28,29 @@
 			<description>
 			</description>
 		</inlet>
-	</inletlist>
-
-	<!--OUTLETS-->
-	<outletlist>
-		<outlet id="0" type="INLET_TYPE">
-			<digest>
-				
-			</digest>
-			<description>
-			</description>
-		</outlet>
-		<outlet id="1" type="INLET_TYPE">
+		<inlet id="1" type="INLET_TYPE">
 			<digest>
 				Starting point
 			</digest>
 			<description>
 				Starting point for cropping
 			</description>
-		</outlet>
-		<outlet id="2" type="INLET_TYPE">
+		</inlet>
+		<inlet id="2" type="INLET_TYPE">
 			<digest>
 				Ending point
+			</digest>
+			<description>
+				Ending point for cropping
+			</description>
+		</inlet>
+	</inletlist>
+
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" type="INLET_TYPE">
+			<digest>
+				Output buffer names(s)
 			</digest>
 			<description>
 				Name of the cropped buffer
@@ -234,7 +235,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -267,23 +267,24 @@
 				Buffer name(s).
 			</description>
 		</entry>
-	</misc>
-
-	<misc name = "Output">
-		<entry name ="Outlet 1">
-			<description>
-				.
-			</description>
-		</entry>
-		<entry name ="Outlet 2 (number)">
+		<entry name ="Inlet 2 (number)">
 			<description>
 				Starting point.
 				Starting point for cropping
 			</description>
 		</entry>
-		<entry name ="Outlet 3 (number)">
+		<entry name ="Inlet 3 (number)">
 			<description>
 				Ending point.
+				Ending point for cropping
+			</description>
+		</entry>
+	</misc>
+
+	<misc name = "Output">
+		<entry name ="Outlet 1 (symbol/list)">
+			<description>
+				Output buffer names(s).
 				Name of the cropped buffer
 			</description>
 		</entry>

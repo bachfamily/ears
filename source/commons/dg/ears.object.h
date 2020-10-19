@@ -268,6 +268,10 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
 double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
 long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
 double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
+double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
+double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit); // generic one
+
+
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf);
 void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf, t_atom *a);
 
@@ -281,10 +285,14 @@ t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem 
 
 
 
+// export
+void earsbufobj_write_buffer(t_earsbufobj *e_ob, t_object *buf, t_symbol *msg, t_symbol *exportpath, t_symbol *format);
+
+
 double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value);
 
-t_llll *earsbufobj_llllelem_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, double orig_from, double orig_to, char convert_from_decibels);
-t_llll *earsbufobj_llll_remap_y_to_0_1_and_x_to_samples(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf, double orig_from, double orig_to, char convert_from_decibels);
+t_llll *earsbufobj_llllelem_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, e_ears_timeunit dest_envtimeunit, double orig_from, double orig_to, char convert_from_decibels);
+t_llll *earsbufobj_llll_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf, e_ears_timeunit dest_envtimeunit, double orig_from, double orig_to, char convert_from_decibels);
 
 
 #endif // _EARS_BUF_OBJECT_H_

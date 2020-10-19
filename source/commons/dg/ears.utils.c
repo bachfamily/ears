@@ -69,6 +69,16 @@ char ears_filename_ends_with(t_symbol *filename, const char *pattern, char ignor
 }
 
 
+
+char ears_file_exists(const char *filename, const short path)
+{
+    t_fileinfo info;
+    if (path_fileinfo(filename, path, &info) == 0)
+        return true;
+    else
+        return false;
+}
+
 /// POLYBUFFERS
 long ears_polybuffer_symbol_is_polybuffer(t_symbol *s)
 {

@@ -211,6 +211,28 @@
       "ears.channel~"
     ]
   },
+  "ears.hoa.mirror~": {
+    "digest": "Mirror higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "mirror",
+      "hoa",
+      "3d",
+      "invert",
+      "swap",
+      "transform"
+    ],
+    "seealso": [
+      "ears.hoa.encode~",
+      "ears.hoa.decode~",
+      "ears.hoa.rotate~"
+    ]
+  },
   "ears.fromsamps~": {
     "digest": "Create a buffer from an llll",
     "module": "ears",
@@ -354,22 +376,6 @@
       "ears.pack~"
     ]
   },
-  "ears.fromroll~": {
-    "digest": "Convert a <o>bach.roll</o> into a buffer",
-    "module": "ears",
-    "category": [
-      "ears buffer operations"
-    ],
-    "keywords": [
-      "buffer",
-      "roll",
-      "bounce",
-      "export"
-    ],
-    "seealso": [
-      "ears.read~"
-    ]
-  },
   "ears.freeverb~": {
     "digest": "Freeverb reverberation",
     "module": "ears",
@@ -421,6 +427,24 @@
     "seealso": [
       "ears.crop~",
       "ears.rev~"
+    ]
+  },
+  "ears.roll.sinusoids~": {
+    "digest": "Convert a <o>bach.roll</o> into a mix of sinusoids",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export",
+      "sinusoids",
+      "cycle"
+    ],
+    "seealso": [
+      "ears.read~"
     ]
   },
   "ears.pan~": {
@@ -478,7 +502,7 @@
       "ears.join~"
     ]
   },
-  "ears.hoadecode~": {
+  "ears.hoa.decode~": {
     "digest": "Decode higher-order ambisonic buffers",
     "module": "ears",
     "category": [
@@ -494,7 +518,8 @@
     ],
     "seealso": [
       "ears.hoa.encode~",
-      "ears.hoa.rotate~"
+      "ears.hoa.rotate~",
+      "ears.hoa.mirror~"
     ]
   },
   "ears.biquad~": {
@@ -594,7 +619,8 @@
     ],
     "seealso": [
       "ears.hoa.decode~",
-      "ears.hoa.rotate~"
+      "ears.hoa.rotate~",
+      "ears.hoa.mirror~"
     ]
   },
   "ears.expr~": {
@@ -735,6 +761,41 @@
       "overdrive"
     ]
   },
+  "ears.roll.sampling~": {
+    "digest": "Convert a <o>bach.roll</o> into a montage of audio samples",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export"
+    ],
+    "seealso": [
+      "ears.read~",
+      "ears.roll.toreaper~"
+    ]
+  },
+  "ears.roll.toreaper~": {
+    "digest": "Export a <o>bach.roll</o> as a Reaper project",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export",
+      "Reaper"
+    ],
+    "seealso": [
+      "ears.roll.sampling~",
+      "ears.roll.sinusoids~"
+    ]
+  },
   "ears.mix~": {
     "digest": "Mix buffers",
     "module": "ears",
@@ -808,7 +869,7 @@
       "ears.trim~"
     ]
   },
-  "ears.hoarotate~": {
+  "ears.hoa.rotate~": {
     "digest": "Rotate higher-order ambisonic buffers",
     "module": "ears",
     "category": [
@@ -824,7 +885,8 @@
     ],
     "seealso": [
       "ears.hoa.encode~",
-      "ears.hoa.decode~"
+      "ears.hoa.decode~",
+      "ears.hoa.mirror~"
     ]
   }
 }

@@ -242,7 +242,7 @@ t_writetags* writetags_new(t_symbol *s, short argc, t_atom *argv)
         x->verbose_errors = true;
         x->protect = true;
         
-		llllobj_obj_setup((t_llllobj_object *)x, 2, "b");
+		llllobj_obj_setup((t_llllobj_object *)x, 2, "b", NULL);
 		
         attr_args_process(x, argc, argv);
 
