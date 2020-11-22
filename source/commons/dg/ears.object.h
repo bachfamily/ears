@@ -265,11 +265,11 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
 
 
 //// BUFFER UNIT CONVERSIONS
-double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
-long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
-double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
-double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf);
-double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit); // generic one
+double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
+long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
+double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
+double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
+double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope = false); // generic one
 
 
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf);

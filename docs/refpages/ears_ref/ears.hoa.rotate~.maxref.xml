@@ -73,6 +73,30 @@
 				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
+		<objarg name="yaw" optional="1" type="number">
+			<digest>
+				Yaw
+			</digest>
+			<description>
+				Rotation angle around Z axis (yaw)
+			</description>
+		</objarg>
+		<objarg name="pitch" optional="1" type="number">
+			<digest>
+				Pitch
+			</digest>
+			<description>
+				Rotation angle around X axis (pitch)
+			</description>
+		</objarg>
+		<objarg name="roll" optional="1" type="number">
+			<digest>
+				Roll
+			</digest>
+			<description>
+				Rotation angle around Y axis (roll)
+			</description>
+		</objarg>
 	</objarglist>
 
 	<!--MESSAGES-->
@@ -237,6 +261,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Dimension" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -271,6 +296,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

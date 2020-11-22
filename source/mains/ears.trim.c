@@ -27,7 +27,7 @@
  
  
 	@category
-	ears buffer operations
+	ears basic
  
 	@keywords
 	buffer, trim, silence, delete, remove

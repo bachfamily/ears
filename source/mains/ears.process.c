@@ -14,6 +14,9 @@
 	@module
 	ears
  
+    @status
+    hidden
+ 
 	@author
 	Daniele Ghisi
  
@@ -26,7 +29,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears process
  
 	@keywords
 	buffer, process, apply, poly

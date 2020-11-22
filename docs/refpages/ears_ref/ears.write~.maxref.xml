@@ -16,7 +16,7 @@
 	<!--METADATA-->
 	<metadatalist>
 		<metadata name="author">Daniele Ghisi</metadata>
-		<metadata name="tag">ears buffer operations</metadata>
+		<metadata name="tag">ears basic</metadata>
 	</metadatalist>
 
 	<!--INLETS-->
@@ -41,7 +41,7 @@
 	<outletlist>
 		<outlet id="0" type="INLET_TYPE">
 			<digest>
-				bang When Export is Done
+				Full path of saved soundfiles
 			</digest>
 			<description>
 			</description>
@@ -197,13 +197,14 @@
 				Sample Format
 			</digest>
 			<description>
-				Sets the bit depth or sample type, just like for the <o>buffer~</o> object.
+				Sets the bit depth or sample type, just like for the <o>buffer~</o> object. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Sample Format" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -216,6 +217,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="MP3 Maximum Bitrate in kbps" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -270,9 +272,9 @@
 	</misc>
 
 	<misc name = "Output">
-		<entry name ="Outlet 1 (bang)">
+		<entry name ="Outlet 1 (llll)">
 			<description>
-				bang When Export is Done.
+				Full path of saved soundfiles.
 			</description>
 		</entry>
 	</misc>

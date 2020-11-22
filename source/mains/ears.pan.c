@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears pan
  
 	@keywords
 	buffer, pan, panoramics, stereo, mono

@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears math
  
 	@keywords
 	buffer, expr, sum, add, operation, arithmetic, arithmetics

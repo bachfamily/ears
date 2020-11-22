@@ -27,7 +27,7 @@
     The original algorithm is by Nasca Octavian PAUL, Targu Mures, Romania, http://www.paulnasca.com/
 
 	@category
-	ears buffer operations
+	ears time and pitch
  
 	@keywords
 	buffer, stretch, timestretch, expand, compress

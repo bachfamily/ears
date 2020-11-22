@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears basic
  
 	@keywords
 	buffer, split, chop, segment
@@ -306,7 +306,7 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             for (double c = duration_samps - overlap_samps; c < size_samps; c += duration_samps - overlap_samps) {
                 long this_samp = (long)round(c);
                 if (this_samp + duration_samps > size_samps) { // last shorter one
-                    llll_appendlong(*end, this_samp);
+                    llll_appendlong(*end, this_samp + overlap_samps);
                     if (x->e_partial_segments && this_samp + overlap_samps < size_samps) {
                         llll_appendlong(*start, this_samp + overlap_samps);
                         llll_appendlong(*end, size_samps);

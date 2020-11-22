@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears basic
  
 	@keywords
 	buffer, reg, store, keep

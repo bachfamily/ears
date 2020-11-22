@@ -42,10 +42,10 @@
 		</outlet>
 		<outlet id="1" type="INLET_TYPE">
 			<digest>
-				Mp3 Info
+				MP3 Info
 			</digest>
 			<description>
-				Outputs mp3 information
+				Outputs MP3 information
 			</description>
 		</outlet>
 	</outletlist>
@@ -56,6 +56,16 @@
 
 	<!--MESSAGES-->
 	<methodlist>
+		<method name="symbol/list/llll">
+			<arglist />
+			<digest>
+				Retrieve MP3 tags
+			</digest>
+			<description>
+				A symbol, a list or an llll is treated as a filename or a collection of filenames and
+				triggers the retrieval of the MP3 tags for the files
+			</description>
+		</method>
 	</methodlist>
 
 	<!--ATTRIBUTES-->
@@ -97,6 +107,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Settings" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output ID3V2 tags" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -140,6 +151,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Outlet Types" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
@@ -181,6 +193,7 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.writetags" />
 	</seealsolist>
 
 	<misc name = "Input">
@@ -200,8 +213,8 @@
 		</entry>
 		<entry name ="Outlet 2 (bang)">
 			<description>
-				Mp3 Info.
-				Outputs mp3 information
+				MP3 Info.
+				Outputs MP3 information
 			</description>
 		</entry>
 	</misc>

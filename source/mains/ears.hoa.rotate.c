@@ -191,6 +191,18 @@ t_buf_hoarotate *buf_hoarotate_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
+        // @arg 1 @name yaw @optional 1 @type number
+        // @digest Yaw
+        // @description Rotation angle around Z axis (yaw)
+
+        // @arg 2 @name pitch @optional 1 @type number
+        // @digest Pitch
+        // @description Rotation angle around X axis (pitch)
+
+        // @arg 3 @name roll @optional 1 @type number
+        // @digest Roll
+        // @description Rotation angle around Y axis (roll)
+
         if (args && args->l_head) {
             llll_clear(x->yaw);
             llll_appendhatom_clone(x->yaw, &args->l_head->l_hatom);

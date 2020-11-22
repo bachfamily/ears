@@ -27,7 +27,7 @@
     The original code for the reverberation was written by Jezar at Dreampoint
  
 	@category
-	ears buffer operations
+	ears reverb
  
 	@keywords
 	buffer, reverb, freeverb, reverberation

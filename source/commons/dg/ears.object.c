@@ -1,6 +1,6 @@
 #include "ears.commons.h"
 
-#define EARS_ALLOCATIONVERBOSE false
+#define EARS_ALLOCATIONVERBOSE true
 
 long ears_check_bach_version()
 {
@@ -1792,10 +1792,10 @@ void earsbufobj_mutex_unlock(t_earsbufobj *e_ob)
 
 
 
-double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf)
+double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
 {
     double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
-    switch (e_ob->l_timeunit) {
+    switch (is_envelope ? e_ob->l_envtimeunit : e_ob->l_timeunit) {
         case EARSBUFOBJ_TIMEUNIT_SAMPS:
             return (1000. * value / buffer_getsamplerate(buf)) / size_ms;
             break;
@@ -1812,9 +1812,9 @@ double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj 
 }
 
 
-double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf)
+double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
 {
-    switch (e_ob->l_timeunit) {
+    switch (is_envelope ? e_ob->l_envtimeunit : e_ob->l_timeunit) {
         case EARSBUFOBJ_TIMEUNIT_SAMPS:
             return ears_samps_to_ms(value, buffer_getsamplerate(buf));
             break;
@@ -1831,43 +1831,45 @@ double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *bu
 }
 
 // TO DO: handle negative values
-double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf)
+double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
 {
-    switch (e_ob->l_timeunit) {
+    double res = 0;
+    switch (is_envelope ? e_ob->l_envtimeunit : e_ob->l_timeunit) {
         case EARSBUFOBJ_TIMEUNIT_SAMPS:
-            return value;
+            res = value;
             break;
             
         case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
-            return ears_buffer_get_size_samps((t_object *)e_ob, buf) * value;
+            res = ears_buffer_get_size_samps((t_object *)e_ob, buf) * value;
             break;
             
         case EARSBUFOBJ_TIMEUNIT_MS:
         default:
-            return ears_ms_to_fsamps(value, buffer_getsamplerate(buf));
+            res = ears_ms_to_fsamps(value, buffer_getsamplerate(buf));
             break;
     }
+    return res;
 }
 
-long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf)
+long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
 {
-    return round(earsbufobj_input_to_fsamps(e_ob, value, buf));
+    return round(earsbufobj_input_to_fsamps(e_ob, value, buf, is_envelope));
 }
 
-double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit)
+double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope)
 {
     switch (new_timeunit) {
         case EARSBUFOBJ_TIMEUNIT_SAMPS:
-            return earsbufobj_input_to_fsamps(e_ob, value, buf);
+            return earsbufobj_input_to_fsamps(e_ob, value, buf, is_envelope);
             break;
             
         case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
-            return earsbufobj_input_to_ratio(e_ob, value, buf);
+            return earsbufobj_input_to_ratio(e_ob, value, buf, is_envelope);
             break;
             
         case EARSBUFOBJ_TIMEUNIT_MS:
         default:
-            return earsbufobj_input_to_ms(e_ob, value, buf);
+            return earsbufobj_input_to_ms(e_ob, value, buf, is_envelope);
             break;
     }
 }
@@ -2118,9 +2120,10 @@ void earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(t_earsbufobj *e_
         for (t_llllelem *el = out->l_head; el; el = el->l_next) {
             if (hatom_gettype(&el->l_hatom) == H_LLLL) {
                 t_llll *sub_ll = hatom_getllll(&el->l_hatom);
-                if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
-                    hatom_setdouble(&sub_ll->l_head->l_hatom,
-                                    earsbufobj_input_convert_timeunit(e_ob, hatom_getdouble(&sub_ll->l_head->l_hatom), buf, dest_envtimeunit));
+                if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom)) {
+                    double ctu = earsbufobj_input_convert_timeunit(e_ob, hatom_getdouble(&sub_ll->l_head->l_hatom), buf, dest_envtimeunit, true);
+                    hatom_setdouble(&sub_ll->l_head->l_hatom, ctu);
+                }
             }
         }
     }

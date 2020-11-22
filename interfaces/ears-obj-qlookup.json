@@ -3,7 +3,7 @@
     "digest": "Interleave buffer channels",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -36,13 +36,14 @@
       "open"
     ],
     "seealso": [
+      "ears.writetags"
     ]
   },
   "ears.join~": {
     "digest": "Concatenate buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -62,9 +63,7 @@
     "digest": "Play mp3 natively",
     "module": "ears",
     "category": [
-      "ears",
-      "ears objects",
-      "ears audio"
+      "ears playback"
     ],
     "keywords": [
       "play",
@@ -83,7 +82,7 @@
     "digest": "Crop a buffer",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -103,7 +102,7 @@
     "digest": "Buffer hard clipping",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears distorsion"
     ],
     "keywords": [
       "buffer",
@@ -120,7 +119,7 @@
     "digest": "Rubber Band pitch and time processing",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears time and pitch"
     ],
     "keywords": [
       "buffer",
@@ -142,7 +141,7 @@
     "digest": "Store files in buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -161,7 +160,7 @@
     "digest": "Slice a buffer into two",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -178,7 +177,7 @@
     "digest": "Modify buffers properties",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears conversions"
     ],
     "keywords": [
       "buffer",
@@ -197,7 +196,7 @@
     "digest": "Unpack buffer channels",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -237,7 +236,7 @@
     "digest": "Create a buffer from an llll",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -253,7 +252,7 @@
     "digest": "Resample buffer",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears conversions"
     ],
     "keywords": [
       "buffer",
@@ -271,7 +270,7 @@
     "digest": "Single pole lowpass or highpass filter for buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears filter"
     ],
     "keywords": [
       "buffer",
@@ -291,7 +290,7 @@
     "digest": "Circular rotation of a buffer",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -310,7 +309,7 @@
     "digest": "Save buffers to files",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -327,7 +326,7 @@
     "digest": "Get buffer samples as llll",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -342,7 +341,7 @@
     "digest": "Get information on buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -361,7 +360,7 @@
     "digest": "Get buffer channels",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -380,7 +379,7 @@
     "digest": "Freeverb reverberation",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears reverb"
     ],
     "keywords": [
       "buffer",
@@ -398,7 +397,7 @@
     "digest": "Repeat buffer",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -416,7 +415,7 @@
     "digest": "Shift a buffer",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -451,7 +450,7 @@
     "digest": "1D buffer panning",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears pan"
     ],
     "keywords": [
       "buffer",
@@ -468,7 +467,7 @@
     "digest": "Fill a buffer with an envelope or a number",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -488,7 +487,7 @@
     "digest": "Apply fades",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -526,7 +525,7 @@
     "digest": "Two-pole two-zero filter for buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears filter"
     ],
     "keywords": [
       "buffer",
@@ -551,7 +550,7 @@
     "digest": "Filter out empty buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -569,7 +568,7 @@
     "digest": "Pack buffer channels",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -587,7 +586,7 @@
     "digest": "Reverse buffer",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -627,7 +626,7 @@
     "digest": "Evaluate mathematical expressions on buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears math"
     ],
     "keywords": [
       "buffer",
@@ -646,7 +645,7 @@
     "digest": "Paulstretch timestretching",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears time and pitch"
     ],
     "keywords": [
       "buffer",
@@ -663,7 +662,7 @@
     "digest": "Trim silence from a buffer",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -681,7 +680,7 @@
     "digest": "Normalize buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -710,28 +709,14 @@
       "write"
     ],
     "seealso": [
-    ]
-  },
-  "ears.process~": {
-    "digest": "Process buffers through patches",
-    "module": "ears",
-    "category": [
-      "ears buffer operations"
-    ],
-    "keywords": [
-      "buffer",
-      "process",
-      "apply",
-      "poly"
-    ],
-    "seealso": [
+      "ears.readtags"
     ]
   },
   "ears.reg~": {
     "digest": "Store buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -748,7 +733,7 @@
     "digest": "Buffer soft clipping",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears distorsion"
     ],
     "keywords": [
       "buffer",
@@ -800,7 +785,7 @@
     "digest": "Mix buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -819,7 +804,7 @@
     "digest": "Apply an analysis window",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -838,7 +823,7 @@
     "digest": "Change buffer gain",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
@@ -856,7 +841,7 @@
     "digest": "Split a buffer into multiple buffers",
     "module": "ears",
     "category": [
-      "ears buffer operations"
+      "ears basic"
     ],
     "keywords": [
       "buffer",

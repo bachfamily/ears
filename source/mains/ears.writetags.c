@@ -33,7 +33,7 @@
 	id3, tag, id3v2, id3tool, metadata, mp3, set, write
  
 	@seealso
-	
+	ears.readtags
 	
 	@owner
 	Daniele Ghisi
@@ -44,6 +44,8 @@
 #include "llllobj.h"
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
+
+#include "ears.commons.h"
 
 #include "id3add.h" // includes all the remaining id3 stuff
 #include "id3.h"
@@ -84,7 +86,7 @@ void writetags_inletinfo(t_writetags *x, void *b, long a, char *t);
 
 void set_tags_to_file(t_writetags *x, const char *filename, t_llll *tags);
 void clear_all_tags_from_file(t_writetags *x, const char *filename, char clearv1, char clearv2);
-void clear_specific_tag(t_writetags *x, ID3_Tag &myTag, const char *code, char all_occurrences);
+void clear_specific_v2_tag(t_writetags *x, ID3_Tag &myTag, const char *code, char all_occurrences);
 long code_to_id3v2_frameid(const char *code);
 void tag_setfield(t_writetags *x, ID3_Tag &myTag, const char *code, t_llllelem *first_val, const char *filename);
 
@@ -122,7 +124,7 @@ int C74_EXPORT main(void)
 				  0L);
 	
 
-    // @method read @digest Function depends on inlet
+    // @method llll @digest Function depends on inlet
     // @description An llll in the first inlet writes some ID3V1 or ID3V2 tags. Such llll is
     // expected to be a list of tags in the form
     // <b>(<m>tag</m> <m>content</m>), (<m>tag</m> <m>content</m>)...</b>, where each <m>tag</m>
@@ -140,7 +142,8 @@ int C74_EXPORT main(void)
     // @method clear @digest Remove all tags
     // @description A <m>clear</m> message removes all the ID3V1 and ID3V2 tags (if the <m>id3v1</m> and <m>id3v2</m>
     // attributes are on). An optional integer argument (1 or 2) limits the removal to the ID3V1 or ID3V2 tags respectively.
-    // If further optional arguments are given, these are expected to be one or several of the four-letter symbols (see http://id3.org/id3v2.3.0 to know more)
+    // If further optional arguments are given, these are expected to be one or several
+    // of the four-letter symbols (see http://id3.org/id3v2.3.0 to know more)
     // corresponding to the fields to be cleared; if such arguments are given, any other field will be left untouched.
     // @marg 0 @name version @optional 1 @type int
     // @marg 1 @name fields @optional 1 @type llll
@@ -157,7 +160,6 @@ int C74_EXPORT main(void)
     class_addmethod(c, (method)writetags_assist,					"assist",				A_CANT,		0);
     class_addmethod(c, (method)writetags_inletinfo,					"inletinfo",			A_CANT,		0);
 
-    llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
     
 	CLASS_STICKY_ATTR(c,"category",0,"Settings");
 
@@ -290,25 +292,23 @@ long clear_tags_from_file_fn(void *data, t_hatom *a, const t_llll *address)
     
     if (hatom_gettype(a) == H_SYM) {
         t_symbol *s = hatom_getsym(a);
+        s = ears_ezlocate_file(s, NULL);
         if (s) {
             if (!fields || fields->l_size == 0)
                 clear_all_tags_from_file(x, s->s_name, whichtags == 0 || whichtags == 1, whichtags == 0 || whichtags == 2);
             else {
                 ID3_Tag myTag;
                 
-                char conformed_name[MAX_PATH_CHARS];
-                path_nameconform(s->s_name, conformed_name, PATH_STYLE_MAX, PATH_TYPE_BOOT);
-                
-                myTag.Link(conformed_name, ID3TT_ID3V2);
-                myTag.SetUnsync(x->sync_v1_v2_tags ? 1 : 0);
+                myTag.Link(s->s_name, ID3TT_ALL);
+                myTag.SetUnsync(x->sync_v1_v2_tags ? 0 : 1);
                 
                 t_llllelem *elem;
                 for (elem = fields->l_head; elem; elem = elem->l_next) {
                     if (hatom_gettype(&elem->l_hatom) == H_SYM)
-                        clear_specific_tag(x, myTag, hatom_getsym(&elem->l_hatom)->s_name, all_occurrences);
+                        clear_specific_v2_tag(x, myTag, hatom_getsym(&elem->l_hatom)->s_name, all_occurrences);
                 }
                 
-                myTag.Update(ID3TT_ID3V2);
+                myTag.Update(ID3TT_ALL);
             }
         }
     }
@@ -332,7 +332,7 @@ long set_tags_to_file_fn(void *data, t_hatom *a, const t_llll *address)
     if (hatom_gettype(a) == H_SYM) {
         t_writetags *x = (t_writetags *) (((void **)data)[0]);
         t_llll *tags = (t_llll *) (((void **)data)[1]);
-        t_symbol *s = hatom_getsym(a);
+        t_symbol *s = ears_ezlocate_file(hatom_getsym(a), NULL);
         if (s && (!x->protect || is_symbol_mp3_file(s)))
             set_tags_to_file(x, s->s_name, tags);
     }
@@ -437,6 +437,7 @@ void clear_all_tags_from_file(t_writetags *x, const char *filename, char clearv1
     if (x->set_id3v2_tags && clearv2) {
         nTags = myTag.Strip(ID3TT_ID3V2);
     }
+    
 }
 
 void set_tags_to_file(t_writetags *x, const char *filename, t_llll *tags)
@@ -447,7 +448,7 @@ void set_tags_to_file(t_writetags *x, const char *filename, t_llll *tags)
     path_nameconform(filename, conformed_name, PATH_STYLE_MAX, PATH_TYPE_BOOT);
     
     myTag.Link(conformed_name, ID3TT_ID3V2);
-    myTag.SetUnsync(x->sync_v1_v2_tags ? 1 : 0);
+    myTag.SetUnsync(x->sync_v1_v2_tags ? 0 : 1);
 
     t_llllelem *elem;
     for (elem = tags->l_head; elem; elem = elem->l_next)
@@ -477,7 +478,7 @@ void set_tags_to_file(t_writetags *x, const char *filename, t_llll *tags)
 */
 
 
-void clear_specific_tag(t_writetags *x, ID3_Tag &myTag, const char *code, char all_occurrences)
+void clear_specific_v2_tag(t_writetags *x, ID3_Tag &myTag, const char *code, char all_occurrences)
 {
     
     ID3_FrameID frame_id = (enum ID3_FrameID)string_to_frameid(code);

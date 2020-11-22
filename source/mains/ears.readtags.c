@@ -33,7 +33,7 @@
 	id3, tag, id3v2, id3tool, metadata, mp3, read, open
  
 	@seealso
-	
+	ears.writetags
 	
 	@owner
 	Daniele Ghisi
@@ -44,6 +44,8 @@
 #include "llllobj.h"
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
+
+#include "ears.commons.h"
 
 #include "id3.h"
 #include "id3add.h" // includes all the remaining id3 stuff
@@ -120,6 +122,9 @@ int C74_EXPORT main(void)
 				  A_GIMME,
 				  0L);
 	
+    // @method symbol/list/llll @digest Retrieve MP3 tags
+    // @description A symbol, a list or an llll is treated as a filename or a collection of filenames and
+    // triggers the retrieval of the MP3 tags for the files
 	class_addmethod(c, (method)readtags_int,				"int",			A_LONG, 0);
 	class_addmethod(c, (method)readtags_anything,			"anything",			A_GIMME, 0);
 	class_addmethod(c, (method)readtags_anything,			"list",			A_GIMME, 0);
@@ -196,8 +201,8 @@ void readtags_assist(t_readtags *x, void *b, long m, long a, char *s)
         llllobj_get_llll_outlet_type_as_string((t_object *) x, LLLL_OBJ_VANILLA, a, &type);
         if (a == 0) // @out 0 @type llll @digest Tags
             sprintf(s, "llll (%s): Tags", type); // @description Outputs metadata tags
-        else // @out 1 @type bang @digest Mp3 Info
-            sprintf(s, "llll (%s): Mp3 Information", type); // @description Outputs mp3 information
+        else // @out 1 @type bang @digest MP3 Info
+            sprintf(s, "llll (%s): Mp3 Information", type); // @description Outputs MP3 information
     }
 }
 
@@ -298,6 +303,8 @@ void readtags_anything(t_readtags *x, t_symbol *msg, long ac, t_atom *av)
 
 t_llll *filename_to_llll_mp3info(t_readtags *x, t_symbol *filename)
 {
+    filename = ears_ezlocate_file(filename, NULL);
+
     if (!filename)
         return llll_get();
     
@@ -309,10 +316,7 @@ t_llll *filename_to_llll_mp3info(t_readtags *x, t_symbol *filename)
     if (x->output_lyrics3v2_tags) which += ID3TT_LYRICS3V2;
     if (x->output_musicmatch_tags) which += ID3TT_MUSICMATCH;
 
-    char conformed_name[MAX_PATH_CHARS];
-    path_nameconform(filename->s_name, conformed_name, PATH_STYLE_MAX, PATH_TYPE_BOOT);
-
-    myTag.Link(conformed_name, which); // ID3TT_NONE will suffice???
+    myTag.Link(filename->s_name, which); // ID3TT_NONE will suffice???
     t_llll *mp3info_ll = llll_get();
     
     const Mp3_Headerinfo* mp3info;
@@ -377,21 +381,20 @@ t_llll *filename_to_llll_mp3info(t_readtags *x, t_symbol *filename)
 
 t_llll *filename_to_llll_tags(t_readtags *x, t_symbol *filename)
 {
+    filename = ears_ezlocate_file(filename, NULL);
+    
     if (!filename)
         return llll_get();
     
     ID3_Tag myTag;
     flags_t which = 0;
-    if (x->output_id3v1_tags) which += ID3TT_ID3V1;
+    //    if (x->output_id3v1_tags) which += ID3TT_ID3V1; // NO: will be handled separately in tag_to_llll()
     if (x->output_id3v2_tags) which += ID3TT_ID3V2;
     if (x->output_lyrics3_tags) which += ID3TT_LYRICS3;
     if (x->output_lyrics3v2_tags) which += ID3TT_LYRICS3V2;
     if (x->output_musicmatch_tags) which += ID3TT_MUSICMATCH;
     
-    char conformed_name[MAX_PATH_CHARS];
-    path_nameconform(filename->s_name, conformed_name, PATH_STYLE_MAX, PATH_TYPE_BOOT);
-    
-    myTag.Link(conformed_name, which);
+    myTag.Link(filename->s_name, which);
     
     return tag_to_llll(x, myTag, filename->s_name);
 
@@ -413,7 +416,7 @@ t_llll *tag_to_llll(t_readtags *x, const ID3_Tag &myTag, const char *filename)
     t_llll *ll = llll_get();
     
     if (x->output_id3v1_tags) {
-        id3tag_t mytag;
+        id3tag_t myv1tag;
         FILE *fp;
         fp = fopen(filename, "rb");
         if (NULL == fp) {
@@ -426,7 +429,7 @@ t_llll *tag_to_llll(t_readtags *x, const ID3_Tag &myTag, const char *filename)
          * bytes of your mp3 if it isn't tagged. ID3 ain't
          * world peace, live with it.
          */
-        if (!id3_readtag(fp, &mytag)) {
+        if (!id3_readtag(fp, &myv1tag)) {
             //            std::cout << "id3v1 tag info for " << sFileName << ":" << std::endl;
             t_llll *title_ll = llll_get(), *artist_ll = llll_get(), *album_ll = llll_get(), *year_ll = llll_get(), *genre_ll = llll_get(), *comment_ll = llll_get();
             
@@ -434,22 +437,22 @@ t_llll *tag_to_llll(t_readtags *x, const ID3_Tag &myTag, const char *filename)
             llll_appendsym(title_ll, gensym("title"));
             if (x->add_version) llll_appendlong(title_ll, 1);
             if (x->add_descriptions) llll_appendsym(title_ll, gensym("Title"));
-            llll_appendsym(title_ll, gensym_n(mytag.songname, 30));
+            llll_appendsym(title_ll, gensym_n(myv1tag.songname, 30));
 
             llll_appendsym(artist_ll, gensym("artist"));
             if (x->add_version) llll_appendlong(artist_ll, 1);
             if (x->add_descriptions) llll_appendsym(artist_ll, gensym("Artist"));
-            llll_appendsym(artist_ll, gensym_n(mytag.artist, 30));
+            llll_appendsym(artist_ll, gensym_n(myv1tag.artist, 30));
 
             llll_appendsym(album_ll, gensym("album"));
             if (x->add_version) llll_appendlong(album_ll, 1);
             if (x->add_descriptions) llll_appendsym(album_ll, gensym("Album"));
-            llll_appendsym(album_ll, gensym_n(mytag.album, 30));
+            llll_appendsym(album_ll, gensym_n(myv1tag.album, 30));
 
             llll_appendsym(year_ll, gensym("year"));
             if (x->add_version) llll_appendlong(year_ll, 1);
             if (x->add_descriptions) llll_appendsym(year_ll, gensym("Year"));
-            llll_appendlong(year_ll, atol(mytag.year));
+            llll_appendlong(year_ll, atol(myv1tag.year));
 
             llll_appendllll(ll, title_ll);
             llll_appendllll(ll, artist_ll);
@@ -459,16 +462,16 @@ t_llll *tag_to_llll(t_readtags *x, const ID3_Tag &myTag, const char *filename)
             llll_appendsym(genre_ll, gensym("genre"));
             if (x->add_version) llll_appendlong(genre_ll, 1);
             if (x->add_descriptions) llll_appendsym(genre_ll, gensym("Genre"));
-            llll_appendlong(genre_ll, mytag.style);
-            llll_appendsym(genre_ll, mytag.style < GetGenreCount() ? gensym(GetGenreFromNum(mytag.style)) : gensym("Unknown"));
+            llll_appendlong(genre_ll, myv1tag.style);
+            llll_appendsym(genre_ll, myv1tag.style < GetGenreCount() ? gensym(GetGenreFromNum(myv1tag.style)) : gensym("Unknown"));
 
             llll_appendllll(ll, genre_ll);
 
             char		strbuf[31];
-            if (mytag.note.v11.marker == '\0') {
+            if (myv1tag.note.v11.marker == '\0') {
                 /* use v1.1 symantics */
-                if (mytag.note.v11.note[0] != '\0') {
-                    strncpy(strbuf, mytag.note.v11.note, 28);
+                if (myv1tag.note.v11.note[0] != '\0') {
+                    strncpy(strbuf, myv1tag.note.v11.note, 28);
                     strbuf[28] = '\0';
                     llll_appendsym(comment_ll, gensym("comment"));
                     if (x->add_version) llll_appendlong(comment_ll, 1);
@@ -476,12 +479,12 @@ t_llll *tag_to_llll(t_readtags *x, const ID3_Tag &myTag, const char *filename)
                     llll_appendsym(comment_ll, gensym(strbuf));
                 }
                 llll_appendllll(ll, comment_ll);
-                if (mytag.note.v11.track != 0) {
-                    llll_appendllll(ll, symbol_and_long_to_llll(gensym("track"), mytag.note.v11.track));
+                if (myv1tag.note.v11.track != 0) {
+                    llll_appendllll(ll, symbol_and_long_to_llll(gensym("track"), myv1tag.note.v11.track));
                 }
             } else {
-                if (mytag.note.v10.note[0] != '\0') {
-                    strncpy(strbuf, mytag.note.v10.note, 30);
+                if (myv1tag.note.v10.note[0] != '\0') {
+                    strncpy(strbuf, myv1tag.note.v10.note, 30);
                     strbuf[30] = '\0';
                     llll_appendsym(comment_ll, gensym("comment"));
                     if (x->add_version) llll_appendlong(comment_ll, 1);

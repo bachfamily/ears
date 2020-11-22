@@ -159,37 +159,78 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="channelmode" get="1" set="1" type="int" size="1">
+		<attribute name="autoxfade" get="1" set="1" type="int" size="1">
 			<digest>
-				Channel Conversion Mode
+				Crossfades When Items Overlap
 			</digest>
 			<description>
-				Sets the channel conversion mode: <br />
-				0 (Clear) = Delete all samples <br />
-				1 (Keep) = Only keep existing channels <br />
-				2 (Pad) = Pad last channel while upmixing <br />
-				3 (Cycle, default) = Repeat all channels (cycling) while upmixing <br />
-				4 (Palindrome) = Palindrome cycling of channels while upmixing <br />
-				5 (Pan) = Pan channels to new configuration <br />
+				Toggles the ability to automatically crossfade items when they overlap
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Channel Conversion Mode" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfades When Items Overlap" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
-		<attribute name="compensate" get="1" set="1" type="int" size="1">
+		<attribute name="bufferfiletype" get="1" set="1" type="symbol" size="1">
 			<digest>
-				Reduce Multichannel Gain To Avoid Clipping
+				Sample Type for Buffer Export
 			</digest>
 			<description>
-				Toggles the ability to automatically reduce the gain of multichannel files by a factor of the number of channels, in order
-				to avoid possible clipping while panning then with low <m>spread</m> values. Defaults to 1.
+				Sets the file type for buffer export, just like for the <o>buffer~</o> object.
+				Note that this is only relevant if <m>copymedia</m> is on, and if you are using buffers instead of files.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Reduce Multichannel Gain To Avoid Clipping" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Export" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Sample Type for Buffer Export" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
+			</attributelist>
+		</attribute>
+		<attribute name="bufferformat" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Sample Format for Buffer Export
+			</digest>
+			<description>
+				Sets the bit depth or sample type when exporting buffers, just like for the <o>buffer~</o> object.
+				Note that this is only relevant if <m>copymedia</m> is on, and if you are using buffers instead of files. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Export" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Sample Format for Buffer Export" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
+			</attributelist>
+		</attribute>
+		<attribute name="colorslot" get="1" set="1" type="int" size="1">
+			<digest>
+				Slot Containing Color Information
+			</digest>
+			<description>
+				Sets the number of slots containing the color information (0 = none).
+				It is expected to be a slot of type color, or floatlist, containing at least three items,
+				corresponding to the R, G, B channels (each 0. to 1.)
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Color Information" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="copymedia" get="1" set="1" type="int" size="1">
+			<digest>
+				Copy Media
+			</digest>
+			<description>
+				Toggles the ability to copy all files locally in a media folder
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Export" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Copy Media" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -201,8 +242,8 @@
 				Toggles the ability to account for note durations while bouncing.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Account For Note Durations" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -230,7 +271,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade In Curve" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -258,6 +298,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Amount" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -272,6 +313,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Curve" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -285,11 +327,28 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Type" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
-		<attribute name="filenameslot" get="1" set="1" type="int" size="1">
+		<attribute name="fadeslot" get="1" set="1" type="int" size="1">
+			<digest>
+				Slot Containing Fade Amount
+			</digest>
+			<description>
+				Sets the number of slots containing the fade amount (0 = none).
+				If slots contains a single number, it will be used both for in and out fade; if slot
+				contains two numbers, they will be assigned respectively to fade in and fade out
+				The unit can be defined by the <m>timeunit</m> attribute, although milliseconds
+				should be used preferably, for best CPU performances.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Fade Amount" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="fileslot" get="1" set="1" type="int" size="1">
 			<digest>
 				Slot Containing File Names
 			</digest>
@@ -299,6 +358,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing File Names" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -316,64 +376,32 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="mutesolo" get="1" set="1" type="int" size="1">
+		<attribute name="mediafolder" get="1" set="1" type="symbol" size="1">
 			<digest>
-				Account For Muting and Soloing
+				Media Folder Name
 			</digest>
 			<description>
-				Toggles the ability to account for muting and soloing while bouncing.
+				Sets the name of the media folder (only relevant if <m>copymedia</m> is on).
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Account For Muting and Soloing" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
-			</attributelist>
-		</attribute>
-		<attribute name="naming" get="1" set="1" type="int" size="1">
-			<digest>
-				Output Naming Policy
-			</digest>
-			<description>
-				Chooses the output buffer naming policy: <br />
-				0 (Copy): the buffer name is copied from the input (in-place modification).
-				Notice that some objects do not allow this policy. <br />
-				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
-				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
-				Beware! This may allocate a lot of memory!
-				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
-				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
-				<b>-</b> for static and <b>!</b> for dynamic.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Export" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Media Folder Name" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="normalize" get="1" set="1" type="int" size="1">
+		<attribute name="numchannels" get="1" set="1" type="llll" size="1">
 			<digest>
-				Normalize Output
+				Number Of Channels Per Voice
 			</digest>
 			<description>
-				Sets the normalization mode for the output buffer:
-				0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 (default) = Overload Protection Only, only
-				normalizes to 1. if some samples exceed in modulo 1.
+				Sets the number of channels for each voice (each voice will be converted into a track with that
+				number of channels)
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Normalize Output" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="numchannels" get="1" set="1" type="int" size="1">
-			<digest>
-				Output Number Of Channels
-			</digest>
-			<description>
-				Sets the number of output channels.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Number Of Channels" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Multichannel" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number Of Channels Per Voice" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -390,47 +418,6 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="outname" get="1" set="1" type="llll" size="1">
-			<digest>
-				Output Buffer Names
-			</digest>
-			<description>
-				Sets the name for each one of the buffer outlets. Leave blank to auto-assign
-				unique names.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="panlaw" get="1" set="1" type="int" size="1">
-			<digest>
-				Pan Law
-			</digest>
-			<description>
-				Sets the panning law: 0 = nearest neighbor (panned on one loudspeaker at a time);
-				1 = cosine law (default).
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pan Law" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="panmode" get="1" set="1" type="int" size="1">
-			<digest>
-				Pan Mode
-			</digest>
-			<description>
-				Sets the panning mode: 0 = linear (default); 1 = circular.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pan Mode" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
 		<attribute name="panslot" get="1" set="1" type="int" size="1">
 			<digest>
 				Slot Containing Pan
@@ -445,43 +432,45 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="reaperversion" get="1" set="1" type="symbol" size="1">
+		<attribute name="pitchbase" get="1" set="1" type="int" size="1">
 			<digest>
-				Reaper Version
+				Pitch Base For Transposition
 			</digest>
 			<description>
-				Sets the Reaper version
+				Sets the pitch (in midicents) corresponding to no transposition (only meaningful if
+				<m>usepitch</m> is on).
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Reaper Version" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="spread" get="1" set="1" type="float" size="1">
-			<digest>
-				Multichannel Spread
-			</digest>
-			<description>
-				Sets the spread of the input channels when panning multichannels buffers. Default is 0 (downmix to mono).
-				A spread of 1 spreads a multichannel signal sent to the central loudspeaker up to the external ones.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Multichannel Spread" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="sr" get="1" set="1" type="float" size="1">
-			<digest>
-				Output Sample Rate
-			</digest>
-			<description>
-				Sets the sample rate for the output buffer.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Sample Rate" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Transposition" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Base For Transposition" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="reaperheader" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Reaper Header
+			</digest>
+			<description>
+				Sets the Reaper header (containing version number) in textual form
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Reaper" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Reaper Header" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="timestretchslot" get="1" set="1" type="int" size="1">
+			<digest>
+				Slot Containing Transposition Amount
+			</digest>
+			<description>
+				Sets the number of slots containing the timestretch ratio (0 = none).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Transposition Amount" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -497,6 +486,33 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="transpositionslot" get="1" set="1" type="int" size="1">
+			<digest>
+				Slot Containing Transposition Amount
+			</digest>
+			<description>
+				Sets the number of slots containing the transposition amount, in midicents (0 = none).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Transposition Amount" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="usepitch" get="1" set="1" type="int" size="1">
+			<digest>
+				Use Pitch For Transposition
+			</digest>
+			<description>
+				Toggles the ability to use the pitch as transposition (also see <m>pitchbase</m>)
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Transposition" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Use Pitch For Transposition" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="velmode" get="1" set="1" type="int" size="1">

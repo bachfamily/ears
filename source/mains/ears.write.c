@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears basic
  
 	@keywords
 	buffer, file, write, save, export
@@ -191,7 +191,7 @@ void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s)
         else
             sprintf(s, "symbol/list/llll: Soundfile names"); // @in 1 @type symbol/list/llll @digest Soundfile names
     } else {
-        sprintf(s, "bang When Done"); // @out 0 @type bang @digest bang When Export is Done
+        sprintf(s, "llll: Full Paths of Saved Soundfiles"); // @out 0 @type llll @digest Full path of saved soundfiles
     }
 }
 
@@ -226,7 +226,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4", "b", NULL);
+        earsbufobj_setup((t_earsbufobj *)x, "E4", "4", NULL);
 
         llll_free(args);
     }
@@ -336,8 +336,8 @@ void buf_write_bang(t_buf_write *x)
         }
     }
     
+    earsbufobj_outlet_llll((t_earsbufobj *)x, 0, names);
     llll_free(names);
-    earsbufobj_outlet_bang((t_earsbufobj *)x, 0);
 }
 
 

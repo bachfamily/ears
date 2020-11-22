@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 124.0, 671.0, 413.0 ],
+						"rect" : [ 0.0, 26.0, 671.0, 413.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -98,7 +98,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 281.0, 241.5, 301.0, 36.0 ],
-									"presentation_linecount" : 2,
 									"text" : "(0 = use defaults, which are the same as LAME defaults, see https://lame.sourceforge.io)",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ],
 									"varname" : "u360001384[1]"
@@ -187,7 +186,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 1,
-									"outlettype" : [ "bang" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 10.0, 297.5, 249.0, 23.0 ],
 									"text" : "ears.write~ @vbrmode CBR @bitrate 256"
 								}
@@ -300,7 +299,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 671.0, 413.0 ],
+						"rect" : [ 100.0, 124.0, 671.0, 413.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -330,6 +329,37 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-14",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 80.0, 267.5, 144.0, 40.0 ],
+									"presentation_linecount" : 2,
+									"text" : "Paths of actually saved files"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-11",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 276.0, 66.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"versionnumber" : 80103
+									}
+,
+									"text" : "bach.print"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -394,7 +424,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 1,
-									"outlettype" : [ "bang" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 10.0, 208.5, 75.0, 23.0 ],
 									"text" : "ears.write~"
 								}
@@ -516,7 +546,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 1,
-									"outlettype" : [ "bang" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 494.0, 317.0, 124.0, 23.0 ],
 									"text" : "ears.write~"
 								}
@@ -554,6 +584,13 @@
 							}
  ],
 						"lines" : [ 							{
+								"patchline" : 								{
+									"destination" : [ "obj-11", 0 ],
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
 								"patchline" : 								{
 									"destination" : [ "obj-1", 1 ],
 									"source" : [ "obj-13", 0 ]
@@ -791,7 +828,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 1,
-									"outlettype" : [ "bang" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 25.0, 317.0, 74.5, 23.0 ],
 									"text" : "ears.write~"
 								}
@@ -1224,6 +1261,10 @@
 			}
 , 			{
 				"name" : "ears.normalize~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.print.mxo",
 				"type" : "iLaX"
 			}
  ],

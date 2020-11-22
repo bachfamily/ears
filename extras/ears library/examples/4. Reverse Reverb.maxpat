@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 106.0, 138.0, 986.0, 684.0 ],
+		"rect" : [ 106.0, 138.0, 809.0, 517.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -45,7 +45,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 523.0, 254.0, 258.0, 74.0 ],
+					"patching_rect" : [ 523.0, 254.0, 263.0, 74.0 ],
 					"text" : "we shift the original properly depending on the length of the reverb tail (which we have left auto-computed in ears.freeverb~, if you want to hard-code it via the @tail attribute, the patch becomes simpler)"
 				}
 
@@ -80,11 +80,12 @@
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-30",
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 180.0, 375.0, 52.0, 24.0 ],
-					"text" : "Play!"
+					"patching_rect" : [ 180.0, 367.5, 288.0, 37.0 ],
+					"text" : "Play!\n(wait: there will be some silence at the beginning)"
 				}
 
 			}
@@ -262,7 +263,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u086002875",
+					"buffername" : "u373000632",
 					"fontsize" : 12.0,
 					"id" : "obj-22",
 					"maxclass" : "waveform~",
@@ -296,7 +297,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 235.5, 119.0, 137.0, 37.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Amount of (reverse) reverb"
 				}
 
@@ -319,7 +319,7 @@
 					"fontsize" : 12.0,
 					"id" : "obj-14",
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 9.0, 175.0, 263.0, 22.0 ],

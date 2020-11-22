@@ -28,7 +28,7 @@
  The object is designed for direct-to-disk usage. No Max audio buffer is used.
  
  @category
- ears, ears objects, ears audio
+ ears playback
  
  @keywords
  play, mpeg, mp3, compressed, native, file

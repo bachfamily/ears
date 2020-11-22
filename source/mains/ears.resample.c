@@ -27,7 +27,7 @@
     If you need to modify the buffer sample rate, use <o>ears.format</o>
  
 	@category
-	ears buffer operations
+	ears conversions
  
 	@keywords
 	buffer, resample, property, change, vinyl

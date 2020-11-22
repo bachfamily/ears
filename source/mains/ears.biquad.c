@@ -27,7 +27,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears filter
  
 	@keywords
 	buffer, biquad, filter, lowpass, hipass, highpass, bandpass, bandreject, hishelf, lowshelf, resonant, attenuation

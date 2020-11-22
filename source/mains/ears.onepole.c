@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears buffer operations
+	ears filter
  
 	@keywords
 	buffer, onepole, filter, lowpass, hipass, highpass, attenuation

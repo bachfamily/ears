@@ -27,7 +27,7 @@
     The original code for the Rubber Band library is by Breakfast Quay (https://breakfastquay.com/rubberband/)
  
 	@category
-	ears buffer operations
+	ears time and pitch
  
 	@keywords
 	buffer, pitch, stretch, shift, pitchshift, timestretch, rubberband, rubber, band

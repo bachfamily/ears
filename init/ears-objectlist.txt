@@ -36,7 +36,6 @@ max oblist "ears objects" ears.paulstretch~;
 max oblist "ears objects" ears.trim~;
 max oblist "ears objects" ears.normalize~;
 max oblist "ears objects" ears.writetags;
-max oblist "ears objects" ears.process~;
 max oblist "ears objects" ears.reg~;
 max oblist "ears objects" ears.overdrive~;
 max oblist "ears objects" ears.roll.sampling~;

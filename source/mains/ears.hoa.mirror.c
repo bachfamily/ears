@@ -84,11 +84,11 @@ t_max_err buf_hoamirror_setattr_axis(t_buf_hoamirror *x, void *attr, long argc, 
         } else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
             if (s == gensym("x") || s == gensym("X"))
-                x->axis = 0;
-            else if (s == gensym("y") || s == gensym("Y"))
                 x->axis = 1;
-            else if (s == gensym("z") || s == gensym("Z"))
+            else if (s == gensym("y") || s == gensym("Y"))
                 x->axis = 2;
+            else if (s == gensym("z") || s == gensym("Z"))
+                x->axis = 3;
             else if (s == gensym("none") || s == gensym("0"))
                 x->axis = 0;
             else

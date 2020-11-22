@@ -16,9 +16,7 @@
 	<!--METADATA-->
 	<metadatalist>
 		<metadata name="author">Daniele Ghisi</metadata>
-		<metadata name="tag">ears</metadata>
-		<metadata name="tag">ears objects</metadata>
-		<metadata name="tag">ears audio</metadata>
+		<metadata name="tag">ears playback</metadata>
 	</metadatalist>
 
 	<!--INLETS-->
@@ -94,6 +92,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Loop" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>

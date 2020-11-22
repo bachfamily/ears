@@ -3,7 +3,7 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 0,
+			"minor" : 1,
 			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
@@ -37,14 +37,43 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"bubble" : 1,
+					"bubblepoint" : 0.66,
+					"bubbleside" : 2,
+					"fontname" : "Arial",
+					"fontsize" : 13.0,
+					"id" : "obj-19",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 457.5, 154.0, 117.0, 40.0 ],
+					"text" : "...or play the result"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-18",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 370.0, 235.0, 129.0, 22.0 ],
+					"text" : "writeaiff @format int24"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-15",
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 450.0, 197.0, 52.0, 22.0 ],
+					"patching_rect" : [ 382.0, 197.0, 52.0, 22.0 ],
 					"text" : "writeaiff"
 				}
 
@@ -52,6 +81,7 @@
 , 			{
 				"box" : 				{
 					"buffername" : "concat",
+					"chanoffset" : 0,
 					"id" : "obj-5",
 					"maxclass" : "waveform~",
 					"numinlets" : 5,
@@ -89,25 +119,15 @@
 			}
 , 			{
 				"box" : 				{
-					"attr" : "xfadeleft",
+					"attr" : "xfade",
+					"attr_display" : 1,
 					"id" : "obj-7",
 					"maxclass" : "attrui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 175.0, 220.0, 150.0, 22.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"attr" : "xfaderight",
-					"id" : "obj-6",
-					"maxclass" : "attrui",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 175.0, 244.0, 150.0, 22.0 ]
+					"patching_rect" : [ 32.0, 248.0, 219.0, 22.0 ],
+					"text_width" : 141.0
 				}
 
 			}
@@ -159,7 +179,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 6.961723327636719, 485.0, 42.0 ],
-					"text" : "concatenate audio files in a folder"
+					"text" : "concatenate files in a folder"
 				}
 
 			}
@@ -170,12 +190,11 @@
 					"fontname" : "Arial",
 					"fontsize" : 13.0,
 					"id" : "obj-40",
-					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 424.5, 132.0, 91.0, 55.0 ],
-					"text" : "Save or play the result"
+					"patching_rect" : [ 366.5, 154.0, 91.0, 40.0 ],
+					"text" : "Save..."
 				}
 
 			}
@@ -224,7 +243,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 567.0, 185.0, 33.0, 22.0 ],
+					"patching_rect" : [ 567.0, 197.0, 33.0, 22.0 ],
 					"text" : "stop"
 				}
 
@@ -246,7 +265,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 530.0, 185.0, 34.0, 22.0 ],
+					"patching_rect" : [ 530.0, 197.0, 34.0, 22.0 ],
 					"text" : "start"
 				}
 
@@ -298,7 +317,7 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 521.5, 132.0, 20.0, 20.0 ],
+					"patching_rect" : [ 452.0, 132.0, 20.0, 20.0 ],
 					"rounded" : 60.0,
 					"text" : "2",
 					"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ]
@@ -330,7 +349,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-1", 0 ],
-					"midpoints" : [ 459.5, 255.0, 336.0, 255.0, 336.0, 279.0, 18.5, 279.0 ],
+					"midpoints" : [ 391.5, 221.0, 336.0, 221.0, 336.0, 279.0, 18.5, 279.0 ],
 					"source" : [ "obj-15", 0 ]
 				}
 
@@ -344,15 +363,16 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-12", 0 ],
-					"source" : [ "obj-4", 0 ]
+					"destination" : [ "obj-1", 0 ],
+					"midpoints" : [ 379.5, 279.0, 18.5, 279.0 ],
+					"source" : [ "obj-18", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-6", 0 ]
+					"destination" : [ "obj-12", 0 ],
+					"source" : [ "obj-4", 0 ]
 				}
 
 			}
@@ -466,6 +486,14 @@
 			}
 , 			{
 				"name" : "bach.nth.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.textin.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.textout.mxo",
 				"type" : "iLaX"
 			}
 , 			{
