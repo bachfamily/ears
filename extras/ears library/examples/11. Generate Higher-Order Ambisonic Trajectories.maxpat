@@ -40,60 +40,39 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
-					"id" : "obj-15",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 261.0, 89.0, 413.0, 22.0 ],
-					"text" : "/Users/danieleghisi/MusicaMia/_RICERCA/orchidea/targets/Toms_diner.wav"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-7",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 170.0, 290.0, 66.0, 22.0 ],
-					"text" : "ears.read~"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-6",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 169.0, 261.0, 413.0, 22.0 ],
-					"text" : "/Users/danieleghisi/MusicaMia/_RICERCA/orchidea/targets/Toms_diner.wav"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-5",
-					"maxclass" : "newobj",
+					"maxclass" : "button",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 425.0, 402.0, 116.0, 22.0 ],
-					"text" : "buffer~ u740001577"
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 246.666666666666629, 185.0, 24.0, 24.0 ]
 				}
 
 			}
 , 			{
 				"box" : 				{
 					"id" : "obj-3",
-					"maxclass" : "newobj",
+					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 319.0, 354.0, 32.0, 22.0 ],
-					"text" : "print"
+					"patching_rect" : [ 257.0, 71.0, 246.0, 20.0 ],
+					"text" : "only first channel will be considered"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bubble" : 1,
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-1",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 128.0, 71.0, 127.0, 24.0 ],
+					"presentation_linecount" : 2,
+					"text" : "Drop audiofile here"
 				}
 
 			}
@@ -108,7 +87,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 256.0, 363.0, 105.0, 39.0 ],
+					"patching_rect" : [ 191.0, 336.0, 105.0, 39.0 ],
 					"text" : "Dynamic naming!"
 				}
 
@@ -120,7 +99,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 112.0, 376.0, 107.0, 22.0 ],
+					"patching_rect" : [ 46.0, 364.0, 107.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"versionnumber" : 80103
 					}
@@ -136,7 +115,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 426.0, 174.0, 246.0, 47.0 ],
+					"patching_rect" : [ 399.0, 173.5, 246.0, 47.0 ],
 					"text" : "these are random trajectories, but you can use envelopes instead, or fixed values (see ears.hoa.encode~'s help file)"
 				}
 
@@ -149,7 +128,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 234.333333333333314, 223.0, 376.0, 22.0 ],
+					"patching_rect" : [ 168.333333333333314, 223.0, 376.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"embed" : 1,
 						"versionnumber" : 80103
@@ -167,7 +146,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 312.666666666666629, 256.0, 379.0, 22.0 ],
+					"patching_rect" : [ 246.666666666666629, 252.0, 379.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"embed" : 1,
 						"versionnumber" : 80103
@@ -185,7 +164,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 391.0, 285.0, 383.0, 22.0 ],
+					"patching_rect" : [ 325.0, 281.0, 383.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"embed" : 1,
 						"versionnumber" : 80103
@@ -202,7 +181,7 @@
 					"numinlets" : 4,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 156.0, 324.0, 254.0, 22.0 ],
+					"patching_rect" : [ 90.0, 312.0, 254.0, 22.0 ],
 					"text" : "ears.hoa.encode~ ! @dimension 3D @order 3"
 				}
 
@@ -214,7 +193,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 156.0, 191.0, 73.5, 22.0 ],
+					"patching_rect" : [ 90.0, 207.0, 73.5, 22.0 ],
 					"text" : "zl.reg"
 				}
 
@@ -226,8 +205,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 3,
 					"outlettype" : [ "bang", "bang", "int" ],
-					"patching_rect" : [ 156.0, 160.0, 40.0, 22.0 ],
-					"text" : "uzi 4"
+					"patching_rect" : [ 90.0, 148.0, 41.0, 22.0 ],
+					"text" : "uzi 20"
 				}
 
 			}
@@ -238,7 +217,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 210.5, 160.0, 66.0, 22.0 ],
+					"patching_rect" : [ 144.5, 148.0, 66.0, 22.0 ],
 					"text" : "ears.read~"
 				}
 
@@ -250,7 +229,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "bang", "", "reset" ],
-					"patching_rect" : [ 156.0, 124.0, 128.0, 22.0 ],
+					"patching_rect" : [ 90.0, 112.0, 128.0, 22.0 ],
 					"text" : "t b l reset"
 				}
 
@@ -262,7 +241,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 156.0, 74.0, 33.0, 42.0 ]
+					"patching_rect" : [ 90.0, 62.0, 33.0, 42.0 ]
 				}
 
 			}
@@ -273,7 +252,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 161.0, 415.0, 124.0, 22.0 ],
+					"patching_rect" : [ 95.0, 403.0, 124.0, 22.0 ],
 					"text" : "/tmp/mytrajectory.wav"
 				}
 
@@ -285,7 +264,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 112.0, 454.0, 68.0, 22.0 ],
+					"patching_rect" : [ 46.0, 442.0, 68.0, 22.0 ],
 					"text" : "ears.write~"
 				}
 
@@ -327,22 +306,13 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-13", 0 ],
-					"order" : 3,
-					"source" : [ "obj-12", 0 ]
+					"source" : [ "obj-12", 2 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-17", 0 ],
-					"order" : 0,
-					"source" : [ "obj-12", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-23", 0 ],
+					"destination" : [ "obj-13", 0 ],
 					"order" : 1,
 					"source" : [ "obj-12", 0 ]
 				}
@@ -350,17 +320,17 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-24", 0 ],
-					"order" : 2,
-					"source" : [ "obj-12", 0 ]
+					"destination" : [ "obj-29", 0 ],
+					"midpoints" : [ 110.5, 175.0, 55.5, 175.0 ],
+					"source" : [ "obj-12", 1 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-29", 0 ],
-					"midpoints" : [ 176.0, 187.0, 121.5, 187.0 ],
-					"source" : [ "obj-12", 1 ]
+					"destination" : [ "obj-6", 0 ],
+					"order" : 0,
+					"source" : [ "obj-12", 0 ]
 				}
 
 			}
@@ -374,23 +344,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-29", 1 ],
-					"order" : 1,
 					"source" : [ "obj-14", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-3", 0 ],
-					"order" : 0,
-					"source" : [ "obj-14", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-10", 0 ],
-					"source" : [ "obj-15", 0 ]
 				}
 
 			}
@@ -440,15 +394,25 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-7", 0 ],
+					"destination" : [ "obj-17", 0 ],
+					"order" : 0,
 					"source" : [ "obj-6", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-14", 0 ],
-					"source" : [ "obj-7", 0 ]
+					"destination" : [ "obj-23", 0 ],
+					"order" : 1,
+					"source" : [ "obj-6", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-24", 0 ],
+					"order" : 2,
+					"source" : [ "obj-6", 0 ]
 				}
 
 			}

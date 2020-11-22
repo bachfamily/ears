@@ -379,7 +379,7 @@ void buf_expr_anything(t_buf_expr *x, t_symbol *msg, long ac, t_atom *av)
         earsbufobj_mutex_lock((t_earsbufobj *)x);
         if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) { // buffers
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, parsed->l_size, true);
-            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet, inlet == 0);
+            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
 // cannot use the functions hatom_change_to_obj_and_free() etc. because they assume that the hatom belongs to an llllelem, which is NOT the case.
 // we do that manually
             if (hatom_gettype(x->arguments + inlet) == H_LLLL)

@@ -292,7 +292,7 @@ void buf_pack_anything(t_buf_pack *x, t_symbol *msg, long ac, t_atom *av)
     if (parsed && parsed->l_head) {
         long ishot = buf_pack_ishot(x, inlet);
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
-        earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet, ishot);
+        earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
         
         if (ishot)
             buf_pack_bang(x);

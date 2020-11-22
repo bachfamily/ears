@@ -288,7 +288,7 @@ void buf_crop_anything(t_buf_crop *x, t_symbol *msg, long ac, t_atom *av)
                 
                 earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
                 earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
-                earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, true);
+                earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
                 
                 buf_crop_bang(x);
             }

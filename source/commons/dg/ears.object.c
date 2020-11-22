@@ -1,6 +1,6 @@
 #include "ears.commons.h"
 
-#define EARS_ALLOCATIONVERBOSE true
+#define EARS_ALLOCATIONVERBOSE false
 
 long ears_check_bach_version()
 {
@@ -307,15 +307,13 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
     }
 }
 
-void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx, char copy_format_to_corresponding_output_buffer)
+void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx)
 {
     long count = 0;
     for (t_llllelem *elem = buffers->l_head; elem; elem = elem->l_next, count++) {
         if (hatom_gettype(&elem->l_hatom) == H_SYM) {
             // storing input buffer
             earsbufobj_store_buffer(e_ob, EARSBUFOBJ_IN, store_idx, count, hatom_getsym(&elem->l_hatom));
-            if (copy_format_to_corresponding_output_buffer && count == 0)
-                earsbufobj_store_copy_format(e_ob, EARSBUFOBJ_IN, store_idx, count, EARSBUFOBJ_OUT, 0, count);
             
         } else {
             // empty buffer will do.
@@ -770,6 +768,11 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
     
     if (e_ob->l_is_freeing)
         return res;
+    
+    if (EARS_ALLOCATIONVERBOSE && s && msg) {
+        t_symbol *buffer_name = (t_symbol *)object_method((t_object *)sender, gensym("getname"));
+        post("--- ears notify: buffer %s: %s", buffer_name ? buffer_name->s_name : "none", msg->s_name);
+    }
     
     for (i = 0; i < e_ob->l_numbufouts; i++)
         for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs; j++) {

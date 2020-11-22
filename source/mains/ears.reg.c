@@ -18,10 +18,10 @@
 	Daniele Ghisi
  
 	@digest
-	Store buffers
+	Store or clone buffers
  
 	@description
-	Stores buffers to be retrieved with a bang
+	Stores or clones buffers to be retrieved with a bang
  
 	@discussion
  
@@ -192,7 +192,7 @@ void buf_reg_anything(t_buf_reg *x, t_symbol *msg, long ac, t_atom *av)
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
         
-        earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, true);
+        earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
         
         if (inlet == 0)
             buf_reg_bang(x);

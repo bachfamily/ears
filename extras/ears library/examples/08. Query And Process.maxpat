@@ -40,6 +40,20 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 13.0,
+					"id" : "obj-21",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 8.5, 46.0, 339.0, 21.0 ],
+					"text" : "(you need the dada library for this patch to work)",
+					"textcolor" : [ 0.792156862745098, 0.043137254901961, 0.043137254901961, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-10",
 					"maxclass" : "newobj",
 					"numinlets" : 2,
@@ -61,7 +75,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 175.0, 60.0, 153.0, 55.0 ],
+					"patching_rect" : [ 175.0, 79.0, 153.0, 55.0 ],
 					"text" : "Create a dataset of notes at startup"
 				}
 
@@ -73,7 +87,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 53.0, 192.0, 49.0, 22.0 ],
+					"patching_rect" : [ 53.0, 211.0, 49.0, 22.0 ],
 					"text" : "pack s i"
 				}
 
@@ -85,7 +99,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 175.0, 114.0, 143.0, 22.0 ],
+					"patching_rect" : [ 175.0, 133.0, 143.0, 22.0 ],
 					"text" : "loadmess bang @defer 1"
 				}
 
@@ -123,7 +137,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 171.0, 256.0, 229.0, 22.0 ],
+					"patching_rect" : [ 171.0, 275.0, 229.0, 22.0 ],
 					"text" : "addtable samples [filename s] [midinote i]"
 				}
 
@@ -135,7 +149,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 53.0, 219.0, 261.0, 22.0 ],
+					"patching_rect" : [ 53.0, 238.0, 261.0, 22.0 ],
 					"text" : "addentry samples [ filename $1 ] [ midinote $2 ]"
 				}
 
@@ -147,7 +161,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
-					"patching_rect" : [ 53.0, 305.0, 250.0, 22.0 ],
+					"patching_rect" : [ 53.0, 324.0, 250.0, 22.0 ],
 					"text" : "dada.base earstestpiano @outputcolnames 0"
 				}
 
@@ -159,7 +173,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 53.0, 156.0, 177.0, 22.0 ],
+					"patching_rect" : [ 53.0, 175.0, 177.0, 22.0 ],
 					"text" : "sprintf earstestpiano_%.2d.mp3"
 				}
 
@@ -172,7 +186,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 21.0, 85.961723327636719, 24.0, 24.0 ]
+					"patching_rect" : [ 21.0, 104.961723327636719, 24.0, 24.0 ]
 				}
 
 			}
@@ -183,7 +197,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 3,
 					"outlettype" : [ "bang", "bang", "int" ],
-					"patching_rect" : [ 21.0, 114.0, 51.0, 22.0 ],
+					"patching_rect" : [ 21.0, 133.0, 51.0, 22.0 ],
 					"text" : "uzi 88 9"
 				}
 
@@ -198,7 +212,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 483.5, 446.0, 339.0, 50.0 ],
-					"text" : "ears is synchronous, the playback won't start before all previous operations are completed (of course this may get in the way of precision...)",
+					"text" : "ears works in the main thread, the playback won't start before all previous operations are completed (of course this may get in the way of precision...)",
 					"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 				}
 

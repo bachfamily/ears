@@ -214,7 +214,7 @@ void earsbufobj_init_and_setup(t_earsbufobj *e_ob, const char *in_types, const c
 bool earsbufobj_is_buf_autoassigned(t_earsbufobj *e_ob, e_earsbufobj_in_out inout, long store, long bufferidx);
 void earsbufobj_free(t_earsbufobj *e_ob);
 void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long new_size, char also_create_unique_buffers);
-void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx, char copy_format_to_corresponding_output_buffer);
+void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx);
 t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av);
 
 t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv);

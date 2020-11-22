@@ -390,7 +390,7 @@ void buf_info_anything(t_buf_info *x, t_symbol *msg, long ac, t_atom *av)
             
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
             
-            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0, false);
+            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
             
             buf_info_bang(x);
         }
