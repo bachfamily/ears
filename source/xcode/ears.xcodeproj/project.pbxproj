@@ -5771,14 +5771,6 @@
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-					"$(PROJECT_DIR)/../lib/",
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../lib/",
@@ -5809,14 +5801,6 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-					"$(PROJECT_DIR)/../lib/",
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../lib/",
@@ -7119,14 +7103,6 @@
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-					"$(PROJECT_DIR)/../lib/",
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../lib/",
@@ -7157,14 +7133,6 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-					"$(PROJECT_DIR)/../lib/",
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../lib/",
@@ -7196,14 +7164,6 @@
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-					"$(PROJECT_DIR)/../lib/",
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../lib/",
@@ -7234,14 +7194,6 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-					"$(PROJECT_DIR)/../lib/",
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../lib/",
@@ -8835,17 +8787,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = "$(C74SUPPORT)/max-includes/macho-prefix.pch";
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
-				);
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
@@ -8876,17 +8817,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PREFIX_HEADER = "$(C74SUPPORT)/max-includes/macho-prefix.pch";
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
-				);
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
@@ -9346,13 +9276,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = NO;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
@@ -9366,13 +9289,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = NO;
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
