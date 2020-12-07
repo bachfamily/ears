@@ -18,6 +18,7 @@ C74SUPPORT = $(SRCROOT)/../../../max-sdk-7.3.3/source/c74support
 BACHSOURCE = $(SRCROOT)/../../../bach/source
 HEADER_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes" "$(BACHSOURCE)/commons/**" "/usr/local/include"
 FRAMEWORK_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes"
+LIBRARY_SEARCH_PATHS = $(BACHSOURCE)/lib
 DSTROOT = $(SRCROOT)/../lib ///Developer/SDKs/MaxSDK-6.1.4/ears/lib
 // (This next path is relative to DSTROOT)
 INSTALL_PATH = /
