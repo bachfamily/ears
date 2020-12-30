@@ -3661,19 +3661,32 @@ void ears_set_mp3encodingsettings(lame_t lame, t_ears_mp3encoding_settings *sett
 
 }
 
-void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_mp3encoding_settings *settings)
+t_symbol *get_conformed_resolved_path(t_symbol *filename)
 {
-    int write;
     t_symbol *resolved_path = filename;
     path_absolutepath(&resolved_path, filename, NULL, 0);
     
     char conformed_path[MAX_PATH_CHARS];
     path_nameconform(resolved_path->s_name, conformed_path, PATH_STYLE_MAX, PATH_TYPE_BOOT);
-    FILE *mp3 = fopen(conformed_path, "wb");
+    
+    return gensym(conformed_path);
+}
+
+void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_mp3encoding_settings *settings)
+{
+    int write;
+    t_symbol *conformed_path = get_conformed_resolved_path(filename);
+
+    if (!conformed_path || !conformed_path->s_name || strlen(conformed_path->s_name)==0) {
+        error("Cannot open file %s for write", filename->s_name);
+        return;
+    }
 
     
+    FILE *mp3 = fopen(conformed_path->s_name, "wb");
+    
     if (!mp3) {
-        error("Cannot open file %s for write", resolved_path->s_name);
+        error("Cannot open file %s for write", conformed_path ? conformed_path->s_name : filename->s_name);
         return;
     }
     
@@ -3848,9 +3861,6 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
                 llll_appendlong(*samp_end, framecount);
         }
         
-        llll_print(*samp_start);
-        llll_print(*samp_end);
-        
         if (keep_silence == 1) {
             t_llllelem *s, *e;
             for (s = (*samp_start)->l_head->l_next, e = (*samp_end)->l_head; e; s = s ? s->l_next : NULL, e=e->l_next) {
@@ -3861,6 +3871,98 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
             }
         }
 
+        buffer_unlocksamples(buf);
+    }
+    
+    return err;
+}
+
+
+t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *buf, double attack_thresh_linear, double release_thresh_linear, double min_silence_samps, long lookahead_samps, long smoothingwin_samps, t_llll **samp_start, t_llll **samp_end, char keep_first)
+{
+    if (!buf) {
+        *samp_start = llll_get();
+        *samp_end = llll_get();
+        return EARS_ERR_NO_BUFFER;
+    }
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        *samp_start = llll_get();
+        *samp_end = llll_get();
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        *samp_start = llll_get();
+        *samp_end = llll_get();
+
+        bool first_samp_is_attack = false;
+        bool in_attack = 0;
+        t_atom_long    channelcount = buffer_getchannelcount(buf);
+        t_atom_long    framecount   = buffer_getframecount(buf);
+        
+        // build envelope with MAX window filtering
+        float *ampenv = (float *)bach_newptr(framecount * sizeof(float));
+        float *temp = (float *)bach_newptr(framecount * sizeof(float));
+
+        for (long f = 0; f < framecount; f++) {
+            float max_amp = 0;
+            for (long c = 0; c < channelcount; c++)
+                max_amp = MAX(max_amp, fabs(sample[f * channelcount + c]));
+            temp[f] = max_amp;
+        }
+
+        // backwards MAX window: this is a slow implementation, there are niftier ways
+        for (long f = 0; f < framecount; f++) {
+            float max_amp = 0;
+            for (int i = 0; i < smoothingwin_samps && f-i >= 0; i++) {
+                max_amp = MAX(max_amp, temp[f-i]);
+            }
+            ampenv[f] = max_amp;
+        }
+
+        // finding split points
+        llll_appendlong(*samp_start, 0);
+        for (long f = 0; f < framecount; f++) {
+            double amp = ampenv[f+lookahead_samps];
+            if (f == 0) {
+                for (long i = 0; i < lookahead_samps; i++)
+                    amp = MAX(amp, ampenv[i]);
+            }
+            
+            if (!in_attack) {
+                if (amp > attack_thresh_linear) {
+                    // start an attack here.
+                    if (f > 0) {
+                        llll_appendlong(*samp_end, f);
+                        llll_appendlong(*samp_start, f);
+                    } else {
+                        first_samp_is_attack = true;
+                    }
+                    in_attack = true;
+                } else {
+                    // nothing happens, continue
+                }
+            } else {
+                if (amp < release_thresh_linear) {
+                    // attack ends
+                    in_attack = false;
+                }
+            }
+        }
+        
+        while ((*samp_end)->l_size < (*samp_start)->l_size)
+            llll_appendlong(*samp_end, framecount);
+        
+        if (keep_first == 0 && !first_samp_is_attack && (*samp_start)->l_size > 0 && (*samp_end)->l_size > 0) {
+            llll_destroyelem((*samp_start)->l_head);
+            llll_destroyelem((*samp_end)->l_head);
+        }
+        
+        bach_freeptr(ampenv);
+        bach_freeptr(temp);
         buffer_unlocksamples(buf);
     }
     

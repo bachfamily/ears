@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 90.0, 79.0, 950.0, 579.0 ],
+		"rect" : [ 161.0, 79.0, 950.0, 579.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -292,6 +292,19 @@
 						"boxes" : [ 							{
 								"box" : 								{
 									"hidden" : 1,
+									"id" : "obj-4",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 598.0, 400.0, 29.5, 22.0 ],
+									"text" : "10"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"hidden" : 1,
 									"id" : "obj-85",
 									"maxclass" : "newobj",
 									"numinlets" : 4,
@@ -344,25 +357,12 @@
 , 							{
 								"box" : 								{
 									"hidden" : 1,
-									"id" : "obj-73",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 753.0, 373.0, 77.0, 22.0 ],
-									"text" : "loadmess 10"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"hidden" : 1,
 									"id" : "obj-71",
 									"maxclass" : "newobj",
 									"numinlets" : 3,
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
-									"patching_rect" : [ 753.0, 399.0, 40.0, 22.0 ],
+									"patching_rect" : [ 637.5, 400.0, 40.0, 22.0 ],
 									"text" : "itoa"
 								}
 
@@ -473,15 +473,15 @@
 									"fontsize" : 15.0,
 									"hyperlinkcolor" : [ 0.694117647058824, 0.4, 0.0, 1.0 ],
 									"id" : "obj-5",
-									"linecount" : 11,
+									"linecount" : 12,
 									"linkend" : [ ":", "!", "?", "\u002c", "\u003b", "(", ")", "[", "]", "{", "}" ],
 									"linkstart" : [ "" ],
 									"maxclass" : "bach.hypercomment",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 213.5, 348.0, 191.0 ],
-									"text" : "01. Concatenate Files In A Folder\n02. Random Mix\n03. Reverse Comparison\n04. Reverse Reverb\n05. Time And Pitch\n06. Multiresample\n07. Offline Panning\n08. Query And Process\n09. Splitting And Tagging MP3 Files\n10. Batch Separate Channels\n11. Generate Higher-Order Ambisonic Trajectories"
+									"patching_rect" : [ 10.0, 213.5, 348.0, 208.0 ],
+									"text" : "01. Concatenate Files In A Folder\n02. Random Mix\n03. Reverse Comparison\n04. Reverse Reverb\n05. Time And Pitch\n06. Multiresample\n07. Offline Panning\n08. Query And Process\n09. Splitting And Tagging MP3 Files\n10. Batch Separate Channels\n11. Batch Combine 5.1 Channels\n12. Generate Higher-Order Ambisonic Trajectories"
 								}
 
 							}
@@ -614,8 +614,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 429.0, 116.0, 161.0, 22.0 ],
-									"text" : "sprintf symout %s/examples/"
+									"patching_rect" : [ 429.0, 116.0, 163.0, 22.0 ],
+									"text" : "sprintf symout %s/Examples/"
 								}
 
 							}
@@ -1065,6 +1065,14 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-71", 0 ],
+									"hidden" : 1,
+									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-83", 0 ],
 									"hidden" : 1,
 									"source" : [ "obj-5", 0 ]
@@ -1106,6 +1114,15 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-4", 0 ],
+									"hidden" : 1,
+									"order" : 0,
+									"source" : [ "obj-70", 1 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-69", 2 ],
 									"hidden" : 1,
 									"source" : [ "obj-70", 2 ]
@@ -1116,6 +1133,7 @@
 								"patchline" : 								{
 									"destination" : [ "obj-69", 0 ],
 									"hidden" : 1,
+									"order" : 1,
 									"source" : [ "obj-70", 1 ]
 								}
 
@@ -1125,14 +1143,6 @@
 									"destination" : [ "obj-69", 1 ],
 									"hidden" : 1,
 									"source" : [ "obj-71", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-71", 0 ],
-									"hidden" : 1,
-									"source" : [ "obj-73", 0 ]
 								}
 
 							}

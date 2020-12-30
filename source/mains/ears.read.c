@@ -63,6 +63,7 @@ void			buf_read_bang(t_buf_read *x);
 void			buf_read_anything(t_buf_read *x, t_symbol *msg, long ac, t_atom *av);
 void            buf_read_append(t_buf_read *x, t_symbol *msg, long ac, t_atom *av);
 void            buf_read_append_deferred(t_buf_read *x, t_symbol *msg, long ac, t_atom *av);
+void            buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_atom *av);
 long            buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *view);
 
 void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s);
@@ -109,6 +110,11 @@ int C74_EXPORT main(void)
     // @description The <m>append</m> message, followed by a list of filenames, will import the files as buffers
     // appending them to the existing one, and then outputting the whole set of output buffer names.
     class_addmethod(c, (method)buf_read_append_deferred,             "append",            A_GIMME, 0);
+
+    // @method load @digest Import files
+    // @description The <m>load</m> message, followed by a list of filenames, will import the files as buffers
+    // appending them to the existing one, and then outputting the whole set of output buffer names.
+    class_addmethod(c, (method)buf_read_load_deferred,             "load",            A_GIMME, 0);
 
     // @method (drag) @digest Drag-and-drop file loading
     // @description The specified file(s) are read from disk and converted into buffers.
@@ -179,7 +185,7 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "4", "E4", names);
+        earsbufobj_setup((t_earsbufobj *)x, "4", "Ea", names);
 
         llll_free(args);
         llll_free(names);
@@ -314,6 +320,20 @@ void buf_read_append(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
     llll_free(parsed);
 }
 
+
+void buf_read_load_do(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
+{
+    t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, NULL, ac, av);
+    if (!parsed) return;
+    buf_read_load(x, parsed, false);
+    llll_free(parsed);
+}
+
+
+void buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
+{
+    defer(x, (method)buf_read_load_do, msg, ac, av);
+}
 
 void buf_read_anything(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 {

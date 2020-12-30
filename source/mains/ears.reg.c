@@ -175,7 +175,12 @@ void buf_reg_bang(t_buf_reg *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     
     for (long count = 0; count < num_buffers; count++) {
-        earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count, earsbufobj_get_inlet_buffer_name((t_earsbufobj *)x, 0, count));
+        t_symbol *name = earsbufobj_get_inlet_buffer_name((t_earsbufobj *)x, 0, count);
+        if (name) {
+            earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count, name);
+        } else {
+            // not a big deal: one may use [ears.reg~] just to create an empty buffer
+        }
     }
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }

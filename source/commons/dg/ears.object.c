@@ -532,8 +532,18 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
         if (out_types_wk[i] == 'e' || out_types_wk[i] == 'E')
             out_types_wk[i] = 'z';
     
-    llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk);
+    long count_a = 0;
+    for (int i = 0; i < strlen(out_types_wk); i++)
+        if (out_types_wk[i] == 'a') count_a++;
     
+    // dirty, just working UP TO 2 'a' outlets (TO BE REFINED)
+    if (count_a == 0)
+        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk);
+    else if (count_a == 1)
+        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL);
+    else if (count_a == 2)
+        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL, NULL);
+
     /*
     e_ob->l_outlet = (void **) bach_newptr((max_out_len + 1) * sizeof (void *));
     for (i = MIN(LLLL_MAX_OUTLETS, max_out_len) - 1; i >= 0; i--) {

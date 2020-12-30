@@ -40,6 +40,20 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"bubble" : 1,
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-5",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 135.0, 148.0, 173.0, 24.0 ],
+					"text" : "We generate 20 trajectories"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-6",
 					"maxclass" : "button",
 					"numinlets" : 1,
@@ -71,7 +85,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 128.0, 71.0, 127.0, 24.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Drop audiofile here"
 				}
 
@@ -87,7 +100,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 191.0, 336.0, 105.0, 39.0 ],
+					"patching_rect" : [ 191.0, 328.0, 105.0, 39.0 ],
 					"text" : "Dynamic naming!"
 				}
 
@@ -193,7 +206,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 90.0, 207.0, 73.5, 22.0 ],
+					"patching_rect" : [ 90.0, 223.0, 73.5, 22.0 ],
 					"text" : "zl.reg"
 				}
 
@@ -217,7 +230,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 144.5, 148.0, 66.0, 22.0 ],
+					"patching_rect" : [ 144.5, 185.0, 66.0, 22.0 ],
 					"text" : "ears.read~"
 				}
 
@@ -298,15 +311,16 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-13", 1 ],
-					"source" : [ "obj-11", 0 ]
+					"destination" : [ "obj-14", 0 ],
+					"midpoints" : [ 208.5, 142.0, 76.0, 142.0, 76.0, 292.0, 99.5, 292.0 ],
+					"source" : [ "obj-10", 2 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-13", 0 ],
-					"source" : [ "obj-12", 2 ]
+					"destination" : [ "obj-13", 1 ],
+					"source" : [ "obj-11", 0 ]
 				}
 
 			}
@@ -329,6 +343,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 0 ],
+					"midpoints" : [ 99.5, 175.0, 256.166666666666629, 175.0 ],
 					"order" : 0,
 					"source" : [ "obj-12", 0 ]
 				}

@@ -185,8 +185,8 @@
 									"id" : "obj-1",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 10.0, 297.5, 249.0, 23.0 ],
 									"text" : "ears.write~ @vbrmode CBR @bitrate 256"
 								}
@@ -333,14 +333,40 @@
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
+									"id" : "obj-17",
+									"linecount" : 4,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 87.5, 238.5, 146.0, 69.0 ],
+									"presentation_linecount" : 4,
+									"text" : "Modified version of the input filename/path (with  incremental indices)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-16",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 66.0, 322.0, 85.0, 23.0 ],
+									"text" : "print FullPath"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 80.0, 267.5, 144.0, 40.0 ],
-									"presentation_linecount" : 2,
-									"text" : "Paths of actually saved files"
+									"patching_rect" : [ 153.0, 313.5, 144.0, 40.0 ],
+									"text" : "Full paths of the actually saved files"
 								}
 
 							}
@@ -350,12 +376,8 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 276.0, 66.0, 23.0 ],
-									"saved_object_attributes" : 									{
-										"versionnumber" : 80103
-									}
-,
-									"text" : "bach.print"
+									"patching_rect" : [ 10.0, 247.0, 71.0, 23.0 ],
+									"text" : "print Paths"
 								}
 
 							}
@@ -423,8 +445,8 @@
 									"id" : "obj-1",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 10.0, 208.5, 75.0, 23.0 ],
 									"text" : "ears.write~"
 								}
@@ -545,8 +567,8 @@
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 494.0, 317.0, 124.0, 23.0 ],
 									"text" : "ears.write~"
 								}
@@ -587,6 +609,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-11", 0 ],
 									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-16", 0 ],
+									"source" : [ "obj-1", 1 ]
 								}
 
 							}
@@ -827,8 +856,8 @@
 									"id" : "obj-10",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 25.0, 317.0, 74.5, 23.0 ],
 									"text" : "ears.write~"
 								}
@@ -1261,10 +1290,6 @@
 			}
 , 			{
 				"name" : "ears.normalize~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.print.mxo",
 				"type" : "iLaX"
 			}
  ],

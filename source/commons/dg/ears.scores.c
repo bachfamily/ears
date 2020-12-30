@@ -658,7 +658,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
         
         // write voice
         filecontent << "  <TRACK" << std::endl;
-        if (voicename_el) {
+        if (voicename_el && !(hatom_gettype(&voicename_el->l_hatom) == H_LLLL && hatom_getllll(&voicename_el->l_hatom)->l_size == 0)) {
             char *voicename_buf = NULL;
             hatom_to_text_buf(&voicename_el->l_hatom, &voicename_buf);
             if (voicename_buf && hatom_gettype(&voicename_el->l_hatom) == H_LLLL && strlen(voicename_buf) > 1) {
