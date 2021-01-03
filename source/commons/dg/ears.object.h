@@ -22,26 +22,27 @@ defer(x, (method)buf_ ## NAME ##_bang, NULL, 0, NULL); \
 } \
 void buf_ ## NAME ## _anything_deferred(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av) \
 { \
+x->e_ob.l_curr_proxy = proxy_getinlet((t_object *) x); \
 defer(x, (method)buf_ ## NAME ##_anything, msg, ac, av); \
 } \
 
 
 #define EARSBUFOBJ_ADD_INT_FLOAT_METHODS(NAME) \
-void buf_ ## NAME ## _int(t_buf_ ## NAME *x, t_atom_long num); \
-void buf_ ## NAME ## _float(t_buf_ ## NAME *x, t_atom_float num); \
+void buf_ ## NAME ## _int_deferred(t_buf_ ## NAME *x, t_atom_long num); \
+void buf_ ## NAME ## _float_deferred(t_buf_ ## NAME *x, t_atom_float num); \
 \
-void buf_ ## NAME ## _int(t_buf_ ## NAME *x, t_atom_long num) \
+void buf_ ## NAME ## _int_deferred(t_buf_ ## NAME *x, t_atom_long num) \
 { \
     t_atom argv[1]; \
     atom_setlong(argv, num); \
-    buf_ ## NAME ## _anything(x, _sym_list, 1, argv); \
+    buf_ ## NAME ## _anything_deferred(x, _sym_list, 1, argv); \
 } \
 \
-void buf_ ## NAME ## _float(t_buf_ ## NAME *x, t_atom_float num) \
+void buf_ ## NAME ## _float_deferred(t_buf_ ## NAME *x, t_atom_float num) \
 { \
     t_atom argv[1]; \
     atom_setfloat(argv, num); \
-    buf_ ## NAME ## _anything(x, _sym_list, 1, argv); \
+    buf_ ## NAME ## _anything_deferred(x, _sym_list, 1, argv); \
 } \
 
 
@@ -52,11 +53,11 @@ EARSBUFOBJ_ADD_INT_FLOAT_METHODS(NAME) \
 
 
 #define EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(NAME) \
-class_addmethod(c, (method)buf_ ## NAME ## _int,                "int",            A_LONG, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _float,                "float",            A_FLOAT, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _anything_deferred,            "anything",            A_GIMME, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _anything_deferred,            "list",            A_GIMME, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _bang_deferred,               "bang",     0); \
+class_addmethod(c, (method)buf_ ## NAME ## _int_deferred,       "int",       A_LONG, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _float_deferred,     "float",     A_FLOAT, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _anything_deferred,  "anything",  A_GIMME, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _anything_deferred,  "list",      A_GIMME, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _bang_deferred,      "bang",     0); \
 \
 class_addmethod(c, (method)buf_ ## NAME ## _assist,                "assist",                A_CANT,        0); \
 class_addmethod(c, (method)buf_ ## NAME ## _inletinfo,            "inletinfo",            A_CANT,        0); \
@@ -171,7 +172,7 @@ typedef struct _earsbufobj
     long                    l_flags;        ///< A combination of the e_earsbufobj_flag
     
     char                    l_is_freeing;   ///< 1 when object is being freed;
-
+    long                    l_curr_proxy;  ///< Filled with the number of the proxy being used
 } t_earsbufobj;
 
 
@@ -188,6 +189,8 @@ t_atom_long ears_hashtab_getcount(t_symbol *name);
 void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *name, char mustfree);
 void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx, bool prevent_from_freeing = false);
 
+// Proxy mechanism
+long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob);
 
 
 /// Accessors

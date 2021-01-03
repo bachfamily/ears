@@ -45,6 +45,12 @@ void ears_hashtab_setup()
     }
 }
 
+long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob)
+{
+    return e_ob->l_curr_proxy;
+}
+
+
 void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *name, char mustfree)
 {    
     if (name && buf) {

@@ -207,7 +207,7 @@ void buf_repeat_bang(t_buf_repeat *x)
 
 void buf_repeat_anything(t_buf_repeat *x, t_symbol *msg, long ac, t_atom *av)
 {
-    long inlet = proxy_getinlet((t_object *) x);
+    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
 
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
     if (!parsed) return;
