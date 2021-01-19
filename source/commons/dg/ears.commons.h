@@ -176,7 +176,7 @@ t_ears_err ears_buffer_crop_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj 
 t_ears_err ears_buffer_crop_inplace(t_object *ob, t_buffer_obj *buf, long start_sample, long end_sample);
 t_ears_err ears_buffer_crop_ms_inplace(t_object *ob, t_buffer_obj *buf, double start_ms, double end_ms);
 t_ears_err ears_buffer_crop_ms_inplace_maxapi(t_object *ob, t_buffer_obj *buf, long start_ms, long end_ms);
-t_ears_err ears_buffer_shift(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long shift_samps);
+t_ears_err ears_buffer_offset(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long shift_samps);
 t_ears_err ears_buffer_trim(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double amp_thresh_linear, char trim_start, char trim_end);
 
 

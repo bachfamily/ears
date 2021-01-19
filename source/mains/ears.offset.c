@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.shift.c
+	ears.offset.c
  
 	@name
-	ears.shift~
+	ears.offset~
  
 	@realname
-	ears.shift~
+	ears.offset~
  
 	@type
 	object
@@ -14,11 +14,14 @@
 	@module
 	ears
  
+    @hiddenalias
+    ears.shift~
+ 
 	@author
 	Daniele Ghisi
  
 	@digest
-	Shift a buffer
+	Temporally offset a buffer
  
 	@description
 	Adds or remove time at the beginning of a buffer
@@ -29,7 +32,7 @@
 	ears basic
  
 	@keywords
-	buffer, shift, add, offset
+	buffer, offset, add, offset
  
 	@seealso
 	ears.crop~, ears.rev~
@@ -46,29 +49,29 @@
 #include "ears.object.h"
 #include "ears.commons.h"
 
-typedef struct _buf_shift {
+typedef struct _buf_offset {
     t_earsbufobj       e_ob;
     t_llll             *amount;
     
-} t_buf_shift;
+} t_buf_offset;
 
 
 
 // Prototypes
-t_buf_shift*         buf_shift_new(t_symbol *s, short argc, t_atom *argv);
-void			buf_shift_free(t_buf_shift *x);
-void			buf_shift_bang(t_buf_shift *x);
-void			buf_shift_anything(t_buf_shift *x, t_symbol *msg, long ac, t_atom *av);
+t_buf_offset*         buf_offset_new(t_symbol *s, short argc, t_atom *argv);
+void			buf_offset_free(t_buf_offset *x);
+void			buf_offset_bang(t_buf_offset *x);
+void			buf_offset_anything(t_buf_offset *x, t_symbol *msg, long ac, t_atom *av);
 
-void buf_shift_assist(t_buf_shift *x, void *b, long m, long a, char *s);
-void buf_shift_inletinfo(t_buf_shift *x, void *b, long a, char *t);
+void buf_offset_assist(t_buf_offset *x, void *b, long m, long a, char *s);
+void buf_offset_inletinfo(t_buf_offset *x, void *b, long a, char *t);
 
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
-EARSBUFOBJ_ADD_IO_METHODS(shift)
+EARSBUFOBJ_ADD_IO_METHODS(offset)
 
 
 
@@ -87,10 +90,10 @@ int C74_EXPORT main(void)
     
     t_class *c;
     
-    CLASS_NEW_CHECK_SIZE(c, "ears.shift~",
-                         (method)buf_shift_new,
-                         (method)buf_shift_free,
-                         sizeof(t_buf_shift),
+    CLASS_NEW_CHECK_SIZE(c, "ears.offset~",
+                         (method)buf_offset_new,
+                         (method)buf_offset_free,
+                         sizeof(t_buf_offset),
                          (method)NULL,
                          A_GIMME,
                          0L);
@@ -98,7 +101,7 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
     // buffer names (depending on the <m>naming</m> attribute).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(shift)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(offset)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
@@ -110,7 +113,7 @@ int C74_EXPORT main(void)
     return 0;
 }
 
-void buf_shift_assist(t_buf_shift *x, void *b, long m, long a, char *s)
+void buf_offset_assist(t_buf_offset *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0) // @in 0 @type symbol/list/llll @digest Buffer name(s)
@@ -122,19 +125,19 @@ void buf_shift_assist(t_buf_shift *x, void *b, long m, long a, char *s)
     }
 }
 
-void buf_shift_inletinfo(t_buf_shift *x, void *b, long a, char *t)
+void buf_offset_inletinfo(t_buf_offset *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
 
-t_buf_shift *buf_shift_new(t_symbol *s, short argc, t_atom *argv)
+t_buf_offset *buf_offset_new(t_symbol *s, short argc, t_atom *argv)
 {
-    t_buf_shift *x;
+    t_buf_offset *x;
     long true_ac = attr_args_offset(argc, argv);
     
-    x = (t_buf_shift*)object_alloc_debug(s_tag_class);
+    x = (t_buf_offset*)object_alloc_debug(s_tag_class);
     if (x) {
         x->amount = llll_from_text_buf("0.", false);
 
@@ -150,7 +153,7 @@ t_buf_shift *buf_shift_new(t_symbol *s, short argc, t_atom *argv)
 
         // @arg 1 @name initial_amount @optional 1 @type number
         // @digest Initial Shift Amount
-        // @description Initial amount of shifting (unit depends on the <m>timeunit</m> attribute).
+        // @description Initial amount of offseting (unit depends on the <m>timeunit</m> attribute).
         if (cur) {
             if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
                 llll_free(x->amount);
@@ -174,7 +177,7 @@ t_buf_shift *buf_shift_new(t_symbol *s, short argc, t_atom *argv)
 }
 
 
-void buf_shift_free(t_buf_shift *x)
+void buf_offset_free(t_buf_offset *x)
 {
     llll_free(x->amount);
     earsbufobj_free((t_earsbufobj *)x);
@@ -183,7 +186,7 @@ void buf_shift_free(t_buf_shift *x)
 
 
 
-void buf_shift_bang(t_buf_shift *x)
+void buf_offset_bang(t_buf_offset *x)
 {
     long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
     
@@ -198,14 +201,14 @@ void buf_shift_bang(t_buf_shift *x)
         
         long amount_samps = earsbufobj_input_to_samps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in);
         
-        ears_buffer_shift((t_object *)x, in, out, amount_samps);
+        ears_buffer_offset((t_object *)x, in, out, amount_samps);
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 
-void buf_shift_anything(t_buf_shift *x, t_symbol *msg, long ac, t_atom *av)
+void buf_offset_anything(t_buf_offset *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
     
@@ -222,7 +225,7 @@ void buf_shift_anything(t_buf_shift *x, t_symbol *msg, long ac, t_atom *av)
                 earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
                 earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
                 
-                buf_shift_bang(x);
+                buf_offset_bang(x);
             }
         } else {
             earsbufobj_mutex_lock((t_earsbufobj *)x);

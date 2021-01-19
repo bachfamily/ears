@@ -3105,7 +3105,7 @@ t_ears_err ears_buffer_repeat_times(t_object *ob, t_buffer_obj *source, t_buffer
 }
 
 
-t_ears_err ears_buffer_shift(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long shift_samps)
+t_ears_err ears_buffer_offset(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long shift_samps)
 {
     if (shift_samps < 0)
         return ears_buffer_crop(ob, source,dest, -shift_samps, -1);
