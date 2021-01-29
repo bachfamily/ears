@@ -210,7 +210,7 @@ void buf_crop_bang(t_buf_crop *x)
 
 void buf_crop_anything(t_buf_crop *x, t_symbol *msg, long ac, t_atom *av)
 {
-    long inlet = proxy_getinlet((t_object *) x);
+    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
 
     t_llll *parsed = llllobj_parse_llll((t_object *) x, LLLL_OBJ_VANILLA, msg, ac, av, LLLL_PARSE_CLONE);
     if (!parsed) return;
@@ -275,7 +275,7 @@ void buf_crop_bang(t_buf_crop *x)
 
 void buf_crop_anything(t_buf_crop *x, t_symbol *msg, long ac, t_atom *av)
 {
-    long inlet = proxy_getinlet((t_object *) x);
+    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
     
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
     if (!parsed) return;

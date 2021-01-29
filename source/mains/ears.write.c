@@ -191,7 +191,12 @@ void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s)
         else
             sprintf(s, "symbol/list/llll: Soundfile names"); // @in 1 @type symbol/list/llll @digest Soundfile names
     } else {
-        sprintf(s, "llll: Full Paths of Saved Soundfiles"); // @out 0 @type llll @digest Full path of saved soundfiles
+        if (a == 0)
+            sprintf(s, "llll: Names of Soundfiles"); // @out 0 @type llll @digest Names of soundfiles
+             // @description Names of the soundfiles as introduced by the user, possibly modified for incremental counting.
+        else
+            sprintf(s, "llll: Full Paths of Saved Soundfiles"); // @out 1 @type llll @digest Full path of saved soundfiles
+            // @description Complete paths of the saved soundfiles
     }
 }
 
@@ -226,7 +231,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4", "4", NULL);
+        earsbufobj_setup((t_earsbufobj *)x, "E4", "aa", NULL);
 
         llll_free(args);
     }
@@ -313,6 +318,7 @@ void buf_write_bang(t_buf_write *x)
     }
     
     t_llllelem *el; long i;
+    t_llll *fullpaths = llll_get();
     for (i = 0, el = names->l_head; i < num_buffers && el; i++, el = el->l_next) {
         t_object *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, i);
         if (buf) {
@@ -328,6 +334,7 @@ void buf_write_bang(t_buf_write *x)
             buf_write_fill_encode_settings(x, &settings);
             
             ears_write_buffer(buf, filename, (t_object *)x, &settings);
+            llll_appendsym(fullpaths, get_conformed_resolved_path(filename));
             
             if (orig_format)
                 ears_buffer_set_sampleformat((t_object *)x, buf, orig_format);
@@ -336,14 +343,28 @@ void buf_write_bang(t_buf_write *x)
         }
     }
     
+    t_symbol **names_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
+    t_symbol **fullpath_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
+    t_llllelem *fullpath_el;
+    for (i = 0, el = names->l_head, fullpath_el = fullpaths->l_head; el; el = el->l_next, fullpath_el = fullpath_el ? fullpath_el->l_next : NULL, i++) {
+        names_sym[i] = hatom_getsym(&el->l_hatom);
+        fullpath_sym[i] = fullpath_el ? hatom_getsym(&fullpath_el->l_hatom) : names_sym[i];
+    }
+
+    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 1, num_buffers, fullpath_sym);
+    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 0, num_buffers, names_sym);
+
     earsbufobj_outlet_llll((t_earsbufobj *)x, 0, names);
     llll_free(names);
+    llll_free(fullpaths);
+    bach_freeptr(names_sym);
+    bach_freeptr(fullpath_sym);
 }
 
 
 void buf_write_anything(t_buf_write *x, t_symbol *msg, long ac, t_atom *av)
 {
-    long inlet = proxy_getinlet((t_object *) x);
+    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
 
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
     if (parsed && parsed->l_head) {

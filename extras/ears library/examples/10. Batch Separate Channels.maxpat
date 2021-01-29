@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 511.0, 79.0, 702.0, 396.0 ],
+		"rect" : [ 34.0, 79.0, 702.0, 396.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,26 +40,12 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
-					"id" : "obj-27",
-					"maxclass" : "button",
+					"id" : "obj-6",
+					"maxclass" : "comment",
 					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 215.0, 106.0, 24.0, 24.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-24",
-					"linecount" : 3,
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 329.0, 300.0, 50.0, 49.0 ],
-					"text" : "YanBn-mul-PG-ST12"
+					"numoutlets" : 0,
+					"patching_rect" : [ 9.0, 52.0, 532.0, 20.0 ],
+					"text" : "We take whatever files are in a folder, split all their channels and save them in the temporary folder"
 				}
 
 			}
@@ -73,7 +59,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 506.0, 222.0, 128.0, 104.0 ],
+					"patching_rect" : [ 501.0, 253.0, 128.0, 104.0 ],
 					"text" : "Saving in /tmp/ folder, change the hard coded directory if you wish (or use a more interactive scenario :)"
 				}
 
@@ -85,7 +71,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 301.5, 272.0, 191.0, 22.0 ],
+					"patching_rect" : [ 296.5, 303.0, 191.0, 22.0 ],
 					"text" : "sprintf symout /tmp/%s.channel.aif"
 				}
 
@@ -97,7 +83,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 5,
 					"outlettype" : [ "", "", "", "", "" ],
-					"patching_rect" : [ 284.0, 241.0, 99.0, 22.0 ],
+					"patching_rect" : [ 279.0, 272.0, 99.0, 22.0 ],
 					"text" : "regexp .+/(.+)\\\\..*"
 				}
 
@@ -109,7 +95,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 154.0, 310.0, 166.5, 22.0 ],
+					"patching_rect" : [ 149.0, 341.0, 166.5, 22.0 ],
 					"text" : "ears.write~"
 				}
 
@@ -121,7 +107,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 5,
 					"outlettype" : [ "", "", "", "", "" ],
-					"patching_rect" : [ 154.0, 192.0, 113.0, 22.0 ],
+					"patching_rect" : [ 149.0, 223.0, 113.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"versionnumber" : 80103
 					}
@@ -137,7 +123,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 154.0, 241.0, 122.0, 22.0 ],
+					"patching_rect" : [ 149.0, 272.0, 122.0, 22.0 ],
 					"text" : "ears.channel~ @all 1"
 				}
 
@@ -149,7 +135,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 154.0, 161.0, 66.0, 22.0 ],
+					"patching_rect" : [ 149.0, 192.0, 66.0, 22.0 ],
 					"text" : "ears.read~"
 				}
 
@@ -161,7 +147,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 26.0, 128.0, 147.0, 22.0 ],
+					"patching_rect" : [ 21.0, 159.0, 147.0, 22.0 ],
 					"text" : "bach.path2llll @filesonly 1"
 				}
 
@@ -176,7 +162,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 61.0, 63.0, 128.0, 51.0 ],
+					"patching_rect" : [ 56.0, 94.0, 128.0, 51.0 ],
 					"text" : "Drop directory containing files here"
 				}
 
@@ -188,7 +174,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 26.0, 63.0, 33.0, 42.0 ]
+					"patching_rect" : [ 21.0, 94.0, 33.0, 42.0 ]
 				}
 
 			}
@@ -207,7 +193,7 @@
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
-					"destination" : [ "obj-24", 1 ],
+					"destination" : [ "obj-21", 0 ],
 					"source" : [ "obj-14", 1 ]
 				}
 
@@ -223,13 +209,6 @@
 				"patchline" : 				{
 					"destination" : [ "obj-10", 1 ],
 					"source" : [ "obj-21", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-4", 0 ],
-					"source" : [ "obj-27", 0 ]
 				}
 
 			}

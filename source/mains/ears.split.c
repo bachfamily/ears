@@ -52,7 +52,7 @@ typedef struct _buf_split {
     
     long                e_mode; //< one of the e_ears_split_modes
     char                e_partial_segments; // output partial segments (for duration split)
-    char                e_keep_silence; // keep silence (For silence split)
+    char                e_keep_silence; // keep silence (For silence and onset split)
 
     double              e_overlap; // < Overlap amount (depending on the time unit)
     
@@ -128,10 +128,18 @@ int C74_EXPORT main(void)
     
     // @method list/llll @digest Process buffers
     // @description A list or llll in the first inlet with buffer names will trigger the slicing; the right portion of buffers is
-    // output from the left outlet, and left portion of buffers is output from the left outlet.
+    // output from the left outlet, and left portion of buffers is output from the left outlet. <br />
+    // A number, list or llll in the second inlet sets the split parameter(s): <br />
+    // in Duration mode: the duration (unit set by <m>timeunit</m> attribute); <br />
+    // in Number mode: the number of output segments; <br />
+    // in List mode: the position of split points (unit set by <m>timeunit</m> attribute); <br />
+    // in Silence mode: amplitude threshold for silence (unit set by <m>ampunit</m> attribute)
+    // and the minimum silence duration (unit set by <m>timeunit</m> attribute); <br />
+    // in Onset mode: amplitude threshold for attacks (unit set by <m>ampunit</m> attribute)
+    // and the minimum distance between attacks (unit set by <m>timeunit</m> attribute); <br />
 
-    // @method number @digest Set split position
-    // @description A number in the second inlet sets the split position (in the unit defined by the <m>timeunit</m> attribute).
+    // @method number @digest Set split parameter
+    // @description A number in the second inlet sets the split parameter (see <m>list/llll</m>).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(split)
 
 
@@ -142,7 +150,7 @@ int C74_EXPORT main(void)
 
     CLASS_ATTR_LONG(c, "mode", 0, t_buf_split, e_mode);
     CLASS_ATTR_STYLE_LABEL(c,"mode",0,"enumindex","Split Mode");
-    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Duration Number List Silence");
+    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Duration Number List Silence Onset");
     CLASS_ATTR_ACCESSORS(c, "mode", NULL, buf_split_setattr_mode);
     CLASS_ATTR_BASIC(c, "mode", 0);
     // @description Sets the split mode: <br />
@@ -150,6 +158,7 @@ int C74_EXPORT main(void)
     // 1 (Number): buffer is split into a fixed number of buffers (such number is set); <br />
     // 2 (List): buffer is split via a series of split points given as parameter (right inlet); <br />
     // 3 (Silence): buffer is split according to silence regions. <br />
+    // 4 (Onset): buffer is split according to onset thresholds (set in the right inlet). <br />
     // Symbols: "duration", "number", "list" and "silence" can be used while defining the attribute in the object box.
 
     CLASS_ATTR_CHAR(c, "partials", 0, t_buf_split, e_partial_segments);
@@ -160,7 +169,8 @@ int C74_EXPORT main(void)
     CLASS_ATTR_CHAR(c, "keepsilence", 0, t_buf_split, e_keep_silence);
     CLASS_ATTR_STYLE_LABEL(c,"keepsilence",0,"onoff","Keep Silence");
     CLASS_ATTR_BASIC(c, "keepsilence", 0);
-    // @description Toggles the ability to keep the trailing silence in <b>Silence</b> <m>mode</m>.
+    // @description Toggles the ability to keep the trailing silence in <b>Silence</b> <m>mode</m>,
+    // or the portion of buffer before the first attack in <b>Onset</b> mode.
 
     CLASS_ATTR_DOUBLE(c, "overlap", 0, t_buf_split, e_overlap);
     CLASS_ATTR_STYLE_LABEL(c,"overlap",0,"text","Overlap Time");
@@ -377,8 +387,26 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             double min_dur = (x->params && x->params->l_head && x->params->l_head->l_next ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_hatom), buf) : 0);
 
             t_ears_err err = ears_buffer_get_split_points_samps_silence((t_object *)x, buf, thresh, min_dur, start, end, x->e_keep_silence);
+            if (err)
+                object_error((t_object *)x, "Error finding split points.");
         }
             break;
+
+            
+        case EARS_SPLIT_MODE_ONSET:
+        {
+            double attackthresh = (x->params && x->params->l_head ? earsbufobj_input_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_hatom)) : 1.);
+            double releasethresh = (x->params && x->params->l_head && x->params->l_head->l_next ? earsbufobj_input_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_hatom)) : 0.5);
+            double min_dur = (x->params && x->params->l_size >= 3 ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_hatom), buf) : 0);
+            double lookahead = (x->params && x->params->l_size >= 4 ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_next->l_hatom), buf) : 0);
+            double smooth = (x->params && x->params->l_size >= 5 ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_next->l_next->l_hatom), buf) : 0);
+
+            t_ears_err err = ears_buffer_get_split_points_samps_onset((t_object *)x, buf, attackthresh, releasethresh, min_dur, lookahead, smooth, start, end, x->e_keep_silence);
+            if (err)
+                object_error((t_object *)x, "Error finding split points.");
+        }
+            break;
+
             
         default:
             *start = llll_get();
@@ -446,7 +474,7 @@ void buf_split_bang(t_buf_split *x)
 
 void buf_split_anything(t_buf_split *x, t_symbol *msg, long ac, t_atom *av)
 {
-    long inlet = proxy_getinlet((t_object *) x);
+    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
 
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
     if (!parsed) return;
