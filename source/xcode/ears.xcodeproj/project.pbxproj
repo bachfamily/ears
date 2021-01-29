@@ -59,8 +59,6 @@
 				1ED65E4F1D38546B007BE0C1 /* PBXTargetDependency */,
 				1E06EE961D36762E0064F23B /* PBXTargetDependency */,
 				1EFF132E1D1D4F7F00B7C47A /* PBXTargetDependency */,
-				1E2034331CFE570D00831C0C /* PBXTargetDependency */,
-				1EDAD6531CFDEAB900DF554D /* PBXTargetDependency */,
 			);
 			name = ears;
 			productName = dada;
@@ -638,13 +636,6 @@
 			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
 			remoteInfo = lib_dada;
 		};
-		1E2034321CFE570D00831C0C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1E20341D1CFE4EE600831C0C;
-			remoteInfo = ears.writetags;
-		};
 		1E21AC0E2177D91D0007E4C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
@@ -1113,13 +1104,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1ED65E3B1D384F13007BE0C1;
 			remoteInfo = ears.buf.fade;
-		};
-		1EDAD6521CFDEAB900DF554D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1E11031C1CFDE69A00E71F0E;
-			remoteInfo = ears.tag;
 		};
 		1EDB3A0C217D337F007347EF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -5216,11 +5200,6 @@
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
 			targetProxy = 1E20341F1CFE4EE600831C0C /* PBXContainerItemProxy */;
 		};
-		1E2034331CFE570D00831C0C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1E20341D1CFE4EE600831C0C /* ears.writetags */;
-			targetProxy = 1E2034321CFE570D00831C0C /* PBXContainerItemProxy */;
-		};
 		1E21AC0D2177D91D0007E4C8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
@@ -5555,11 +5534,6 @@
 			isa = PBXTargetDependency;
 			target = 1ED65E3B1D384F13007BE0C1 /* ears.fade~ */;
 			targetProxy = 1ED65E4E1D38546B007BE0C1 /* PBXContainerItemProxy */;
-		};
-		1EDAD6531CFDEAB900DF554D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1E11031C1CFDE69A00E71F0E /* ears.readtags */;
-			targetProxy = 1EDAD6521CFDEAB900DF554D /* PBXContainerItemProxy */;
 		};
 		1EDB3A0B217D337F007347EF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
