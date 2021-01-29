@@ -5812,14 +5812,6 @@
 					NO_THREADING,
 					HAVE_VDSP,
 				);
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"$(BACHSOURCE)/commons/**\"",
-					"\"/usr/local/include\"",
-					"$(SRCROOT)/../lib/rubberband-master/src/**",
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -5857,14 +5849,6 @@
 					HAVE_LIBSAMPLERATE,
 					NO_THREADING,
 					HAVE_VDSP,
-				);
-				HEADER_SEARCH_PATHS = (
-					"\"$(C74SUPPORT)/max-includes\"",
-					"\"$(C74SUPPORT)/msp-includes\"",
-					"\"$(C74SUPPORT)/jit-includes\"",
-					"\"$(BACHSOURCE)/commons/**\"",
-					"\"/usr/local/include\"",
-					"$(SRCROOT)/../lib/rubberband-master/src/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
