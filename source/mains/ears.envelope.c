@@ -109,6 +109,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     
     class_register(CLASS_BOX, c);
@@ -217,7 +218,7 @@ void buf_envelope_bang(t_buf_envelope *x)
             ears_buffer_gain((t_object *)x, out, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARSBUFOBJ_AMPUNIT_DECIBEL);
         } else {
             // envelope is an envelope in llll form
-            ears_buffer_gain_envelope((t_object *)x, out, out, env, x->e_ob.l_envampunit == EARSBUFOBJ_AMPUNIT_DECIBEL);
+            ears_buffer_gain_envelope((t_object *)x, out, out, env, x->e_ob.l_envampunit == EARSBUFOBJ_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);

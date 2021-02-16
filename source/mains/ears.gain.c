@@ -109,6 +109,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_envampunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     
     class_register(CLASS_BOX, c);
@@ -226,7 +227,7 @@ void buf_gain_bang(t_buf_gain *x)
             }
         } else {
             // gain is an envelope in llll form
-            ears_buffer_gain_envelope((t_object *)x, in, out, env, x->e_ob.l_envampunit == EARSBUFOBJ_AMPUNIT_DECIBEL);
+            ears_buffer_gain_envelope((t_object *)x, in, out, env, x->e_ob.l_envampunit == EARSBUFOBJ_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);

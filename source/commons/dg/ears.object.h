@@ -166,6 +166,8 @@ typedef struct _earsbufobj
     char                    l_envampunit;      ///< Amplitude unit for envelopes
     char                    l_pitchunit;      ///< Pitch unit
     char                    l_angleunit;      ///< Angle unit
+    
+    char                    l_slopemapping; ///< Slope mapping (one of the #e_slope_mapping)
 
     t_systhread_mutex       l_mutex;        ///< A mutex
     
@@ -207,6 +209,7 @@ void earsbufobj_class_add_envampunit_attr(t_class *c);
 void earsbufobj_class_add_pitchunit_attr(t_class *c);
 void earsbufobj_class_add_angleunit_attr(t_class *c);
 void earsbufobj_class_add_naming_attr(t_class *c);
+void earsbufobj_class_add_slopemapping_attr(t_class *c);
 
 
 /// Basic API
@@ -224,6 +227,8 @@ t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t
 void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob);
 
 t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, char assign_naming_policy = true);
+
+e_slope_mapping earsbufobj_get_slope_mapping(t_earsbufobj *e_ob);
 
 t_buffer_ref *earsbufobj_get_inlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx);

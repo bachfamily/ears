@@ -107,6 +107,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     
     class_register(CLASS_BOX, c);
@@ -204,7 +205,7 @@ void buf_overdrive_bang(t_buf_overdrive *x)
             ears_buffer_overdrive((t_object *)x, in, out, hatom_getdouble(&env->l_head->l_hatom));
         } else {
             // drive is an envelope in llll form
-            ears_buffer_overdrive_envelope((t_object *)x, in, out, env);
+            ears_buffer_overdrive_envelope((t_object *)x, in, out, env, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);

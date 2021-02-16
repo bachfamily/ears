@@ -106,7 +106,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     //    earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
-    
+    earsbufobj_class_add_slopemapping_attr(c);
+
     CLASS_ATTR_LONG(c, "winsize", 0, t_buf_resample, window_width);
     CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Window Width");
     CLASS_ATTR_BASIC(c, "winsize", 0);
@@ -206,7 +207,7 @@ void buf_resample_bang(t_buf_resample *x)
             t_llll *env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, el, in);
             
             // check if envelope crosses zero or is constantly negative (and hence needs reverse)
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             double min_y = ears_envelope_iterator_get_min_y(&eei);
             double max_y = ears_envelope_iterator_get_max_y(&eei);
             
@@ -221,9 +222,9 @@ void buf_resample_bang(t_buf_resample *x)
                     if (ll && ll->l_size >= 2 && is_hatom_number(&ll->l_head->l_next->l_hatom))
                         hatom_setdouble(&ll->l_head->l_next->l_hatom, hatom_getdouble(&ll->l_head->l_next->l_hatom) * -1);
                 }
-                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width);
+                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             } else {
-                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width);
+                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             }
 
             llll_free(env);

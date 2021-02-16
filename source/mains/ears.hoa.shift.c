@@ -123,6 +123,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoashift, dimension);
     CLASS_ATTR_STYLE_LABEL(c,"dimension",0,"enum","Dimension");
@@ -239,7 +240,7 @@ void buf_hoashift_bang(t_buf_hoashift *x)
         t_llll *delta_y_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, delta_y_el, in);
         t_llll *delta_z_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, delta_z_el, in);
 
-        ears_buffer_hoa_shift((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), delta_x_env, delta_y_env, delta_z_env);
+        ears_buffer_hoa_shift((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), delta_x_env, delta_y_env, delta_z_env, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         
         llll_free(delta_x_env);
         llll_free(delta_y_env);

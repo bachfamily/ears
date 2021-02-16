@@ -165,7 +165,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
-    
+    earsbufobj_class_add_slopemapping_attr(c);
+
     CLASS_ATTR_LLLL(c, "wet", 0, t_buf_freeverb, e_wet, buf_freeverb_getattr_wet, buf_freeverb_setattr_wet);
     CLASS_ATTR_STYLE_LABEL(c,"wet",0,"text","Wet");
     CLASS_ATTR_BASIC(c, "wet", 0);
@@ -304,7 +305,7 @@ void buf_freeverb_bang(t_buf_freeverb *x)
             double dry_default = is_hatom_number(&dry_el->l_hatom) ? hatom_getdouble(&dry_el->l_hatom) : 1.;
             double wet_default = is_hatom_number(&wet_el->l_hatom) ? hatom_getdouble(&wet_el->l_hatom) : 0.;
             ears_buffer_freeverb_envelope((t_object *)x, in, out, x->e_model, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_tail, in),
-                                          dry_env, wet_env, dry_default, wet_default);
+                                          dry_env, wet_env, dry_default, wet_default, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             llll_free(dry_env);
             llll_free(wet_env);
         } else {

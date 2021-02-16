@@ -108,6 +108,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     
     CLASS_ATTR_CHAR(c, "fadeintype", 0, t_buf_fade, fadein_type);
@@ -227,7 +228,7 @@ void buf_fade_bang(t_buf_fade *x)
         long fadein = earsbufobj_input_to_samps((t_earsbufobj *)x, x->fadein, in);
         long fadeout = earsbufobj_input_to_samps((t_earsbufobj *)x, x->fadeout, in);
         
-        ears_buffer_fade((t_object *)x, in, out, fadein, fadeout, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type, x->fadein_curve, x->fadeout_curve);
+        ears_buffer_fade((t_object *)x, in, out, fadein, fadeout, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type, x->fadein_curve, x->fadeout_curve, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
     }
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

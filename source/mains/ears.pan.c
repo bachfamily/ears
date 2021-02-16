@@ -200,6 +200,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     
     CLASS_ATTR_LONG(c, "numchannels", 0, t_buf_pan, num_out_channels);
@@ -374,7 +375,7 @@ void buf_pan_bang(t_buf_pan *x)
             }
         } else {
             // pan is an envelope in llll form
-            ears_buffer_pan1d_envelope((t_object *)x, in, out, num_out_channels, pans01, pan_mode, pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping);
+            ears_buffer_pan1d_envelope((t_object *)x, in, out, num_out_channels, pans01, pan_mode, pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(pans01);

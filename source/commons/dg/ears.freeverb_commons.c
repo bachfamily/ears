@@ -80,7 +80,7 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
 
 
 // IMPORTANT: the model should ALREADY be initialized ot the number of channels of the source
-t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, revmodel *model, long tail_samps, t_llll *dry_env, t_llll *wet_env, double dry_default, double wet_default)
+t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, revmodel *model, long tail_samps, t_llll *dry_env, t_llll *wet_env, double dry_default, double wet_default, e_slope_mapping slopemapping)
 {
     double sr = ears_buffer_get_sr(ob, source);
     
@@ -105,8 +105,8 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
         float *wet = (float *)bach_newptrclear((framecount + framepad) * sizeof(float));
         
         // building envelopes
-        t_ears_envelope_iterator eei_dry = ears_envelope_iterator_create(dry_env, dry_default, false);
-        t_ears_envelope_iterator eei_wet = ears_envelope_iterator_create(wet_env, wet_default, false);
+        t_ears_envelope_iterator eei_dry = ears_envelope_iterator_create(dry_env, dry_default, false, slopemapping);
+        t_ears_envelope_iterator eei_wet = ears_envelope_iterator_create(wet_env, wet_default, false, slopemapping);
         for (long i = 0; i < framecount; i++) {
             dry[i] = ears_envelope_iterator_walk_interp(&eei_dry, i, framecount);
             wet[i] = ears_envelope_iterator_walk_interp(&eei_wet, i, framecount);

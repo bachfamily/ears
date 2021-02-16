@@ -109,6 +109,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     CLASS_ATTR_DOUBLE(c, "winsize", 0, t_buf_paulstretch, e_winsize);
     CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Windows Size");
@@ -223,7 +224,7 @@ void buf_paulstretch_bang(t_buf_paulstretch *x)
         } if (env->l_depth == 1 && env->l_head) {
             ears_buffer_paulstretch((t_object *)x, in, out, hatom_getdouble(&env->l_head->l_hatom), earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_winsize, in), x->e_spectral);
         } else {
-            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_winsize, in), x->e_spectral);
+            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_winsize, in), x->e_spectral, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);

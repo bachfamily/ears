@@ -363,10 +363,10 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
 
 
 // resampling without converting sr
-t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width)
+t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
-    t_ears_envelope_iterator eei = ears_envelope_iterator_create(resampling_factor, 1., false);
+    t_ears_envelope_iterator eei = ears_envelope_iterator_create(resampling_factor, 1., false, slopemapping);
     double curr_sr = buffer_getsamplerate(buf);
     double maxfactor = ears_envelope_iterator_get_max_y(&eei);
     double sr = curr_sr * maxfactor;
@@ -1598,7 +1598,7 @@ t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
 
 
 
-t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long num_out_channels, t_llll *env, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law, double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping)
+t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long num_out_channels, t_llll *env, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law, double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping, e_slope_mapping slopemapping)
 {
     
     
@@ -1634,7 +1634,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., false);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., false, slopemapping);
             
             if (channelcount == 1) { // panning a mono source
                 for (long i = 0; i < framecount; i++) {
@@ -2049,9 +2049,10 @@ t_pts elem_to_pts(t_llllelem *incoming_el)
 
 
 
-t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double default_val, char use_decibels)
+t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double default_val, char use_decibels, e_slope_mapping slopemapping)
 {
     t_ears_envelope_iterator eei;
+    eei.slopemapping = slopemapping;
     eei.env = envelope;
     eei.default_val = default_val;
     eei.left_el = NULL;
@@ -2062,7 +2063,7 @@ t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double 
     return eei;
 }
 
-t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem *envelope, double default_val, char use_decibels)
+t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem *envelope, double default_val, char use_decibels, e_slope_mapping slopemapping)
 {
     t_ears_envelope_iterator eei;
     if (!envelope) {
@@ -2078,6 +2079,7 @@ t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem 
         eei.right_el = NULL;
         eei.default_val = hatom_getdouble(&envelope->l_hatom);
     }
+    eei.slopemapping = slopemapping;
     eei.use_decibels = use_decibels;
     eei.left_el = NULL;
     if (eei.right_el)
@@ -2143,7 +2145,7 @@ double ears_envelope_iterator_walk_interp(t_ears_envelope_iterator *eei, long sa
     
     double amp = 0.;
     if (eei->right_el && eei->left_el)
-        amp = rescale_with_slope(pos_x, eei->left_pts.x, eei->right_pts.x, eei->left_pts.y, eei->right_pts.y, eei->right_pts.slope);
+        amp = rescale_with_slope(pos_x, eei->left_pts.x, eei->right_pts.x, eei->left_pts.y, eei->right_pts.y, eei->right_pts.slope, eei->slopemapping);
     else if (eei->left_el)
         amp = eei->left_pts.y;
     else if (eei->right_el)
@@ -2153,7 +2155,7 @@ double ears_envelope_iterator_walk_interp(t_ears_envelope_iterator *eei, long sa
 }
 
 
-t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *env, char use_decibels)
+t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *env, char use_decibels, e_slope_mapping slopemapping)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -2181,7 +2183,7 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., use_decibels);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., use_decibels, slopemapping);
             for (long i = 0; i < framecount; i++) {
                 double factor = ears_envelope_iterator_walk_interp(&eei, i, framecount);
                 
@@ -2204,7 +2206,7 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
 }
 
 
-t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, char use_decibels)
+t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, char use_decibels, e_slope_mapping slopemapping)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -2232,7 +2234,7 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(thresh, 0., use_decibels);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(thresh, 0., use_decibels, slopemapping);
             for (long i = 0; i < framecount; i++) {
                 double threshold = ears_envelope_iterator_walk_interp(&eei, i, framecount);
                 
@@ -2257,7 +2259,7 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
 }
 
 
-t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *drive)
+t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *drive, e_slope_mapping slopemapping)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -2286,7 +2288,7 @@ t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(drive, 0., false);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(drive, 0., false, slopemapping);
             for (long i = 0; i < framecount; i++) {
                 double this_drive = ears_envelope_iterator_walk_interp(&eei, i, framecount);
                 
@@ -2355,7 +2357,7 @@ t_ears_err ears_buffer_normalize_rms(t_object *ob, t_buffer_obj *source, t_buffe
 
 
 // position ranges from 0 = fade is at 0 factor, to 1 = fade is at 1 factor (original gain)
-float ears_get_fade_factor(char in_or_out, e_ears_fade_types fade, double position, double curve)
+float ears_get_fade_factor(char in_or_out, e_ears_fade_types fade, double position, double curve, e_slope_mapping slopemapping)
 {
     switch (fade) {
         case EARS_FADE_LINEAR:
@@ -2366,16 +2368,16 @@ float ears_get_fade_factor(char in_or_out, e_ears_fade_types fade, double positi
             break;
         case EARS_FADE_CURVE: // could find a faster formula, this is CPU consuming
             CLIP_ASSIGN(curve, -1., 1.);
-            return rescale_with_slope(position, 0, 1., 0., 1., curve * in_or_out);
+            return rescale_with_slope(position, 0, 1., 0., 1., curve * in_or_out, slopemapping);
             break;
         case EARS_FADE_SCURVE:  // could find a faster formula, this is CPU consuming
             CLIP_ASSIGN(curve, -1., 1.);
             if (position == 0.5)
                 return 0.5;
             else if (position < 0.5)
-                return rescale_with_slope(position, 0., 0.5, 0., 0.5, curve * in_or_out);
+                return rescale_with_slope(position, 0., 0.5, 0., 0.5, curve * in_or_out, slopemapping);
             else
-                return 1. - rescale_with_slope(1. - position, 0., 0.5, 0., 0.5, curve * in_or_out);
+                return 1. - rescale_with_slope(1. - position, 0., 0.5, 0., 0.5, curve * in_or_out, slopemapping);
             break;
         default:
             return 1.;
@@ -2383,21 +2385,21 @@ float ears_get_fade_factor(char in_or_out, e_ears_fade_types fade, double positi
     }
 }
 
-float ears_get_fade_in_factor(e_ears_fade_types fade, double position, double curve)
+float ears_get_fade_in_factor(e_ears_fade_types fade, double position, double curve, e_slope_mapping slopemapping)
 {
-    return ears_get_fade_factor(1, fade, position, curve);
+    return ears_get_fade_factor(1, fade, position, curve, slopemapping);
 }
 
-float ears_get_fade_out_factor(e_ears_fade_types fade, double position, double curve)
+float ears_get_fade_out_factor(e_ears_fade_types fade, double position, double curve, e_slope_mapping slopemapping)
 {
-    return ears_get_fade_factor(-1, fade, position, curve);
+    return ears_get_fade_factor(-1, fade, position, curve, slopemapping);
 }
 
 
-t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long fade_in_samples, long fade_out_samples, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve)
+t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long fade_in_samples, long fade_out_samples, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping)
 {
     if (source == dest)
-        return ears_buffer_fade_inplace(ob, source, fade_in_samples, fade_out_samples, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve);
+        return ears_buffer_fade_inplace(ob, source, fade_in_samples, fade_out_samples, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, slopemapping);
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
@@ -2429,13 +2431,13 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             // applying fade in
             for (j = 0; j < actual_fade_in_samples; j++) {
                 for (c = 0; c < dest_channelcount; c++)
-                    dest_sample[j*dest_channelcount + c] *= ears_get_fade_in_factor(fade_in_type, ((float)j)/fade_in_samples, fade_in_curve);
+                    dest_sample[j*dest_channelcount + c] *= ears_get_fade_in_factor(fade_in_type, ((float)j)/fade_in_samples, fade_in_curve, slopemapping);
             }
 
             // applying fade out
             for (j = framecount - actual_fade_out_samples; j < framecount; j++) {
                 for (c = 0; c < dest_channelcount; c++)
-                    dest_sample[j*dest_channelcount + c] *= ears_get_fade_out_factor(fade_out_type, (framecount - (float)j)/fade_out_samples, fade_out_curve);
+                    dest_sample[j*dest_channelcount + c] *= ears_get_fade_out_factor(fade_out_type, (framecount - (float)j)/fade_out_samples, fade_out_curve, slopemapping);
             }
             
             buffer_setdirty(dest);
@@ -2447,21 +2449,21 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
     return err;
 }
 
-t_ears_err ears_buffer_fade_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long fade_in_ms, long fade_out_ms, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve)
+t_ears_err ears_buffer_fade_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long fade_in_ms, long fade_out_ms, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping)
 {
     if (source == dest)
-        return ears_buffer_fade_ms_inplace(ob, source, fade_in_ms, fade_out_ms, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve);
+        return ears_buffer_fade_ms_inplace(ob, source, fade_in_ms, fade_out_ms, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, slopemapping);
 
     
     float msr = buffer_getmillisamplerate(source);
     long fade_in_samps = round(fade_in_ms * msr);
     long fade_out_samps = round(fade_out_ms * msr);
     
-    return ears_buffer_fade(ob, source, dest, fade_in_samps, fade_out_samps, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve);
+    return ears_buffer_fade(ob, source, dest, fade_in_samps, fade_out_samps, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, slopemapping);
 }
 
 
-t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_in_samples, long fade_out_samples, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve)
+t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_in_samples, long fade_out_samples, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
     float *sample = buffer_locksamples(buf);
@@ -2481,13 +2483,13 @@ t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_i
         // applying fade in
         for (j = 0; j < actual_fade_in_samples; j++) {
             for (c = 0; c < channelcount; c++)
-                sample[j*channelcount + c] *= ears_get_fade_in_factor(fade_in_type, ((float)j)/fade_in_samples, fade_in_curve);
+                sample[j*channelcount + c] *= ears_get_fade_in_factor(fade_in_type, ((float)j)/fade_in_samples, fade_in_curve, slopemapping);
         }
         
         // applying fade out
         for (j = framecount - actual_fade_out_samples; j < framecount; j++) {
             for (c = 0; c < channelcount; c++)
-                sample[j*channelcount + c] *= ears_get_fade_out_factor(fade_out_type, (framecount - (float)j)/fade_out_samples, fade_out_curve);
+                sample[j*channelcount + c] *= ears_get_fade_out_factor(fade_out_type, (framecount - (float)j)/fade_out_samples, fade_out_curve, slopemapping);
         }
         
         buffer_setdirty(buf);
@@ -2497,17 +2499,17 @@ t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_i
     return err;
 }
 
-t_ears_err ears_buffer_fade_ms_inplace(t_object *ob, t_buffer_obj *buf, long fade_in_ms, long fade_out_ms, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve)
+t_ears_err ears_buffer_fade_ms_inplace(t_object *ob, t_buffer_obj *buf, long fade_in_ms, long fade_out_ms, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping)
 {
     float msr = buffer_getmillisamplerate(buf);
     long fade_in_samps = round(fade_in_ms * msr);
     long fade_out_samps = round(fade_out_ms * msr);
     
-    return ears_buffer_fade_inplace(ob, buf, fade_in_samps, fade_out_samps, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve);
+    return ears_buffer_fade_inplace(ob, buf, fade_in_samps, fade_out_samps, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, slopemapping);
 }
 
 
-t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest, t_llll *gains, long *offset_samps, e_ears_normalization_modes normalization_mode)
+t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest, t_llll *gains, long *offset_samps, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -2565,7 +2567,7 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
             
             long this_onset_samps = offset_samps[i] > 0 ? offset_samps[i] : 0;
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., false);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., false, slopemapping);
             for (j = 0; j < num_samples[i]; j++) {
                 double this_gain = ears_envelope_iterator_walk_interp(&eei, j, num_samples[i]);
                 for (c = 0; c < num_channels[i] && c < channelcount; c++)
@@ -2614,7 +2616,7 @@ end:
 }
 
 
-t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode)
+t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping)
 {
     long num_sources = sources_ll->l_size;
     
@@ -2632,7 +2634,7 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
         for (t_llllelem *el = offset_samps_ll->l_head; el; el = el->l_next, i++)
             offset_samps[i] = hatom_getlong(&el->l_hatom);
 
-        t_max_err err = ears_buffer_mix(ob, sources, num_sources, dest, gains, offset_samps, normalization_mode);
+        t_max_err err = ears_buffer_mix(ob, sources, num_sources, dest, gains, offset_samps, normalization_mode, slopemapping);
         bach_freeptr(sources);
         bach_freeptr(offset_samps);
         return err;
@@ -2643,7 +2645,7 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
 
 t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
                               long *xfade_samples, char also_fade_boundaries,
-                              e_ears_fade_types fade_type, double fade_curve)
+                              e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
 
@@ -2652,7 +2654,7 @@ t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sour
         return EARS_ERR_NONE;
     } else if (num_sources == 1) {
         if (also_fade_boundaries)
-            return ears_buffer_fade(ob, source[0], dest, xfade_samples[0], xfade_samples[0], fade_type, fade_type, fade_curve, fade_curve);
+            return ears_buffer_fade(ob, source[0], dest, xfade_samples[0], xfade_samples[0], fade_type, fade_type, fade_curve, fade_curve, slopemapping);
         else
             return ears_buffer_clone(ob, source[0], dest);
     }
@@ -2729,7 +2731,7 @@ t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sour
             for (j = sample_start[i]; j < sample_fadein_end[i]; j++) {
                 long l = j - sample_start[i];
                 for (c = 0; c < channelcount && c < num_channels[i] && l < num_samples[i]; c++) {
-                    dest_sample[j * channelcount + c] += samples[i][l * num_channels[i] + c] * ears_get_fade_in_factor(fade_type, ((float)l)/(sample_fadein_end[i] - sample_start[i]), fade_curve);
+                    dest_sample[j * channelcount + c] += samples[i][l * num_channels[i] + c] * ears_get_fade_in_factor(fade_type, ((float)l)/(sample_fadein_end[i] - sample_start[i]), fade_curve, slopemapping);
                 }
             }
             
@@ -2748,7 +2750,7 @@ t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sour
             for ( ; j < sample_end[i]; j++) {
                 long l = j - sample_start[i];
                 for (c = 0; c < channelcount && c < num_channels[i] && l < num_samples[i]; c++) {
-                    dest_sample[j * channelcount + c] += samples[i][l * num_channels[i] + c] * ears_get_fade_out_factor(fade_type, (sample_end[i] - ((float)j))/(sample_end[i] - sample_fadeout_start[i]), fade_curve);
+                    dest_sample[j * channelcount + c] += samples[i][l * num_channels[i] + c] * ears_get_fade_out_factor(fade_type, (sample_end[i] - ((float)j))/(sample_end[i] - sample_fadeout_start[i]), fade_curve, slopemapping);
                 }
             }
         }
@@ -2940,7 +2942,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
 t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **dest,
                                                 double midicents, double duration_ms, double velocity, t_llll *breakpoints,
                                                 e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
-                                                double middleAtuning, double sr, long buffer_idx)
+                                                double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
     long duration_samps = (long)ceil(duration_ms * (sr/1000.));
@@ -3004,8 +3006,8 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
         }
 
         // building envelope iterators
-        t_ears_envelope_iterator eei_deltapitch = ears_envelope_iterator_create(pitchenv, 0, false);
-        t_ears_envelope_iterator eei_vel = ears_envelope_iterator_create(velocityenv, velocity, false);
+        t_ears_envelope_iterator eei_deltapitch = ears_envelope_iterator_create(pitchenv, 0, false, slopemapping);
+        t_ears_envelope_iterator eei_vel = ears_envelope_iterator_create(velocityenv, velocity, false, slopemapping);
 
         // synthesizing
         double running_phase = 0;
@@ -3366,7 +3368,7 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
 
 t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
                             t_hatom *arguments, long num_arguments,
-                            t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit)
+                            t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -3463,7 +3465,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         if (argtype[i] == 2) {
             eei_envs[i] = llll_clone(hatom_getllll(arguments + i));
             ears_llll_to_env_samples(eei_envs[i], total_length_samps, sr, envtimeunit);
-            eei[i] = ears_envelope_iterator_create(eei_envs[i], 0., false);
+            eei[i] = ears_envelope_iterator_create(eei_envs[i], 0., false, slopemapping);
         }
     }
     

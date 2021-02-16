@@ -154,7 +154,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
 
 
 
-t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *stretchenv, long winsize_samps, char spectral)
+t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *stretchenv, long winsize_samps, char spectral, e_slope_mapping slopemapping)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -189,7 +189,7 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                 orig_sample_wk[i*channelcount + c] *= rescale(i, framecount-end_size, framecount-1, 1., 0.);
         
         // compute output frame count
-        t_ears_envelope_iterator eei = ears_envelope_iterator_create(stretchenv, 0., false);
+        t_ears_envelope_iterator eei = ears_envelope_iterator_create(stretchenv, 0., false, slopemapping);
         long n = 0;
         double start_pos = 0.;
         char have_warned = false;

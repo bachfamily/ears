@@ -137,7 +137,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
-
+    earsbufobj_class_add_slopemapping_attr(c);
     
     CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoaencode, dimension);
     CLASS_ATTR_STYLE_LABEL(c,"dimension",0,"enum","Dimension");
@@ -305,7 +305,7 @@ void buf_hoaencode_bang(t_buf_hoaencode *x)
                          (x->coordinate_type == EARS_COORDINATES_AZR ? "No axial radius defined." : "No distance defined."));
         } else {
             ears_buffer_hoa_encode((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->order,
-                                   x->coordinate_type, coord1_env, coord2_env, coord3_env);
+                                   x->coordinate_type, coord1_env, coord2_env, coord3_env, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(coord1_env);

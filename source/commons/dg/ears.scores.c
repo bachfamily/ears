@@ -277,11 +277,13 @@ char is_slot_temporal_absolute(t_llll *header, long slotnum)
 t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, t_llll *roll_gs, t_buffer_obj *dest,
                                char use_mute_solos, char use_durations,
                                long num_channels,
-                               long filename_slot, long offset_slot, long gain_slot, long pan_slot,
+                               long filename_slot, long offset_slot, long gain_slot, long pan_slot, long rate_slot,
+                               // these two below are currently unused
+                               long ps_slot, long ts_slot,
                                double sr, e_ears_normalization_modes normalization_mode, e_ears_channel_convert_modes convertchannelsmode,
                                double fadein_amount, double fadeout_amount, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type,
                                double fade_in_curve, double fade_out_curve,
-                               e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
+                               t_llll *voice_pan, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
                                double middleAtuning)
@@ -317,8 +319,8 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     ears_buffer_set_sr((t_object *)e_ob, dest, sr);
     ears_buffer_set_numchannels((t_object *)e_ob, dest, num_channels);
     
-    long buffer_index = 1;
-    for (t_llllelem *voice_el = body->l_head; voice_el; voice_el = voice_el->l_next) {
+    long buffer_index = 1, voice_num = 1;
+    for (t_llllelem *voice_el = body->l_head; voice_el; voice_el = voice_el->l_next, voice_num++) {
         if (hatom_gettype(&voice_el->l_hatom) != H_LLLL)
             continue;
         
@@ -374,10 +376,40 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 if (mode == EARS_SCORETOBUF_MODE_SINUSOIDS) {
                     this_err = ears_buffer_synth_from_duration_line((t_object *)e_ob, &buf,
                                                                     note_pitch_cents, note_duration_ms, note_velocity, breakpoints,
-                                                                    veltoamp_mode, amp_vel_min, amp_vel_max, middleAtuning, sr, buffer_index++);
+                                                                    veltoamp_mode, amp_vel_min, amp_vel_max, middleAtuning, sr, buffer_index++, earsbufobj_get_slope_mapping(e_ob));
                 } else if (mode == EARS_SCORETOBUF_MODE_SAMPLING) {
                     t_symbol *filename = get_filename_from_note_llll(note_ll, filename_slot);
                     this_err = ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, sr, buffer_index++);
+                    
+                    if (rate_slot) {
+                        t_llll *rate_ll = get_slot_from_note_llll(note_ll, rate_slot);
+                        if (rate_ll && rate_ll->l_head && is_hatom_number(&rate_ll->l_head->l_hatom)) {
+                            double rate = hatom_getdouble(&rate_ll->l_head->l_hatom);
+                            if (rate != 1)
+                                ears_buffer_resample((t_object *)e_ob, buf, 1./rate, 20);
+                            llll_free(rate_ll);
+                        }
+                    }
+/*                    if (ps_slot || ts_slot) {
+                        t_llll *ps_env = get_slot_from_note_llll(note_ll, ps_slot);
+                        t_llll *ts_env = get_slot_from_note_llll(note_ll, ts_slot);
+                        if (!ps_env) {
+                            ps_env = llll_get();
+                            llll_appendlong(ps_env, 0);
+                        }
+                        if (!ts_env) {
+                            ts_env = llll_get();
+                            llll_appendlong(ps_env, 1);
+                        }
+
+                        ears_llll_to_env_samples(ps_env, ears_ms_to_samps(note_duration_ms, sr), sr, e_ob->l_envtimeunit);
+                        ears_llll_to_env_samples(ts_env, ears_ms_to_samps(note_duration_ms, sr), sr, e_ob->l_envtimeunit);
+                        
+//                        ears_buffer_rubberband((t_object *)e_ob, buf, buf, ts_env, ps_env, buf_rubberband_get_default_options(), 8820, earsbufobj_get_slope_mapping(e_ob));
+                        
+                        llll_free(ps_env);
+                        llll_free(ts_env);
+                    } */
                 }
 
                 // Now a sequence of in-place operations to modify the buffer
@@ -389,7 +421,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     t_llll *gain_env = get_slot_from_note_llll(note_ll, gain_slot);
                     if (gain_env) {
                         t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARSBUFOBJ_TIMEUNIT_SAMPS, gain_min, gain_max, false);
-                        ears_buffer_gain_envelope((t_object *)e_ob, buf, buf, gain_env_remapped, gain_is_in_decibel);
+                        ears_buffer_gain_envelope((t_object *)e_ob, buf, buf, gain_env_remapped, gain_is_in_decibel, earsbufobj_get_slope_mapping(e_ob));
                         llll_free(gain_env_remapped);
                         llll_free(gain_env);
                     }
@@ -399,9 +431,14 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     t_llll *pan_env = get_slot_from_note_llll(note_ll, pan_slot);
                     if (pan_env) {
                         t_llll *pan_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, pan_env, buf, EARSBUFOBJ_TIMEUNIT_SAMPS, pan_min, pan_max, false);
-                        ears_buffer_pan1d_envelope((t_object *)e_ob, buf, buf, num_channels, pan_env_remapped, pan_mode, pan_law, multichannel_pan_aperture, compensate_gain_for_multichannel_to_avoid_clipping);
+                        ears_buffer_pan1d_envelope((t_object *)e_ob, buf, buf, num_channels, pan_env_remapped, pan_mode, pan_law, multichannel_pan_aperture, compensate_gain_for_multichannel_to_avoid_clipping, earsbufobj_get_slope_mapping(e_ob));
                         llll_free(pan_env_remapped);
                         llll_free(pan_env);
+                    }
+                } else if (voice_pan && voice_pan->l_size > 0) {
+                    t_llllelem *pan_el = llll_getindex(voice_pan, voice_num, I_STANDARD);
+                    if (pan_el && is_hatom_number(&pan_el->l_hatom)) {
+                        ears_buffer_pan1d((t_object *)e_ob, buf, buf, num_channels, hatom_getdouble(&pan_el->l_hatom), pan_mode, pan_law, multichannel_pan_aperture, compensate_gain_for_multichannel_to_avoid_clipping);
                     }
                 }
                 
@@ -409,7 +446,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     ears_buffer_convert_numchannels((t_object *)e_ob, buf, num_channels, convertchannelsmode, convertchannelsmode);
                 
                 if (fadein_amount > 0 || fadeout_amount > 0)
-                    ears_buffer_fade((t_object *)e_ob, buf, buf, earsbufobj_input_to_samps(e_ob, fadein_amount, buf), earsbufobj_input_to_samps(e_ob, fadeout_amount, buf), fade_in_type, fade_out_type, fade_in_curve, fade_out_curve);
+                    ears_buffer_fade((t_object *)e_ob, buf, buf, earsbufobj_input_to_samps(e_ob, fadein_amount, buf), earsbufobj_input_to_samps(e_ob, fadeout_amount, buf), fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, earsbufobj_get_slope_mapping(e_ob));
                 
                 if (err == EARS_ERR_NONE && this_err != EARS_ERR_NONE)
                     err = this_err;
@@ -440,7 +477,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
 
     
     // mixing
-    ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode);
+    ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode, earsbufobj_get_slope_mapping(e_ob));
     
     // freeing buffers
     for (t_llllelem *el = sources->l_head; el; el = el->l_next) {

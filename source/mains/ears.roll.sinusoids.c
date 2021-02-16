@@ -67,6 +67,7 @@ typedef struct _buf_roll_sinusoids {
     double      fadeout_curve;
     
     // panning
+    t_llll      *panvoices;
     long        pan_mode; // one of e_ears_pan_modes
     long        pan_law; // one of e_ears_pan_laws
     double      multichannel_spread;
@@ -98,6 +99,8 @@ static t_symbol	*ps_event = NULL;
 
 
 EARSBUFOBJ_ADD_IO_METHODS(roll_sinusoids)
+DEFINE_LLLL_ATTR_DEFAULT_GETTER(t_buf_roll_sinusoids, panvoices, buf_roll_sinusoids_getattr_panvoices);
+DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_roll_sinusoids, panvoices, buf_roll_sinusoids_setattr_panvoices);
 
 
 /**********************************************************************/
@@ -205,7 +208,12 @@ int C74_EXPORT main(void)
     
     CLASS_STICKY_ATTR(c,"category",0,"Pan");
     
-    
+    CLASS_ATTR_LLLL(c, "panvoices", 0, t_buf_roll_sinusoids, panvoices, buf_roll_sinusoids_getattr_panvoices, buf_roll_sinusoids_setattr_panvoices);
+    CLASS_ATTR_STYLE_LABEL(c,"panvoices",0,"text","Per-Voice Panning");
+    CLASS_ATTR_BASIC(c, "panvoices", 0);
+    // @description Sets the panning on a voice-by-voice basis (possibly overridden by the <m>panslot</m>).
+    // A number for each voice is expected
+
     CLASS_ATTR_LONG(c, "panmode", 0, t_buf_roll_sinusoids, pan_mode);
     CLASS_ATTR_STYLE_LABEL(c,"panmode",0,"text","Pan Mode");
     CLASS_ATTR_ENUMINDEX(c,"panmode", 0, "Linear Circular");
@@ -293,6 +301,8 @@ t_buf_roll_sinusoids *buf_roll_sinusoids_new(t_symbol *s, short argc, t_atom *ar
         x->gain_slot = 0;
         x->pan_slot = 0;
         
+        x->panvoices = llll_from_text_buf("");
+
         x->pan_mode = EARS_PAN_MODE_LINEAR;
         x->pan_law = EARS_PAN_LAW_COSINE;
         x->multichannel_spread = 0.;
@@ -340,9 +350,10 @@ void buf_roll_sinusoids_bang(t_buf_roll_sinusoids *x)
 
     earsbufobj_mutex_lock((t_earsbufobj *)x);
     ears_roll_to_buffer((t_earsbufobj *)x, EARS_SCORETOBUF_MODE_SINUSOIDS, roll_gs, outbuf, x->use_mute_solos, true, x->num_channels,
-                        0, 0, x->gain_slot, x->pan_slot, x->sr, (e_ears_normalization_modes)x->normalization_mode, EARS_CHANNELCONVERTMODE_PAN,
+                        0, 0, x->gain_slot, x->pan_slot, 0, 0, 0, x->sr, (e_ears_normalization_modes)x->normalization_mode, EARS_CHANNELCONVERTMODE_PAN,
                         x->fadein_amount, x->fadeout_amount, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type,
                         x->fadein_curve, x->fadeout_curve,
+                        x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
                         (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

@@ -429,12 +429,10 @@
 		1EC43EA424F7BF43006658C4 /* ears.windows.c in Sources */ = {isa = PBXBuildFile; fileRef = 1EC43EA224F7BF42006658C4 /* ears.windows.c */; };
 		1EC43EA524F7BF43006658C4 /* ears.windows.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC43EA324F7BF43006658C4 /* ears.windows.h */; };
 		1EC7AA4E253C4E0D00D72895 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
-		1EC7AA4F253C4E0E00D72895 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
 		1EC7AA50253C4E1000D72895 /* ears.scores.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E459B961FE4417E003A487D /* ears.scores.h */; };
 		1EC7AA51253C4E1100D72895 /* ears.scores.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E459B961FE4417E003A487D /* ears.scores.h */; };
 		1EC7AA56253C4E7700D72895 /* ears.scores.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E459B961FE4417E003A487D /* ears.scores.h */; };
 		1EC7AA58253C4E7700D72895 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
-		1EC7AA5A253C4E7700D72895 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
 		1EC7AA5D253C4E7700D72895 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1EC7AA5E253C4E7700D72895 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1EC7AA66253C4F9900D72895 /* ears.roll.toreaper.c in Sources */ = {isa = PBXBuildFile; fileRef = 1EC7AA65253C4F9800D72895 /* ears.roll.toreaper.c */; };
@@ -445,6 +443,10 @@
 		1ECBF9D71FE1F83D00F71382 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1ECBF9D81FE1F83D00F71382 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1ECBF9E01FE1F87400F71382 /* ears.pack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBF9DF1FE1F87400F71382 /* ears.pack.c */; };
+		1ECE416225D5AA920003CFA2 /* neon_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D763251CA91B0049B6A5 /* neon_mathfun.h */; };
+		1ECE416325D5AA920003CFA2 /* sse_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D764251CA91B0049B6A5 /* sse_mathfun.h */; };
+		1ECE416525D5AE8E0003CFA2 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
+		1ECE416625D5AE940003CFA2 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
 		1ECE7A421FF67D7F005236BE /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1ECE7A461FF67D7F005236BE /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1ECE7A471FF67D7F005236BE /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
@@ -2537,6 +2539,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1ECE416225D5AA920003CFA2 /* neon_mathfun.h in Headers */,
+				1ECE416325D5AA920003CFA2 /* sse_mathfun.h in Headers */,
 				1EC7AA50253C4E1000D72895 /* ears.scores.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4833,7 +4837,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1EC7AA4F253C4E0E00D72895 /* ears.scores.c in Sources */,
+				1ECE416625D5AE940003CFA2 /* ears.scores.c in Sources */,
 				1E3C6886252E250800212E66 /* ears.roll.sinusoids.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5021,7 +5025,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1EC7AA5A253C4E7700D72895 /* ears.scores.c in Sources */,
+				1ECE416525D5AE8E0003CFA2 /* ears.scores.c in Sources */,
 				1EC7AA66253C4F9900D72895 /* ears.roll.toreaper.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

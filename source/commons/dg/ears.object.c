@@ -466,6 +466,8 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_CENTS;
     e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_RADIANS;
     e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+    
+    e_ob->l_slopemapping = k_SLOPE_MAPPING_BACH;
 
     systhread_mutex_new_debug(&e_ob->l_mutex, 0);
     
@@ -1212,6 +1214,16 @@ void earsbufobj_class_add_angleunit_attr(t_class *c)
     // @description Sets the unit for angles: Radians (default), Degrees, or Turns.
 }
 
+
+void earsbufobj_class_add_slopemapping_attr(t_class *c)
+{
+    CLASS_ATTR_LONG(c,"slopemapping",0, t_earsbufobj, l_slopemapping);
+    CLASS_ATTR_STYLE_LABEL(c,"slopemapping",0,"enumindex","Slope Mapping");
+    CLASS_ATTR_ENUMINDEX(c,"slopemapping", 0, "bach Max");
+    // @description Sets the function to be used for slope mapping: either bach (default) or Max.
+}
+
+
 t_max_err earsbufobj_setattr_envtimeunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
@@ -1314,6 +1326,11 @@ void earsbufobj_class_add_naming_attr(t_class *c)
     // @description Chooses the output buffer naming policy
 }
 
+
+e_slope_mapping earsbufobj_get_slope_mapping(t_earsbufobj *e_ob)
+{
+    return (e_slope_mapping)e_ob->l_slopemapping;
+}
 
 t_buffer_ref *earsbufobj_get_inlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx)
 {

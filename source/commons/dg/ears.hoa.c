@@ -85,7 +85,7 @@ void ears_coord_convert(e_ears_coordinate_type from, e_ears_coordinate_type to, 
     }
 }
 
-t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3)
+t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3, e_slope_mapping slopemapping)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -168,17 +168,17 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
             double prev_coord1 = 0, prev_coord2 = 0, prev_coord3 = (coord_type == EARS_COORDINATES_AED ? 1. : 0.);
             
             if (coord1_is_envelope) {
-                coord1_eei = ears_envelope_iterator_create(coord1, 0., false);
+                coord1_eei = ears_envelope_iterator_create(coord1, 0., false, slopemapping);
             } else {
                 prev_coord1 = hatom_getdouble(&coord1->l_head->l_hatom);
             }
             if (coord2_is_envelope) {
-                coord2_eei = ears_envelope_iterator_create(coord2, 0., false);
+                coord2_eei = ears_envelope_iterator_create(coord2, 0., false, slopemapping);
             } else {
                 prev_coord2 = hatom_getdouble(&coord2->l_head->l_hatom);
             }
             if (coord3_is_envelope) {
-                coord3_eei = ears_envelope_iterator_create(coord3, 0., false);
+                coord3_eei = ears_envelope_iterator_create(coord3, 0., false, slopemapping);
             } else {
                 prev_coord3 = hatom_getdouble(&coord3->l_head->l_hatom);
             }
@@ -253,17 +253,17 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
             double prev_coord1 = 0, prev_coord2 = 0, prev_coord3 = (coord_type == EARS_COORDINATES_AED ? 1. : 0.);
             
             if (coord1_is_envelope) {
-                coord1_eei = ears_envelope_iterator_create(coord1, 0., false);
+                coord1_eei = ears_envelope_iterator_create(coord1, 0., false, slopemapping);
             } else {
                 prev_coord1 = hatom_getdouble(&coord1->l_head->l_hatom);
             }
             if (coord2_is_envelope) {
-                coord2_eei = ears_envelope_iterator_create(coord2, 0., false);
+                coord2_eei = ears_envelope_iterator_create(coord2, 0., false, slopemapping);
             } else {
                 prev_coord2 = hatom_getdouble(&coord2->l_head->l_hatom);
             }
             if (coord3_is_envelope) {
-                coord3_eei = ears_envelope_iterator_create(coord3, 0., false);
+                coord3_eei = ears_envelope_iterator_create(coord3, 0., false, slopemapping);
             } else {
                 prev_coord3 = hatom_getdouble(&coord3->l_head->l_hatom);
             }
@@ -271,7 +271,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
             double a, e, d;
             ears_coord_convert(coord_type, EARS_COORDINATES_AED, prev_coord1, prev_coord2, prev_coord3, &a, &e, &d);
 
-            // HOALibrary convention is that angle increase clockwise,
+            // HOALibrary convention is that angle increase counterclockwise,
             // as in Mathematics; however, musical convention often goes the other way around (e.g. in Ircam's spat)
             // we choose the latter
             encoder.setAzimuth(-a);
@@ -562,7 +562,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
 
 
 
-t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *yaw, t_llll *pitch, t_llll *roll)
+t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *yaw, t_llll *pitch, t_llll *roll, e_slope_mapping slopemapping)
 {
     
     if (!source || !dest)
@@ -625,17 +625,17 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
             double y = 0, p = 0, r = 0;
             t_ears_envelope_iterator y_eei, p_eei, r_eei;
             if (yaw_is_envelope)
-                y_eei = ears_envelope_iterator_create(yaw, 0., false);
+                y_eei = ears_envelope_iterator_create(yaw, 0., false, slopemapping);
             else
                 y = hatom_getdouble(&yaw->l_head->l_hatom);
             
             if (pitch_is_envelope)
-                p_eei = ears_envelope_iterator_create(pitch, 0., false);
+                p_eei = ears_envelope_iterator_create(pitch, 0., false, slopemapping);
             else
                 p = hatom_getdouble(&pitch->l_head->l_hatom);
 
             if (roll_is_envelope)
-                r_eei = ears_envelope_iterator_create(roll, 0., false);
+                r_eei = ears_envelope_iterator_create(roll, 0., false, slopemapping);
             else
                 r = hatom_getdouble(&roll->l_head->l_hatom);
 
@@ -706,7 +706,7 @@ void quaternion_to_yawpitchroll(double w, double x, double y, double z, double *
 
 
 
-t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *delta_x, t_llll *delta_y, t_llll *delta_z)
+t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *delta_x, t_llll *delta_y, t_llll *delta_z, e_slope_mapping slopemapping)
 {
     
     if (!source || !dest)
@@ -774,17 +774,17 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
             t_ears_envelope_iterator dx_eei, dy_eei, dz_eei;
             
             if (delta_x_is_envelope)
-                dx_eei = ears_envelope_iterator_create(delta_x, 0., false);
+                dx_eei = ears_envelope_iterator_create(delta_x, 0., false, slopemapping);
             else
                 dx = hatom_getdouble(&delta_x->l_head->l_hatom);
             
             if (delta_y_is_envelope)
-                dy_eei = ears_envelope_iterator_create(delta_y, 0., false);
+                dy_eei = ears_envelope_iterator_create(delta_y, 0., false, slopemapping);
             else
                 dy = hatom_getdouble(&delta_y->l_head->l_hatom);
             
             if (delta_z_is_envelope)
-                dz_eei = ears_envelope_iterator_create(delta_z, 0., false);
+                dz_eei = ears_envelope_iterator_create(delta_z, 0., false, slopemapping);
             else
                 dz = hatom_getdouble(&delta_z->l_head->l_hatom);
 

@@ -124,6 +124,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_pitchunit_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     CLASS_ATTR_LONG(c, "transients", 0, t_buf_rubberband, e_transients);
     CLASS_ATTR_STYLE_LABEL(c,"transients",0,"enumindex","Transient Type");
@@ -257,7 +258,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "pitchmode", 0, t_buf_rubberband, e_pitchmode);
     CLASS_ATTR_STYLE_LABEL(c,"pitchmode",0,"enumindex","Pitch Shift Mode");
     CLASS_ATTR_ENUMINDEX(c,"pitchmode", 0, "High Speed High Quality High Consistency");
-    CLASS_ATTR_DEFAULT(c, "pitchmode", 0, "0");
+    CLASS_ATTR_DEFAULT(c, "pitchmode", 0, "2");
     // @description Control the method used for
     // pitch shifting.  Options are: <br />
     // - <b>High Speed</b> (0): Use a method with a CPU cost
@@ -510,7 +511,7 @@ void buf_rubberband_bang(t_buf_rubberband *x)
             if (in != out)
                 ears_buffer_clone((t_object *)x, in, out);
         } else {
-            ears_buffer_rubberband((t_object *)x, in, out, ts_env, ps_env, buf_rubberband_get_options(x), earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_blocksize, in));
+            ears_buffer_rubberband((t_object *)x, in, out, ts_env, ps_env, buf_rubberband_get_options(x), earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_blocksize, in), earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(ts_env);

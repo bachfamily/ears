@@ -61,6 +61,11 @@ typedef struct _buf_roll_sampling {
     long        offset_slot;
     long        gain_slot;
     long        pan_slot;
+    long        rate_slot;
+    // these two are currently unused
+    long        ps_slot; // pitch shift
+    long        ts_slot; // time stretch
+    
 
     // fades
     double      fadein_amount;
@@ -71,6 +76,7 @@ typedef struct _buf_roll_sampling {
     double      fadeout_curve;
     
     // panning
+    t_llll      *panvoices;
     long        pan_mode; // one of e_ears_pan_modes
     long        pan_law; // one of e_ears_pan_laws
     double      multichannel_spread;
@@ -100,6 +106,8 @@ static t_symbol	*ps_event = NULL;
 
 
 EARSBUFOBJ_ADD_IO_METHODS(roll_sampling)
+DEFINE_LLLL_ATTR_DEFAULT_GETTER(t_buf_roll_sampling, panvoices, buf_roll_sampling_getattr_panvoices);
+DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_roll_sampling, panvoices, buf_roll_sampling_setattr_panvoices);
 
 
 /**********************************************************************/
@@ -159,6 +167,20 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "panslot", 0, t_buf_roll_sampling, pan_slot);
     CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Pan");
     // @description Sets the number of slots containing the file names (0 = none).
+
+    CLASS_ATTR_LONG(c, "rateslot", 0, t_buf_roll_sampling, rate_slot);
+    CLASS_ATTR_STYLE_LABEL(c,"rateslot",0,"text","Slot Containing Rate");
+    // @description Sets the number of slots containing the rate (0 = none).
+
+//    CLASS_ATTR_LONG(c, "psslot", 0, t_buf_roll_sampling, ps_slot);
+//    CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Pitch Shift");
+    // @exclude all
+    // @description Sets the number of slots containing the pitch shift in cents (0 = none).
+
+//    CLASS_ATTR_LONG(c, "tsslot", 0, t_buf_roll_sampling, ts_slot);
+//    CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Time Stretch");
+    // @exclude all
+    // @description Sets the number of slots containing the time stretch as ratio (0 = none).
 
     CLASS_STICKY_ATTR_CLEAR(c, "category");
 
@@ -228,6 +250,12 @@ int C74_EXPORT main(void)
     
     CLASS_STICKY_ATTR(c,"category",0,"Pan");
     
+    
+    CLASS_ATTR_LLLL(c, "panvoices", 0, t_buf_roll_sampling, panvoices, buf_roll_sampling_getattr_panvoices, buf_roll_sampling_setattr_panvoices);
+    CLASS_ATTR_STYLE_LABEL(c,"panvoices",0,"text","Per-Voice Panning");
+    CLASS_ATTR_BASIC(c, "panvoices", 0);
+    // @description Sets the panning on a voice-by-voice basis (possibly overridden by the <m>panslot</m>).
+    // A number for each voice is expected
     
     CLASS_ATTR_LONG(c, "panmode", 0, t_buf_roll_sampling, pan_mode);
     CLASS_ATTR_STYLE_LABEL(c,"panmode",0,"text","Pan Mode");
@@ -319,6 +347,8 @@ t_buf_roll_sampling *buf_roll_sampling_new(t_symbol *s, short argc, t_atom *argv
         x->gain_slot = 0;
         x->pan_slot = 0;
 
+        x->panvoices = llll_from_text_buf("");
+
         x->pan_mode = EARS_PAN_MODE_LINEAR;
         x->pan_law = EARS_PAN_LAW_COSINE;
         x->multichannel_spread = 0.;
@@ -365,10 +395,11 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
 
     earsbufobj_mutex_lock((t_earsbufobj *)x);
     ears_roll_to_buffer((t_earsbufobj *)x, EARS_SCORETOBUF_MODE_SAMPLING, roll_gs, outbuf, x->use_mute_solos, x->use_durations, x->num_channels,
-                        x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->sr, (e_ears_normalization_modes)x->normalization_mode,
+                        x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->rate_slot, x->ps_slot, x->ts_slot, x->sr, (e_ears_normalization_modes)x->normalization_mode,
                         (e_ears_channel_convert_modes)x->channelmode,
                         x->fadein_amount, x->fadeout_amount, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type,
                         x->fadein_curve, x->fadeout_curve,
+                        x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
                         (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

@@ -29,14 +29,14 @@ int ears_ACN_to_order(long ACN);
 void ears_ACN_to_order_and_index(long ACN, int *order, int *index);
 
 
-t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3);
+t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long order, e_ears_coordinate_type coord_type, t_llll *coord1, t_llll *coord2, t_llll *coord3, e_slope_mapping slopemapping);
 
 // In the following functions, order is always inferred by number of source channels
 t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension,
                                   long num_out_channels, double *out_channels_azimuth, double *out_channels_elevation);
 t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, long blockSize);
-t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *yaw, t_llll *pitch, t_llll *roll);
-t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *delta_x, t_llll *delta_y, t_llll *delta_z);
+t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *yaw, t_llll *pitch, t_llll *roll, e_slope_mapping slopemapping);
+t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, t_llll *delta_x, t_llll *delta_y, t_llll *delta_z, e_slope_mapping slopemapping);
 t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, int dimension, int axis);
 
 void quaternion_to_yawpitchroll(double w, double x, double y, double z, double *yaw, double *pitch, double *roll);

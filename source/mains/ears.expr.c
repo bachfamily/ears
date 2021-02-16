@@ -111,6 +111,7 @@ int C74_EXPORT main(void)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     earsbufobj_class_add_envtimeunit_attr(c);
 
@@ -362,7 +363,7 @@ void buf_expr_bang(t_buf_expr *x)
     
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
     ears_buffer_expr((t_object *)x, x->n_lexpr, x->arguments, x->e_ob.l_numins, out, (e_ears_normalization_modes)normalization_mode,
-                     x->e_ob.l_envtimeunit);
+                     x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }

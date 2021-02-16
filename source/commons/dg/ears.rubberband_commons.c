@@ -4,7 +4,22 @@
 #define RUBBERBAND_MAX_RATIO 128
 using namespace RubberBand;
 
-t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *timestretch_factor, t_llll *pitchshift_factor, RubberBandStretcher::Options options, long blocksize_samps)
+RubberBandStretcher::Options buf_rubberband_get_default_options()
+{
+    RubberBand::RubberBandStretcher::Options options = 0;
+    options |= RubberBand::RubberBandStretcher::OptionPitchHighConsistency;
+    options |= RubberBand::RubberBandStretcher::OptionStretchElastic;
+    options |= RubberBand::RubberBandStretcher::OptionTransientsSmooth;
+    options |= RubberBand::RubberBandStretcher::OptionDetectorCompound;
+    options |= RubberBand::RubberBandStretcher::OptionPhaseLaminar;
+    options |= RubberBand::RubberBandStretcher::OptionFormantShifted;
+    options |= RubberBand::RubberBandStretcher::OptionThreadingNever;
+    options |= RubberBand::RubberBandStretcher::OptionWindowStandard;
+    return options;
+}
+
+
+t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *timestretch_factor, t_llll *pitchshift_factor, RubberBandStretcher::Options options, long blocksize_samps, e_slope_mapping slopemapping)
 {
     int mask = (RubberBand::RubberBandStretcher::OptionPitchHighQuality |
                 RubberBand::RubberBandStretcher::OptionPitchHighSpeed |
@@ -29,8 +44,8 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
     else
         options |= RubberBand::RubberBandStretcher::OptionProcessRealTime;
 
-    t_ears_envelope_iterator ts_eei = ears_envelope_iterator_create(timestretch_factor, 0., false);
-    t_ears_envelope_iterator ps_eei = ears_envelope_iterator_create(pitchshift_factor, 0., false);
+    t_ears_envelope_iterator ts_eei = ears_envelope_iterator_create(timestretch_factor, 0., false, slopemapping);
+    t_ears_envelope_iterator ps_eei = ears_envelope_iterator_create(pitchshift_factor, 0., false, slopemapping);
 
 //    double frequencyshift = 1.;
 //    if (pitchshift_cents != 0.0)

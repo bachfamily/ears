@@ -102,6 +102,9 @@ void ears_llll_to_radians(t_llll *out, char angleunit)
 // inplace, destructive! will alter ll
 void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit)
 {
+    if (!ll)
+        return;
+    
     for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             switch (envtimeunit) {
