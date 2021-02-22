@@ -212,7 +212,8 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c,"panvoices",0,"text","Per-Voice Panning");
     CLASS_ATTR_BASIC(c, "panvoices", 0);
     // @description Sets the panning on a voice-by-voice basis (possibly overridden by the <m>panslot</m>).
-    // A number for each voice is expected
+    // A number for each voice is expected, between 0 (first loudspeaker) and 1 (last loudspeaker).
+    // In a standard stereo 0 = left, 1 = right.
 
     CLASS_ATTR_LONG(c, "panmode", 0, t_buf_roll_sinusoids, pan_mode);
     CLASS_ATTR_STYLE_LABEL(c,"panmode",0,"text","Pan Mode");

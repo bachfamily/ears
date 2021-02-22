@@ -221,8 +221,8 @@ int C74_EXPORT main(void)
     
     CLASS_STICKY_ATTR(c,"category",0,"Behavior");
 
-    CLASS_ATTR_CHAR(c, "durations", 0, t_buf_roll_toreaper, use_durations);
-    CLASS_ATTR_STYLE_LABEL(c,"durations",0,"onoff","Account For Note Durations");
+    CLASS_ATTR_CHAR(c, "usedurations", 0, t_buf_roll_toreaper, use_durations);
+    CLASS_ATTR_STYLE_LABEL(c,"usedurations",0,"onoff","Account For Note Durations");
     // @description Toggles the ability to account for note durations while bouncing.
 
     CLASS_ATTR_CHAR(c, "autoxfade", 0, t_buf_roll_toreaper, auto_xfade);

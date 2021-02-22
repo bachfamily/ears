@@ -266,7 +266,7 @@ long ears_resample(float *in, long num_in_frames, float **out, long num_out_fram
                 //rem calculate von Hann Window. Scale and calculate Sinc
                 r_w     = 0.5 - 0.5 * cos(TWOPI*(0.5 + (j - x)/window_width));
                 r_a     = TWOPI*(j - x)*fmax/sr;
-                r_snc   = (r_a != 0 ? r_snc = sin(r_a)/r_a : 1); ///<< sin(r_a) is slow. Do we have other options?
+                r_snc   = (r_a != 0 ? sin(r_a)/r_a : 1); ///<< sin(r_a) is slow. Do we have other options?
                 if (j >= 0 && j < num_in_frames)
                     r_y   = r_y + r_g * r_w * r_snc * in[num_channels * j + ch];
             }

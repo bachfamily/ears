@@ -338,9 +338,6 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
             double onset_ms = chord_ll->l_head ? hatom_getdouble(&chord_ll->l_head->l_hatom) : 0;
             long chord_flag = voice_flag | ((chord_ll->l_tail && hatom_gettype(&chord_ll->l_tail->l_hatom) == H_LONG) ? hatom_getlong(&chord_ll->l_tail->l_hatom) : 0);
             
-            if (!should_be_bounced(there_are_solos, chord_flag))
-                continue;
-
             for (t_llllelem *note_el = chord_ll->l_head; note_el; note_el = note_el->l_next) {
                 if (hatom_gettype(&note_el->l_hatom) != H_LLLL)
                     continue;
@@ -379,16 +376,22 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                                                     veltoamp_mode, amp_vel_min, amp_vel_max, middleAtuning, sr, buffer_index++, earsbufobj_get_slope_mapping(e_ob));
                 } else if (mode == EARS_SCORETOBUF_MODE_SAMPLING) {
                     t_symbol *filename = get_filename_from_note_llll(note_ll, filename_slot);
-                    this_err = ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, sr, buffer_index++);
-                    
+                    double rate = 1.;
+
                     if (rate_slot) {
                         t_llll *rate_ll = get_slot_from_note_llll(note_ll, rate_slot);
-                        if (rate_ll && rate_ll->l_head && is_hatom_number(&rate_ll->l_head->l_hatom)) {
-                            double rate = hatom_getdouble(&rate_ll->l_head->l_hatom);
-                            if (rate != 1)
-                                ears_buffer_resample((t_object *)e_ob, buf, 1./rate, 20);
-                            llll_free(rate_ll);
-                        }
+                        if (rate_ll && rate_ll->l_head && is_hatom_number(&rate_ll->l_head->l_hatom))
+                            rate = hatom_getdouble(&rate_ll->l_head->l_hatom);
+                        llll_free(rate_ll);
+                    }
+                    
+                    if (end > 0 && rate != 1)
+                        end = start + (end-start) * rate;
+
+                    this_err = ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, sr, buffer_index++);
+                    
+                    if (rate != 1) {
+                        ears_buffer_resample((t_object *)e_ob, buf, 1./rate, 11);
                     }
 /*                    if (ps_slot || ts_slot) {
                         t_llll *ps_env = get_slot_from_note_llll(note_ll, ps_slot);

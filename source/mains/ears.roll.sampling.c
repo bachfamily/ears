@@ -144,8 +144,8 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c,"mutesolo",0,"onoff","Account For Muting and Soloing");
     // @description Toggles the ability to account for muting and soloing while bouncing.
 
-    CLASS_ATTR_CHAR(c, "durations", 0, t_buf_roll_sampling, use_durations);
-    CLASS_ATTR_STYLE_LABEL(c,"durations",0,"onoff","Account For Note Durations");
+    CLASS_ATTR_CHAR(c, "usedurations", 0, t_buf_roll_sampling, use_durations);
+    CLASS_ATTR_STYLE_LABEL(c,"usedurations",0,"onoff","Account For Note Durations");
     // @description Toggles the ability to account for note durations while bouncing.
 
     CLASS_STICKY_ATTR(c,"category",0,"Slots");
@@ -255,7 +255,8 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c,"panvoices",0,"text","Per-Voice Panning");
     CLASS_ATTR_BASIC(c, "panvoices", 0);
     // @description Sets the panning on a voice-by-voice basis (possibly overridden by the <m>panslot</m>).
-    // A number for each voice is expected
+    // A number for each voice is expected, between 0 (first loudspeaker) and 1 (last loudspeaker).
+    // In a standard stereo 0 = left, 1 = right.
     
     CLASS_ATTR_LONG(c, "panmode", 0, t_buf_roll_sampling, pan_mode);
     CLASS_ATTR_STYLE_LABEL(c,"panmode",0,"text","Pan Mode");
