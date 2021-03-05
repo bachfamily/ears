@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 0,
+			"minor" : 1,
 			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 98.0, 671.0, 497.0 ],
+		"rect" : [ 100.0, 98.0, 671.0, 507.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,7 @@
 		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontname" : "Arial",
@@ -51,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 671.0, 471.0 ],
+						"rect" : [ 0.0, 26.0, 671.0, 481.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -86,6 +87,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -316,14 +318,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 671.0, 471.0 ],
+						"rect" : [ 0.0, 26.0, 671.0, 481.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -351,6 +353,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bubble" : 1,
@@ -454,8 +457,8 @@
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "bang" ],
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 501.0, 428.0, 118.0, 23.0 ],
 									"text" : "ears.write~"
 								}
@@ -759,14 +762,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 124.0, 671.0, 471.0 ],
+						"rect" : [ 100.0, 124.0, 671.0, 481.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -794,6 +797,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bubble" : 1,
@@ -804,7 +808,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 117.0, 224.0, 169.0, 40.0 ],
+									"patching_rect" : [ 117.0, 244.0, 169.0, 40.0 ],
 									"text" : "Remove all buffers (only keep an empty one)"
 								}
 
@@ -816,7 +820,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 81.375, 232.5, 29.5, 23.0 ],
+									"patching_rect" : [ 81.375, 252.5, 29.5, 23.0 ],
 									"text" : "null"
 								}
 
@@ -828,7 +832,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 556.0, 351.0, 58.0, 23.0 ],
+									"patching_rect" : [ 556.0, 371.0, 58.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80001
 									}
@@ -845,7 +849,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 557.0, 297.5, 90.0, 38.0 ],
+									"patching_rect" : [ 557.0, 317.5, 90.0, 38.0 ],
 									"text" : "bach.path2llll @filesonly 1"
 								}
 
@@ -861,7 +865,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 446.0, 232.5, 107.0, 69.0 ],
+									"patching_rect" : [ 446.0, 252.5, 107.0, 69.0 ],
 									"text" : "Handy usage:\ndrop a folder containing soundfiles"
 								}
 
@@ -873,7 +877,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 557.0, 246.0, 49.0, 42.0 ]
+									"patching_rect" : [ 557.0, 266.0, 49.0, 42.0 ]
 								}
 
 							}
@@ -883,7 +887,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 556.0, 412.0, 36.0, 23.0 ],
+									"patching_rect" : [ 556.0, 432.0, 36.0, 23.0 ],
 									"text" : "print"
 								}
 
@@ -897,7 +901,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 556.0, 381.0, 71.0, 23.0 ],
+									"patching_rect" : [ 556.0, 401.0, 71.0, 23.0 ],
 									"text" : "ears.read~"
 								}
 
@@ -912,7 +916,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 182.0, 179.5, 172.0, 40.0 ],
+									"patching_rect" : [ 182.0, 199.5, 172.0, 40.0 ],
 									"text" : "Append some more files as additional buffers"
 								}
 
@@ -924,7 +928,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 189.0, 335.0, 46.0, 23.0 ],
+									"patching_rect" : [ 189.0, 355.0, 46.0, 23.0 ],
 									"text" : "set $3"
 								}
 
@@ -937,7 +941,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 189.0, 367.0, 70.0, 38.0 ]
+									"patching_rect" : [ 189.0, 387.0, 70.0, 38.0 ]
 								}
 
 							}
@@ -948,7 +952,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 56.0, 188.0, 117.0, 23.0 ],
+									"patching_rect" : [ 56.0, 208.0, 117.0, 23.0 ],
 									"text" : "append cello-f2.aif"
 								}
 
@@ -958,12 +962,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-15",
-									"linecount" : 2,
+									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 81.375, 146.0, 581.25, 36.0 ],
-									"text" : "Filenames must be as absolute paths or alternatively they will be searched in the Max search path.\nAlso supports native import of mp3 files (no explicit conversion).",
+									"patching_rect" : [ 52.375, 146.0, 581.25, 50.0 ],
+									"text" : "Filenames must be as absolute paths or alternatively they will be searched in the Max search path.\nIn addition to the support of all the standard Max audio types (wav, flac, aiff, raw), ears.read also supports natively mp3 files (no temporary file conversion under the hood) and WavPack files (.wv)",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ],
 									"varname" : "u360001384"
 								}
@@ -990,7 +994,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 103.0, 335.0, 46.0, 23.0 ],
+									"patching_rect" : [ 103.0, 355.0, 46.0, 23.0 ],
 									"text" : "set $2"
 								}
 
@@ -1003,7 +1007,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 103.0, 367.0, 70.0, 38.0 ]
+									"patching_rect" : [ 103.0, 387.0, 70.0, 38.0 ]
 								}
 
 							}
@@ -1029,7 +1033,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 103.0, 272.5, 148.0, 40.0 ],
+									"patching_rect" : [ 103.0, 292.5, 148.0, 40.0 ],
 									"text" : "Drag'n'drop audio files also works"
 								}
 
@@ -1040,7 +1044,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 246.0, 335.0, 94.0, 23.0 ],
+									"patching_rect" : [ 246.0, 355.0, 94.0, 23.0 ],
 									"text" : "print BufferList"
 								}
 
@@ -1052,7 +1056,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 16.0, 335.0, 46.0, 23.0 ],
+									"patching_rect" : [ 16.0, 355.0, 46.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -1065,7 +1069,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 16.0, 367.0, 70.0, 38.0 ]
+									"patching_rect" : [ 16.0, 387.0, 70.0, 38.0 ]
 								}
 
 							}
@@ -1082,7 +1086,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 416.0, 377.0, 36.0 ],
+									"patching_rect" : [ 10.0, 436.0, 377.0, 36.0 ],
 									"text" : "Click here to learn about the common features of ears modules, including in-place operations and dynamic allocation."
 								}
 
@@ -1095,7 +1099,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 14.0, 453.0, 152.0, 23.0 ],
+									"patching_rect" : [ 14.0, 473.0, 152.0, 23.0 ],
 									"text" : "load ears.help.commons"
 								}
 
@@ -1122,7 +1126,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 16.0, 282.0, 71.0, 23.0 ],
+									"patching_rect" : [ 16.0, 302.0, 71.0, 23.0 ],
 									"text" : "ears.read~"
 								}
 
@@ -1307,14 +1311,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 671.0, 471.0 ],
+						"rect" : [ 0.0, 26.0, 671.0, 481.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1342,6 +1346,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [  ],
 						"lines" : [  ]
 					}
@@ -1468,6 +1473,14 @@
 			}
 , 			{
 				"name" : "bach.nth.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.textin.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.textout.mxo",
 				"type" : "iLaX"
 			}
 , 			{

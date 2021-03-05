@@ -17,6 +17,7 @@ Dependencies
 
 • bach (https://github.com/bachfamily/bach)
 • the mpg123 library 1.23.4 (released under LGPLv2.1)
+• WavPack (released under BSD license) 
 • for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
 • for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2)
 • for the [ears.rubberband~] module: the Rubberband library (released under GPLv2); a slightly modified version of commit f42a369 is included in the repository; the resampler used is libsamplerate (released under BSD license)

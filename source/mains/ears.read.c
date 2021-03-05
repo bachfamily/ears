@@ -44,6 +44,8 @@
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
+#include "ears.mp3.h"
+#include "ears.wavpack.h"
 
 
 typedef struct _buf_read {
@@ -52,6 +54,8 @@ typedef struct _buf_read {
     char                native_mp3_handling;
     
     t_llll              *filenames;
+    
+    char                mustclear;
 } t_buf_read;
 
 
@@ -138,6 +142,8 @@ int C74_EXPORT main(void)
 
 long buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *view)
 {
+//    long l = jdrag_itemcount(drag);
+    x->mustclear = true;
     if (jdrag_matchdragrole(drag, gensym("audiofile"), 0))  {
         jdrag_object_add(drag, (t_object *)x, gensym("append"));
         return true;
@@ -260,13 +266,20 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                     ears_buffer_read_handle_mp3((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset));
                 } else {
 #endif
-                    // trying to load file into input buffer
-                    earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset, filepath);
                     
-                    if (start > 0 || end > 0) {
-                        double start_samps = start < 0 ? -1 : earsbufobj_input_to_samps((t_earsbufobj *)x, start, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset));
-                        double end_samps = end < 0 ? -1 : earsbufobj_input_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset));
-                        ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset), start_samps, end_samps);
+                    if (ears_filename_ends_with(filepath, ".wv", true)) {
+                        long startsamp = start >= 0 ? earsbufobj_input_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
+                        long endsamp = end >= 0 ? earsbufobj_input_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
+                        ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset));
+                    } else {
+                        // trying to load file into input buffer
+                        earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset, filepath);
+                        
+                        if (start > 0 || end > 0) {
+                            double start_samps = start < 0 ? -1 : earsbufobj_input_to_samps((t_earsbufobj *)x, start, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset));
+                            double end_samps = end < 0 ? -1 : earsbufobj_input_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset));
+                            ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset), start_samps, end_samps);
+                        }
                     }
                     
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
@@ -316,7 +329,9 @@ void buf_read_append(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 {
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, NULL, ac, av);
     if (!parsed) return;
-    buf_read_load(x, parsed, true);
+    buf_read_load(x, parsed, x->mustclear ? false : true);
+    if (x->mustclear)
+        x->mustclear = false;
     llll_free(parsed);
 }
 

@@ -57,6 +57,8 @@ typedef struct _buf_write {
     long               mp3_bitrate;
     long               mp3_bitrate_min;
     long               mp3_bitrate_max;
+    
+    char               use_correction_file;
 } t_buf_write;
 
 
@@ -164,7 +166,7 @@ int C74_EXPORT main(void)
 
     CLASS_ATTR_LONG(c, "bitrate", 0, t_buf_write, mp3_bitrate);
     CLASS_ATTR_STYLE_LABEL(c, "bitrate", 0, "text", "MP3 Bitrate in kbps");
-    // @description Sets the constant or average bitrate for MP3 encoding, in kbps.
+    // @description Sets the constant or average bitrate for MP3 or WavPack encoding, in kbps.
 
     CLASS_ATTR_LONG(c, "minbitrate", 0, t_buf_write, mp3_bitrate_min);
     CLASS_ATTR_STYLE_LABEL(c, "minbitrate", 0, "text", "MP3 Minimum Bitrate in kbps");
@@ -173,6 +175,11 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "maxbitrate", 0, t_buf_write, mp3_bitrate_max);
     CLASS_ATTR_STYLE_LABEL(c, "maxbitrate", 0, "text", "MP3 Maximum Bitrate in kbps");
     // @description Sets the minimum bitrate for MP3 encoding (if applicable), in kbps.
+
+    CLASS_ATTR_CHAR(c, "correction", 0, t_buf_write, use_correction_file);
+    CLASS_ATTR_STYLE_LABEL(c, "correction", 0, "onoff", "Write WavPack correction file");
+    // @description Toggles the ability to write WavPack correction file (according to a <m>bitrate</m> that
+    // needs to be set via the corresponding attribute).
 
     
     class_register(CLASS_BOX, c);
@@ -263,7 +270,7 @@ t_symbol *increment_symbol(t_symbol *base, long index)
     }
 }
 
-void buf_write_fill_encode_settings(t_buf_write *x, t_ears_mp3encoding_settings *settings)
+void buf_write_fill_encode_settings(t_buf_write *x, t_ears_encoding_settings *settings)
 {
     // default:
     settings->vbr_type = EARS_MP3_VBRMODE_VBR;
@@ -285,6 +292,9 @@ void buf_write_fill_encode_settings(t_buf_write *x, t_ears_mp3encoding_settings 
         settings->bitrate_min = x->mp3_bitrate_min;
     if (x->mp3_bitrate_min > 0)
         settings->bitrate_max = x->mp3_bitrate_max;
+    
+    settings->format = x->sampleformat;
+    settings->use_correction_file = x->use_correction_file;
 }
 
 void buf_write_bang(t_buf_write *x)
@@ -317,6 +327,9 @@ void buf_write_bang(t_buf_write *x)
             llll_appendsym(names, increment_symbol(lastname, count++));
     }
     
+    t_ears_encoding_settings settings;
+    buf_write_fill_encode_settings(x, &settings);
+    
     t_llllelem *el; long i;
     t_llll *fullpaths = llll_get();
     for (i = 0, el = names->l_head; i < num_buffers && el; i++, el = el->l_next) {
@@ -328,10 +341,8 @@ void buf_write_bang(t_buf_write *x)
             if (sampleformat != x->sampleformat) {
                 orig_format = sampleformat;
                 ears_buffer_set_sampleformat((t_object *)x, buf, x->sampleformat);
+                settings.format = sampleformat;
             }
-            
-            t_ears_mp3encoding_settings settings;
-            buf_write_fill_encode_settings(x, &settings);
             
             ears_write_buffer(buf, filename, (t_object *)x, &settings);
             llll_appendsym(fullpaths, get_conformed_resolved_path(filename));

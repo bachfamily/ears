@@ -17,6 +17,7 @@
 #define EARS_ERROR_BUF_NO_SEGMENTS "There are no output segments"
 #define EARS_ERROR_BUF_NO_BUFFER_NAMED "There is no buffer named '%s'"
 #define EARS_ERROR_BUF_NO_FILE_NAMED "Can't find file '%s'"
+#define EARS_WARNING_BUF_CANT_SEEK "Can't seek"
 
 #define EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK 10
 #define EARS_MAX_NUM_CHANNELS 2048 // max num channels per buffer
@@ -51,18 +52,22 @@ typedef enum {
     EARS_MP3_VBRMODE_CBR,    ///< Constant bit rate
     EARS_MP3_VBRMODE_ABR,    ///< Average bit rate
     EARS_MP3_VBRMODE_VBR,    ///< Variable bit rate
-} e_ears_mp3encoding_vbrmode;
+} e_ears_mp3_encoding_vbrmode;
 
 
-/** Enconding settings for mp3's
+/** Enconding settings for compressed stuff
     @ingroup mp3 */
-typedef struct _ears_mp3encoding_settings
+typedef struct _ears_encoding_settings
 {
-    e_ears_mp3encoding_vbrmode  vbr_type;
+    e_ears_mp3_encoding_vbrmode  vbr_type;
     int                         bitrate;
     int                         bitrate_max;
     int                         bitrate_min;
-} t_ears_mp3encoding_settings;
+    
+    // For wavpack
+    char        use_correction_file;
+    t_symbol    *format;
+} t_ears_encoding_settings;
 
 
 /** Standard values returned by function calls with a return type of #t_ears_err
@@ -291,7 +296,7 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
 
 
 /// WRITE FILES
-void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_mp3encoding_settings *settings);
+void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings);
 void ears_writeaiff(t_object *buf, t_symbol *filename);
 void ears_writeflac(t_object *buf, t_symbol *filename);
 void ears_writewave(t_object *buf, t_symbol *filename);
@@ -319,8 +324,6 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                                                 double midicents, double duration_ms, double velocity, t_llll *breakpoints,
                                                 e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
                                                 double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping);
-
-long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start_sample, double end_sample, t_buffer_obj *buf);
 
 
 

@@ -394,6 +394,40 @@
 		1E9889D122B52D6F00E744B7 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E9889D222B52D6F00E744B7 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1E9889DC22B52D8B00E744B7 /* ears.offset.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9889DB22B52D8B00E744B7 /* ears.offset.c */; };
+		1E9E8B8525F2B97400F54BC3 /* write_words.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3F25F2AAEE00F54BC3 /* write_words.c */; };
+		1E9E8BAA25F2B97800F54BC3 /* common_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3B25F2AAEE00F54BC3 /* common_utils.c */; };
+		1E9E8BAB25F2B97800F54BC3 /* decorr_tables.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E9E8B4025F2AAEE00F54BC3 /* decorr_tables.h */; };
+		1E9E8BAC25F2B97800F54BC3 /* decorr_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4B25F2AAEF00F54BC3 /* decorr_utils.c */; };
+		1E9E8BAD25F2B97800F54BC3 /* entropy_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4A25F2AAEF00F54BC3 /* entropy_utils.c */; };
+		1E9E8BAE25F2B97800F54BC3 /* extra1.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3825F2AAED00F54BC3 /* extra1.c */; };
+		1E9E8BAF25F2B97800F54BC3 /* extra2.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4325F2AAEE00F54BC3 /* extra2.c */; };
+		1E9E8BB025F2B97800F54BC3 /* open_filename.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4925F2AAEF00F54BC3 /* open_filename.c */; };
+		1E9E8BB125F2B97800F54BC3 /* open_legacy.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5625F2AAF000F54BC3 /* open_legacy.c */; };
+		1E9E8BB225F2B97800F54BC3 /* open_raw.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4225F2AAEE00F54BC3 /* open_raw.c */; };
+		1E9E8BB325F2B97800F54BC3 /* open_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4125F2AAEE00F54BC3 /* open_utils.c */; };
+		1E9E8BB425F2B97800F54BC3 /* pack_dns.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5825F2AAF000F54BC3 /* pack_dns.c */; };
+		1E9E8BB525F2B97800F54BC3 /* pack_dsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4725F2AAEF00F54BC3 /* pack_dsd.c */; };
+		1E9E8BB625F2B97800F54BC3 /* pack_floats.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5225F2AAF000F54BC3 /* pack_floats.c */; };
+		1E9E8BB725F2B97800F54BC3 /* pack_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5525F2AAF000F54BC3 /* pack_utils.c */; };
+		1E9E8BBC25F2B97800F54BC3 /* pack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3A25F2AAEE00F54BC3 /* pack.c */; };
+		1E9E8BBD25F2B97800F54BC3 /* read_words.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4525F2AAEE00F54BC3 /* read_words.c */; };
+		1E9E8BBE25F2B97800F54BC3 /* tag_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3925F2AAED00F54BC3 /* tag_utils.c */; };
+		1E9E8BBF25F2B97800F54BC3 /* tags.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5325F2AAF000F54BC3 /* tags.c */; };
+		1E9E8BC125F2B97800F54BC3 /* unpack_dsd.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B4625F2AAEF00F54BC3 /* unpack_dsd.c */; };
+		1E9E8BC225F2B97800F54BC3 /* unpack_floats.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5425F2AAF000F54BC3 /* unpack_floats.c */; };
+		1E9E8BC325F2B97800F54BC3 /* unpack_seek.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3C25F2AAEE00F54BC3 /* unpack_seek.c */; };
+		1E9E8BC425F2B97800F54BC3 /* unpack_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5125F2AAF000F54BC3 /* unpack_utils.c */; };
+		1E9E8BC925F2B97800F54BC3 /* unpack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3625F2AAED00F54BC3 /* unpack.c */; };
+		1E9E8BCA25F2B97800F54BC3 /* unpack3_open.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3725F2AAED00F54BC3 /* unpack3_open.c */; };
+		1E9E8BCB25F2B97800F54BC3 /* unpack3_seek.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B3E25F2AAEE00F54BC3 /* unpack3_seek.c */; };
+		1E9E8BCC25F2B97800F54BC3 /* unpack3.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8B5025F2AAF000F54BC3 /* unpack3.c */; };
+		1E9E8BCD25F2B97800F54BC3 /* unpack3.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E9E8B3525F2AAED00F54BC3 /* unpack3.h */; };
+		1E9E8BCE25F2B97800F54BC3 /* wavpack_local.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E9E8B3D25F2AAEE00F54BC3 /* wavpack_local.h */; };
+		1E9E8BCF25F2B97800F54BC3 /* wavpack_version.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E9E8B4D25F2AAEF00F54BC3 /* wavpack_version.h */; };
+		1E9E8BD425F2DEAE00F54BC3 /* ears.wavpack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8BD025F2DEAD00F54BC3 /* ears.wavpack.c */; };
+		1E9E8BD525F2DEAE00F54BC3 /* ears.wavpack.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E9E8BD125F2DEAD00F54BC3 /* ears.wavpack.h */; };
+		1E9E8BD625F2DEAE00F54BC3 /* ears.mp3.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E8BD225F2DEAE00F54BC3 /* ears.mp3.c */; };
+		1E9E8BD725F2DEAE00F54BC3 /* ears.mp3.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E9E8BD325F2DEAE00F54BC3 /* ears.mp3.h */; };
 		1EA5935F19767B4D00D3BFFC /* commonsyms.c in Sources */ = {isa = PBXBuildFile; fileRef = 1EDCC52D196AEC8B00638665 /* commonsyms.c */; };
 		1EA5947319767BD000D3BFFC /* bach.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EFC44C1196AEF9C000BDFBF /* bach.h */; };
 		1EB62F231F5B30010099F454 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
@@ -1252,7 +1286,7 @@
 		1E46D721251CA91B0049B6A5 /* float_cast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = float_cast.h; sourceTree = "<group>"; };
 		1E46D722251CA91B0049B6A5 /* StretchCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StretchCalculator.h; sourceTree = "<group>"; };
 		1E46D724251CA91B0049B6A5 /* getopt_long.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getopt_long.c; sourceTree = "<group>"; };
-		1E46D725251CA91B0049B6A5 /* unistd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unistd.h; sourceTree = "<group>"; };
+		1E46D725251CA91B0049B6A5 /* rb_unistd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rb_unistd.h; sourceTree = "<group>"; };
 		1E46D726251CA91B0049B6A5 /* getopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getopt.h; sourceTree = "<group>"; };
 		1E46D727251CA91B0049B6A5 /* getopt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getopt.c; sourceTree = "<group>"; };
 		1E46D729251CA91B0049B6A5 /* ConstantAudioCurve.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConstantAudioCurve.cpp; sourceTree = "<group>"; };
@@ -1377,6 +1411,49 @@
 		1E91FAFD1FCB151F0075DB7A /* ears.reg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.reg.c; path = ../mains/ears.reg.c; sourceTree = SOURCE_ROOT; };
 		1E9889D722B52D6F00E744B7 /* ears.offset~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.offset~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9889DB22B52D8B00E744B7 /* ears.offset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.offset.c; path = ../mains/ears.offset.c; sourceTree = SOURCE_ROOT; };
+		1E9E8B3525F2AAED00F54BC3 /* unpack3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unpack3.h; path = ../lib/WavPack/src/unpack3.h; sourceTree = "<group>"; };
+		1E9E8B3625F2AAED00F54BC3 /* unpack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack.c; path = ../lib/WavPack/src/unpack.c; sourceTree = "<group>"; };
+		1E9E8B3725F2AAED00F54BC3 /* unpack3_open.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack3_open.c; path = ../lib/WavPack/src/unpack3_open.c; sourceTree = "<group>"; };
+		1E9E8B3825F2AAED00F54BC3 /* extra1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extra1.c; path = ../lib/WavPack/src/extra1.c; sourceTree = "<group>"; };
+		1E9E8B3925F2AAED00F54BC3 /* tag_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tag_utils.c; path = ../lib/WavPack/src/tag_utils.c; sourceTree = "<group>"; };
+		1E9E8B3A25F2AAEE00F54BC3 /* pack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack.c; path = ../lib/WavPack/src/pack.c; sourceTree = "<group>"; };
+		1E9E8B3B25F2AAEE00F54BC3 /* common_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = common_utils.c; path = ../lib/WavPack/src/common_utils.c; sourceTree = "<group>"; };
+		1E9E8B3C25F2AAEE00F54BC3 /* unpack_seek.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack_seek.c; path = ../lib/WavPack/src/unpack_seek.c; sourceTree = "<group>"; };
+		1E9E8B3D25F2AAEE00F54BC3 /* wavpack_local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wavpack_local.h; path = ../lib/WavPack/src/wavpack_local.h; sourceTree = "<group>"; };
+		1E9E8B3E25F2AAEE00F54BC3 /* unpack3_seek.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack3_seek.c; path = ../lib/WavPack/src/unpack3_seek.c; sourceTree = "<group>"; };
+		1E9E8B3F25F2AAEE00F54BC3 /* write_words.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = write_words.c; path = ../lib/WavPack/src/write_words.c; sourceTree = "<group>"; };
+		1E9E8B4025F2AAEE00F54BC3 /* decorr_tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decorr_tables.h; path = ../lib/WavPack/src/decorr_tables.h; sourceTree = "<group>"; };
+		1E9E8B4125F2AAEE00F54BC3 /* open_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = open_utils.c; path = ../lib/WavPack/src/open_utils.c; sourceTree = "<group>"; };
+		1E9E8B4225F2AAEE00F54BC3 /* open_raw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = open_raw.c; path = ../lib/WavPack/src/open_raw.c; sourceTree = "<group>"; };
+		1E9E8B4325F2AAEE00F54BC3 /* extra2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extra2.c; path = ../lib/WavPack/src/extra2.c; sourceTree = "<group>"; };
+		1E9E8B4425F2AAEE00F54BC3 /* pack_x86.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = pack_x86.asm; path = ../lib/WavPack/src/pack_x86.asm; sourceTree = "<group>"; };
+		1E9E8B4525F2AAEE00F54BC3 /* read_words.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = read_words.c; path = ../lib/WavPack/src/read_words.c; sourceTree = "<group>"; };
+		1E9E8B4625F2AAEF00F54BC3 /* unpack_dsd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack_dsd.c; path = ../lib/WavPack/src/unpack_dsd.c; sourceTree = "<group>"; };
+		1E9E8B4725F2AAEF00F54BC3 /* pack_dsd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack_dsd.c; path = ../lib/WavPack/src/pack_dsd.c; sourceTree = "<group>"; };
+		1E9E8B4825F2AAEF00F54BC3 /* unpack_x64.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = unpack_x64.asm; path = ../lib/WavPack/src/unpack_x64.asm; sourceTree = "<group>"; };
+		1E9E8B4925F2AAEF00F54BC3 /* open_filename.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = open_filename.c; path = ../lib/WavPack/src/open_filename.c; sourceTree = "<group>"; };
+		1E9E8B4A25F2AAEF00F54BC3 /* entropy_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = entropy_utils.c; path = ../lib/WavPack/src/entropy_utils.c; sourceTree = "<group>"; };
+		1E9E8B4B25F2AAEF00F54BC3 /* decorr_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = decorr_utils.c; path = ../lib/WavPack/src/decorr_utils.c; sourceTree = "<group>"; };
+		1E9E8B4C25F2AAEF00F54BC3 /* pack_x64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = pack_x64.S; path = ../lib/WavPack/src/pack_x64.S; sourceTree = "<group>"; };
+		1E9E8B4D25F2AAEF00F54BC3 /* wavpack_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wavpack_version.h; path = ../lib/WavPack/src/wavpack_version.h; sourceTree = "<group>"; };
+		1E9E8B4E25F2AAEF00F54BC3 /* pack_x86.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = pack_x86.S; path = ../lib/WavPack/src/pack_x86.S; sourceTree = "<group>"; };
+		1E9E8B4F25F2AAEF00F54BC3 /* unpack_x86.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = unpack_x86.asm; path = ../lib/WavPack/src/unpack_x86.asm; sourceTree = "<group>"; };
+		1E9E8B5025F2AAF000F54BC3 /* unpack3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack3.c; path = ../lib/WavPack/src/unpack3.c; sourceTree = "<group>"; };
+		1E9E8B5125F2AAF000F54BC3 /* unpack_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack_utils.c; path = ../lib/WavPack/src/unpack_utils.c; sourceTree = "<group>"; };
+		1E9E8B5225F2AAF000F54BC3 /* pack_floats.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack_floats.c; path = ../lib/WavPack/src/pack_floats.c; sourceTree = "<group>"; };
+		1E9E8B5325F2AAF000F54BC3 /* tags.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tags.c; path = ../lib/WavPack/src/tags.c; sourceTree = "<group>"; };
+		1E9E8B5425F2AAF000F54BC3 /* unpack_floats.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unpack_floats.c; path = ../lib/WavPack/src/unpack_floats.c; sourceTree = "<group>"; };
+		1E9E8B5525F2AAF000F54BC3 /* pack_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack_utils.c; path = ../lib/WavPack/src/pack_utils.c; sourceTree = "<group>"; };
+		1E9E8B5625F2AAF000F54BC3 /* open_legacy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = open_legacy.c; path = ../lib/WavPack/src/open_legacy.c; sourceTree = "<group>"; };
+		1E9E8B5725F2AAF000F54BC3 /* unpack_x86.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = unpack_x86.S; path = ../lib/WavPack/src/unpack_x86.S; sourceTree = "<group>"; };
+		1E9E8B5825F2AAF000F54BC3 /* pack_dns.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack_dns.c; path = ../lib/WavPack/src/pack_dns.c; sourceTree = "<group>"; };
+		1E9E8B5925F2AAF000F54BC3 /* unpack_armv7.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = unpack_armv7.S; path = ../lib/WavPack/src/unpack_armv7.S; sourceTree = "<group>"; };
+		1E9E8B5A25F2AAF100F54BC3 /* unpack_x64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = unpack_x64.S; path = ../lib/WavPack/src/unpack_x64.S; sourceTree = "<group>"; };
+		1E9E8B5B25F2AAF100F54BC3 /* pack_x64.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = pack_x64.asm; path = ../lib/WavPack/src/pack_x64.asm; sourceTree = "<group>"; };
+		1E9E8BD025F2DEAD00F54BC3 /* ears.wavpack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.wavpack.c; path = ../commons/dg/ears.wavpack.c; sourceTree = "<group>"; };
+		1E9E8BD125F2DEAD00F54BC3 /* ears.wavpack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.wavpack.h; path = ../commons/dg/ears.wavpack.h; sourceTree = "<group>"; };
+		1E9E8BD225F2DEAE00F54BC3 /* ears.mp3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.mp3.c; path = ../commons/dg/ears.mp3.c; sourceTree = "<group>"; };
+		1E9E8BD325F2DEAE00F54BC3 /* ears.mp3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.mp3.h; path = ../commons/dg/ears.mp3.h; sourceTree = "<group>"; };
 		1EA955BE201E55BB007A1E92 /* ears.writetags.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = ears.writetags.c; path = ../mains/ears.writetags.c; sourceTree = SOURCE_ROOT; };
 		1EB62F2D1F5B30010099F454 /* ears.normalize~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.normalize~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EB62F311F5B301E0099F454 /* ears.normalize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.normalize.c; path = ../mains/ears.normalize.c; sourceTree = SOURCE_ROOT; };
@@ -2028,7 +2105,7 @@
 			isa = PBXGroup;
 			children = (
 				1E46D724251CA91B0049B6A5 /* getopt_long.c */,
-				1E46D725251CA91B0049B6A5 /* unistd.h */,
+				1E46D725251CA91B0049B6A5 /* rb_unistd.h */,
 				1E46D726251CA91B0049B6A5 /* getopt.h */,
 				1E46D727251CA91B0049B6A5 /* getopt.c */,
 			);
@@ -2212,6 +2289,52 @@
 			name = Source;
 			sourceTree = SOURCE_ROOT;
 		};
+		1E9E8B3425F2AAD200F54BC3 /* WavPack */ = {
+			isa = PBXGroup;
+			children = (
+				1E9E8B3B25F2AAEE00F54BC3 /* common_utils.c */,
+				1E9E8B4025F2AAEE00F54BC3 /* decorr_tables.h */,
+				1E9E8B4B25F2AAEF00F54BC3 /* decorr_utils.c */,
+				1E9E8B4A25F2AAEF00F54BC3 /* entropy_utils.c */,
+				1E9E8B3825F2AAED00F54BC3 /* extra1.c */,
+				1E9E8B4325F2AAEE00F54BC3 /* extra2.c */,
+				1E9E8B4925F2AAEF00F54BC3 /* open_filename.c */,
+				1E9E8B5625F2AAF000F54BC3 /* open_legacy.c */,
+				1E9E8B4225F2AAEE00F54BC3 /* open_raw.c */,
+				1E9E8B4125F2AAEE00F54BC3 /* open_utils.c */,
+				1E9E8B5825F2AAF000F54BC3 /* pack_dns.c */,
+				1E9E8B4725F2AAEF00F54BC3 /* pack_dsd.c */,
+				1E9E8B5225F2AAF000F54BC3 /* pack_floats.c */,
+				1E9E8B5525F2AAF000F54BC3 /* pack_utils.c */,
+				1E9E8B5B25F2AAF100F54BC3 /* pack_x64.asm */,
+				1E9E8B4C25F2AAEF00F54BC3 /* pack_x64.S */,
+				1E9E8B4425F2AAEE00F54BC3 /* pack_x86.asm */,
+				1E9E8B4E25F2AAEF00F54BC3 /* pack_x86.S */,
+				1E9E8B3A25F2AAEE00F54BC3 /* pack.c */,
+				1E9E8B4525F2AAEE00F54BC3 /* read_words.c */,
+				1E9E8B3925F2AAED00F54BC3 /* tag_utils.c */,
+				1E9E8B5325F2AAF000F54BC3 /* tags.c */,
+				1E9E8B5925F2AAF000F54BC3 /* unpack_armv7.S */,
+				1E9E8B4625F2AAEF00F54BC3 /* unpack_dsd.c */,
+				1E9E8B5425F2AAF000F54BC3 /* unpack_floats.c */,
+				1E9E8B3C25F2AAEE00F54BC3 /* unpack_seek.c */,
+				1E9E8B5125F2AAF000F54BC3 /* unpack_utils.c */,
+				1E9E8B4825F2AAEF00F54BC3 /* unpack_x64.asm */,
+				1E9E8B5A25F2AAF100F54BC3 /* unpack_x64.S */,
+				1E9E8B4F25F2AAEF00F54BC3 /* unpack_x86.asm */,
+				1E9E8B5725F2AAF000F54BC3 /* unpack_x86.S */,
+				1E9E8B3625F2AAED00F54BC3 /* unpack.c */,
+				1E9E8B3725F2AAED00F54BC3 /* unpack3_open.c */,
+				1E9E8B3E25F2AAEE00F54BC3 /* unpack3_seek.c */,
+				1E9E8B5025F2AAF000F54BC3 /* unpack3.c */,
+				1E9E8B3525F2AAED00F54BC3 /* unpack3.h */,
+				1E9E8B3D25F2AAEE00F54BC3 /* wavpack_local.h */,
+				1E9E8B4D25F2AAEF00F54BC3 /* wavpack_version.h */,
+				1E9E8B3F25F2AAEE00F54BC3 /* write_words.c */,
+			);
+			name = WavPack;
+			sourceTree = "<group>";
+		};
 		1EB91C52190C00D400E05E70 /* commons */ = {
 			isa = PBXGroup;
 			children = (
@@ -2237,6 +2360,10 @@
 				1EBE31DC22EDE97D0090BBFE /* ears.spectral.h */,
 				1EC43EA224F7BF42006658C4 /* ears.windows.c */,
 				1EC43EA324F7BF43006658C4 /* ears.windows.h */,
+				1E9E8BD225F2DEAE00F54BC3 /* ears.mp3.c */,
+				1E9E8BD325F2DEAE00F54BC3 /* ears.mp3.h */,
+				1E9E8BD025F2DEAD00F54BC3 /* ears.wavpack.c */,
+				1E9E8BD125F2DEAD00F54BC3 /* ears.wavpack.h */,
 			);
 			name = commons;
 			sourceTree = SOURCE_ROOT;
@@ -2300,6 +2427,7 @@
 		1EFC4354196AEEA4000BDFBF /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				1E9E8B3425F2AAD200F54BC3 /* WavPack */,
 				1E46D712251CA8F50049B6A5 /* rubberband */,
 				1E5F7D6424FC27EF00042C4B /* hoalibrary */,
 				1E1D8E4122B18607003699A6 /* freeverb */,
@@ -2781,12 +2909,18 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E9E8BD525F2DEAE00F54BC3 /* ears.wavpack.h in Headers */,
 				1EA5947319767BD000D3BFFC /* bach.h in Headers */,
+				1E9E8BCE25F2B97800F54BC3 /* wavpack_local.h in Headers */,
+				1E9E8BD725F2DEAE00F54BC3 /* ears.mp3.h in Headers */,
 				1EC43EA524F7BF43006658C4 /* ears.windows.h in Headers */,
 				1E21E90C21D6836E0044249A /* ears_doc_substitutions.h in Headers */,
 				1EF09BC41D370B7D00CCC3C3 /* ears.conversions.h in Headers */,
 				1EBE3E501D368FB1009B7392 /* ears.object.h in Headers */,
+				1E9E8BAB25F2B97800F54BC3 /* decorr_tables.h in Headers */,
+				1E9E8BCD25F2B97800F54BC3 /* unpack3.h in Headers */,
 				1E21E90B21D6836E0044249A /* ears_doc_commons.h in Headers */,
+				1E9E8BCF25F2B97800F54BC3 /* wavpack_version.h in Headers */,
 				1EBE3E4B1D368108009B7392 /* ears.commons.h in Headers */,
 				1E5D94B71D39B2D800BFB88E /* ears.utils.h in Headers */,
 			);
@@ -5066,15 +5200,43 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E9E8BB225F2B97800F54BC3 /* open_raw.c in Sources */,
 				1E32F23C2388A2F3000B0DEC /* ears.spectral.c in Sources */,
+				1E9E8BBD25F2B97800F54BC3 /* read_words.c in Sources */,
 				1EA5935F19767B4D00D3BFFC /* commonsyms.c in Sources */,
+				1E9E8BD625F2DEAE00F54BC3 /* ears.mp3.c in Sources */,
+				1E9E8BC425F2B97800F54BC3 /* unpack_utils.c in Sources */,
+				1E9E8BB025F2B97800F54BC3 /* open_filename.c in Sources */,
+				1E9E8BC125F2B97800F54BC3 /* unpack_dsd.c in Sources */,
+				1E9E8BC325F2B97800F54BC3 /* unpack_seek.c in Sources */,
+				1E9E8BCA25F2B97800F54BC3 /* unpack3_open.c in Sources */,
+				1E9E8BBE25F2B97800F54BC3 /* tag_utils.c in Sources */,
+				1E9E8BAA25F2B97800F54BC3 /* common_utils.c in Sources */,
+				1E9E8BB625F2B97800F54BC3 /* pack_floats.c in Sources */,
+				1E9E8B8525F2B97400F54BC3 /* write_words.c in Sources */,
+				1E9E8BB425F2B97800F54BC3 /* pack_dns.c in Sources */,
+				1E9E8BAD25F2B97800F54BC3 /* entropy_utils.c in Sources */,
 				1EF09BC31D370B7D00CCC3C3 /* ears.conversions.c in Sources */,
 				1EC43EA424F7BF43006658C4 /* ears.windows.c in Sources */,
+				1E9E8BBF25F2B97800F54BC3 /* tags.c in Sources */,
+				1E9E8BB325F2B97800F54BC3 /* open_utils.c in Sources */,
+				1E9E8BC225F2B97800F54BC3 /* unpack_floats.c in Sources */,
+				1E9E8BAF25F2B97800F54BC3 /* extra2.c in Sources */,
+				1E9E8BCC25F2B97800F54BC3 /* unpack3.c in Sources */,
+				1E9E8BAC25F2B97800F54BC3 /* decorr_utils.c in Sources */,
+				1E9E8BAE25F2B97800F54BC3 /* extra1.c in Sources */,
+				1E9E8BB725F2B97800F54BC3 /* pack_utils.c in Sources */,
+				1E9E8BD425F2DEAE00F54BC3 /* ears.wavpack.c in Sources */,
 				1EBE3E4F1D368FB1009B7392 /* ears.object.c in Sources */,
+				1E9E8BC925F2B97800F54BC3 /* unpack.c in Sources */,
 				1E32F23E2388A2F3000B0DEC /* ears.rubberband_commons.c in Sources */,
+				1E9E8BB525F2B97800F54BC3 /* pack_dsd.c in Sources */,
+				1E9E8BB125F2B97800F54BC3 /* open_legacy.c in Sources */,
 				1E32F23D2388A2F3000B0DEC /* ears.freeverb_commons.c in Sources */,
 				1EBE3E481D3680D1009B7392 /* ears.commons.c in Sources */,
 				1E5D94B61D39B2D800BFB88E /* ears.utils.c in Sources */,
+				1E9E8BCB25F2B97800F54BC3 /* unpack3_seek.c in Sources */,
+				1E9E8BBC25F2B97800F54BC3 /* pack.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7056,6 +7218,7 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../lib/WavPack/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7092,6 +7255,7 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../lib/WavPack/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8844,7 +9008,9 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
+					/usr/local/include,
+					"\"$(SRCROOT)/../lib/WavPack/include\"",
+					"\"$(SRCROOT)/../lib/WavPack/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8885,7 +9051,9 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
-					/usr/local/include/,
+					/usr/local/include,
+					"\"$(SRCROOT)/../lib/WavPack/include\"",
+					"\"$(SRCROOT)/../lib/WavPack/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
