@@ -150,6 +150,22 @@ t_max_err buf_roll_toreaper_setattr_format(t_buf_roll_toreaper *x, void *attr, l
 }
 
 
+void buf_roll_toreaper_open(t_buf_roll_toreaper *x)
+{
+    char cmd[2048];
+    t_symbol *outfile_resolved = x->outfile && strlen(x->outfile->s_name) > 0 ? ears_ezlocate_file(x->outfile, NULL) : NULL;
+    if (outfile_resolved && strlen(outfile_resolved->s_name) > 0) {
+        snprintf_zero(cmd, 2048, "open %s", outfile_resolved->s_name);
+        system(cmd);
+    }
+}
+
+void buf_roll_toreaper_dblclick(t_buf_roll_toreaper *x)
+{
+    buf_roll_toreaper_open(x);
+}
+
+
 /**********************************************************************/
 // Class Definition and Life Cycle
 
@@ -174,6 +190,15 @@ int C74_EXPORT main(void)
                          0L);
     
     EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(roll_toreaper)
+    
+    // @method (mouse) @digest Open the exported session.
+    // @description Double-clicking opens the exported session in Reaper.
+    class_addmethod(c, (method)buf_roll_toreaper_dblclick,                    "dblclick",                A_CANT,   0);
+
+    // @method open @digest Open the exported session.
+    // @description Opens the exported session in Reaper.
+    class_addmethod(c, (method)buf_roll_toreaper_open,                    "open", 0);
+
     
     earsbufobj_class_add_timeunit_attr(c);
     

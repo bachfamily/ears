@@ -658,6 +658,8 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
 
     if (auto_xfade) {
         filecontent << "  AUTOXFADE 1" << std::endl;
+    } else {
+        filecontent << "  ITEMMIX 1" << std::endl;
     }
 
     if (copy_media) {
@@ -865,8 +867,8 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                     }
                 }
 
-                filecontent << "      FADEIN " << ears_fade_type_to_reaper_type(fade_in_type) << " " << fade_in_ms/1000. << " " << fade_in_curve << " "  << ears_fade_type_to_reaper_type(fade_in_type) << " 0 0" << std::endl;
-                filecontent << "      FADEOUT "  << ears_fade_type_to_reaper_type(fade_out_type) << " " << fade_out_ms/1000. << " " << fade_out_curve << " " << ears_fade_type_to_reaper_type(fade_out_type) << " 0 0" << std::endl;
+                filecontent << "      FADEIN " << ears_fade_type_to_reaper_type(fade_in_type) << " " << fade_in_ms/1000. << " " << fade_in_curve << " "  << ears_fade_type_to_reaper_type(fade_in_type) << " 0 " << fade_in_curve << std::endl;
+                filecontent << "      FADEOUT "  << ears_fade_type_to_reaper_type(fade_out_type) << " " << fade_out_ms/1000. << " " << fade_out_curve << " " << ears_fade_type_to_reaper_type(fade_out_type) << " 0 "  << fade_out_curve << std::endl;
                 
                 double playrate = 1./get_slot_from_note_as_double(note_ll, timestretch_slot, 1.);
                 double transp = get_slot_from_note_as_double(note_ll, transp_slot, 0.)/100.;
