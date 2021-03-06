@@ -279,9 +279,9 @@ void buf_write_fill_encode_settings(t_buf_write *x, t_ears_encoding_settings *se
     settings->bitrate_min = 0;
     settings->bitrate_max = 0;
 
-    if (x->mp3_vbrmode == gensym("CBR"))
+    if (x->mp3_vbrmode == gensym("CBR") || x->mp3_vbrmode == gensym("cbr"))
         settings->vbr_type = EARS_MP3_VBRMODE_CBR;
-    else if (x->mp3_vbrmode == gensym("ABR"))
+    else if (x->mp3_vbrmode == gensym("ABR") || x->mp3_vbrmode == gensym("abr"))
         settings->vbr_type = EARS_MP3_VBRMODE_ABR;
     else
         settings->vbr_type = EARS_MP3_VBRMODE_VBR;
@@ -344,7 +344,7 @@ void buf_write_bang(t_buf_write *x)
                 settings.format = sampleformat;
             }
             
-            ears_write_buffer(buf, filename, (t_object *)x, &settings);
+            ears_buffer_write(buf, filename, (t_object *)x, &settings);
             llll_appendsym(fullpaths, get_conformed_resolved_path(filename));
             
             if (orig_format)

@@ -22,7 +22,6 @@
 <refpage name='ears.channel~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
-<refpage name='ears.shift~.maxref.xml'/>
 <refpage name='ears.roll.sinusoids~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
 <refpage name='ears.envelope~.maxref.xml'/>
@@ -38,6 +37,7 @@
 <refpage name='ears.trim~.maxref.xml'/>
 <refpage name='ears.normalize~.maxref.xml'/>
 <refpage name='ears.writetags.maxref.xml'/>
+<refpage name='ears.offset~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
 <refpage name='ears.overdrive~.maxref.xml'/>
 <refpage name='ears.roll.sampling~.maxref.xml'/>

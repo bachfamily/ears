@@ -3550,7 +3550,7 @@ const char *get_filename_ext(const char *filename)
     return dot + 1;
 }
 
-void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings)
+void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings)
 {
     const char *ext = get_filename_ext(filename->s_name);
     if (!strcmp(ext, "aif") || !strcmp(ext, "aiff"))

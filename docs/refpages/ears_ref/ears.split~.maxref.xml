@@ -95,16 +95,24 @@
 			</digest>
 			<description>
 				A list or llll in the first inlet with buffer names will trigger the slicing; the right portion of buffers is
-				output from the left outlet, and left portion of buffers is output from the left outlet.
+				output from the left outlet, and left portion of buffers is output from the left outlet. <br />
+				A number, list or llll in the second inlet sets the split parameter(s): <br />
+				in Duration mode: the duration (unit set by <m>timeunit</m> attribute); <br />
+				in Number mode: the number of output segments; <br />
+				in List mode: the position of split points (unit set by <m>timeunit</m> attribute); <br />
+				in Silence mode: amplitude threshold for silence (unit set by <m>ampunit</m> attribute)
+				and the minimum silence duration (unit set by <m>timeunit</m> attribute); <br />
+				in Onset mode: amplitude threshold for attacks (unit set by <m>ampunit</m> attribute)
+				and the minimum distance between attacks (unit set by <m>timeunit</m> attribute); <br />
 			</description>
 		</method>
 		<method name="number">
 			<arglist />
 			<digest>
-				Set split position
+				Set split parameter
 			</digest>
 			<description>
-				A number in the second inlet sets the split position (in the unit defined by the <m>timeunit</m> attribute).
+				A number in the second inlet sets the split parameter (see <m>list/llll</m>).
 			</description>
 		</method>
 		<method name="reset">
@@ -119,7 +127,7 @@
 			</description>
 		</method>
 		<method name="write">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as audio file
 			</digest>
@@ -128,14 +136,16 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeaiff">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as AIFF file
 			</digest>
@@ -144,14 +154,16 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeflac">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as FLAC file
 			</digest>
@@ -160,14 +172,37 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writemp3">
+			<arg name="" optional="1" type="symbol" />
+			<digest>
+				Save output as MP3 file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@vbrmode</m> (symbol, default: VBR): Variable bit rate mode ("VBR", "CBR" or "ABR")<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@minbitrate</m> (int): Minimum bitrate in kbps<br />
+				<m>@maxbitrate</m> (int): Maximum bitrate in kbps<br />
+				<br />
+				Save the buffer as lossy compressed MP3 file.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional message attributes specify the encoding properties (VBR mode, bitrates). <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeraw">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as raw file with no header
 			</digest>
@@ -176,14 +211,38 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeraw">
+			<arg name="instance-index" optional="1" type="symbol" />
+			<digest>
+				Save output as WavPack file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@correction</m> (int, default: 0): Write correction file along with a lossy wv file<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				Save the buffer as lossless WavPack compression, or as lossy WavPack compression along with a
+				correction file (if the <m>correction</m> message attribute is set to 1). In this last case, a <m>bitrate</m>
+				message attribute specifies the bitrate of the lossy .wv file in kbps.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Optional message attributes specify the encoding properties (correction, bitrate, sample format). <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writewave">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as WAV file
 			</digest>
@@ -192,7 +251,9 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -220,7 +281,8 @@
 				Keep Silence
 			</digest>
 			<description>
-				Toggles the ability to keep the trailing silence in <b>Silence</b> <m>mode</m>.
+				Toggles the ability to keep the trailing silence in <b>Silence</b> <m>mode</m>,
+				or the portion of buffer before the first attack in <b>Onset</b> mode.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Keep Silence" />
@@ -237,6 +299,7 @@
 				1 (Number): buffer is split into a fixed number of buffers (such number is set); <br />
 				2 (List): buffer is split via a series of split points given as parameter (right inlet); <br />
 				3 (Silence): buffer is split according to silence regions. <br />
+				4 (Onset): buffer is split according to onset thresholds (set in the right inlet). <br />
 				Symbols: "duration", "number", "list" and "silence" can be used while defining the attribute in the object box.
 			</description>
 			<attributelist>

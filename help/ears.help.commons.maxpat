@@ -111,7 +111,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 286.5, 238.5, 167.0, 40.0 ],
-									"presentation_linecount" : 2,
 									"text" : "See the \"units\" tab to know more about units"
 								}
 
@@ -414,9 +413,9 @@
 , 											{
 												"name" : "Default M4L",
 												"default" : 												{
-													"fontname" : [ "Arial Bold" ],
+													"fontsize" : [ 11.0 ],
 													"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-													"fontsize" : [ 11.0 ]
+													"fontname" : [ "Arial Bold" ]
 												}
 ,
 												"parentstyle" : "",
@@ -425,9 +424,9 @@
 , 											{
 												"name" : "Default M4L Poletti",
 												"default" : 												{
-													"fontname" : [ "Arial Bold" ],
+													"fontsize" : [ 10.0 ],
 													"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-													"fontsize" : [ 10.0 ]
+													"fontname" : [ "Arial Bold" ]
 												}
 ,
 												"parentstyle" : "",
@@ -436,7 +435,8 @@
 , 											{
 												"name" : "Default M4L-1",
 												"default" : 												{
-													"fontname" : [ "Arial" ],
+													"fontface" : [ 1 ],
+													"fontsize" : [ 11.0 ],
 													"bgfillcolor" : 													{
 														"type" : "gradient",
 														"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -446,8 +446,7 @@
 														"proportion" : 0.39
 													}
 ,
-													"fontface" : [ 1 ],
-													"fontsize" : [ 11.0 ]
+													"fontname" : [ "Arial" ]
 												}
 ,
 												"parentstyle" : "",
@@ -473,7 +472,7 @@
 , 											{
 												"name" : "jbb",
 												"default" : 												{
-													"fontname" : [ "Arial" ],
+													"fontsize" : [ 9.0 ],
 													"bgfillcolor" : 													{
 														"type" : "gradient",
 														"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -483,7 +482,7 @@
 														"proportion" : 0.39
 													}
 ,
-													"fontsize" : [ 9.0 ]
+													"fontname" : [ "Arial" ]
 												}
 ,
 												"parentstyle" : "",
@@ -541,7 +540,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u443005356",
-									"chanoffset" : 4,
 									"id" : "obj-36",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -556,7 +554,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u443005356",
-									"chanoffset" : 3,
 									"id" : "obj-33",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -571,7 +568,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u443005356",
-									"chanoffset" : 2,
 									"id" : "obj-7",
 									"labels" : 0,
 									"maxclass" : "waveform~",
@@ -845,9 +841,9 @@
 , 							{
 								"name" : "Default M4L",
 								"default" : 								{
-									"fontname" : [ "Arial Bold" ],
+									"fontsize" : [ 11.0 ],
 									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 11.0 ]
+									"fontname" : [ "Arial Bold" ]
 								}
 ,
 								"parentstyle" : "",
@@ -856,9 +852,9 @@
 , 							{
 								"name" : "Default M4L Poletti",
 								"default" : 								{
-									"fontname" : [ "Arial Bold" ],
+									"fontsize" : [ 10.0 ],
 									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 10.0 ]
+									"fontname" : [ "Arial Bold" ]
 								}
 ,
 								"parentstyle" : "",
@@ -867,7 +863,8 @@
 , 							{
 								"name" : "Default M4L-1",
 								"default" : 								{
-									"fontname" : [ "Arial" ],
+									"fontface" : [ 1 ],
+									"fontsize" : [ 11.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -877,8 +874,7 @@
 										"proportion" : 0.39
 									}
 ,
-									"fontface" : [ 1 ],
-									"fontsize" : [ 11.0 ]
+									"fontname" : [ "Arial" ]
 								}
 ,
 								"parentstyle" : "",
@@ -904,7 +900,7 @@
 , 							{
 								"name" : "jbb",
 								"default" : 								{
-									"fontname" : [ "Arial" ],
+									"fontsize" : [ 9.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -914,7 +910,7 @@
 										"proportion" : 0.39
 									}
 ,
-									"fontsize" : [ 9.0 ]
+									"fontname" : [ "Arial" ]
 								}
 ,
 								"parentstyle" : "",
@@ -1411,9 +1407,9 @@
 , 							{
 								"name" : "Default M4L",
 								"default" : 								{
-									"fontname" : [ "Arial Bold" ],
+									"fontsize" : [ 11.0 ],
 									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 11.0 ]
+									"fontname" : [ "Arial Bold" ]
 								}
 ,
 								"parentstyle" : "",
@@ -1422,9 +1418,9 @@
 , 							{
 								"name" : "Default M4L Poletti",
 								"default" : 								{
-									"fontname" : [ "Arial Bold" ],
+									"fontsize" : [ 10.0 ],
 									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 10.0 ]
+									"fontname" : [ "Arial Bold" ]
 								}
 ,
 								"parentstyle" : "",
@@ -1433,7 +1429,8 @@
 , 							{
 								"name" : "Default M4L-1",
 								"default" : 								{
-									"fontname" : [ "Arial" ],
+									"fontface" : [ 1 ],
+									"fontsize" : [ 11.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -1443,8 +1440,7 @@
 										"proportion" : 0.39
 									}
 ,
-									"fontface" : [ 1 ],
-									"fontsize" : [ 11.0 ]
+									"fontname" : [ "Arial" ]
 								}
 ,
 								"parentstyle" : "",
@@ -1470,7 +1466,7 @@
 , 							{
 								"name" : "jbb",
 								"default" : 								{
-									"fontname" : [ "Arial" ],
+									"fontsize" : [ 9.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -1480,7 +1476,7 @@
 										"proportion" : 0.39
 									}
 ,
-									"fontsize" : [ 9.0 ]
+									"fontname" : [ "Arial" ]
 								}
 ,
 								"parentstyle" : "",
@@ -1558,7 +1554,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 367.0, 105.0, 955.0, 585.0 ],
+						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3042,12 +3038,147 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-36",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 534.0, 254.0, 139.0, 23.0 ],
+									"text" : "writeaiff @format int24"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "format",
+									"id" : "obj-34",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 598.0, 425.0, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-35",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 598.0, 461.0, 74.5, 23.0 ],
+									"text" : "ears.write~"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-32",
+									"linecount" : 2,
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 534.0, 214.0, 186.0, 38.0 ],
+									"presentation_linecount" : 7,
+									"text" : "writemp3 /tmp/myfile.mp3 @vbrmode CBR @bitrate 320"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-31",
+									"linecount" : 8,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 534.0, 293.0, 390.0, 123.0 ],
+									"text" : "Encoding attributes are the same as in [ears.write~]:\n@vbrmode: \"CBR\", \"ABR\" or \"VBR\" (default)\n@bitrate (for CBR mode and for WavPack with correction), in kbps\n@minbitrate and @maxbitrate (for VBR mode), in kbps\n@correction: (for WavPack) 0 or 1, toggling the writing of a \n                       lossy .wv file along with a .wvc correction file)\n@format (for suitable encodings): a symbol identifying \n                 the bit format, as for [ears.write~]:",
+									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-30",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 735.0, 206.0, 96.0, 54.0 ],
+									"presentation_linecount" : 2,
+									"text" : "...including encoding settings"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-29",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 534.0, 189.0, 137.0, 23.0 ],
+									"presentation_linecount" : 3,
+									"text" : "writewv @correction 1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-28",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 534.0, 148.5, 52.0, 23.0 ],
+									"text" : "writewv"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-27",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 593.0, 133.0, 160.0, 54.0 ],
+									"presentation_linecount" : 3,
+									"text" : "...plus, you have direct access to mp3 and WavPack export"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-24",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 461.0, 148.5, 61.0, 23.0 ],
+									"presentation_linecount" : 2,
+									"text" : "writemp3"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-26",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 176.5, 436.0, 66.0, 23.0 ],
+									"patching_rect" : [ 168.5, 481.0, 66.0, 23.0 ],
 									"text" : "writeaiff 2"
 								}
 
@@ -3062,7 +3193,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 31.0, 436.0, 139.0, 25.0 ],
+									"patching_rect" : [ 23.0, 481.0, 139.0, 25.0 ],
 									"text" : "Save second buffer"
 								}
 
@@ -3076,7 +3207,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 31.0, 291.0, 405.0, 36.0 ],
+									"patching_rect" : [ 13.0, 336.0, 405.0, 36.0 ],
 									"text" : "If the output of an object is a buffer list instead of a single buffer, you can add a leading integer to specify which buffer should be saved",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
@@ -3089,7 +3220,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 176.5, 409.0, 66.0, 23.0 ],
+									"patching_rect" : [ 168.5, 454.0, 66.0, 23.0 ],
 									"text" : "writeaiff 1"
 								}
 
@@ -3104,7 +3235,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 52.0, 409.0, 118.0, 25.0 ],
+									"patching_rect" : [ 44.0, 454.0, 118.0, 25.0 ],
 									"text" : "Save first buffer"
 								}
 
@@ -3116,7 +3247,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 272.5, 445.0, 44.0, 23.0 ],
+									"patching_rect" : [ 264.5, 490.0, 44.0, 23.0 ],
 									"text" : "zl.join"
 								}
 
@@ -3128,7 +3259,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 272.5, 482.0, 64.0, 23.0 ],
+									"patching_rect" : [ 264.5, 527.0, 64.0, 23.0 ],
 									"text" : "ears.reg~"
 								}
 
@@ -3142,7 +3273,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 297.5, 416.0, 63.0, 23.0 ],
+									"patching_rect" : [ 289.5, 461.0, 63.0, 23.0 ],
 									"text" : "ears.rev~"
 								}
 
@@ -3156,7 +3287,7 @@
 									"numinlets" : 3,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 297.5, 384.0, 135.0, 23.0 ],
+									"patching_rect" : [ 289.5, 429.0, 135.0, 23.0 ],
 									"text" : "ears.crop~ 1000 1200"
 								}
 
@@ -3168,7 +3299,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 272.5, 346.0, 106.0, 23.0 ],
+									"patching_rect" : [ 264.5, 391.0, 106.0, 23.0 ],
 									"text" : "earsBufHelpTest"
 								}
 
@@ -3180,7 +3311,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 303.5, 168.5, 59.0, 23.0 ],
+									"patching_rect" : [ 197.5, 176.5, 59.0, 23.0 ],
 									"text" : "writeraw"
 								}
 
@@ -3192,7 +3323,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 287.5, 140.5, 52.0, 23.0 ],
+									"patching_rect" : [ 181.5, 148.5, 52.0, 23.0 ],
 									"text" : "writeau"
 								}
 
@@ -3204,7 +3335,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 217.5, 140.5, 68.0, 23.0 ],
+									"patching_rect" : [ 111.5, 148.5, 68.0, 23.0 ],
 									"text" : "writewave"
 								}
 
@@ -3216,7 +3347,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 190.5, 201.5, 126.0, 23.0 ],
+									"patching_rect" : [ 84.5, 209.5, 126.0, 23.0 ],
 									"text" : "writeaiff /tmp/test.aif"
 								}
 
@@ -3228,7 +3359,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 240.5, 168.5, 58.0, 23.0 ],
+									"patching_rect" : [ 134.5, 176.5, 58.0, 23.0 ],
 									"text" : "writeflac"
 								}
 
@@ -3240,7 +3371,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 183.5, 168.5, 55.0, 23.0 ],
+									"patching_rect" : [ 77.5, 176.5, 55.0, 23.0 ],
 									"text" : "writeaiff"
 								}
 
@@ -3268,8 +3399,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 377.0, 153.0, 160.0, 54.0 ],
-									"text" : "All the write-like messages work as for the [buffer~] object"
+									"patching_rect" : [ 267.0, 148.5, 160.0, 54.0 ],
+									"text" : "All the write-like messages work as for the [buffer~] object..."
 								}
 
 							}
@@ -3280,7 +3411,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 170.0, 140.5, 38.0, 23.0 ],
+									"patching_rect" : [ 64.0, 148.5, 38.0, 23.0 ],
 									"text" : "write"
 								}
 
@@ -3306,7 +3437,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 31.0, 140.0, 106.0, 23.0 ],
+									"patching_rect" : [ 21.0, 115.0, 106.0, 23.0 ],
 									"text" : "earsBufHelpTest"
 								}
 
@@ -3320,7 +3451,7 @@
 									"numinlets" : 3,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 31.0, 238.0, 174.5, 23.0 ],
+									"patching_rect" : [ 21.0, 286.0, 174.5, 23.0 ],
 									"text" : "ears.crop~ 1000 1200"
 								}
 
@@ -3402,6 +3533,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-24", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-15", 0 ],
 									"source" : [ "obj-26", 0 ]
 								}
@@ -3410,7 +3548,42 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-28", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-29", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
 									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-32", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-35", 0 ],
+									"source" : [ "obj-34", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-36", 0 ]
 								}
 
 							}
@@ -3485,7 +3658,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 955.0, 585.0 ],
+						"rect" : [ 367.0, 105.0, 955.0, 585.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -4039,6 +4212,10 @@
 			}
 , 			{
 				"name" : "ears.reg~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.write~.mxo",
 				"type" : "iLaX"
 			}
 , 			{

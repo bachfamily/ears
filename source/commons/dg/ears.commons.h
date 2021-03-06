@@ -296,7 +296,7 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
 
 
 /// WRITE FILES
-void ears_write_buffer(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings);
+void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings);
 void ears_writeaiff(t_object *buf, t_symbol *filename);
 void ears_writeflac(t_object *buf, t_symbol *filename);
 void ears_writewave(t_object *buf, t_symbol *filename);

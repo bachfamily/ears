@@ -18,34 +18,81 @@ class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
 class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
 // @method write @digest Save output as audio file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+// Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+// and the filename (otherwise a dialog menu will appear).
+// Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
-// @mattr format @type symbol @default int16 @digest Sample Format
+// @marg bufferindex @type int @optional 1 @digest Buffer index
+// @marg filename @type symbol @optional 1 @digest Filename or path
+// @mattr format @type symbol @optional 1 @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "write", A_GIMME, 0);
 // @method writeaiff @digest Save output as AIFF file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+// Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+// and the filename (otherwise a dialog menu will appear).
+// Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
-// @mattr format @type symbol @default int16 @digest Sample Format
+// @marg bufferindex @type int @optional 1 @digest Buffer index
+// @marg filename @type symbol @optional 1 @digest Filename or path
+// @mattr format @type symbol @optional 1 @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeaiff", A_GIMME, 0);
 // @method writewave @digest Save output as WAV file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+// Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+// and the filename (otherwise a dialog menu will appear).
+// Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
-// @mattr format @type symbol @default int16 @digest Sample Format
+// @marg bufferindex @type int @optional 1 @digest Buffer index
+// @marg filename @type symbol @optional 1 @digest Filename or path
+// @mattr format @type symbol @optional 1 @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writewave", A_GIMME, 0);
 // @method writeflac @digest Save output as FLAC file
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+// Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+// and the filename (otherwise a dialog menu will appear).
+// Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
-// @mattr format @type symbol @default int16 @digest Sample Format
+// @marg bufferindex @type int @optional 1 @digest Buffer index
+// @marg filename @type symbol @optional 1 @digest Filename or path
+// @mattr format @type symbol @optional 1 @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeflac", A_GIMME, 0);
 // @method writeraw @digest Save output as raw file with no header
 // @description See equivalent <o>buffer~</o> method.
-// An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+// Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+// and the filename (otherwise a dialog menu will appear).
+// Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 // @copy EARS_DOC_ACCEPTED_SAMPLETYPES
-// @mattr format @type symbol @default int16 @digest Sample Format
+// @marg bufferindex @type int @optional 1 @digest Buffer index
+// @marg filename @type symbol @optional 1 @digest Filename or path
+// @mattr format @type symbol @optional 1 @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writeraw", A_GIMME, 0);
+// @method writemp3 @digest Save output as MP3 file
+// @description Save the buffer as lossy compressed MP3 file.
+// Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+// and the filename (otherwise a dialog menu will appear).
+// Additional optional message attributes specify the encoding properties (VBR mode, bitrates). <br />
+// @copy EARS_DOC_ACCEPTED_SAMPLETYPES
+// @marg bufferindex @type int @optional 1 @digest Buffer index
+// @marg filename @type symbol @optional 1 @digest Filename or path
+// @mattr vbrmode @type symbol @optional 1 @default VBR @digest Variable bit rate mode ("VBR", "CBR" or "ABR")
+// @mattr bitrate @type int @optional 1 @digest Bitrate in kbps
+// @mattr minbitrate @type int @optional 1 @digest Minimum bitrate in kbps
+// @mattr maxbitrate @type int @optional 1 @digest Maximum bitrate in kbps
+class_addmethod(c, (method)earsbufobj_writegeneral, "writemp3", A_GIMME, 0);
+// @method writeraw @digest Save output as WavPack file
+// @description Save the buffer as lossless WavPack compression, or as lossy WavPack compression along with a
+// correction file (if the <m>correction</m> message attribute is set to 1). In this last case, a <m>bitrate</m>
+// message attribute specifies the bitrate of the lossy .wv file in kbps.
+// Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+// and the filename (otherwise a dialog menu will appear).
+// Optional message attributes specify the encoding properties (correction, bitrate, sample format). <br />
+// @copy EARS_DOC_ACCEPTED_SAMPLETYPES
+// @marg bufferindex @type int @optional 1 @digest Buffer index
+// @marg filename @type symbol @optional 1 @digest Filename or path
+// @mattr correction @type int @optional 1 @default 0 @digest Write correction file along with a lossy wv file
+// @mattr bitrate @type int @optional 1 @digest Bitrate in kbps
+// @mattr format @type symbol @optional 1 @default int16 @digest Sample Format
+class_addmethod(c, (method)earsbufobj_writegeneral, "writewv", A_GIMME, 0);
 
 
 #define earsbufobj_class_add_naming_attr

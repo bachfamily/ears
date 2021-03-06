@@ -411,23 +411,6 @@
       "ears.crop~"
     ]
   },
-  "ears.shift~": {
-    "digest": "Shift a buffer",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "shift",
-      "add",
-      "offset"
-    ],
-    "seealso": [
-      "ears.crop~",
-      "ears.rev~"
-    ]
-  },
   "ears.roll.sinusoids~": {
     "digest": "Convert a <o>bach.roll</o> into a mix of sinusoids",
     "module": "ears",
@@ -712,8 +695,25 @@
       "ears.readtags"
     ]
   },
+  "ears.offset~": {
+    "digest": "Temporally offset a buffer",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "offset",
+      "add",
+      "offset"
+    ],
+    "seealso": [
+      "ears.crop~",
+      "ears.rev~"
+    ]
+  },
   "ears.reg~": {
-    "digest": "Store buffers",
+    "digest": "Store or clone buffers",
     "module": "ears",
     "category": [
       "ears basic"

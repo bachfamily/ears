@@ -971,13 +971,43 @@ void earsbufobj_write_buffer(t_earsbufobj *e_ob, t_object *buf, t_symbol *msg, t
         ears_buffer_set_sampleformat((t_object *)e_ob, buf, orig_format);
 }
 
+void fill_encoding_settings(t_object *ob, t_llll *args, t_ears_encoding_settings *settings)
+{
+    // parsing args
+    t_symbol *vbrmode = gensym("vbr"), *format = NULL;
+    long bitrate = 0, bitrate_min = 0, bitrate_max = 0, correction = 0;
+    llll_parseattrs(ob, args, true, "siiisi",
+                    gensym("vbrmode"), &vbrmode,
+                    gensym("bitrate"), &bitrate,
+                    gensym("minbitrate"), &bitrate_min,
+                    gensym("maxbitrate"), &bitrate_max,
+                    gensym("format"), &format,
+                    gensym("correction"), &correction);
+    
+    if (vbrmode == gensym("ABR") || vbrmode == gensym("abr"))
+        settings->vbr_type = EARS_MP3_VBRMODE_ABR;
+    else if (vbrmode == gensym("CBR") || vbrmode == gensym("cbr"))
+        settings->vbr_type = EARS_MP3_VBRMODE_CBR;
+    else
+        settings->vbr_type = EARS_MP3_VBRMODE_VBR;
+
+    settings->bitrate = bitrate;
+    settings->bitrate_min = bitrate_min;
+    settings->bitrate_max = bitrate_max;
+    settings->format = format;
+    settings->use_correction_file = correction;
+}
+
+
+
 // this lets us save the buffer
 void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom *av)
 {
     // parse attrs
-    t_symbol *format = NULL;
     t_llll *parsed = llll_parse(ac, av);
-    llll_parseargs_and_attrs_destructive((t_object *)e_ob, parsed, "s", gensym("format"), &format);
+    
+    t_ears_encoding_settings settings;
+    fill_encoding_settings((t_object *)e_ob, parsed, &settings);
     
     t_buffer_obj *buf = NULL;
     long which_buffer = 0;
@@ -992,22 +1022,50 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
     
     if ((buf = earsbufobj_get_outlet_buffer_obj(e_ob, 0, which_buffer))) {
         t_symbol *orig_format = NULL;
-        if (format) {
+        if (settings.format) {
             orig_format = ears_buffer_get_sampleformat((t_object *)e_ob, buf);
-            if (orig_format != format) {
-                ears_buffer_set_sampleformat((t_object *)e_ob, buf, format);
+            if (orig_format != settings.format) {
+                ears_buffer_set_sampleformat((t_object *)e_ob, buf, settings.format);
                 // need to plug it back later
             } else
                 orig_format = NULL; // don't care later
         }
         
-        if (parsed && parsed->l_size > 0) {
-            t_atom *true_av = NULL;
-            long true_ac = llll_deparse(parsed, &true_av, 0, 0);
-            typedmess(buf, msg, true_ac, true_av);
-            bach_freeptr(true_av);
-        } else
-            typedmess(buf, msg, 0, NULL);
+        if (msg == gensym("writemp3")) {
+            t_fourcc outtype;
+            t_fourcc filetype = 'MPEG';
+            t_symbol *outfilepath = NULL;
+            if (parsed && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM)
+                outfilepath = ears_ezresolve_file(hatom_getsym(&parsed->l_head->l_hatom), true, ".mp3");
+            else
+                ears_saveasdialog((t_object *)e_ob, "Untitled.mp3", &filetype, 1, &outtype, &outfilepath, true);
+            
+            if (outfilepath)
+                ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
+            
+        } else if (msg == gensym("writewavpack") || msg == gensym("writewv")) {
+            t_fourcc outtype;
+            t_fourcc filetype = 'WAVE';
+            t_symbol *outfilepath = NULL;
+            if (parsed && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM)
+                outfilepath = ears_ezresolve_file(hatom_getsym(&parsed->l_head->l_hatom), true, ".wv");
+            else
+                ears_saveasdialog((t_object *)e_ob, "Untitled.wv", &filetype, 1, &outtype, &outfilepath, true);
+            
+            if (outfilepath)
+                ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
+            
+        } else {
+            // all other cases are handled natively via Max API
+            if (parsed && parsed->l_size > 0) {
+                t_atom *true_av = NULL;
+                long true_ac = llll_deparse(parsed, &true_av, 0, 0);
+                typedmess(buf, msg, true_ac, true_av);
+                bach_freeptr(true_av);
+            } else {
+                typedmess(buf, msg, 0, NULL);
+            }
+        }
         
         if (orig_format)
             ears_buffer_set_sampleformat((t_object *)e_ob, buf, orig_format);
@@ -1034,6 +1092,9 @@ void earsbufobj_add_common_methods(t_class *c)
     class_addmethod(c, (method)earsbufobj_writegeneral, "writewave", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writeau", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writeflac", A_GIMME, 0);
+    class_addmethod(c, (method)earsbufobj_writegeneral, "writemp3", A_GIMME, 0);
+    class_addmethod(c, (method)earsbufobj_writegeneral, "writewavpack", A_GIMME, 0);
+    class_addmethod(c, (method)earsbufobj_writegeneral, "writewv", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_open, "open", 0);
 
 

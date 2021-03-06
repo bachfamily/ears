@@ -41,9 +41,18 @@
 	<outletlist>
 		<outlet id="0" type="INLET_TYPE">
 			<digest>
+				Names of soundfiles
+			</digest>
+			<description>
+				Names of the soundfiles as introduced by the user, possibly modified for incremental counting.
+			</description>
+		</outlet>
+		<outlet id="1" type="INLET_TYPE">
+			<digest>
 				Full path of saved soundfiles
 			</digest>
 			<description>
+				Complete paths of the saved soundfiles
 			</description>
 		</outlet>
 	</outletlist>
@@ -96,7 +105,7 @@
 			</description>
 		</method>
 		<method name="write">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as audio file
 			</digest>
@@ -105,14 +114,16 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeaiff">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as AIFF file
 			</digest>
@@ -121,14 +132,16 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeflac">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as FLAC file
 			</digest>
@@ -137,14 +150,59 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writemp3">
+			<arg name="" optional="1" type="symbol" />
+			<digest>
+				Save output as MP3 file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@vbrmode</m> (symbol, default: VBR): Variable bit rate mode ("VBR", "CBR" or "ABR")<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@minbitrate</m> (int): Minimum bitrate in kbps<br />
+				<m>@maxbitrate</m> (int): Maximum bitrate in kbps<br />
+				<br />
+				Save the buffer as lossy compressed MP3 file.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional message attributes specify the encoding properties (VBR mode, bitrates). <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writeraw">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
+			<digest>
+				Save output as WavPack file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@correction</m> (int, default: 0): Write correction file along with a lossy wv file<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				Save the buffer as lossless WavPack compression, or as lossy WavPack compression along with a
+				correction file (if the <m>correction</m> message attribute is set to 1). In this last case, a <m>bitrate</m>
+				message attribute specifies the bitrate of the lossy .wv file in kbps.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Optional message attributes specify the encoding properties (correction, bitrate, sample format). <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeraw">
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as raw file with no header
 			</digest>
@@ -153,14 +211,16 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
 		</method>
 		<method name="writewave">
-			<arglist />
+			<arg name="" optional="1" type="symbol" />
 			<digest>
 				Save output as WAV file
 			</digest>
@@ -169,7 +229,9 @@
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
 				See equivalent <o>buffer~</o> method.
-				An additional <m>format</m> message attribute specifies the output sample type, if applicable. <br />
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
 				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
@@ -184,12 +246,26 @@
 				MP3 Bitrate in kbps
 			</digest>
 			<description>
-				Sets the constant or average bitrate for MP3 encoding, in kbps.
+				Sets the constant or average bitrate for MP3 or WavPack encoding, in kbps.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="MP3 Bitrate in kbps" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="correction" get="1" set="1" type="int" size="1">
+			<digest>
+				Write WavPack correction file
+			</digest>
+			<description>
+				Toggles the ability to write WavPack correction file (according to a <m>bitrate</m> that
+				needs to be set via the corresponding attribute).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Write WavPack correction file" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="format" get="1" set="1" type="symbol" size="1">
@@ -274,7 +350,14 @@
 	<misc name = "Output">
 		<entry name ="Outlet 1 (llll)">
 			<description>
+				Names of soundfiles.
+				Names of the soundfiles as introduced by the user, possibly modified for incremental counting.
+			</description>
+		</entry>
+		<entry name ="Outlet 2 (llll)">
+			<description>
 				Full path of saved soundfiles.
+				Complete paths of the saved soundfiles
 			</description>
 		</entry>
 	</misc>
