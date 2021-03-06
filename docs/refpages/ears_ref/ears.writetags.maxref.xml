@@ -69,6 +69,7 @@
 				Remove all tags
 			</digest>
 			<description>
+				Syntax: <b>clear <m>[&lt;int: version&gt;]</m> <m>[&lt;llll: fields&gt;]</m> </b><br />				<br />
 				A <m>clear</m> message removes all the ID3V1 and ID3V2 tags (if the <m>id3v1</m> and <m>id3v2</m>
 				attributes are on). An optional integer argument (1 or 2) limits the removal to the ID3V1 or ID3V2 tags respectively.
 				If further optional arguments are given, these are expected to be one or several
@@ -82,6 +83,7 @@
 				Remove single tag
 			</digest>
 			<description>
+				Syntax: <b>clearfirst <m>[&lt;int: version&gt;]</m> </b><br />				<br />
 				A <m>clearfirst</m> message removes only the first occurrence of a ID3V2 tag with a given four-letter signature.
 				For all other purposes use <m>clear</m>
 			</description>
@@ -92,6 +94,7 @@
 				Function depends on inlet
 			</digest>
 			<description>
+				Syntax: <b>llll <m>[&lt;symbol: file_name&gt;]</m> </b><br />				<br />
 				An llll in the first inlet writes some ID3V1 or ID3V2 tags. Such llll is
 				expected to be a list of tags in the form
 				<b>(<m>tag</m> <m>content</m>), (<m>tag</m> <m>content</m>)...</b>, where each <m>tag</m>
