@@ -137,19 +137,23 @@ CLASS_ATTR_BASIC(c, "envampunit", 0);
 #define earsbufobj_class_add_timeunit_attr
 CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
 CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Relative");
+CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Seconds Samples Relative Intervals Onsets");
 CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
 CLASS_ATTR_BASIC(c, "timeunit", 0);
-// @description Sets the unit for time values: Milliseconds, Samples or Relative (0. to 1. as a percentage of the buffer length).
-// Object usually default to Milliseconds, except for <o>ears.repeat~</o> defaulting to relative.
+CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
+// @description Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+// Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+// The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
 
 #define earsbufobj_class_add_envtimeunit_attr
 CLASS_ATTR_CHAR(c, "envtimeunit", 0, t_earsbufobj, l_envtimeunit);
 CLASS_ATTR_STYLE_LABEL(c,"envtimeunit",0,"enumindex","Envelope Time Values Are In");
-CLASS_ATTR_ENUMINDEX(c,"envtimeunit", 0, "Milliseconds Samples Relative");
+CLASS_ATTR_ENUMINDEX(c,"envtimeunit", 0, "Milliseconds Seconds Samples Relative Intervals Onsets");
 CLASS_ATTR_ACCESSORS(c, "envtimeunit", NULL, earsbufobj_setattr_envtimeunit);
 CLASS_ATTR_BASIC(c, "envtimeunit", 0);
-// @description Sets the unit for time values inside envelopes: Milliseconds (default), Samples or Relative (0. to 1 as a percentage of the buffer length)
+// @description Sets the unit for time values inside envelopes: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+// Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+// The default is Relative.
 
 #define earsbufobj_class_add_pitchunit_attr
 CLASS_ATTR_CHAR(c, "pitchunit", 0, t_earsbufobj, l_pitchunit);

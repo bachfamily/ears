@@ -142,6 +142,7 @@ t_buf_envelope *buf_envelope_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_envelope*)object_alloc_debug(s_tag_class);
     if (x) {
         x->envelope = llll_from_text_buf("1.", false);
+        atom_setlong(&x->duration, 1000);
         
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
@@ -153,6 +154,10 @@ t_buf_envelope *buf_envelope_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
         attr_args_process(x, argc, argv);
+
+        // @arg 1 @name duration @optional 1 @type number
+        // @digest Duration
+        // @description Duration of the envelope (in the unit given by the <m>timeunit</m> attribute).
 
         if (args && args->l_head) {
             if (hatom_gettype(&args->l_head->l_hatom) == H_LONG)
@@ -190,7 +195,7 @@ void buf_envelope_bang(t_buf_envelope *x)
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         long duration_samps = 0;
-        if (x->e_ob.l_envtimeunit == EARSBUFOBJ_TIMEUNIT_DURATION_RATIO) {
+        if (x->e_ob.l_envtimeunit == EARSBUFOBJ_TIMEUNIT_DURATION_RATIO || x->e_ob.l_envtimeunit == EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS || x->e_ob.l_envtimeunit == EARSBUFOBJ_TIMEUNIT_NUM_ONSETS) {
             duration_samps = earsbufobj_atom_to_samps((t_earsbufobj *)x, &x->duration, out);
         } else {
             t_atom temp;
@@ -201,6 +206,9 @@ void buf_envelope_bang(t_buf_envelope *x)
                     break;
                 case EARSBUFOBJ_TIMEUNIT_MS:
                     duration_samps = ears_ms_to_samps(atom_getfloat(&temp), ears_buffer_get_sr((t_object *)x, out));
+                    break;
+                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                    duration_samps = ears_ms_to_samps(atom_getfloat(&temp)*1000., ears_buffer_get_sr((t_object *)x, out));
                     break;
                 default:
                     break;

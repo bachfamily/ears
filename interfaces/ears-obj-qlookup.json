@@ -286,6 +286,22 @@
       "ears.biquad~"
     ]
   },
+  "ears.essentia~": {
+    "digest": "Extract buffer features",
+    "module": "ears",
+    "category": [
+      "ears distorsion"
+    ],
+    "keywords": [
+      "buffer",
+      "essentia",
+      "feature",
+      "descriptor"
+    ],
+    "seealso": [
+      "ears.spectrogram~"
+    ]
+  },
   "ears.rot~": {
     "digest": "Circular rotation of a buffer",
     "module": "ears",
@@ -639,6 +655,24 @@
     ],
     "seealso": [
       "ears.freeverb~"
+    ]
+  },
+  "ears.fft~": {
+    "digest": "Fast Fourier Transforms",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "fft",
+      "fourier",
+      "transform",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.spectrogram~"
     ]
   },
   "ears.trim~": {

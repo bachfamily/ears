@@ -95,7 +95,6 @@
 				Save output as audio file
 			</digest>
 			<description>
-				Syntax: <b>write <m>[&lt;int: bufferindex&gt;]</m> <m>[&lt;symbol: filename_or_path&gt;]</m> <i>[message attributes]</i> </b><br />				<br />
 				Message attributes:<br />
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
@@ -115,7 +114,6 @@
 				Save output as AIFF file
 			</digest>
 			<description>
-				Syntax: <b>writeaiff <m>[&lt;int: bufferindex&gt;]</m> <m>[&lt;symbol: filename_or_path&gt;]</m> <i>[message attributes]</i> </b><br />				<br />
 				Message attributes:<br />
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
@@ -135,7 +133,6 @@
 				Save output as FLAC file
 			</digest>
 			<description>
-				Syntax: <b>writeflac <m>[&lt;int: bufferindex&gt;]</m> <m>[&lt;symbol: filename_or_path&gt;]</m> <i>[message attributes]</i> </b><br />				<br />
 				Message attributes:<br />
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
@@ -155,7 +152,6 @@
 				Save output as MP3 file
 			</digest>
 			<description>
-				Syntax: <b>writemp3 <m>[&lt;int: bufferindex&gt;]</m> <m>[&lt;symbol: filename_or_path&gt;]</m> <i>[message attributes]</i> </b><br />				<br />
 				Message attributes:<br />
 				<m>@vbrmode</m> (symbol, default: VBR): VBR mode ("VBR", "CBR" or "ABR")<br />
 				<m>@bitrate</m> (int): Bitrate in kbps<br />
@@ -178,7 +174,6 @@
 				Save output as raw file with no header
 			</digest>
 			<description>
-				Syntax: <b>writeraw <m>[&lt;int: bufferindex&gt;]</m> <m>[&lt;symbol: filename_or_path&gt;]</m> <i>[message attributes]</i> </b><br />				<br />
 				Message attributes:<br />
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
@@ -198,7 +193,6 @@
 				Save output as WAV file
 			</digest>
 			<description>
-				Syntax: <b>writewave <m>[&lt;int: bufferindex&gt;]</m> <m>[&lt;symbol: filename_or_path&gt;]</m> <i>[message attributes]</i> </b><br />				<br />
 				Message attributes:<br />
 				<m>@format</m> (symbol, default: int16): Sample Format<br />
 				<br />
@@ -218,7 +212,6 @@
 				Save output as WavPack file
 			</digest>
 			<description>
-				Syntax: <b>writewv <m>[&lt;int: bufferindex&gt;]</m> <m>[&lt;symbol: filename_or_path&gt;]</m> <i>[message attributes]</i> </b><br />				<br />
 				Message attributes:<br />
 				<m>@correction</m> (int, default: 0): Write correction file along with a lossy wv file<br />
 				<m>@bitrate</m> (int): Bitrate in kbps<br />

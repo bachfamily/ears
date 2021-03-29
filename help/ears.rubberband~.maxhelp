@@ -1663,7 +1663,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u148000764",
+									"buffername" : "u452001531",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1680,8 +1680,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 330.0, 76.0, 23.0 ],
-									"text" : "set $1, start"
+									"patching_rect" : [ 15.0, 330.0, 44.0, 23.0 ],
+									"text" : "set $1"
 								}
 
 							}

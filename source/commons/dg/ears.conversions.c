@@ -1,5 +1,32 @@
 #include "ears.conversions.h"
 
+
+e_ears_timeunit ears_timeunit_from_symbol(t_symbol *s)
+{
+    if (s == gensym("ms") || s == gensym("millisecond") || s == gensym("milliseconds"))
+        return EARSBUFOBJ_TIMEUNIT_MS;
+    if (s == gensym("s") || s == gensym("sec") || s == gensym("second") || s == gensym("seconds"))
+        return EARSBUFOBJ_TIMEUNIT_SECONDS;
+    else if (s == gensym("perc") || s == gensym("percentage") || s == gensym("ratio") || s == gensym("durationratio") || s == gensym("relative"))
+        return EARSBUFOBJ_TIMEUNIT_DURATION_RATIO;
+    else if (s == gensym("numdivisions") || s == gensym("intervals") || s == gensym("divisions") || s == gensym("numintervals"))
+        return EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS;
+    else if (s == gensym("numpoints") || s == gensym("points") || s == gensym("onsets") || s == gensym("numonsets"))
+        return EARSBUFOBJ_TIMEUNIT_NUM_ONSETS;
+    else if (s == gensym("samps") || s == gensym("samples"))
+        return EARSBUFOBJ_TIMEUNIT_SAMPS;
+    return EARSBUFOBJ_TIMEUNIT_UNKNOWN;
+}
+
+e_ears_ampunit ears_ampunit_from_symbol(t_symbol *s)
+{
+    if (s == gensym("db") || s == gensym("dB") || s == gensym("decibel") || s == gensym("decibels"))
+        return EARSBUFOBJ_AMPUNIT_DECIBEL;
+    else if (s == gensym("lin") || s == gensym("linear"))
+        return EARSBUFOBJ_AMPUNIT_LINEAR;
+    return EARSBUFOBJ_AMPUNIT_UNKNOWN;
+}
+
 double ears_ms_to_fsamps(double ms, double sr)
 {
     return ms * sr / 1000.;
@@ -56,6 +83,38 @@ double ears_cents_to_freq(double cents, double middleAtuning)
 {
     return middleAtuning * pow(2, (cents-6900.)/1200.);
 }
+
+
+double ears_angle_to_radians(double angle, char angleunit)
+{
+    switch (angleunit) {
+        case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+            return ears_deg_to_rad(angle);
+            break;
+        case EARSBUFOBJ_ANGLEUNIT_TURNS:
+            return ears_deg_to_rad(TWOPI * angle);
+            break;
+        default:
+            return angle;
+            break;
+    }
+}
+
+double ears_radians_to_angle(double rad, char angleunit)
+{
+    switch (angleunit) {
+        case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+            return ears_rad_to_deg(rad);
+            break;
+        case EARSBUFOBJ_ANGLEUNIT_TURNS:
+            return rad/TWOPI;
+            break;
+        default:
+            return rad;
+            break;
+    }
+}
+
 
 
 
@@ -115,11 +174,32 @@ void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envt
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
+                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
+                }
+                    break;
                 case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
+                }
+                    break;
+                case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
+                }
+                    break;
+                case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1./(hatom_getdouble(&sub_ll->l_head->l_hatom)-1)) * (dur_samps - 1));
                 }
                     break;
                 default:

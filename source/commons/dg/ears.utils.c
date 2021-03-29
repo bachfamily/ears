@@ -2,7 +2,33 @@
 #include "llll_files.h"
 
 
-char ears_filename_ends_with_char(const char *filename, const char *pattern, char ignore_case)
+void ears_symbol_split_unit(t_symbol *s, double *val, t_symbol **unit)
+{
+    char val_str[4096];
+    char unit_str[64];
+    long break_pos = -1;
+    for (long i = 0; i < strlen(s->s_name); i++) {
+        char c = s->s_name[i];
+        if (!((c >= '0' && c <= '9') || c == '.' || c == '+' || c == '-')) { // || c == 'e')) {
+            break_pos = i;
+            break;
+        }
+    }
+    if (break_pos >= 0) {
+        snprintf_zero(val_str, 4096, "%s", s->s_name);
+        if (break_pos < 4096)
+            val_str[break_pos] = 0;
+        snprintf_zero(unit_str, 64, "%s", s->s_name+break_pos);
+        *val = atof(val_str); // TO DO: parse with lllls to retain exponentials?
+        *unit = gensym(val_str);
+    } else {
+        *val = atof(s->s_name);
+        *unit = NULL;
+    }
+}
+
+
+char ears_symbol_ends_with_char(const char *filename, const char *pattern, char ignore_case)
 {
     if (filename && strlen(filename)>=strlen(pattern) &&
         ((ignore_case && strcasecmp(filename + strlen(filename) - strlen(pattern), pattern) == 0) ||
@@ -12,7 +38,7 @@ char ears_filename_ends_with_char(const char *filename, const char *pattern, cha
 }
 
 
-char ears_filename_ends_with(t_symbol *filename, const char *pattern, char ignore_case)
+char ears_symbol_ends_with(t_symbol *filename, const char *pattern, char ignore_case)
 {
     if (filename && filename->s_name && strlen(filename->s_name)>=strlen(pattern) &&
         ((ignore_case && strcasecmp(filename->s_name + strlen(filename->s_name) - strlen(pattern), pattern) == 0) ||
@@ -98,7 +124,7 @@ t_symbol *ears_ezresolve_file(t_symbol *file_name, bool force_extension, const c
     }
 
     if (force_extension) {
-        if (!strchr(outfilepath, '.') || !ears_filename_ends_with_char(outfilepath, ext, true)) {
+        if (!strchr(outfilepath, '.') || !ears_symbol_ends_with_char(outfilepath, ext, true)) {
             strncat_zero(outfilepath, ext, MAX_PATH_CHARS);
         }
     }
@@ -137,7 +163,7 @@ long ears_saveasdialog(t_object *e_ob, const char *default_filename, t_fourcc *t
     // check
     if (force_extension) {
         const char *ext = strrchr(default_filename, '.');
-        if (!strchr(filename, '.') || !ears_filename_ends_with_char(filename, ext, true)) {
+        if (!strchr(filename, '.') || !ears_symbol_ends_with_char(filename, ext, true)) {
             strncat_zero(filename, ext, MAX_PATH_CHARS);
         }
     }

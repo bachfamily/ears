@@ -108,9 +108,9 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
 
     
-    CLASS_ATTR_SYM(c, "type", 0, t_buf_window, window_type);
-    CLASS_ATTR_ENUM(c,"type", 0, "rect tri sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian");
-    CLASS_ATTR_BASIC(c, "format", 0);
+    CLASS_ATTR_SYM(c, "wintype", 0, t_buf_window, window_type);
+    CLASS_ATTR_ENUM(c,"wintype", 0, "rect tri sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian");
+    CLASS_ATTR_BASIC(c, "wintype", 0);
     // @description Sets the window type.
     // Available windows are: "rect", "tri", "sine", "hann", "hamming", "blackman", "nuttall",
     // "blackmannuttall", "blackmanharris", "gaussian"
@@ -147,7 +147,7 @@ t_buf_window *buf_window_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_window*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->window_type = gensym("blackman");
+        x->window_type = gensym("hann");
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         

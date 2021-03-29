@@ -15,6 +15,7 @@
 <refpage name='ears.fromsamps~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
 <refpage name='ears.onepole~.maxref.xml'/>
+<refpage name='ears.essentia~.maxref.xml'/>
 <refpage name='ears.rot~.maxref.xml'/>
 <refpage name='ears.write~.maxref.xml'/>
 <refpage name='ears.tosamps~.maxref.xml'/>
@@ -34,6 +35,7 @@
 <refpage name='ears.hoa.encode~.maxref.xml'/>
 <refpage name='ears.expr~.maxref.xml'/>
 <refpage name='ears.paulstretch~.maxref.xml'/>
+<refpage name='ears.fft~.maxref.xml'/>
 <refpage name='ears.trim~.maxref.xml'/>
 <refpage name='ears.normalize~.maxref.xml'/>
 <refpage name='ears.writetags.maxref.xml'/>

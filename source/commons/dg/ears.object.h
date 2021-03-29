@@ -80,8 +80,6 @@ earsbufobj_add_common_methods(c); \
 
 
 
-
-
 typedef enum _earsbufobj_in_out
 {
     EARSBUFOBJ_IN = 0,
@@ -130,7 +128,7 @@ typedef enum _earsbufobj_flag
 {
     EARSBUFOBJ_FLAG_NONE = 0,
     EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
-    EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,   ///< Supports naming copy, i.e. "inplace" modification
+    EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
 } e_earsbufobj_flag;
 
 
@@ -149,6 +147,7 @@ typedef struct _earsbufobj
 // (the first two fields are handled directly via the llllobj_object structure
 //    t_int32					l_numouts;      ///< how many outlets
 //    void					**l_outlet;     ///< the outlets
+    char                    l_outlet_types[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
     t_int32					l_numbufouts;	///< how many buffer outlets
     t_earsbufobj_store      *l_outstore;	///< the out stores
     t_llll                  *l_outnames;    ///< Output names, could be a level2 list if outlets have multiple buffers
@@ -237,6 +236,7 @@ t_symbol *earsbufobj_get_inlet_buffer_name(t_earsbufobj *e_ob, long store_idx, l
 t_buffer_ref *earsbufobj_get_outlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_object *earsbufobj_get_outlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_symbol *earsbufobj_get_outlet_buffer_name(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
+long earsbufobj_outlet_to_bufoutlet(t_earsbufobj *e_ob, long outlet);
 
 void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *buffername);
 void earsbufobj_store_empty_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx);
@@ -278,6 +278,7 @@ long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *b
 double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
 double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
 double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope = false); // generic one
+double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to);
 
 
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf);

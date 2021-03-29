@@ -181,6 +181,7 @@ t_symbol *info2type(t_buf_info *x, long info)
         case EARS_BUF_INFO_LENGTH:
             switch (x->e_ob.l_timeunit) {
                 case EARSBUFOBJ_TIMEUNIT_MS: return _sym_float;
+                case EARSBUFOBJ_TIMEUNIT_SECONDS: return _sym_float;
                 case EARSBUFOBJ_TIMEUNIT_SAMPS: return _sym_int;
                 default: return _sym_float;
             };
@@ -236,6 +237,9 @@ t_ears_err buf_info_get_analysis(t_buf_info *x, t_buffer_obj *buf, long info, t_
             switch (x->e_ob.l_timeunit) {
                 case EARSBUFOBJ_TIMEUNIT_MS:
                     atom_setfloat(res, ears_buffer_get_size_ms((t_object *)x, buf));
+                    break;
+                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                    atom_setfloat(res, ears_buffer_get_size_ms((t_object *)x, buf)/1000.);
                     break;
                 case EARSBUFOBJ_TIMEUNIT_SAMPS:
                     atom_setlong(res, ears_buffer_get_size_samps((t_object *)x, buf));

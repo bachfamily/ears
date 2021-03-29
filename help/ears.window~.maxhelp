@@ -109,6 +109,31 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-8",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 362.0, 290.0, 88.0, 23.0 ],
+									"text" : "ears.window~"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"hidden" : 1,
+									"id" : "obj-1",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 209.0, 160.0, 75.0, 23.0 ],
+									"text" : "loadmess 5"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -117,8 +142,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 569.0, 343.056961059570312, 89.0, 40.0 ],
-									"presentation_linecount" : 2,
+									"patching_rect" : [ 589.0, 343.056961059570312, 89.0, 40.0 ],
 									"text" : "In-place operation"
 								}
 
@@ -144,8 +168,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 412.0, 351.556961059570312, 155.0, 23.0 ],
-									"text" : "ears.window~ = @type tri"
+									"patching_rect" : [ 412.0, 351.556961059570312, 175.0, 23.0 ],
+									"text" : "ears.window~ = @wintype tri"
 								}
 
 							}
@@ -163,7 +187,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u207001095",
+									"buffername" : "u478001042",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -194,8 +218,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 412.0, 160.0, 144.0, 23.0 ],
-									"text" : "ears.window~ @type tri"
+									"patching_rect" : [ 412.0, 160.0, 164.0, 23.0 ],
+									"text" : "ears.window~ @wintype tri"
 								}
 
 							}
@@ -246,7 +270,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 248.5, 184.5, 73.0, 54.0 ],
+									"patching_rect" : [ 267.5, 185.5, 74.0, 54.0 ],
 									"text" : "Choose window type"
 								}
 
@@ -260,7 +284,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "int", "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 146.5, 200.0, 100.0, 23.0 ]
+									"patching_rect" : [ 165.5, 201.0, 100.0, 23.0 ]
 								}
 
 							}
@@ -273,7 +297,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 211.0, 244.0, 105.0, 25.0 ],
+									"patching_rect" : [ 227.0, 244.0, 105.0, 25.0 ],
 									"text" : "Apply window"
 								}
 
@@ -287,8 +311,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 244.0, 189.0, 23.0 ],
-									"text" : "ears.window~ @type blackman"
+									"patching_rect" : [ 17.0, 244.0, 208.0, 23.0 ],
+									"text" : "ears.window~ @wintype blackman"
 								}
 
 							}
@@ -306,7 +330,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u986000717",
+									"buffername" : "u884001235",
 									"id" : "obj-9",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -428,6 +452,14 @@
 							}
  ],
 						"lines" : [ 							{
+								"patchline" : 								{
+									"destination" : [ "obj-10", 0 ],
+									"hidden" : 1,
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
 								"patchline" : 								{
 									"destination" : [ "obj-3", 1 ],
 									"source" : [ "obj-10", 1 ]

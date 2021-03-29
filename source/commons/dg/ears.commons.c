@@ -6,6 +6,7 @@
 #include "ears.windows.h"
 #include "ears.mp3.h"
 #include "ears.wavpack.h"
+#include <vector>
 
 t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf)
 {
@@ -2448,6 +2449,7 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
     return err;
 }
 
+
 t_ears_err ears_buffer_fade_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long fade_in_ms, long fade_out_ms, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping)
 {
     if (source == dest)
@@ -2813,7 +2815,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
         } else {
             
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
-            if (ears_filename_ends_with(filepath, ".mp3", true)) {
+            if (ears_symbol_ends_with(filepath, ".mp3", true)) {
                 long startsamp = start_ms >= 0 ? ears_ms_to_samps(start_ms, sr) : -1;
                 long endsamp = end_ms >= 0 ? ears_ms_to_samps(end_ms, sr) : -1;
                 err = ears_buffer_read_handle_mp3(ob, filepath->s_name, startsamp, endsamp, *dest);
@@ -3782,6 +3784,37 @@ t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *
     }
     
     return err;
+}
+
+
+std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj *buf)
+{
+    std::vector<float> res;
+    if (!buf) {
+        return res;
+    }
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        return res;
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);
+        t_atom_long    framecount   = buffer_getframecount(buf);
+        
+        for (long f = 0; f < framecount; f++) {
+            double sum = 0;
+            for (long c = 0; c < channelcount; c++)
+                sum += sample[f * channelcount + c];
+            res.push_back(sum/channelcount);
+        }
+        buffer_unlocksamples(buf);
+    }
+    
+    return res;
 }
 
 
