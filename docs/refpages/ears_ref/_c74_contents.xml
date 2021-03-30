@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <root>
+<refpage name='ears.stft~.maxref.xml'/>
 <refpage name='ears.lace~.maxref.xml'/>
 <refpage name='ears.readtags.maxref.xml'/>
 <refpage name='ears.join~.maxref.xml'/>

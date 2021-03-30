@@ -3787,6 +3787,34 @@ t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *
 }
 
 
+std::vector<float> ears_buffer_get_sample_vector(t_object *ob, t_buffer_obj *buf, long channelnum)
+{
+    std::vector<float> res;
+    if (!buf) {
+        return res;
+    }
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        return res;
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);
+        t_atom_long    framecount   = buffer_getframecount(buf);
+        
+        for (long f = 0; f < framecount; f++) {
+            res.push_back(sample[f * channelcount + channelnum]);
+        }
+        buffer_unlocksamples(buf);
+    }
+    
+    return res;
+}
+
+
 std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj *buf)
 {
     std::vector<float> res;
@@ -3816,5 +3844,4 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
     
     return res;
 }
-
 

@@ -116,7 +116,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "polar",    0,    t_buf_fft, polar);
     CLASS_ATTR_STYLE_LABEL(c, "polar", 0, "onoff", "Polar Input And Output");
     CLASS_ATTR_BASIC(c, "polar", 0);
-    // @description Output data in polar coordinates, instead of cartesian ones.
+    // @description Input and output data in polar coordinates, instead of cartesian ones.
 
     CLASS_ATTR_LONG(c, "fullspectrum",    0,    t_buf_fft, fullspectrum);
     CLASS_ATTR_STYLE_LABEL(c, "fullspectrum", 0, "onoff", "Full Spectrum");
@@ -133,10 +133,10 @@ void buf_fft_assist(t_buf_fft *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0)
-            sprintf(s, x->polar ? "symbol: Buffer Containing Amplitudes" : "symbol: Buffer Containing Real/x Parts");
-        // @in 0 @type symbol @digest Buffer containing input amplitudes or real (x) parts
+            sprintf(s, x->polar ? "symbol: Buffer Containing Magnitudes" : "symbol: Buffer Containing Real/x Parts");
+        // @in 0 @type symbol @digest Buffer containing input magnitudes or real (x) parts
         // @description Depending on the object "polar" attribute, the first inlet expects a buffer containing either the incoming
-        //                amplitudes, or the incoming real parts of the samples
+        //                magnitudes, or the incoming real parts of the samples
         else
             sprintf(s, x->polar ? "symbol: Buffer Containing Phases" : "symbol: Buffer Containing Imaginary/y Parts");
         // @in 1 @type symbol @digest Buffer containing input phases or imaginary (y) parts
@@ -144,7 +144,7 @@ void buf_fft_assist(t_buf_fft *x, void *b, long m, long a, char *s)
         //                phases (in the <m>angleunit</m> coordinate), or the incoming imaginary parts of the samples
     } else {
         switch (a) {
-            case 0: sprintf(s, x->polar ? "symbol: Buffer Containing FFT Amplitudes" : "symbol: Buffer Containing FFT Real/x Parts");    break; // @out 0 @type symbol @digest Buffer containing output amplitudes or real (x) parts
+            case 0: sprintf(s, x->polar ? "symbol: Buffer Containing FFT Magnitudes" : "symbol: Buffer Containing FFT Real/x Parts");    break; // @out 0 @type symbol @digest Buffer containing output magnitudes or real (x) parts
             case 1: sprintf(s, x->polar ? "symbol: Buffer Containing FFT Phases" : "symbol: Buffer Containing FFT Imaginary/y Parts");    break; // @out 1 @type symbol @digest Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts
         }
     }

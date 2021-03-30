@@ -1,4 +1,22 @@
 {
+  "ears.stft~": {
+    "digest": "Compute spectrograms",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "stft",
+      "fourier",
+      "transform",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.stft~"
+    ]
+  },
   "ears.lace~": {
     "digest": "Interleave buffer channels",
     "module": "ears",

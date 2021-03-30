@@ -99,11 +99,6 @@ EARSBUFOBJ_ADD_IO_METHODS(essentia)
 // Class Definition and Life Cycle
 
 
-void *buf_essentia_quit(t_symbol *s, short argc, t_atom *argv)
-{
-    essentia::shutdown();
-    return NULL;
-}
 
 
 t_max_err buf_essentia_notify(t_buf_essentia *x, t_symbol *s, t_symbol *msg, void *sender, void *data)
@@ -118,9 +113,7 @@ t_max_err buf_essentia_notify(t_buf_essentia *x, t_symbol *s, t_symbol *msg, voi
 
 int C74_EXPORT main(void)
 {
-    essentia::init();
-    quittask_install((method)buf_essentia_quit, NULL);
-    
+    ears_essentia_init();
     common_symbols_init();
     llllobj_common_symbols_init();
     

@@ -46,6 +46,7 @@
 #include "bach_math_utilities.h"
 
 #include "ears.commons.h"
+#include "ears.utils.h"
 
 #include "id3add.h" // includes all the remaining id3 stuff
 #include "id3.h"

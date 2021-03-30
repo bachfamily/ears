@@ -264,6 +264,8 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
 t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *buf, double attack_thresh_linear, double release_thresh_linear, double min_silence_samps, long lookahead_samps, long smoothingwin_samps, t_llll **samp_start, t_llll **samp_end, char keep_first);
 
 
+// Convert buffer to float vectors
+std::vector<float> ears_buffer_get_sample_vector(t_object *ob, t_buffer_obj *buf, long channelnum);
 std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj *buf);
 
 // Filtering

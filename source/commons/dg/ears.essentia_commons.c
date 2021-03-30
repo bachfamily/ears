@@ -7,6 +7,25 @@ std::vector<Real> NOWHERE_vec;
 Real NOWHERE_real;
 int NOWHERE_int;
 
+bool essentia_has_been_initialized = false;
+
+void *ears_essentia_quit(t_symbol *s, short argc, t_atom *argv)
+{
+    essentia::shutdown();
+    return NULL;
+}
+
+void ears_essentia_init()
+{
+    if (!essentia_has_been_initialized) {
+        essentia::init();
+        quittask_install((method)ears_essentia_quit, NULL);
+        essentia_has_been_initialized = true;
+    }
+}
+
+
+
 std::vector<Real> llll_to_vector_real(t_llll *ll)
 {
     std::vector<Real> res;
@@ -14,6 +33,102 @@ std::vector<Real> llll_to_vector_real(t_llll *ll)
         res.push_back(hatom_getdouble(&el->l_hatom));
     return res;
 }
+
+
+
+
+t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    long outframecount_ceil = ceil(1 + ((samples.size() * 1.) / params->hopsize_samps));
+    long numbins = fullspectrum ? params->framesize_samps : params->framesize_samps/2 + 1;
+    
+    ears_buffer_set_size_and_numchannels(ob, dest1, outframecount_ceil, numbins);
+    ears_buffer_set_size_and_numchannels(ob, dest2, outframecount_ceil, numbins);
+    
+    std::vector<essentia::Real> framedata;
+    std::vector<essentia::Real> wframedata;
+    std::vector<std::complex<essentia::Real>> fftdata;
+    
+    
+    essentia::standard::Algorithm *frameCutter = essentia::standard::AlgorithmFactory::create("FrameCutter",
+                                                                                              "frameSize", params->framesize_samps,
+                                                                                              "hopSize", (Real)params->hopsize_samps,
+                                                                                              "startFromZero", params->startFromZero,
+                                                                                              "lastFrameToEndOfFile", params->lastFrameToEndOfFile);
+    // windowing algorithm:
+    essentia::standard::Algorithm *windower = essentia::standard::AlgorithmFactory::create("Windowing",
+                                                                                           "zeroPadding", 0,
+                                                                                           "size", params->framesize_samps,
+                                                                                           "type", params->windowType);
+    
+    // fft algorithm:
+    essentia::standard::Algorithm *fft = essentia::standard::AlgorithmFactory::create("FFT",
+                                                                                      "size", params->framesize_samps);
+    
+    
+    frameCutter->input("signal").set(samples);
+    frameCutter->output("frame").set(framedata);
+    windower->input("frame").set(framedata);
+    windower->output("frame").set(wframedata);
+    fft->input("frame").set(wframedata);
+    fft->output("fft").set(fftdata);
+    
+    
+    float *dest_sample1 = buffer_locksamples(dest1);
+    float *dest_sample2 = buffer_locksamples(dest2);
+    
+    if (!dest_sample1 || !dest_sample2) {
+        err = EARS_ERR_CANT_WRITE;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+    } else {
+        
+        frameCutter->reset();
+        long actual_framecount = 0;
+        while (true) {
+            frameCutter->compute(); // new frame
+            if (!framedata.size()) {
+                break;
+            }
+            
+            windower->compute();
+            fft->compute();
+            
+            if (polar) {
+                for (long b = 0; b < numbins; b++) {
+                    dest_sample1[actual_framecount*numbins + b] = std::abs(fftdata[b]);
+                    dest_sample2[actual_framecount*numbins + b] = ears_radians_to_angle(std::arg(fftdata[b]), angleunit);
+                }
+            } else {
+                for (long b = 0; b < numbins; b++) {
+                    dest_sample1[actual_framecount*numbins + b] = fftdata[b].real();
+                    dest_sample2[actual_framecount*numbins + b] = fftdata[b].imag();
+                }
+            }
+            
+            actual_framecount++;
+        }
+        
+        buffer_setdirty(dest1);
+        buffer_setdirty(dest2);
+        buffer_unlocksamples(dest1);
+        buffer_unlocksamples(dest2);
+        
+    }
+    
+    
+    delete frameCutter;
+    delete windower;
+    delete fft;
+    
+    return err;
+}
+
+
+
+
+
+
 
 void ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params)
 {

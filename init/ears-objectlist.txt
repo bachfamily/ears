@@ -1,3 +1,4 @@
+max oblist "ears objects" ears.stft~;
 max oblist "ears objects" ears.lace~;
 max oblist "ears objects" ears.readtags;
 max oblist "ears objects" ears.join~;

@@ -138,6 +138,11 @@ typedef struct _ears_essentia_analysis_params
     bool    envelope_rectify;
 } t_ears_essentia_analysis_params;
 
+void ears_essentia_init();
+void *ears_essentia_quit(t_symbol *s, short argc, t_atom *argv);
+
+t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit);
+
 void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *lib);
 void ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params);
 void ears_essentia_extractors_library_compute(t_object *x, t_buffer_obj *buf, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, long buffer_output_interpolation_order);
