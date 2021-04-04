@@ -304,14 +304,14 @@ void buf_freeverb_bang(t_buf_freeverb *x)
             t_llll *wet_env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, wet_el, in);
             double dry_default = is_hatom_number(&dry_el->l_hatom) ? hatom_getdouble(&dry_el->l_hatom) : 1.;
             double wet_default = is_hatom_number(&wet_el->l_hatom) ? hatom_getdouble(&wet_el->l_hatom) : 0.;
-            ears_buffer_freeverb_envelope((t_object *)x, in, out, x->e_model, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_tail, in),
+            ears_buffer_freeverb_envelope((t_object *)x, in, out, x->e_model, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_tail, in),
                                           dry_env, wet_env, dry_default, wet_default, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             llll_free(dry_env);
             llll_free(wet_env);
         } else {
             x->e_model->setwet(hatom_getdouble(&wet_el->l_hatom));
             x->e_model->setdry(hatom_getdouble(&dry_el->l_hatom));
-            ears_buffer_freeverb((t_object *)x, in, out, x->e_model, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_tail, in));
+            ears_buffer_freeverb((t_object *)x, in, out, x->e_model, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_tail, in));
         }
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

@@ -4,27 +4,73 @@
 e_ears_timeunit ears_timeunit_from_symbol(t_symbol *s)
 {
     if (s == gensym("ms") || s == gensym("millisecond") || s == gensym("milliseconds"))
-        return EARSBUFOBJ_TIMEUNIT_MS;
+        return EARS_TIMEUNIT_MS;
     if (s == gensym("s") || s == gensym("sec") || s == gensym("second") || s == gensym("seconds"))
-        return EARSBUFOBJ_TIMEUNIT_SECONDS;
-    else if (s == gensym("perc") || s == gensym("percentage") || s == gensym("ratio") || s == gensym("durationratio") || s == gensym("relative"))
-        return EARSBUFOBJ_TIMEUNIT_DURATION_RATIO;
-    else if (s == gensym("numdivisions") || s == gensym("intervals") || s == gensym("divisions") || s == gensym("numintervals"))
-        return EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS;
-    else if (s == gensym("numpoints") || s == gensym("points") || s == gensym("onsets") || s == gensym("numonsets"))
-        return EARSBUFOBJ_TIMEUNIT_NUM_ONSETS;
-    else if (s == gensym("samps") || s == gensym("samples"))
-        return EARSBUFOBJ_TIMEUNIT_SAMPS;
-    return EARSBUFOBJ_TIMEUNIT_UNKNOWN;
+        return EARS_TIMEUNIT_SECONDS;
+    if (s == gensym("perc") || s == gensym("percentage") || s == gensym("ratio") || s == gensym("durationratio") || s == gensym("relative"))
+        return EARS_TIMEUNIT_DURATION_RATIO;
+    if (s == gensym("numdivisions") || s == gensym("intervals") || s == gensym("divisions") || s == gensym("numintervals"))
+        return EARS_TIMEUNIT_NUM_INTERVALS;
+    if (s == gensym("numpoints") || s == gensym("points") || s == gensym("onsets") || s == gensym("numonsets"))
+        return EARS_TIMEUNIT_NUM_ONSETS;
+    if (s == gensym("samps") || s == gensym("samples"))
+        return EARS_TIMEUNIT_SAMPS;
+    return EARS_TIMEUNIT_UNKNOWN;
+}
+
+t_symbol *ears_pitchunit_to_symbol(e_ears_pitchunit u)
+{
+    switch (u) {
+        case EARS_PITCHUNIT_CENTS: return gensym("cents"); break;
+        case EARS_PITCHUNIT_MIDI: return gensym("midi"); break;
+        case EARS_PITCHUNIT_HERTZ: return gensym("hertz"); break;
+        case EARS_PITCHUNIT_FREQRATIO: return gensym("freqratio"); break;
+        default: return gensym("unknown"); break;
+    }
+}
+
+e_ears_pitchunit ears_pitchunit_from_symbol(t_symbol *s)
+{
+    if (s == gensym("Cents") || s == gensym("cents") || s == gensym("midicents") || s == gensym("MIDIcents"))
+        return EARS_PITCHUNIT_CENTS;
+    if (s == gensym("Midi") || s == gensym("midi") || s == gensym("MIDI") || s == gensym("semitones"))
+        return EARS_PITCHUNIT_MIDI;
+    if (s == gensym("Hz") || s == gensym("Hertz") || s == gensym("hz") || s == gensym("hertz") || s == gensym("freq") || s == gensym("frequency"))
+        return EARS_PITCHUNIT_HERTZ;
+    if (s == gensym("Frequency Ratio") || s == gensym("Frequency Ratio") ||
+             s == gensym("frequency ratio") || s == gensym("freqratio") || s == gensym("ratio"))
+        return EARS_PITCHUNIT_FREQRATIO;
+    return EARS_PITCHUNIT_UNKNOWN;
+}
+
+t_symbol *ears_frequnit_to_symbol(e_ears_frequnit u)
+{
+    switch (u) {
+        case EARS_FREQUNIT_CENTS: return gensym("cents"); break;
+        case EARS_FREQUNIT_MIDI: return gensym("midi"); break;
+        case EARS_FREQUNIT_HERTZ: return gensym("hertz"); break;
+        default: return gensym("unknown"); break;
+    }
+}
+
+e_ears_frequnit ears_frequnit_from_symbol(t_symbol *s)
+{
+    if (s == gensym("Cents") || s == gensym("cents") || s == gensym("midicents") || s == gensym("MIDIcents"))
+        return EARS_FREQUNIT_CENTS;
+    if (s == gensym("Midi") || s == gensym("midi") || s == gensym("MIDI") || s == gensym("semitones"))
+        return EARS_FREQUNIT_MIDI;
+    if (s == gensym("Hz") || s == gensym("Hertz") || s == gensym("hz") || s == gensym("hertz") || s == gensym("freq") || s == gensym("frequency"))
+        return EARS_FREQUNIT_HERTZ;
+    return EARS_FREQUNIT_UNKNOWN;
 }
 
 e_ears_ampunit ears_ampunit_from_symbol(t_symbol *s)
 {
     if (s == gensym("db") || s == gensym("dB") || s == gensym("decibel") || s == gensym("decibels"))
-        return EARSBUFOBJ_AMPUNIT_DECIBEL;
-    else if (s == gensym("lin") || s == gensym("linear"))
-        return EARSBUFOBJ_AMPUNIT_LINEAR;
-    return EARSBUFOBJ_AMPUNIT_UNKNOWN;
+        return EARS_AMPUNIT_DECIBEL;
+    if (s == gensym("lin") || s == gensym("linear"))
+        return EARS_AMPUNIT_LINEAR;
+    return EARS_AMPUNIT_UNKNOWN;
 }
 
 double ears_ms_to_fsamps(double ms, double sr)
@@ -74,12 +120,12 @@ double ears_cents_to_ratio(double cents)
 }
 
 
-double ears_freq_to_cents(double freq, double middleAtuning)
+double ears_hz_to_cents(double freq, double middleAtuning)
 {
     return 6900 + 1200 * log2(freq/middleAtuning);
 }
 
-double ears_cents_to_freq(double cents, double middleAtuning)
+double ears_cents_to_hz(double cents, double middleAtuning)
 {
     return middleAtuning * pow(2, (cents-6900.)/1200.);
 }
@@ -88,10 +134,10 @@ double ears_cents_to_freq(double cents, double middleAtuning)
 double ears_angle_to_radians(double angle, char angleunit)
 {
     switch (angleunit) {
-        case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+        case EARS_ANGLEUNIT_DEGREES:
             return ears_deg_to_rad(angle);
             break;
-        case EARSBUFOBJ_ANGLEUNIT_TURNS:
+        case EARS_ANGLEUNIT_TURNS:
             return ears_deg_to_rad(TWOPI * angle);
             break;
         default:
@@ -103,10 +149,10 @@ double ears_angle_to_radians(double angle, char angleunit)
 double ears_radians_to_angle(double rad, char angleunit)
 {
     switch (angleunit) {
-        case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+        case EARS_ANGLEUNIT_DEGREES:
             return ears_rad_to_deg(rad);
             break;
-        case EARSBUFOBJ_ANGLEUNIT_TURNS:
+        case EARS_ANGLEUNIT_TURNS:
             return rad/TWOPI;
             break;
         default:
@@ -125,14 +171,14 @@ void ears_llll_to_radians(t_llll *out, char angleunit)
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             // envelopes values
             switch (angleunit) {
-                case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+                case EARS_ANGLEUNIT_DEGREES:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_deg_to_rad(hatom_getdouble(&sub_ll->l_head->l_next->l_hatom)));
                 }
                     break;
-                case EARSBUFOBJ_ANGLEUNIT_TURNS:
+                case EARS_ANGLEUNIT_TURNS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
@@ -145,10 +191,10 @@ void ears_llll_to_radians(t_llll *out, char angleunit)
         } else if (is_hatom_number(&el->l_hatom)) {
             // single values
             switch (angleunit) {
-                case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+                case EARS_ANGLEUNIT_DEGREES:
                     hatom_setdouble(&el->l_hatom, ears_deg_to_rad(hatom_getdouble(&el->l_hatom)));
                     break;
-                case EARSBUFOBJ_ANGLEUNIT_TURNS:
+                case EARS_ANGLEUNIT_TURNS:
                     hatom_setdouble(&el->l_hatom, hatom_getdouble(&el->l_hatom)*TWOPI);
                     break;
                 default:
@@ -167,35 +213,35 @@ void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envt
     for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             switch (envtimeunit) {
-                case EARSBUFOBJ_TIMEUNIT_MS:
+                case EARS_TIMEUNIT_MS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                case EARS_TIMEUNIT_SECONDS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+                case EARS_TIMEUNIT_DURATION_RATIO:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+                case EARS_TIMEUNIT_NUM_INTERVALS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+                case EARS_TIMEUNIT_NUM_ONSETS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))

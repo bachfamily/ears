@@ -197,7 +197,7 @@ void buf_slice_bang(t_buf_slice *x)
         t_buffer_obj *out_left = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out_right = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, count);
 
-        long split_sample = earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in);
+        long split_sample = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in);
         
         ears_buffer_slice((t_object *)x, in, out_left, out_right, split_sample);
     }

@@ -277,7 +277,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
 
 
 
-t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *stretchenv, long winsize_samps, char spectral, e_slope_mapping slopemapping)
+t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *stretchenv, long winsize_samps, char spectral, e_slope_mapping slopemapping, e_ears_timeunit factor_timeunit)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -320,7 +320,7 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
         while (true) {
             outframecount += half_winsize_samps;
 
-            double stretchfactor = ears_envelope_iterator_walk_interp(&eei, start_pos, framecount);
+            double stretchfactor = ears_convert_timeunit(ears_envelope_iterator_walk_interp(&eei, start_pos, framecount), source, factor_timeunit, EARS_TIMEUNIT_DURATION_RATIO);
             // checking stretch factor
             if (stretchfactor < PAULSTRETCH_MIN_STRETCH_FACTOR) {
                 stretchfactor = PAULSTRETCH_MIN_STRETCH_FACTOR;
@@ -397,7 +397,9 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                         dest_sample[(i + (n * half_winsize_samps)) * channelcount + c] += fin[i].r;
                 }
                 
-                double stretchfactor = ears_envelope_iterator_walk_interp(&eei, start_pos, framecount);
+                double stretchfactor = ears_convert_timeunit(ears_envelope_iterator_walk_interp(&eei, start_pos, framecount), source, factor_timeunit, EARS_TIMEUNIT_DURATION_RATIO);
+//                double stretchfactor = ears_envelope_iterator_walk_interp(&eei, start_pos, framecount);
+                
                 if (stretchfactor < PAULSTRETCH_MIN_STRETCH_FACTOR)
                     stretchfactor = PAULSTRETCH_MIN_STRETCH_FACTOR;
                 start_pos += (winsize_samps*0.5)/stretchfactor;

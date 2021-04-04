@@ -280,7 +280,7 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             *end = llll_get();
             llll_appendlong(*start, 0);
 
-            double overlap_samps = earsbufobj_input_to_fsamps(e_ob, x->e_overlap, buf);
+            double overlap_samps = earsbufobj_time_to_fsamps(e_ob, x->e_overlap, buf);
             double duration_samps = (size_samps + (num_buffers - 1) * overlap_samps)/num_buffers;
             
             if (overlap_samps >= duration_samps) {
@@ -301,8 +301,8 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             
         case EARS_SPLIT_MODE_DURATION:
         {
-            double duration_samps = earsbufobj_input_to_fsamps(e_ob, x->params && x->params->l_head ? hatom_getdouble(&x->params->l_head->l_hatom) : 0, buf);
-            double overlap_samps = earsbufobj_input_to_fsamps(e_ob, x->e_overlap, buf);
+            double duration_samps = earsbufobj_time_to_fsamps(e_ob, x->params && x->params->l_head ? hatom_getdouble(&x->params->l_head->l_hatom) : 0, buf);
+            double overlap_samps = earsbufobj_time_to_fsamps(e_ob, x->e_overlap, buf);
             
             if (overlap_samps >= duration_samps) {
                 object_error((t_object *)e_ob, "Overlap duration cannot be greater than or equal to the segment duration.");
@@ -339,7 +339,7 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
                 double prev_samp = 0;
                 double this_samp = 0;
                 for (t_llllelem *el = x->params->l_head; el; el = el->l_next) {
-                    this_samp = earsbufobj_input_to_fsamps(e_ob, hatom_getdouble(&el->l_hatom), buf);
+                    this_samp = earsbufobj_time_to_fsamps(e_ob, hatom_getdouble(&el->l_hatom), buf);
                     if (this_samp < size_samps) {
                         if (this_samp > prev_samp) {
                             llll_appendlong(*start, prev_samp);
@@ -361,8 +361,8 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
                     if (hatom_gettype(&el->l_hatom) == H_LLLL) {
                         t_llll *ll = hatom_getllll(&el->l_hatom);
                         if (ll && ll->l_head && ll->l_head->l_next) {
-                            double start_samp = earsbufobj_input_to_fsamps(e_ob, hatom_getdouble(&ll->l_head->l_hatom), buf);
-                            double end_samp = earsbufobj_input_to_fsamps(e_ob, hatom_getdouble(&ll->l_head->l_next->l_hatom), buf);
+                            double start_samp = earsbufobj_time_to_fsamps(e_ob, hatom_getdouble(&ll->l_head->l_hatom), buf);
+                            double end_samp = earsbufobj_time_to_fsamps(e_ob, hatom_getdouble(&ll->l_head->l_next->l_hatom), buf);
                             if (start_samp < end_samp) {
                                 llll_appendlong(*start, start_samp);
                                 llll_appendlong(*end, end_samp);
@@ -383,8 +383,8 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             
         case EARS_SPLIT_MODE_SILENCE:
         {
-            double thresh = (x->params && x->params->l_head ? earsbufobj_input_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_hatom)) : 0);
-            double min_dur = (x->params && x->params->l_head && x->params->l_head->l_next ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_hatom), buf) : 0);
+            double thresh = (x->params && x->params->l_head ? earsbufobj_amplitude_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_hatom)) : 0);
+            double min_dur = (x->params && x->params->l_head && x->params->l_head->l_next ? earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_hatom), buf) : 0);
 
             t_ears_err err = ears_buffer_get_split_points_samps_silence((t_object *)x, buf, thresh, min_dur, start, end, x->e_keep_silence);
             if (err)
@@ -395,11 +395,11 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             
         case EARS_SPLIT_MODE_ONSET:
         {
-            double attackthresh = (x->params && x->params->l_head ? earsbufobj_input_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_hatom)) : 1.);
-            double releasethresh = (x->params && x->params->l_head && x->params->l_head->l_next ? earsbufobj_input_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_hatom)) : 0.5);
-            double min_dur = (x->params && x->params->l_size >= 3 ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_hatom), buf) : 0);
-            double lookahead = (x->params && x->params->l_size >= 4 ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_next->l_hatom), buf) : 0);
-            double smooth = (x->params && x->params->l_size >= 5 ? earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_next->l_next->l_hatom), buf) : 0);
+            double attackthresh = (x->params && x->params->l_head ? earsbufobj_amplitude_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_hatom)) : 1.);
+            double releasethresh = (x->params && x->params->l_head && x->params->l_head->l_next ? earsbufobj_amplitude_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_hatom)) : 0.5);
+            double min_dur = (x->params && x->params->l_size >= 3 ? earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_hatom), buf) : 0);
+            double lookahead = (x->params && x->params->l_size >= 4 ? earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_next->l_hatom), buf) : 0);
+            double smooth = (x->params && x->params->l_size >= 5 ? earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_next->l_next->l_next->l_next->l_hatom), buf) : 0);
 
             t_ears_err err = ears_buffer_get_split_points_samps_onset((t_object *)x, buf, attackthresh, releasethresh, min_dur, lookahead, smooth, start, end, x->e_keep_silence);
             if (err)

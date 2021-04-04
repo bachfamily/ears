@@ -423,7 +423,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 if (gain_slot) {
                     t_llll *gain_env = get_slot_from_note_llll(note_ll, gain_slot);
                     if (gain_env) {
-                        t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARSBUFOBJ_TIMEUNIT_SAMPS, gain_min, gain_max, false);
+                        t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARS_TIMEUNIT_SAMPS, gain_min, gain_max, false);
                         ears_buffer_gain_envelope((t_object *)e_ob, buf, buf, gain_env_remapped, gain_is_in_decibel, earsbufobj_get_slope_mapping(e_ob));
                         llll_free(gain_env_remapped);
                         llll_free(gain_env);
@@ -433,7 +433,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 if (pan_slot) {
                     t_llll *pan_env = get_slot_from_note_llll(note_ll, pan_slot);
                     if (pan_env) {
-                        t_llll *pan_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, pan_env, buf, EARSBUFOBJ_TIMEUNIT_SAMPS, pan_min, pan_max, false);
+                        t_llll *pan_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, pan_env, buf, EARS_TIMEUNIT_SAMPS, pan_min, pan_max, false);
                         ears_buffer_pan1d_envelope((t_object *)e_ob, buf, buf, num_channels, pan_env_remapped, pan_mode, pan_law, multichannel_pan_aperture, compensate_gain_for_multichannel_to_avoid_clipping, earsbufobj_get_slope_mapping(e_ob));
                         llll_free(pan_env_remapped);
                         llll_free(pan_env);
@@ -449,7 +449,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     ears_buffer_convert_numchannels((t_object *)e_ob, buf, num_channels, convertchannelsmode, convertchannelsmode);
                 
                 if (fadein_amount > 0 || fadeout_amount > 0)
-                    ears_buffer_fade((t_object *)e_ob, buf, buf, earsbufobj_input_to_samps(e_ob, fadein_amount, buf), earsbufobj_input_to_samps(e_ob, fadeout_amount, buf), fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, earsbufobj_get_slope_mapping(e_ob));
+                    ears_buffer_fade((t_object *)e_ob, buf, buf, earsbufobj_time_to_samps(e_ob, fadein_amount, buf), earsbufobj_time_to_samps(e_ob, fadeout_amount, buf), fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, earsbufobj_get_slope_mapping(e_ob));
                 
                 if (err == EARS_ERR_NONE && this_err != EARS_ERR_NONE)
                     err = this_err;
@@ -764,7 +764,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                 double fade_in_ms = fade_in_amount, fade_out_ms = fade_out_amount;
                 t_buffer_obj *buf = NULL;;
                 
-                if (e_ob->l_timeunit != EARSBUFOBJ_TIMEUNIT_MS || !use_durations) {
+                if (e_ob->l_timeunit != EARS_TIMEUNIT_MS || !use_durations) {
                     // This part is definitely overkill: if the timeunit is not MS we LOAD the content into a buffer just to get
                     // the proper samplerate/duration; there should be no need for this, one may probably get those info from the file itself
                     if (is_buffer) {
@@ -776,8 +776,8 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                         ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, EARS_DEFAULT_SR, 0);
                     }
                     if (buf) {
-                        fade_in_ms = earsbufobj_input_to_ms(e_ob, fade_in_amount, buf);
-                        fade_out_ms = earsbufobj_input_to_ms(e_ob, fade_out_amount, buf);
+                        fade_in_ms = earsbufobj_time_to_ms(e_ob, fade_in_amount, buf);
+                        fade_out_ms = earsbufobj_time_to_ms(e_ob, fade_out_amount, buf);
                         if (!use_durations)
                             note_duration_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
                     }
@@ -925,7 +925,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                 if (gain_slot) {
                     t_llll *gain_env = get_slot_from_note_llll(note_ll, gain_slot);
                     if (gain_env) {
-                        t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARSBUFOBJ_TIMEUNIT_MS, gain_min, gain_max, false);
+                        t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARS_TIMEUNIT_MS, gain_min, gain_max, false);
 
                         filecontent << "      <VOLENV" << std::endl;
                         filecontent << "        VOLTYPE " << (gain_is_in_decibel ? 1 : 0) << std::endl;
@@ -958,7 +958,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                 if (pan_slot) {
                     t_llll *pan_env = get_slot_from_note_llll(note_ll, pan_slot);
                     if (pan_env) {
-                        t_llll *pan_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, pan_env, buf, EARSBUFOBJ_TIMEUNIT_MS, pan_min, pan_max, false);
+                        t_llll *pan_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, pan_env, buf, EARS_TIMEUNIT_MS, pan_min, pan_max, false);
                         
                         filecontent << "      <PANENV" << std::endl;
                         filecontent << "        VOLTYPE " << (gain_is_in_decibel ? 1 : 0) << std::endl;

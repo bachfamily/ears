@@ -221,7 +221,7 @@ void buf_join_bang(t_buf_join *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     for (long count = 0; count < num_buffers; count++) {
-        xfade_samps[count] = earsbufobj_input_to_samps((t_earsbufobj *)x, x->xfade, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count));
+        xfade_samps[count] = earsbufobj_time_to_samps((t_earsbufobj *)x, x->xfade, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count));
         inbufs[count] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
     }
     

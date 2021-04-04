@@ -107,6 +107,7 @@ int C74_EXPORT main(void)
     //    earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
+    earsbufobj_class_add_antimeunit_attr(c);
 
     CLASS_ATTR_LONG(c, "winsize", 0, t_buf_resample, window_width);
     CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Window Width");
@@ -200,6 +201,8 @@ void buf_resample_bang(t_buf_resample *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
+        long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->window_width, in, false, true);
+        
         if (in != out)
             ears_buffer_clone((t_object *)x, in, out);
         
@@ -222,9 +225,9 @@ void buf_resample_bang(t_buf_resample *x)
                     if (ll && ll->l_size >= 2 && is_hatom_number(&ll->l_head->l_next->l_hatom))
                         hatom_setdouble(&ll->l_head->l_next->l_hatom, hatom_getdouble(&ll->l_head->l_next->l_hatom) * -1);
                 }
-                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             } else {
-                ears_buffer_resample_envelope((t_object *)x, out, env, x->window_width, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             }
 
             llll_free(env);
@@ -238,7 +241,7 @@ void buf_resample_bang(t_buf_resample *x)
             if (factor == 0) {
                 object_error((t_object *)x, "Resampling factor cannot be zero.");
             } else if (factor != 1) {
-                ears_buffer_resample((t_object *)x, out, factor, x->window_width);
+                ears_buffer_resample((t_object *)x, out, factor, window_width_samples);
             }
         }
     }

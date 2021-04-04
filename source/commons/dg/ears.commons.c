@@ -75,7 +75,115 @@ t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr)
 }
 
 
+t_symbol *ears_buffer_get_name(t_object *ob, t_buffer_obj *buf)
+{
+    t_buffer_info info;
+    info.b_name = NULL;
+    buffer_getinfo(buf, &info);
+    return info.b_name;
+}
 
+// THESE 3 ARE TOO DANGEROUS
+long get_hidden_sr_offset()
+{
+    return (sizeof(t_object) + 9*sizeof(long) + 3*sizeof(float)+ 2*sizeof(float*) + sizeof(t_symbol*)+2*sizeof(short)+sizeof(void*) + 2 * sizeof(double) + 7*sizeof(short))/sizeof(short);
+}
+
+t_ears_err ears_buffer_set_hidden_sr(t_object *ob, t_buffer_obj *buf, double sr)
+{
+    long offset = get_hidden_sr_offset();
+
+    unsigned int sr_int = sr;
+    unsigned short s1 = sr_int % (1 << 16);
+    unsigned short s2 = sr_int >> 16;
+    
+    *(((unsigned short *)buf)+offset) = (unsigned short)s1;
+    *(((unsigned short *)buf)+offset+1) = (unsigned short)s2;
+    return EARS_ERR_NONE;
+}
+
+
+t_atom_float ears_buffer_get_hidden_sr(t_object *ob, t_buffer_obj *buf)
+{
+    long offset = get_hidden_sr_offset();
+    unsigned short s1 = *(((unsigned short *)buf)+offset);
+    unsigned short s2 = *(((unsigned short *)buf)+offset+1);
+
+    return (s2 << 16) + s1;
+}
+
+// THESE ONES ARE BETTER
+
+// turns a spectralbuf into an ordinary buffer
+t_ears_err ears_spectralbuf_metadata_remove(t_object *ob, t_buffer_obj *buf)
+{
+    if (hashtab_delete(ears_hashtab_spectrograms_get(), ears_buffer_get_name(ob, buf)) == MAX_ERR_NONE)
+        return EARS_ERR_NONE;
+    return EARS_ERR_GENERIC;
+}
+
+t_ears_err ears_spectralbuf_metadata_set(t_object *ob, t_buffer_obj *buf, t_ears_spectralbuf_metadata *data)
+{
+    t_symbol *buffer_name = ears_buffer_get_name(ob, buf);
+    if (buffer_name) {
+        t_ears_spectralbuf_metadata *storeddata = (t_ears_spectralbuf_metadata *)sysmem_newptr(sizeof(t_ears_spectralbuf_metadata));
+        *storeddata = *data;
+        if (ears_hashtab_spectrograms_store(buffer_name, storeddata) == 0) {
+            ears_buffer_set_sampleformat(ob, buf, _sym_float32); // also sets sample format as float32
+            return EARS_ERR_NONE;
+        }
+        return EARS_ERR_GENERIC;
+    }
+    
+    return EARS_ERR_GENERIC;
+}
+
+bool ears_buffer_is_spectral(t_object *ob, t_buffer_obj *buf)
+{
+    if (ears_spectralbuf_metadata_get(ob, buf) == NULL)
+        return false;
+    return true;
+}
+
+// When you use this function, you should NOT FREE the obtained metadata, you don't own them
+t_ears_spectralbuf_metadata *ears_spectralbuf_metadata_get(t_object *ob, t_buffer_obj *buf)
+{
+    t_symbol *buffer_name = ears_buffer_get_name(ob, buf);
+    return (t_ears_spectralbuf_metadata *)ears_hashtab_spectrograms_retrieve(buffer_name);
+}
+
+double ears_spectralbuf_get_original_audio_sr(t_object *ob, t_buffer_obj *buf)
+{
+    t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, buf);
+    return data ? data->original_audio_signal_sr : ears_buffer_get_sr(ob, buf);
+}
+
+
+double ears_spectralbuf_get_binsize(t_object *ob, t_buffer_obj *buf)
+{
+    t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, buf);
+    return data ? data->binsize : 0;
+}
+
+
+double ears_spectralbuf_get_binoffset(t_object *ob, t_buffer_obj *buf)
+{
+    t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, buf);
+    return data ? data->offset : 0;
+}
+
+
+t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf)
+{
+    t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, buf);
+    return data ? data->type : _llllobj_sym_none;
+}
+
+e_ears_frequnit ears_spectralbuf_get_binunit(t_object *ob, t_buffer_obj *buf)
+{
+    t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, buf);
+    return data ? data->frequnit : EARS_FREQUNIT_UNKNOWN;
+}
 
 
 t_ears_err ears_buffer_crop_ms_inplace_maxapi(t_object *ob, t_buffer_obj *buf, double ms_start, long ms_end)
@@ -140,6 +248,14 @@ t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_ob
     if (dest_sr != orig_sr || dest_channelcount != orig_channelcount) {
         ears_buffer_set_sr(ob, dest, orig_sr);
         ears_buffer_set_numchannels(ob, dest, orig_channelcount);
+    }
+    
+    // is spectral?
+    if (ears_buffer_is_spectral(ob, orig)) {
+        ears_spectralbuf_metadata_set(ob, dest, ears_spectralbuf_metadata_get(ob, orig));
+    } else {
+        if (ears_spectralbuf_metadata_get(ob, dest))
+            ears_spectralbuf_metadata_remove(ob, dest);
     }
     
 //    dest_channelcount = buffer_getchannelcount(dest);
@@ -241,6 +357,9 @@ t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val)
     }
     return err;
 }
+
+
+
 
 
 
@@ -1253,6 +1372,7 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
 }
 
 
+
 // also supports inplace operations
 t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double clip_threshold, char use_decibels)
 {
@@ -1410,6 +1530,9 @@ t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer
     
     return err;
 }
+
+
+
 
 
 double min_circular_dist(double v1, double v2, double modulo)
@@ -2889,7 +3012,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                 }
             }
             
-            ears_llll_to_env_samples(pitchenv, duration_samps, sr, EARSBUFOBJ_TIMEUNIT_DURATION_RATIO);
+            ears_llll_to_env_samples(pitchenv, duration_samps, sr, EARS_TIMEUNIT_DURATION_RATIO);
             
             bool has_no_velocity = false;
             for (t_llllelem *el = pitchenv->l_head; el; el = el->l_next) {
@@ -2908,7 +3031,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                 llll_clear(velocityenv);
                 llll_appenddouble(velocityenv, velocity);
             } else {
-                ears_llll_to_env_samples(velocityenv, duration_samps, sr, EARSBUFOBJ_TIMEUNIT_DURATION_RATIO);
+                ears_llll_to_env_samples(velocityenv, duration_samps, sr, EARS_TIMEUNIT_DURATION_RATIO);
             }
         }
 
@@ -2922,7 +3045,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
         for (long i = 0; i < framecount; i++) {
             double cents = ears_envelope_iterator_walk_interp(&eei_deltapitch, i, framecount) + midicents;
             double vel = ears_envelope_iterator_walk_interp(&eei_vel, i, framecount);
-            double freq = ears_cents_to_freq(cents, middleAtuning);
+            double freq = ears_cents_to_hz(cents, middleAtuning);
             double amp = 1;
             
             switch (veltoamp_mode) {
@@ -3258,6 +3381,60 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
             
             bach_freeptr(prev_fb_1);
             bach_freeptr(prev_fb_2);
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        }
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
+
+
+
+t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest)
+{
+    
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample_wk = NULL;
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
+            buffer_unlocksamples(source);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format(ob, source, dest);
+        }
+        
+        ears_buffer_set_size_and_numchannels(ob, dest, channelcount, framecount);
+        
+        float *dest_sample = buffer_locksamples(dest);
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            for (long f = 0; f < framecount; f++)
+                for (long c = 0; c < channelcount; c++)
+                    dest_sample[c * framecount + f] = orig_sample_wk[f * channelcount + c];
+            
             buffer_setdirty(dest);
             buffer_unlocksamples(dest);
         }
@@ -3844,4 +4021,17 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
     
     return res;
 }
+
+
+
+void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double offset, e_ears_frequnit frequnit, t_symbol *type)
+{
+    data->original_audio_signal_sr = original_audio_signal_sr;
+    data->binsize = binsize;
+    data->offset = offset;
+    data->frequnit = frequnit;
+    data->type = type;
+}
+
+
 

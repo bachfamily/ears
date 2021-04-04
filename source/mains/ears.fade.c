@@ -225,8 +225,8 @@ void buf_fade_bang(t_buf_fade *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long fadein = earsbufobj_input_to_samps((t_earsbufobj *)x, x->fadein, in);
-        long fadeout = earsbufobj_input_to_samps((t_earsbufobj *)x, x->fadeout, in);
+        long fadein = earsbufobj_time_to_samps((t_earsbufobj *)x, x->fadein, in);
+        long fadeout = earsbufobj_time_to_samps((t_earsbufobj *)x, x->fadeout, in);
         
         ears_buffer_fade((t_object *)x, in, out, fadein, fadeout, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type, x->fadein_curve, x->fadeout_curve, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
     }

@@ -195,19 +195,19 @@ void buf_envelope_bang(t_buf_envelope *x)
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         long duration_samps = 0;
-        if (x->e_ob.l_envtimeunit == EARSBUFOBJ_TIMEUNIT_DURATION_RATIO || x->e_ob.l_envtimeunit == EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS || x->e_ob.l_envtimeunit == EARSBUFOBJ_TIMEUNIT_NUM_ONSETS) {
+        if (x->e_ob.l_envtimeunit == EARS_TIMEUNIT_DURATION_RATIO || x->e_ob.l_envtimeunit == EARS_TIMEUNIT_NUM_INTERVALS || x->e_ob.l_envtimeunit == EARS_TIMEUNIT_NUM_ONSETS) {
             duration_samps = earsbufobj_atom_to_samps((t_earsbufobj *)x, &x->duration, out);
         } else {
             t_atom temp;
             ears_envelope_get_max_x(el, &temp);
             switch (x->e_ob.l_envtimeunit) {
-                case EARSBUFOBJ_TIMEUNIT_SAMPS:
+                case EARS_TIMEUNIT_SAMPS:
                     duration_samps = atom_getlong(&temp);
                     break;
-                case EARSBUFOBJ_TIMEUNIT_MS:
+                case EARS_TIMEUNIT_MS:
                     duration_samps = ears_ms_to_samps(atom_getfloat(&temp), ears_buffer_get_sr((t_object *)x, out));
                     break;
-                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                case EARS_TIMEUNIT_SECONDS:
                     duration_samps = ears_ms_to_samps(atom_getfloat(&temp)*1000., ears_buffer_get_sr((t_object *)x, out));
                     break;
                 default:
@@ -223,10 +223,10 @@ void buf_envelope_bang(t_buf_envelope *x)
         
         if (env->l_depth == 1 && env->l_head) {
             // envelope is a single number
-            ears_buffer_gain((t_object *)x, out, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARSBUFOBJ_AMPUNIT_DECIBEL);
+            ears_buffer_gain((t_object *)x, out, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARS_AMPUNIT_DECIBEL);
         } else {
             // envelope is an envelope in llll form
-            ears_buffer_gain_envelope((t_object *)x, out, out, env, x->e_ob.l_envampunit == EARSBUFOBJ_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+            ears_buffer_gain_envelope((t_object *)x, out, out, env, x->e_ob.l_envampunit == EARS_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);

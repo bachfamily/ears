@@ -48,14 +48,21 @@
 
 enum {
     EARS_BUF_INFO_NONE = 0,
-    EARS_BUF_INFO_MIN = 1,
-    EARS_BUF_INFO_MAX = 2,
-    EARS_BUF_INFO_MAXABS = 3,
-    EARS_BUF_INFO_RMS = 4,
-    EARS_BUF_INFO_LENGTH = 5,
-    EARS_BUF_INFO_NUMCHANNELS = 6,
-    EARS_BUF_INFO_SR = 7,
-    EARS_BUF_INFO_NUMSAMPLES = 8,
+    EARS_BUF_INFO_MIN,
+    EARS_BUF_INFO_MAX,
+    EARS_BUF_INFO_MAXABS,
+    EARS_BUF_INFO_RMS,
+    EARS_BUF_INFO_LENGTH,
+    EARS_BUF_INFO_NUMCHANNELS,
+    EARS_BUF_INFO_SR,
+    EARS_BUF_INFO_NUMSAMPLES,
+    // spectral buffer stuff
+    EARS_BUF_INFO_SPECTRAL,
+    EARS_BUF_INFO_AUDIOSR,
+    EARS_BUF_INFO_BINSIZE,
+    EARS_BUF_INFO_BINOFFSET,
+    EARS_BUF_INFO_SPECTYPE,
+    EARS_BUF_INFO_SPECFREQUNIT,
 };
 
 typedef struct _buf_info {
@@ -78,7 +85,7 @@ void buf_info_inletinfo(t_buf_info *x, void *b, long a, char *t);
 
 
 // Globals and Statics
-static t_class	*s_tag_class = NULL;
+static t_class	*s_info_class = NULL;
 static t_symbol	*ps_event = NULL;
 
 EARSBUFOBJ_ADD_IO_METHODS(info)
@@ -117,7 +124,7 @@ int C74_EXPORT main(void)
 
     
     class_register(CLASS_BOX, c);
-    s_tag_class = c;
+    s_info_class = c;
     ps_event = gensym("event");
     return 0;
 }
@@ -149,6 +156,24 @@ long sym2info(t_symbol *s)
     if (s == gensym("numsamples"))
         return EARS_BUF_INFO_NUMSAMPLES;
 
+    if (s == gensym("spectral"))
+        return EARS_BUF_INFO_SPECTRAL;
+
+    if (s == gensym("audiosr"))
+        return EARS_BUF_INFO_AUDIOSR;
+
+    if (s == gensym("binsize"))
+        return EARS_BUF_INFO_BINSIZE;
+    
+    if (s == gensym("binoffset"))
+        return EARS_BUF_INFO_BINOFFSET;
+    
+    if (s == gensym("spectype"))
+        return EARS_BUF_INFO_SPECTYPE;
+    
+    if (s == gensym("binunit"))
+        return EARS_BUF_INFO_SPECFREQUNIT;
+
     return EARS_BUF_INFO_NONE;
 }
 
@@ -163,6 +188,12 @@ t_symbol *info2sym(long info)
         case EARS_BUF_INFO_NUMCHANNELS: return gensym("numchannels");
         case EARS_BUF_INFO_SR: return gensym("sr");
         case EARS_BUF_INFO_NUMSAMPLES: return gensym("numsamples");
+        case EARS_BUF_INFO_SPECTRAL: return gensym("spectral");
+        case EARS_BUF_INFO_AUDIOSR: return gensym("audiosr");
+        case EARS_BUF_INFO_BINSIZE: return gensym("binsize");
+        case EARS_BUF_INFO_BINOFFSET: return gensym("binoffset");
+        case EARS_BUF_INFO_SPECTYPE: return gensym("spectype");
+        case EARS_BUF_INFO_SPECFREQUNIT: return gensym("binunit");
         default: return _llllobj_sym_none;
     }
 }
@@ -180,23 +211,29 @@ t_symbol *info2type(t_buf_info *x, long info)
             
         case EARS_BUF_INFO_LENGTH:
             switch (x->e_ob.l_timeunit) {
-                case EARSBUFOBJ_TIMEUNIT_MS: return _sym_float;
-                case EARSBUFOBJ_TIMEUNIT_SECONDS: return _sym_float;
-                case EARSBUFOBJ_TIMEUNIT_SAMPS: return _sym_int;
+                case EARS_TIMEUNIT_MS: return _sym_float;
+                case EARS_TIMEUNIT_SECONDS: return _sym_float;
+                case EARS_TIMEUNIT_SAMPS: return _sym_int;
                 default: return _sym_float;
             };
             break;
             
         case EARS_BUF_INFO_NUMCHANNELS:
+        case EARS_BUF_INFO_NUMSAMPLES:
+        case EARS_BUF_INFO_SPECTRAL:
             return _sym_int;
         
         case EARS_BUF_INFO_SR:
+        case EARS_BUF_INFO_AUDIOSR:
+        case EARS_BUF_INFO_BINSIZE:
+        case EARS_BUF_INFO_BINOFFSET:
             return _sym_float;
+
+
+        case EARS_BUF_INFO_SPECTYPE:
+        case EARS_BUF_INFO_SPECFREQUNIT:
+            return _sym_symbol;
             
-        case EARS_BUF_INFO_NUMSAMPLES:
-            return _sym_int;
-
-
         default:
             return _sym_float;
     }
@@ -235,13 +272,13 @@ t_ears_err buf_info_get_analysis(t_buf_info *x, t_buffer_obj *buf, long info, t_
             
         case EARS_BUF_INFO_LENGTH:
             switch (x->e_ob.l_timeunit) {
-                case EARSBUFOBJ_TIMEUNIT_MS:
+                case EARS_TIMEUNIT_MS:
                     atom_setfloat(res, ears_buffer_get_size_ms((t_object *)x, buf));
                     break;
-                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                case EARS_TIMEUNIT_SECONDS:
                     atom_setfloat(res, ears_buffer_get_size_ms((t_object *)x, buf)/1000.);
                     break;
-                case EARSBUFOBJ_TIMEUNIT_SAMPS:
+                case EARS_TIMEUNIT_SAMPS:
                     atom_setlong(res, ears_buffer_get_size_samps((t_object *)x, buf));
                     break;
                 default:
@@ -262,6 +299,30 @@ t_ears_err buf_info_get_analysis(t_buf_info *x, t_buffer_obj *buf, long info, t_
             atom_setfloat(res, ears_buffer_get_sr((t_object *)x, buf));
             break;
 
+        case EARS_BUF_INFO_SPECTRAL:
+            atom_setlong(res, ears_buffer_is_spectral((t_object *)x, buf));
+            break;
+
+        case EARS_BUF_INFO_AUDIOSR:
+            atom_setfloat(res, ears_spectralbuf_get_original_audio_sr((t_object *)x, buf));
+            break;
+
+        case EARS_BUF_INFO_BINSIZE:
+            atom_setfloat(res, ears_spectralbuf_get_binsize((t_object *)x, buf));
+            break;
+            
+        case EARS_BUF_INFO_BINOFFSET:
+            atom_setfloat(res, ears_spectralbuf_get_binoffset((t_object *)x, buf));
+            break;
+            
+        case EARS_BUF_INFO_SPECTYPE:
+            atom_setsym(res, ears_spectralbuf_get_spectype((t_object *)x, buf));
+            break;
+            
+        case EARS_BUF_INFO_SPECFREQUNIT:
+            atom_setsym(res, ears_frequnit_to_symbol(ears_spectralbuf_get_binunit((t_object *)x, buf)));
+            break;
+            
         default:
             atom_setfloat(res, 0.);
             break;
@@ -296,7 +357,7 @@ t_buf_info *buf_info_new(t_symbol *s, short argc, t_atom *argv)
     t_buf_info *x;
     long true_ac = attr_args_offset(argc, argv);
     
-    x = (t_buf_info*)object_alloc_debug(s_tag_class);
+    x = (t_buf_info*)object_alloc_debug(s_info_class);
     if (x) {
 
         earsbufobj_init((t_earsbufobj *)x, 0);
@@ -304,7 +365,8 @@ t_buf_info *buf_info_new(t_symbol *s, short argc, t_atom *argv)
         // @arg 0 @name tags @optional 0 @type symbol/list
         // @digest Required buffer information tags
         // @description A list of symbols among the following ones: "min", "max", "maxabs", "rms", "length"
-        // "numchannels", "sr", "numsamples". For every symbol an outlet is created, which
+        // "numchannels", "sr", "numsamples". Plus, for spectral buffers: "spectral", "audiosr", "binsize", "binoffset",
+        // "spectype", "binunit". For every symbol an outlet is created, which
         // will output the corresponding information.
         
 
@@ -373,8 +435,7 @@ void buf_info_bang(t_buf_info *x)
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     for (long i = 0; i < num_outlets; i++)
-        earsbufobj_outlet_anything((t_earsbufobj *)x, i, num_buffers > 1 ? _llllobj_sym_list :
-                                   info2type(x, x->outlet_info[i]), num_buffers, av[i]);
+        earsbufobj_outlet_anything((t_earsbufobj *)x, i, num_buffers > 1 || info2type(x, x->outlet_info[i]) == _sym_symbol ? _llllobj_sym_list : info2type(x, x->outlet_info[i]), num_buffers, av[i]);
 
     for (long i = 0; i < num_outlets; i++)
         bach_freeptr(av[i]);

@@ -137,31 +137,49 @@ CLASS_ATTR_BASIC(c, "envampunit", 0);
 #define earsbufobj_class_add_timeunit_attr
 CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
 CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Seconds Samples Relative Intervals Onsets");
+CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Relative");
 CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
 CLASS_ATTR_BASIC(c, "timeunit", 0);
 CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
-// @description Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-// Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+// @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+// The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+
+#define earsbufobj_class_add_antimeunit_attr
+CLASS_ATTR_CHAR(c, "antimeunit", 0, t_earsbufobj, l_antimeunit);
+CLASS_ATTR_STYLE_LABEL(c,"antimeunit",0,"enumindex","Analysis Time Values Are In");
+CLASS_ATTR_ENUMINDEX(c,"antimeunit", 0, "Milliseconds Samples Relative");
+CLASS_ATTR_ACCESSORS(c, "antimeunit", NULL, earsbufobj_setattr_antimeunit);
+CLASS_ATTR_BASIC(c, "antimeunit", 0);
+CLASS_ATTR_CATEGORY(c, "antimeunit", 0, "Units");
+// @description Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
 // The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+
 
 #define earsbufobj_class_add_envtimeunit_attr
 CLASS_ATTR_CHAR(c, "envtimeunit", 0, t_earsbufobj, l_envtimeunit);
 CLASS_ATTR_STYLE_LABEL(c,"envtimeunit",0,"enumindex","Envelope Time Values Are In");
-CLASS_ATTR_ENUMINDEX(c,"envtimeunit", 0, "Milliseconds Seconds Samples Relative Intervals Onsets");
+CLASS_ATTR_ENUMINDEX(c,"envtimeunit", 0, "Milliseconds Samples Relative");
 CLASS_ATTR_ACCESSORS(c, "envtimeunit", NULL, earsbufobj_setattr_envtimeunit);
 CLASS_ATTR_BASIC(c, "envtimeunit", 0);
-// @description Sets the unit for time values inside envelopes: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-// Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+// @description Sets the unit for time values inside envelopes: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
 // The default is Relative.
 
 #define earsbufobj_class_add_pitchunit_attr
 CLASS_ATTR_CHAR(c, "pitchunit", 0, t_earsbufobj, l_pitchunit);
 CLASS_ATTR_STYLE_LABEL(c,"pitchunit",0,"enumindex","Pitch Values Are In");
-CLASS_ATTR_ENUMINDEX(c,"pitchunit", 0, "Cents MIDI Frequency Ratio");
+CLASS_ATTR_ENUMINDEX(c,"pitchunit", 0, "Cents MIDI Hertz Frequency Ratio");
 CLASS_ATTR_ACCESSORS(c, "pitchunit", NULL, earsbufobj_setattr_pitchunit);
 CLASS_ATTR_BASIC(c, "pitchunit", 0);
-// @description Sets the unit for pitch values: Cents (default), MIDI, or frequency ratio.
+// @description Sets the unit for pitch values: Cents (default), MIDI, Hertz (frequency), or frequency ratio.
+
+#define earsbufobj_class_add_frequnit_attr
+CLASS_ATTR_CHAR(c, "frequnit", 0, t_earsbufobj, l_frequnit);
+CLASS_ATTR_STYLE_LABEL(c,"frequnit",0,"enumindex","Frequency Values Are In");
+CLASS_ATTR_ENUMINDEX(c,"frequnit", 0, "Hertz BPM Cents MIDI");
+CLASS_ATTR_ACCESSORS(c, "frequnit", NULL, earsbufobj_setattr_frequnit);
+CLASS_ATTR_BASIC(c, "frequnit", 0);
+// @description Sets the unit for pitch values: Hertz (default), BPM, Cents, MIDI
+
 
 #define earsbufobj_class_add_angleunit_attr
 CLASS_ATTR_CHAR(c, "angleunit", 0, t_earsbufobj, l_angleunit);

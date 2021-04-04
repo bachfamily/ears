@@ -203,7 +203,7 @@ void buf_trim_bang(t_buf_trim *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        double thresh = earsbufobj_input_to_linear((t_earsbufobj *)x, x->e_ampthreshold);
+        double thresh = earsbufobj_amplitude_to_linear((t_earsbufobj *)x, x->e_ampthreshold);
         
         ears_buffer_trim((t_object *)x, in, out, thresh, x->e_trim_start, x->e_trim_end);
     }

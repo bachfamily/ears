@@ -193,7 +193,7 @@ void buf_rot_bang(t_buf_rot *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-        long out_samples = earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in);
+        long out_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in);
         
         if (in != out)
             ears_buffer_clone((t_object *)x, in, out);

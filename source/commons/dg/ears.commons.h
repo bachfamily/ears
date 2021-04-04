@@ -46,6 +46,20 @@
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
 
 
+static bool ears_is_freeing = false;
+
+
+typedef struct _ears_spectralbuf_metadata {
+    double              original_audio_signal_sr;
+    double              binsize; // size of a bin, in whatever unit is pertinent (e.g. Hz)
+    double              offset;  // offset of the first bin,in whatever unit is pertinent (e.g. Hz)
+    e_ears_frequnit     frequnit;
+    t_symbol            *type; // spectrogram type
+} t_ears_spectralbuf_metadata;
+
+
+
+
 /** VBR Enconding types for mp3's
     @ingroup mp3 */
 typedef enum {
@@ -83,7 +97,9 @@ typedef enum {
     EARS_ERR_NO_BUFFER =    -7,  ///< Can't find buffer
     EARS_ERR_EMPTY_BUFFER = -8,  ///< Empty buffer
     EARS_ERR_ZERO_AMP =     -9,  ///< Zero amplitude buffer (e.g. for normalization)
-    EARS_ERR_NO_FILE =      -10  ///< Can't find file
+    EARS_ERR_NO_FILE =      -10,  ///< Can't find file
+    EARS_ERR_ESSENTIA =     -11,  ///< Essentia error
+    EARS_ERR_INVALID_MODE = -12  ///< Invalid mode
 } e_ears_errorcodes;
 
 /** Fade types
@@ -272,6 +288,9 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
 t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double cutoff_freq, char highpass); // also works inplace
 t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double a0, double a1, double a2, double b1, double b2); // also works inplace
 
+// Transposition
+t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
+
 
 
 // GET properties
@@ -281,10 +300,28 @@ t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf);
 t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_buffer_get_sampleformat(t_object *ob, t_buffer_obj *buf);
 
+// THESE FUNCTIONS ARE ESSENTIALLY ILLEGAL!
+// they use some unused fields in the Max buffer structure...
+// we use them to store the original sample rate for spectrograms
+t_atom_float ears_buffer_get_hidden_sr(t_object *ob, t_buffer_obj *buf);
+t_ears_err ears_buffer_set_hidden_sr(t_object *ob, t_buffer_obj *buf, double sr);
+
+// THESE ARE BETTER
+bool ears_buffer_is_spectral(t_object *ob, t_buffer_obj *buf);
+double ears_spectralbuf_get_original_audio_sr(t_object *ob, t_buffer_obj *buf);
+t_ears_spectralbuf_metadata *ears_spectralbuf_metadata_get(t_object *ob, t_buffer_obj *buf);
+t_ears_err ears_spectralbuf_metadata_set(t_object *ob, t_buffer_obj *buf, t_ears_spectralbuf_metadata *data);
+t_ears_err ears_spectralbuf_metadata_remove(t_object *ob, t_buffer_obj *buf);
+double ears_spectralbuf_get_binoffset(t_object *ob, t_buffer_obj *buf);
+double ears_spectralbuf_get_binsize(t_object *ob, t_buffer_obj *buf);
+e_ears_frequnit ears_spectralbuf_get_binunit(t_object *ob, t_buffer_obj *buf);
+t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
+
 
 // SET properties
 t_ears_err ears_buffer_set_size(t_object *ob, t_buffer_obj *buf, long num_frames);
 t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr);
+
 t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels);
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels);
 t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbol *sampleformat);
@@ -329,6 +366,12 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                                                 double midicents, double duration_ms, double velocity, t_llll *breakpoints,
                                                 e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
                                                 double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping);
+
+
+
+// convenience
+void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double offset, e_ears_frequnit frequnit, t_symbol *type);
+
 
 
 

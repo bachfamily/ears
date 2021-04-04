@@ -54,6 +54,12 @@ typedef struct _buf_format {
     double              duration;
     double              sr;
     
+    t_symbol*           spectype;
+    double              audiosr;
+    double              binsize;
+    double              binoffset;
+    t_symbol*           binunit;
+    
     char                resample;
     char                channelmode_upmix;
     char                channelmode_downmix;
@@ -116,20 +122,24 @@ int C74_EXPORT main(void)
     
     
     CLASS_ATTR_LONG(c, "numchannels",	0,	t_buf_format, numchannels);
+    CLASS_ATTR_BASIC(c, "numchannels", 0);
     CLASS_ATTR_STYLE_LABEL(c, "numchannels", 0, "text", "Number Of Output Channels");
-    // @description Sets the number of output channels. 0 means: don't change.
+    // @description Sets the number of output channels. Negative or zero values mean: don't change.
     
     CLASS_ATTR_DOUBLE(c, "duration",	0,	t_buf_format, duration);
+    CLASS_ATTR_BASIC(c, "duration", 0);
     CLASS_ATTR_STYLE_LABEL(c, "duration", 0, "text", "Duration");
     // @description Sets the buffer duration (unit given by the <m>timeunit</m> attribute)
-    // 0 means: don't change.
+    // Negative or zero values mean mean: don't change.
     
     CLASS_ATTR_DOUBLE(c, "sr",	0,	t_buf_format, sr);
+    CLASS_ATTR_BASIC(c, "sr", 0);
     CLASS_ATTR_STYLE_LABEL(c, "sr", 0, "text", "Sample Rate");
     // @description Sets the sample rate for the buffer
-    // 0 means: don't change.
+    // Negative or zero values mean: don't change.
     
     CLASS_ATTR_CHAR(c, "resample",	0,	t_buf_format, resample);
+    CLASS_ATTR_BASIC(c, "resample", 0);
     CLASS_ATTR_STYLE_LABEL(c, "resample", 0, "onoff", "Resample Buffers");
     // @description Toggles the ability to resample buffers when the sample rate has changed.
     
@@ -155,7 +165,39 @@ int C74_EXPORT main(void)
     // 4 (Palindrome) = Palindrome cycling of channels while upmixing <br />
     // 5 (Pan) = Pan channels to new configuration <br />
     
+    
+    CLASS_ATTR_SYM(c, "spectype",    0,    t_buf_format, spectype);
+    CLASS_ATTR_STYLE_LABEL(c, "spectype", 0, "text", "Spectral Type");
+    CLASS_ATTR_CATEGORY(c, "spectype", 0, "Spectral Type");
+    // @description Sets the spectral type for spectral buffers.
+    // A "keep" symbol means: don't change; a "none" symbol means: turn to ordinary buffer.
+    // Any other symbol ("stft", "cqt", ...) will turn the buffer into a spectral buffer
 
+    CLASS_ATTR_DOUBLE(c, "audiosr",    0,    t_buf_format, audiosr);
+    CLASS_ATTR_STYLE_LABEL(c, "audiosr", 0, "text", "Audio Sample Rate for Spectral Buffers");
+    CLASS_ATTR_CATEGORY(c, "audiosr", 0, "Spectral Buffers");
+    // @description Sets the audio sample rate for spectral buffers
+    // Negative or zero values mean: don't change.
+
+    CLASS_ATTR_DOUBLE(c, "binsize",    0,    t_buf_format, binsize);
+    CLASS_ATTR_STYLE_LABEL(c, "binsize", 0, "text", "Bin Size");
+    CLASS_ATTR_CATEGORY(c, "binsize", 0, "Spectral Buffers");
+    // @description Sets the bin size for spectral buffers.
+    // Negative or zero values mean: don't change.
+
+    CLASS_ATTR_DOUBLE(c, "binoffset",    0,    t_buf_format, binoffset);
+    CLASS_ATTR_STYLE_LABEL(c, "binoffset", 0, "text", "Bin Offset");
+    CLASS_ATTR_CATEGORY(c, "binoffset", 0, "Spectral Buffers");
+    // @description Sets the bin offset for spectral buffers.
+    // Negative values mean: don't change (beware: a 0 value means: change to zero, so use strictly
+    // negative values to mean "don't change").
+
+    CLASS_ATTR_SYM(c, "binunit", 0, t_buf_format, binunit);
+    CLASS_ATTR_STYLE_LABEL(c,"binunit",0,"enumindex","Spectral Pitch Unit");
+    CLASS_ATTR_ENUM(c,"binunit", 0, "keep cents MIDI hertz freqratio");
+    // @description Sets the unit for spectral bins: Keep (keep previous one) Cents, MIDI, Hertz (frequency), or frequency ratio.
+
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -185,10 +227,15 @@ t_buf_format *buf_format_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_format*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->numchannels = 0;
-        x->duration = 0;
-        x->sr = 0;
+        x->numchannels = -1;
+        x->duration = -1;
+        x->sr = -1;
         x->resample = true;
+        x->spectype = gensym("keep");
+        x->audiosr = -1;
+        x->binunit = gensym("keep");
+        x->binoffset = -1;
+        x->binsize = -1;
         x->channelmode_upmix = EARS_CHANNELCONVERTMODE_CYCLE;
         x->channelmode_downmix = EARS_CHANNELCONVERTMODE_CYCLE;
 
@@ -228,9 +275,16 @@ void buf_format_bang(t_buf_format *x)
     long numchannels = x->numchannels;
     long channelmode_upmix = x->channelmode_upmix;
     long channelmode_downmix = x->channelmode_downmix;
+    double audiosr = x->audiosr;
+    t_symbol *spectype = x->spectype;
+    t_symbol *binunit = x->binunit;
+    double binsize = x->binsize;
+    double binoffset = x->binoffset;
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -249,7 +303,7 @@ void buf_format_bang(t_buf_format *x)
         }
         
         if (duration > 0) {
-            long duration_samps = earsbufobj_input_to_samps((t_earsbufobj *)x, duration, out);
+            long duration_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, duration, out);
             ears_buffer_convert_size((t_object *)x, out, duration_samps);
         }
         
@@ -258,8 +312,36 @@ void buf_format_bang(t_buf_format *x)
             if (curr_num_channels != numchannels)
                 ears_buffer_convert_numchannels((t_object *)x, out, numchannels, (e_ears_channel_convert_modes)channelmode_upmix, (e_ears_channel_convert_modes)channelmode_downmix);
         }
+        
+        // spectral ?
+        long must_be_spectral = (spectype != _llllobj_sym_empty_symbol && spectype != _llllobj_sym_none && spectype != gensym("keep"));
+        e_ears_frequnit u = ears_frequnit_from_symbol(x->binunit);
+        long is_spectral = ears_buffer_is_spectral((t_object *)x, out);
+        if (is_spectral == 0 && must_be_spectral == 1) {
+            t_ears_spectralbuf_metadata data;
+            ears_spectralbuf_metadata_fill(&data, audiosr, binsize, binoffset, u, spectype);
+            ears_spectralbuf_metadata_set((t_object *)x, out, &data);
+        } else if (is_spectral == 1 && must_be_spectral == 0) {
+            ears_spectralbuf_metadata_remove((t_object *)x, out);
+        } else {
+            if (ears_buffer_is_spectral((t_object *)x, out)) {
+                t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get((t_object *)x, out);
+                if (binsize > 0)
+                    data->binsize = binsize;
+                if (binoffset >= 0)
+                    data->offset = binoffset;
+                if (spectype != gensym("keep"))
+                    data->type = spectype;
+                if (u != EARS_FREQUNIT_UNKNOWN)
+                    data->frequnit = u;
+                if (audiosr > 0)
+                    data->original_audio_signal_sr = audiosr;
+            }
+        }
     }
     
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

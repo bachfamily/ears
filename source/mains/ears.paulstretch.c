@@ -108,13 +108,11 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
+    earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
-    CLASS_ATTR_DOUBLE(c, "winsize", 0, t_buf_paulstretch, e_winsize);
-    CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Windows Size");
-    CLASS_ATTR_BASIC(c, "winsize", 0);
-    // @description Sets the windows size (the unit depends on the <m>timeunit</m> attribute)
+    earsbufobj_class_add_winsize_attr(c);
 
     CLASS_ATTR_CHAR(c, "spectral", 0, t_buf_paulstretch, e_spectral);
     CLASS_ATTR_STYLE_LABEL(c,"spectral",0,"onoff","Frequency Domain");
@@ -163,20 +161,23 @@ t_buf_paulstretch *buf_paulstretch_new(t_symbol *s, short argc, t_atom *argv)
         // @description @copy EARS_DOC_OUTNAME_ATTR
 
         // @arg 1 @name factor @optional 1 @type float/llll
-        // @digest Stretch factor
-        // @description Sets the stretch factor, either as a single number or as an llll
+        // @digest Stretch factor or duration
+        // @description Sets the stretch factor or the total duration, depending on the <m>timeunit</m> attribute
+        // This can be either as a single number or as an llll
         // containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>]
         // [<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
         // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
 
         x->e_factor = llll_from_text_buf("1.");
-        x->e_winsize = 250; // 250 ms as default
+        x->e_winsize = 8192; // 8192 samples as default
         x->e_spectral = true;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
+        
+        x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
         
         if (args && args->l_head) {
             llll_clear(x->e_factor);
@@ -222,9 +223,9 @@ void buf_paulstretch_bang(t_buf_paulstretch *x)
             if (in != out)
                 ears_buffer_clone((t_object *)x, in, out);
         } if (env->l_depth == 1 && env->l_head) {
-            ears_buffer_paulstretch((t_object *)x, in, out, hatom_getdouble(&env->l_head->l_hatom), earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_winsize, in), x->e_spectral);
+            ears_buffer_paulstretch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, hatom_getdouble(&env->l_head->l_hatom), in), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_winsize, in, false, true), x->e_spectral);
         } else {
-            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_input_to_samps((t_earsbufobj *)x, x->e_winsize, in), x->e_spectral, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_winsize, in, false, true), x->e_spectral, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_timeunit)x->e_ob.l_timeunit);
         }
         
         llll_free(env);

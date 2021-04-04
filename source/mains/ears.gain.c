@@ -223,11 +223,11 @@ void buf_gain_bang(t_buf_gain *x)
                 object_free(ref);
             } else {
                 // gain is a single number
-                ears_buffer_gain((t_object *)x, in, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARSBUFOBJ_AMPUNIT_DECIBEL);
+                ears_buffer_gain((t_object *)x, in, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARS_AMPUNIT_DECIBEL);
             }
         } else {
             // gain is an envelope in llll form
-            ears_buffer_gain_envelope((t_object *)x, in, out, env, x->e_ob.l_envampunit == EARSBUFOBJ_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+            ears_buffer_gain_envelope((t_object *)x, in, out, env, x->e_ob.l_envampunit == EARS_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);

@@ -225,7 +225,7 @@ void buf_mix_bang(t_buf_mix *x)
             llll_appenddouble(gains_linear, 1.);
         
         if (offset_el) {
-            double this_offset_samps = earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+            double this_offset_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
             offsets_samps[count] = MAX(0, this_offset_samps);
             
             last_diff_samps = this_offset_samps - last_offset_samps;

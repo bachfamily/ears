@@ -206,7 +206,7 @@ void buf_normalize_bang(t_buf_normalize *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     for (long count = 0; count < num_buffers; count++) {
-        double this_linear_amp = earsbufobj_input_to_linear((t_earsbufobj *)x, x->level);
+        double this_linear_amp = earsbufobj_amplitude_to_linear((t_earsbufobj *)x, x->level);
 
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);

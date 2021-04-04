@@ -32,7 +32,7 @@
 	buffer, stft, fourier, transform, spectrum
  
 	@seealso
-	ears.window~, ears.stft~
+	ears.window~, ears.istft~
 	
 	@owner
 	Daniele Ghisi
@@ -53,11 +53,6 @@ typedef struct _buf_stft {
     long polar;
     long fullspectrum;
     long downmix;
-    
-    double             a_winsize;
-    double             a_hopsize;
-    t_symbol           *a_wintype;
-
 } t_buf_stft;
 
 
@@ -111,32 +106,15 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
+    earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
 
-    CLASS_ATTR_DOUBLE(c, "winsize", 0, t_buf_stft, a_winsize);
-    CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Windows Size");
-    CLASS_ATTR_BASIC(c, "winsize", 0);
-    CLASS_ATTR_CATEGORY(c, "winsize", 0, "Analysis");
-    // @description Sets the analysis frame size (the unit depends on the <m>timeunit</m> attribute)
-    
-    
-    CLASS_ATTR_DOUBLE(c, "hopsize", 0, t_buf_stft, a_hopsize);
-    CLASS_ATTR_STYLE_LABEL(c,"hopsize",0,"text","Hop Size");
-    CLASS_ATTR_BASIC(c, "hopsize", 0);
-    CLASS_ATTR_CATEGORY(c, "hopsize", 0, "Analysis");
-    // @description Sets the analysis hop size (the unit depends on the <m>timeunit</m> attribute)
-    // Floating point values are allowed.
-    
-    CLASS_ATTR_SYM(c, "wintype", 0, t_buf_stft, a_wintype);
-    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
-    CLASS_ATTR_ENUM(c,"wintype", 0, "hamming hann hannnsgcq triangular square blackmanharris62 blackmanharris70 blackmanharris74 blackmanharris92");
-    CLASS_ATTR_BASIC(c, "wintype", 0);
-    CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
-    // @description Sets the window type.
-    // Available windows are the ones allowed by the Essentia library:
-    // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
-
-    
+    earsbufobj_class_add_winsize_attr(c);
+    earsbufobj_class_add_hopsize_attr(c);
+    earsbufobj_class_add_numframes_attr(c);
+    earsbufobj_class_add_overlap_attr(c);
+    earsbufobj_class_add_wintype_attr(c);
+    earsbufobj_class_add_winstartfromzero_attr(c);
     
     CLASS_ATTR_LONG(c, "polar",    0,    t_buf_stft, polar);
     CLASS_ATTR_STYLE_LABEL(c, "polar", 0, "onoff", "Polar Output");
@@ -195,10 +173,6 @@ t_buf_stft *buf_stft_new(t_symbol *s, short argc, t_atom *argv)
         x->fullspectrum = 0;
         x->downmix = 1;
         
-        x->a_winsize = 46.4399093;
-        x->a_hopsize = 23.21995465;
-        x->a_wintype = gensym("hann");
-
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
         // @arg 0 @name outname @optional 1 @type symbol
@@ -227,25 +201,7 @@ void buf_stft_free(t_buf_stft *x)
 
 t_ears_essentia_analysis_params buf_stft_get_params(t_buf_stft *x, t_buffer_obj *buf)
 {
-    t_ears_essentia_analysis_params params;
-    params.framesize_samps = earsbufobj_input_to_samps((t_earsbufobj *)x, x->a_winsize, buf);
-    params.framesize_samps = 2 * (params.framesize_samps / 2);     // ensure this is even
-    params.hopsize_samps = (Real)earsbufobj_input_to_fsamps((t_earsbufobj *)x, x->a_hopsize, buf);
-    params.duration_samps = ears_buffer_get_size_samps((t_object *)x, buf);
-    if (params.hopsize_samps <= 0) {
-        params.hopsize_samps = 1024;
-        object_error((t_object *)x, "Negative hop size ignored; a default value of 1024 samples will be used instead.");
-    } else if (params.hopsize_samps < 1) {
-        object_warn((t_object *)x, "Hop size is smaller than one sample. The number of output frames may differ from what was expected.");
-    }
-    params.windowType = x->a_wintype->s_name;
-    params.lastFrameToEndOfFile = 0;
-    params.startFromZero = 0;
-    
-    // not important
-    params.envelope_rectify = 1;
-    params.envelope_attack_time_samps = 0;
-    params.envelope_release_time_samps = 0;
+    t_ears_essentia_analysis_params params = earsbufobj_get_essentia_analysis_params((t_earsbufobj *)x, buf);
     return params;
 }
 
@@ -264,14 +220,14 @@ void buf_stft_bang(t_buf_stft *x)
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 1, true);
             earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-
+            
             t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
             t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
             std::vector<float> data = ears_buffer_get_sample_vector_mono((t_object *)x, in);
             
             t_ears_essentia_analysis_params params = buf_stft_get_params(x, in);
 
-            ears_vector_stft((t_object *)x, data, out1, out2, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit);
+            ears_vector_stft((t_object *)x, data, ears_buffer_get_sr((t_object *)x, in), out1, out2, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit);
         } else if (num_channels > 0){
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_channels, true);
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, num_channels, true);
@@ -284,7 +240,7 @@ void buf_stft_bang(t_buf_stft *x)
                 
                 t_ears_essentia_analysis_params params = buf_stft_get_params(x, in);
 
-                ears_vector_stft((t_object *)x, data, out1, out2, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit);
+                ears_vector_stft((t_object *)x, data, ears_buffer_get_sr((t_object *)x, in), out1, out2, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit);
             }
         } else {
             object_error((t_object *)x, "No channels in buffer!");

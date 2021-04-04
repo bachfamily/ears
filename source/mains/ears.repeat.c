@@ -156,7 +156,7 @@ t_buf_repeat *buf_repeat_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
-        x->e_ob.l_timeunit = EARSBUFOBJ_TIMEUNIT_DURATION_RATIO;
+        x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
         
         if (args && args->l_head) {
             llll_clear(x->howmany);
@@ -196,7 +196,7 @@ void buf_repeat_bang(t_buf_repeat *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-        long out_samples = earsbufobj_input_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in);
+        long out_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in);
         
         ears_buffer_repeat((t_object *)x, in, out, out_samples);
     }

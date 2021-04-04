@@ -226,8 +226,8 @@ void buf_crop_anything(t_buf_crop *x, t_symbol *msg, long ac, t_atom *av)
                 earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, buf);
                 earsbufobj_store_copy_format((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, EARSBUFOBJ_OUT, 0, 0);
                 
-                long from_sample = x->from < 0 ? -1 : earsbufobj_input_to_samps((t_earsbufobj *)x, x->from, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0));
-                long to_sample = x->to < 0 ? -1 : earsbufobj_input_to_samps((t_earsbufobj *)x, x->to, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0));
+                long from_sample = x->from < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, x->from, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0));
+                long to_sample = x->to < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, x->to, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0));
 
                 // cloning inlet store to outlet store, and then cropping
                 t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
@@ -264,8 +264,8 @@ void buf_crop_bang(t_buf_crop *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long from_sample = earsbufobj_input_to_samps((t_earsbufobj *)x, el_from ? hatom_getdouble(&el_from->l_hatom) : 0, in);
-        long to_sample = earsbufobj_input_to_samps((t_earsbufobj *)x, el_to ? hatom_getdouble(&el_to->l_hatom) : 0, in);
+        long from_sample = earsbufobj_time_to_samps((t_earsbufobj *)x, el_from ? hatom_getdouble(&el_from->l_hatom) : 0, in);
+        long to_sample = earsbufobj_time_to_samps((t_earsbufobj *)x, el_to ? hatom_getdouble(&el_to->l_hatom) : 0, in);
         
         ears_buffer_crop((t_object *)x, in, out, from_sample, to_sample);
     }

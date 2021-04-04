@@ -199,7 +199,7 @@ void buf_offset_bang(t_buf_offset *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long amount_samps = earsbufobj_input_to_samps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in);
+        long amount_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in);
         
         ears_buffer_offset((t_object *)x, in, out, amount_samps);
     }

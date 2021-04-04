@@ -79,7 +79,6 @@ class_addmethod(c, (method)buf_ ## NAME ## _inletinfo,            "inletinfo",  
 earsbufobj_add_common_methods(c); \
 
 
-
 typedef enum _earsbufobj_in_out
 {
     EARSBUFOBJ_IN = 0,
@@ -161,10 +160,21 @@ typedef struct _earsbufobj
     // Settings
     char                    l_timeunit;      ///< Time unit
     char                    l_ampunit;      ///< Amplitude unit
+    char                    l_antimeunit;      ///< Time unit for analysis
     char                    l_envtimeunit;      ///< Time unit for envelopes
     char                    l_envampunit;      ///< Amplitude unit for envelopes
     char                    l_pitchunit;      ///< Pitch unit
+    char                    l_frequnit;       ///< Frequency unit
     char                    l_angleunit;      ///< Angle unit
+    
+    // analysis
+    double                  a_winsize;
+    double                  a_hopsize;
+    t_atom                  a_numframes;
+    double                  a_overlap;
+    t_symbol                *a_wintype;
+    char                    a_lastframetoendoffile;
+    char                    a_winstartfromzero;
     
     char                    l_slopemapping; ///< Slope mapping (one of the #e_slope_mapping)
 
@@ -178,17 +188,21 @@ typedef struct _earsbufobj
 
 
 
-
 void ears_error_bachcheck();
 
 /// Buffer mechanisms
-void ears_hashtab_setup();
+void ears_hashtabs_setup();
 t_hashtab *ears_hashtab_get();
-void ears_buffer_store(t_symbol *name);
 void ears_hashtab_inccount(t_symbol *name);
 t_atom_long ears_hashtab_getcount(t_symbol *name);
 void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *name, char mustfree);
 void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx, bool prevent_from_freeing = false);
+
+// spectrogram table
+t_hashtab *ears_hashtab_spectrograms_get();
+long ears_hashtab_spectrograms_store(t_symbol *buffername, void *data);
+void *ears_hashtab_spectrograms_retrieve(t_symbol *buffername);
+
 
 // Proxy mechanism
 long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob);
@@ -202,13 +216,21 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
 void earsbufobj_add_common_methods(t_class *c);
 void earsbufobj_class_add_outname_attr(t_class *c);
 void earsbufobj_class_add_timeunit_attr(t_class *c);
+void earsbufobj_class_add_antimeunit_attr(t_class *c);
 void earsbufobj_class_add_ampunit_attr(t_class *c);
 void earsbufobj_class_add_envtimeunit_attr(t_class *c);
 void earsbufobj_class_add_envampunit_attr(t_class *c);
 void earsbufobj_class_add_pitchunit_attr(t_class *c);
+void earsbufobj_class_add_frequnit_attr(t_class *c);
 void earsbufobj_class_add_angleunit_attr(t_class *c);
 void earsbufobj_class_add_naming_attr(t_class *c);
 void earsbufobj_class_add_slopemapping_attr(t_class *c);
+void earsbufobj_class_add_winsize_attr(t_class *c);
+void earsbufobj_class_add_hopsize_attr(t_class *c);
+void earsbufobj_class_add_numframes_attr(t_class *c);
+void earsbufobj_class_add_overlap_attr(t_class *c);
+void earsbufobj_class_add_wintype_attr(t_class *c);
+void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
 
 
 /// Basic API
@@ -217,6 +239,7 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags = 0);
 void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_types, t_llll *outlet_names);
 void earsbufobj_init_and_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_types, t_llll *outlet_names, long flags = 0);
 bool earsbufobj_is_buf_autoassigned(t_earsbufobj *e_ob, e_earsbufobj_in_out inout, long store, long bufferidx);
+bool earsbufobj_is_buf_autoassigned_or_copied(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx);
 void earsbufobj_free(t_earsbufobj *e_ob);
 void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long new_size, char also_create_unique_buffers);
 void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx);
@@ -273,24 +296,32 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
 
 
 //// BUFFER UNIT CONVERSIONS
-double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
-long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
-double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
-double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false);
-double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope = false); // generic one
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
+long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
+double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
+double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
+double earsbufobj_pitch_to_cents(t_earsbufobj *e_ob, double value);
+double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope = false, bool is_analysis = false); // generic one
+double earsbufobj_freq_to_hz(t_earsbufobj *e_ob, double value);
+double earsbufobj_freq_to_midi(t_earsbufobj *e_ob, double value);
+double earsbufobj_freq_to_cents(t_earsbufobj *e_ob, double value);
+
+// Convenience non-earsobj versions
 double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to);
+double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to);
+double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to);
 
 
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf);
 void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf, t_atom *a);
 
-double earsbufobj_input_to_linear(t_earsbufobj *e_ob, double value);
-double earsbufobj_input_to_db(t_earsbufobj *e_ob, double value);
+double earsbufobj_amplitude_to_linear(t_earsbufobj *e_ob, double value);
+double earsbufobj_amplitude_to_db(t_earsbufobj *e_ob, double value);
 double earsbufobj_input_to_radians(t_earsbufobj *e_ob, double value);
 t_llll *earsbufobj_llllelem_to_linear(t_earsbufobj *e_ob, t_llllelem *elem);
 t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
-t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
+t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 
 
 

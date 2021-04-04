@@ -37,6 +37,45 @@
       "ears.channel~"
     ]
   },
+  "ears.specshow~": {
+    "digest": "Display spectrograms",
+    "module": "ears",
+    "category": [
+      "ears display"
+    ],
+    "keywords": [
+      "buffer",
+      "specshow",
+      "spectrogram",
+      "display",
+      "stft",
+      "cqt"
+    ],
+    "seealso": [
+      "waveform~"
+    ]
+  },
+  "ears.trans~": {
+    "digest": "Transpose a buffer considered as a matrix",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "trans",
+      "transpose",
+      "swap",
+      "channel",
+      "sample",
+      "spectral"
+    ],
+    "seealso": [
+      "ears.sftf~",
+      "ears.cqt~",
+      "bach.trans"
+    ]
+  },
   "ears.readtags": {
     "digest": "Get metadata tags",
     "module": "ears",
@@ -210,6 +249,22 @@
       "ears.resample~"
     ]
   },
+  "ears.features~": {
+    "digest": "Extract buffer features",
+    "module": "ears",
+    "category": [
+      "ears distorsion"
+    ],
+    "keywords": [
+      "buffer",
+      "features",
+      "feature",
+      "descriptor"
+    ],
+    "seealso": [
+      "ears.spectrogram~"
+    ]
+  },
   "ears.unpack~": {
     "digest": "Unpack buffer channels",
     "module": "ears",
@@ -302,22 +357,6 @@
     "seealso": [
       "onepole~",
       "ears.biquad~"
-    ]
-  },
-  "ears.essentia~": {
-    "digest": "Extract buffer features",
-    "module": "ears",
-    "category": [
-      "ears distorsion"
-    ],
-    "keywords": [
-      "buffer",
-      "essentia",
-      "feature",
-      "descriptor"
-    ],
-    "seealso": [
-      "ears.spectrogram~"
     ]
   },
   "ears.rot~": {
@@ -478,6 +517,26 @@
     ],
     "seealso": [
       "ears.gain~"
+    ]
+  },
+  "ears.cqt~": {
+    "digest": "Constant-Q Transform",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "cqt",
+      "q",
+      "constant",
+      "fourier",
+      "transform",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.stft~"
     ]
   },
   "ears.envelope~": {
@@ -693,6 +752,23 @@
       "ears.spectrogram~"
     ]
   },
+  "ears.peaks~": {
+    "digest": "Find peaks of a spectrogram",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "peaks",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.stft~",
+      "ears.cqt~",
+      "ears.trans~"
+    ]
+  },
   "ears.trim~": {
     "digest": "Trim silence from a buffer",
     "module": "ears",
@@ -762,6 +838,25 @@
     "seealso": [
       "ears.crop~",
       "ears.rev~"
+    ]
+  },
+  "ears.istft~": {
+    "digest": "Inverse Short-Time Fourier Transform",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "istft",
+      "fourier",
+      "transform",
+      "spectrum",
+      "inverse"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.stft~"
     ]
   },
   "ears.reg~": {

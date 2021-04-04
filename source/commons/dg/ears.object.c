@@ -34,13 +34,42 @@ void ears_error_bachcheck()
 
 t_hashtab *ears_hashtab_get()
 {
-    return (t_hashtab *)(gensym("ears")->s_thing);
+    return ((t_hashtab **)(gensym("ears")->s_thing))[0];
 }
 
-void ears_hashtab_setup()
+t_hashtab *ears_hashtab_spectrograms_get()
 {
-    if (!ears_hashtab_get()) {
-        t_hashtab *h = hashtab_new(0);
+    return ((t_hashtab **)(gensym("ears")->s_thing))[1];
+}
+
+long ears_hashtab_spectrograms_store(t_symbol *buffername, void *data)
+{
+                                                                        // will be freed with sysmem_freeptr()
+    if (hashtab_storeflags(ears_hashtab_spectrograms_get(), buffername, (t_object *)data, OBJ_FLAG_MEMORY) == MAX_ERR_NONE)
+        return 0;
+    
+    return 1;
+}
+
+void *ears_hashtab_spectrograms_retrieve(t_symbol *buffername)
+{
+    t_object *storeddata = NULL;
+    hashtab_lookup(ears_hashtab_spectrograms_get(), buffername, &storeddata);
+    if (storeddata) {
+        return storeddata;
+    } else {
+        return NULL;
+    }
+}
+
+void ears_hashtabs_setup()
+{
+    if (!gensym("ears")->s_thing) {
+        t_hashtab *h_main = hashtab_new(0);
+        t_hashtab *h_spectrograms = hashtab_new(0);
+        t_hashtab **h = (t_hashtab **)bach_newptr(2 * sizeof(t_hashtab *));
+        h[0] = h_main;
+        h[1] = h_spectrograms;
         gensym("ears")->s_thing = (t_object *)h;
     }
 }
@@ -67,6 +96,17 @@ void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *
                     if (EARS_ALLOCATIONVERBOSE)
                         post("--- ears allocation: Releasing buffer %s: count is now 0. %s", name->s_name, mustfree ? "Also freeing buffer." : "Not freeing buffer.");
                     hashtab_chuckkey(ht, name);
+
+                    
+                    // is this a spectral buffer? do we need to chuck it from the spectral hash table?
+                    t_object *meta = NULL;
+                    t_hashtab *htspec = ears_hashtab_spectrograms_get();
+                    if (hashtab_lookup(htspec, name, &meta) == MAX_ERR_NONE) {
+                        if (meta) {
+                            hashtab_delete(htspec, name); // also frees memory
+                        }
+                    }
+                    
                     if (mustfree) {
                         object_free_debug(buf); ///< This makes Max crash, for some weird reason... Gotta discover why, highest priority
                     }
@@ -83,7 +123,7 @@ void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, lo
 {
     t_object *buf = earsbufobj_get_stored_buffer_obj(e_ob, where, store, bufferidx);
     t_symbol *name = earsbufobj_get_stored_buffer_name(e_ob, where, store, bufferidx);
-    bool mustfree = !prevent_from_freeing && earsbufobj_is_buf_autoassigned(e_ob, where, store, bufferidx);
+    bool mustfree = !prevent_from_freeing && earsbufobj_is_buf_autoassigned_or_copied(e_ob, where, store, bufferidx);
     
     earsbufobj_buffer_release_raw(e_ob, buf, name, mustfree);
 
@@ -99,7 +139,7 @@ void ears_hashtab_inccount(t_symbol *name)
             t_max_err err = hashtab_lookuplong(ht, name, &count);
             if (err == MAX_ERR_NONE) {
                 if (EARS_ALLOCATIONVERBOSE)
-                    post("--- ears allocation: Incrementing count for buffer %s: now has count %ld", name->s_name, count);
+                    post("--- ears allocation: Incrementing count for buffer %s: now has count %ld", name->s_name, count+1);
                 hashtab_storelong(ht, name, count+1); // increase reference count
             }
         }
@@ -394,7 +434,7 @@ long substitute_polybuffers(t_llll *ll)
 
 t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av)
 {
-    t_llll *ll = llllobj_parse_llll((t_object *) e_ob, LLLL_OBJ_VANILLA, msg, ac, av, LLLL_PARSE_CLONE);
+    t_llll *ll = llllobj_parse_llll((t_object *) e_ob, type, msg, ac, av, LLLL_PARSE_CLONE);
 
     // checking whether any of the symbols is a POLYbuffer, and in this case substituting it with all its buffers
     substitute_polybuffers(ll);
@@ -454,18 +494,30 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
     
     return names;
 }
+
 void earsbufobj_init(t_earsbufobj *e_ob, long flags)
 {
-    ears_hashtab_setup();
-    
+    ears_hashtabs_setup();
+
     /// attributes (these must be done before the actual initialization)
-    e_ob->l_ampunit = EARSBUFOBJ_AMPUNIT_LINEAR;
-    e_ob->l_timeunit = EARSBUFOBJ_TIMEUNIT_MS;
-    e_ob->l_envampunit = EARSBUFOBJ_AMPUNIT_LINEAR;
-    e_ob->l_envtimeunit = EARSBUFOBJ_TIMEUNIT_DURATION_RATIO;
-    e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_CENTS;
-    e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_RADIANS;
+    e_ob->l_ampunit = EARS_AMPUNIT_LINEAR;
+    e_ob->l_timeunit = EARS_TIMEUNIT_MS;
+    e_ob->l_antimeunit = EARS_TIMEUNIT_SAMPS;
+    e_ob->l_envampunit = EARS_AMPUNIT_LINEAR;
+    e_ob->l_envtimeunit = EARS_TIMEUNIT_DURATION_RATIO;
+    e_ob->l_pitchunit = EARS_PITCHUNIT_CENTS;
+    e_ob->l_frequnit = EARS_FREQUNIT_HERTZ;
+    e_ob->l_angleunit = EARS_ANGLEUNIT_RADIANS;
     e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+    
+    e_ob->a_winsize = 2048;
+    e_ob->a_hopsize = 1024;
+    e_ob->a_lastframetoendoffile = 0;
+    e_ob->a_winstartfromzero = 0;
+    atom_setsym(&e_ob->a_numframes, _llllobj_sym_auto);
+    e_ob->a_overlap = 2.;
+    e_ob->a_wintype = gensym("hann");
+
     
     e_ob->l_slopemapping = k_SLOPE_MAPPING_BACH;
 
@@ -735,11 +787,31 @@ bool earsbufobj_is_buf_autoassigned(t_earsbufobj *e_ob, e_earsbufobj_in_out wher
     }
 }
 
+bool earsbufobj_is_buf_autoassigned_or_copied(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx)
+{
+    long i = store, j = bufferidx;
+    switch (where) {
+        case EARSBUFOBJ_IN:
+            return (e_ob->l_instore[i].stored_buf[j].l_status == EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED ||
+                    e_ob->l_instore[i].stored_buf[j].l_status == EARSBUFOBJ_BUFSTATUS_COPIED);
+            break;
+            
+        case EARSBUFOBJ_OUT:
+            return (e_ob->l_outstore[i].stored_buf[j].l_status == EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED ||
+                    e_ob->l_outstore[i].stored_buf[j].l_status == EARSBUFOBJ_BUFSTATUS_COPIED);
+            break;
+            
+        default:
+            return false;
+            break;
+    }
+}
+
 void earsbufobj_free(t_earsbufobj *e_ob)
 {
     long i, j;
     
-    e_ob->l_is_freeing = 1;
+    ears_is_freeing = true;
     
     for (i = e_ob->l_numins - 1; i > 0; i--)
         object_free_debug(e_ob->l_proxy[i]);
@@ -750,7 +822,8 @@ void earsbufobj_free(t_earsbufobj *e_ob)
         for (j = 0; j < e_ob->l_instore[i].num_stored_bufs; j++) {
             if (e_ob->l_instore[i].stored_buf[j].l_ref)
                 object_free_debug(e_ob->l_instore[i].stored_buf[j].l_ref);
-            if (e_ob->l_instore[i].stored_buf[j].l_name && e_ob->l_instore[i].stored_buf[j].l_buf)
+            if (e_ob->l_instore[i].stored_buf[j].l_name && e_ob->l_instore[i].stored_buf[j].l_buf &&
+                e_ob->l_instore[i].stored_buf[j].l_status == EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED)
                 earsbufobj_buffer_release(e_ob, EARSBUFOBJ_IN, i, j);
         }
         bach_freeptr(e_ob->l_instore[i].stored_buf);
@@ -770,6 +843,8 @@ void earsbufobj_free(t_earsbufobj *e_ob)
         }
         bach_freeptr(e_ob->l_outstore[i].stored_buf);
     }
+    
+    ears_is_freeing = false;
 
     bach_freeptr(e_ob->l_outstore);
 //    bach_freeptr(e_ob->l_outlet);
@@ -788,7 +863,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
     long i, j;
     long res = MAX_ERR_NONE;
     
-    if (e_ob->l_is_freeing)
+    if (ears_is_freeing)
         return res;
     
     if (EARS_ALLOCATIONVERBOSE && s && msg) {
@@ -803,7 +878,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                 if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
                     res = MAX_ERR_GENERIC;
                 
-                if (!e_ob->l_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
+                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
                     if (data == earsbufobj_get_outlet_buffer_obj(e_ob, i, j)) {
                         t_buffer_obj *new_obj = buffer_ref_getobject(ref);
                         if (!new_obj) {
@@ -826,7 +901,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                 if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
                     res = MAX_ERR_GENERIC;
                 
-                if (!e_ob->l_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
+                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
                     if (data == earsbufobj_get_inlet_buffer_obj(e_ob, i, j)) {
                         t_buffer_obj *new_obj = buffer_ref_getobject(ref);
                         if (!new_obj) {
@@ -858,7 +933,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                 if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
                     res = MAX_ERR_GENERIC;
                 
-                if (!e_ob->l_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
+                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
                     if (data == earsbufobj_get_outlet_buffer_obj(e_ob, i, j)) {
 // N.B.: buffer_ref_getobject() is unreliable for our instores and outstores
 //                    t_buffer_obj *new_obj = buffer_ref_getobject(ref);
@@ -890,7 +965,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                 if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
                     res = MAX_ERR_GENERIC;
                 
-                if (!e_ob->l_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
+                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
                     if (data == earsbufobj_get_inlet_buffer_obj(e_ob, i, j)) {
                         t_buffer_obj *new_obj = buffer_ref_getobject(ref);
                         if (!new_obj) {
@@ -1128,7 +1203,7 @@ t_max_err earsbufobj_setattr_ampunit(t_earsbufobj *e_ob, void *attr, long argc, 
         else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
             e_ears_ampunit new_ampunit = ears_ampunit_from_symbol(s);
-            if (new_ampunit != EARSBUFOBJ_AMPUNIT_UNKNOWN)
+            if (new_ampunit != EARS_AMPUNIT_UNKNOWN)
                 e_ob->l_ampunit = new_ampunit;
             else
                 object_error((t_object *)e_ob, "Unknown amplitude unit!");
@@ -1158,7 +1233,7 @@ t_max_err earsbufobj_setattr_envampunit(t_earsbufobj *e_ob, void *attr, long arg
         else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
             e_ears_ampunit new_ampunit = ears_ampunit_from_symbol(s);
-            if (new_ampunit != EARSBUFOBJ_AMPUNIT_UNKNOWN)
+            if (new_ampunit != EARS_AMPUNIT_UNKNOWN)
                 e_ob->l_envampunit = new_ampunit;
             else
                 object_error((t_object *)e_ob, "Unknown amplitude unit!");
@@ -1189,7 +1264,7 @@ t_max_err earsbufobj_setattr_timeunit(t_earsbufobj *e_ob, void *attr, long argc,
         else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
             e_ears_timeunit new_timeunit = ears_timeunit_from_symbol(s);
-            if (new_timeunit != EARSBUFOBJ_TIMEUNIT_UNKNOWN)
+            if (new_timeunit != EARS_TIMEUNIT_UNKNOWN)
                 e_ob->l_timeunit = new_timeunit;
             else
                 object_error((t_object *)e_ob, "Unknown time unit!");
@@ -1203,12 +1278,41 @@ void earsbufobj_class_add_timeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
     CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Seconds Samples Relative Intervals Onsets");
+    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Relative");
     CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
     CLASS_ATTR_BASIC(c, "timeunit", 0);
     CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
-    // @description Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-    // Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+    // @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+    // The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+}
+
+
+t_max_err earsbufobj_setattr_antimeunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_LONG)
+            e_ob->l_antimeunit = atom_getlong(argv);
+        else if (atom_gettype(argv) == A_SYM) {
+            t_symbol *s = atom_getsym(argv);
+            e_ears_timeunit new_timeunit = ears_timeunit_from_symbol(s);
+            if (new_timeunit != EARS_TIMEUNIT_UNKNOWN)
+                e_ob->l_antimeunit = new_timeunit;
+            else
+                object_error((t_object *)e_ob, "Unknown time unit!");
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
+void earsbufobj_class_add_antimeunit_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "antimeunit", 0, t_earsbufobj, l_antimeunit);
+    CLASS_ATTR_STYLE_LABEL(c,"antimeunit",0,"enumindex","Analysis Time Values Are In");
+    CLASS_ATTR_ENUMINDEX(c,"antimeunit", 0, "Milliseconds Samples Relative");
+    CLASS_ATTR_ACCESSORS(c, "antimeunit", NULL, earsbufobj_setattr_antimeunit);
+    CLASS_ATTR_BASIC(c, "antimeunit", 0);
+    CLASS_ATTR_CATEGORY(c, "antimeunit", 0, "Units");
+    // @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
     // The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
 }
 
@@ -1218,13 +1322,9 @@ t_max_err earsbufobj_setattr_pitchunit(t_earsbufobj *e_ob, void *attr, long argc
         if (atom_gettype(argv) == A_LONG)
             e_ob->l_pitchunit = atom_getlong(argv);
         else if (atom_gettype(argv) == A_SYM) {
-            t_symbol *s = atom_getsym(argv);
-            if (s == gensym("cents") || s == gensym("midicents") || s == gensym("MIDIcents"))
-                e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_CENTS;
-            else if (s == gensym("midi") || s == gensym("MIDI") || s == gensym("semitones"))
-                e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_MIDI;
-            else if (s == gensym("freqratio") || s == gensym("fr") || s == gensym("ratio"))
-                e_ob->l_pitchunit = EARSBUFOBJ_PITCHUNIT_FREQRATIO;
+            e_ears_pitchunit new_pitchunit = ears_pitchunit_from_symbol(atom_getsym(argv));
+            if (new_pitchunit != EARS_PITCHUNIT_UNKNOWN)
+                e_ob->l_pitchunit = new_pitchunit;
             else
                 object_error((t_object *)e_ob, "Unknown pitch unit!");
         }
@@ -1238,12 +1338,42 @@ void earsbufobj_class_add_pitchunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "pitchunit", 0, t_earsbufobj, l_pitchunit);
     CLASS_ATTR_STYLE_LABEL(c,"pitchunit",0,"enumindex","Pitch Values Are In");
-    CLASS_ATTR_ENUMINDEX(c,"pitchunit", 0, "Cents MIDI Frequency Ratio");
+    CLASS_ATTR_ENUMINDEX(c,"pitchunit", 0, "Cents MIDI Hertz Frequency Ratio");
     CLASS_ATTR_ACCESSORS(c, "pitchunit", NULL, earsbufobj_setattr_pitchunit);
     CLASS_ATTR_BASIC(c, "pitchunit", 0);
     CLASS_ATTR_CATEGORY(c, "pitchunit", 0, "Units");
-    // @description Sets the unit for pitch values: Cents (default), MIDI, or frequency ratio.
+    // @description Sets the unit for pitch values: Cents (default), MIDI, Hertz (frequency), or frequency ratio.
 }
+
+t_max_err earsbufobj_setattr_frequnit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_LONG)
+            e_ob->l_frequnit = atom_getlong(argv);
+        else if (atom_gettype(argv) == A_SYM) {
+            e_ears_frequnit new_frequnit = ears_frequnit_from_symbol(atom_getsym(argv));
+            if (new_frequnit != EARS_FREQUNIT_UNKNOWN)
+                e_ob->l_frequnit = new_frequnit;
+            else
+                object_error((t_object *)e_ob, "Unknown frequency unit!");
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
+
+
+void earsbufobj_class_add_frequnit_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "frequnit", 0, t_earsbufobj, l_frequnit);
+    CLASS_ATTR_STYLE_LABEL(c,"frequnit",0,"enumindex","Frequency Values Are In");
+    CLASS_ATTR_ENUMINDEX(c,"frequnit", 0, "Hertz BPM Cents MIDI");
+    CLASS_ATTR_ACCESSORS(c, "frequnit", NULL, earsbufobj_setattr_frequnit);
+    CLASS_ATTR_BASIC(c, "frequnit", 0);
+    CLASS_ATTR_CATEGORY(c, "frequnit", 0, "Units");
+    // @description Sets the unit for pitch values: Hertz (default), BPM, Cents, MIDI 
+}
+
 
 
 t_max_err earsbufobj_setattr_angleunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
@@ -1254,11 +1384,11 @@ t_max_err earsbufobj_setattr_angleunit(t_earsbufobj *e_ob, void *attr, long argc
         else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
             if (s == gensym("radians") || s == gensym("radian") || s == gensym("rad"))
-                e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_RADIANS;
+                e_ob->l_angleunit = EARS_ANGLEUNIT_RADIANS;
             else if (s == gensym("degrees") || s == gensym("degree") || s == gensym("deg"))
-                e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_DEGREES;
+                e_ob->l_angleunit = EARS_ANGLEUNIT_DEGREES;
             else if (s == gensym("turns") || s == gensym("turn"))
-                e_ob->l_angleunit = EARSBUFOBJ_ANGLEUNIT_TURNS;
+                e_ob->l_angleunit = EARS_ANGLEUNIT_TURNS;
             else
                 object_error((t_object *)e_ob, "Unknown angle unit!");
         }
@@ -1295,7 +1425,7 @@ t_max_err earsbufobj_setattr_envtimeunit(t_earsbufobj *e_ob, void *attr, long ar
         else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
             e_ears_timeunit new_timeunit = ears_timeunit_from_symbol(s);
-            if (new_timeunit != EARSBUFOBJ_TIMEUNIT_UNKNOWN)
+            if (new_timeunit != EARS_TIMEUNIT_UNKNOWN)
                 e_ob->l_envtimeunit = new_timeunit;
             else
                 object_error((t_object *)e_ob, "Unknown time unit!");
@@ -1309,12 +1439,11 @@ void earsbufobj_class_add_envtimeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "envtimeunit", 0, t_earsbufobj, l_envtimeunit);
     CLASS_ATTR_STYLE_LABEL(c,"envtimeunit",0,"enumindex","Envelope Time Values Are In");
-    CLASS_ATTR_ENUMINDEX(c,"envtimeunit", 0, "Milliseconds Seconds Samples Relative Intervals Onsets");
+    CLASS_ATTR_ENUMINDEX(c,"envtimeunit", 0, "Milliseconds Samples Relative");
     CLASS_ATTR_ACCESSORS(c, "envtimeunit", NULL, earsbufobj_setattr_envtimeunit);
     CLASS_ATTR_BASIC(c, "envtimeunit", 0);
     CLASS_ATTR_CATEGORY(c, "envtimeunit", 0, "Units");
-    // @description Sets the unit for time values inside envelopes: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-    // Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+    // @description Sets the unit for time values inside envelopes: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
     // The default is Relative.
 }
 
@@ -1387,6 +1516,96 @@ void earsbufobj_class_add_naming_attr(t_class *c)
     CLASS_ATTR_CATEGORY(c, "naming", 0, "Behavior");
     // @description Chooses the output buffer naming policy
 }
+
+
+void earsbufobj_class_add_winsize_attr(t_class *c)
+{
+    CLASS_ATTR_DOUBLE(c, "winsize", 0, t_earsbufobj, a_winsize);
+    CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Windows Size");
+    CLASS_ATTR_BASIC(c, "winsize", 0);
+    CLASS_ATTR_CATEGORY(c, "winsize", 0, "Analysis");
+    // @description Sets the analysis frame size (the unit depends on the <m>antimeunit</m> attribute)
+}
+    
+void earsbufobj_class_add_hopsize_attr(t_class *c)
+{
+    CLASS_ATTR_DOUBLE(c, "hopsize", 0, t_earsbufobj, a_hopsize);
+    CLASS_ATTR_STYLE_LABEL(c,"hopsize",0,"text","Hop Size");
+    CLASS_ATTR_BASIC(c, "hopsize", 0);
+    CLASS_ATTR_CATEGORY(c, "hopsize", 0, "Analysis");
+    // @description Sets the analysis hop size (the unit depends on the <m>antimeunit</m> attribute)
+    // Floating point values are allowed.
+}
+
+
+t_max_err earsbufobj_setattr_overlap(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (is_atom_number(argv)) {
+            double olap = atom_getfloat(argv);
+            e_ob->a_overlap = olap;
+            object_attr_setfloat(e_ob, gensym("hopsize"), e_ob->a_winsize / olap);
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
+void earsbufobj_class_add_overlap_attr(t_class *c)
+{
+    CLASS_ATTR_DOUBLE(c, "overlap", 0, t_earsbufobj, a_overlap);
+    CLASS_ATTR_STYLE_LABEL(c,"overlap",0,"text","Overlap");
+    CLASS_ATTR_ACCESSORS(c, "overlap", NULL, earsbufobj_setattr_overlap);
+    CLASS_ATTR_CATEGORY(c, "overlap", 0, "Analysis");
+    // @description Sets the overlap factor between the analysis window size and the hop size.
+}
+
+
+t_max_err earsbufobj_setattr_numframes(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_LONG) {
+            atom_setlong(&e_ob->a_numframes, atom_getlong(argv));
+            object_attr_setdisabled((t_object *)e_ob, gensym("hopsize"), true);
+            object_attr_setdisabled((t_object *)e_ob, gensym("winsize"), true);
+        } else if (atom_gettype(argv) == A_SYM) {
+            atom_setsym(&e_ob->a_numframes, _llllobj_sym_auto);
+            object_attr_setdisabled((t_object *)e_ob, gensym("hopsize"), false);
+            object_attr_setdisabled((t_object *)e_ob, gensym("winsize"), false);
+        }
+    }
+    return MAX_ERR_NONE;
+}
+void earsbufobj_class_add_numframes_attr(t_class *c)
+{
+    CLASS_ATTR_ATOM(c, "numframes", 0, t_earsbufobj, a_numframes);
+    CLASS_ATTR_STYLE_LABEL(c,"numframes",0,"text","Number of Analysis Frames");
+    CLASS_ATTR_ACCESSORS(c, "numframes", NULL, earsbufobj_setattr_numframes);
+    CLASS_ATTR_CATEGORY(c, "numframes", 0, "Analysis");
+    // @description Sets the number of analysis frames. Defaults to "auto", as this number is a consequence of the
+    // <m>winsize</m> and <m>hopsize</m> attributes. If this number is set to a positive integer value, the <m>hopsize</m>
+    // is ignored and inferred from <m>numframes</m>.
+}
+
+void earsbufobj_class_add_wintype_attr(t_class *c)
+{
+    CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+    CLASS_ATTR_ENUM(c,"wintype", 0, "hamming hann hannnsgcq triangular square blackmanharris62 blackmanharris70 blackmanharris74 blackmanharris92");
+    CLASS_ATTR_BASIC(c, "wintype", 0);
+    CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+    // @description Sets the window type.
+    // Available windows are the ones allowed by the Essentia library:
+    // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
+}
+
+void earsbufobj_class_add_winstartfromzero_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "winstartfromzero", 0, t_earsbufobj, a_winstartfromzero);
+    CLASS_ATTR_STYLE_LABEL(c,"winstartfromzero",0,"onoff","First Window Starts At Zero");
+    CLASS_ATTR_CATEGORY(c, "winstartfromzero", 0, "Analysis");
+    // @description If on, the first window is centered at winsize/2; if off (default), the first window is centered at zero.
+}
+
 
 
 e_slope_mapping earsbufobj_get_slope_mapping(t_earsbufobj *e_ob)
@@ -1867,6 +2086,10 @@ t_symbol *earsbufobj_get_stored_buffer_name(t_earsbufobj *e_ob, e_earsbufobj_in_
     return NULL;
 }
 
+// TODO
+// t_earsobj_object
+// t_earsobj_pxobject
+// earsbufobj -> earsobj
 void earsbufobj_store_copy_format(t_earsbufobj *e_ob, e_earsbufobj_in_out source, long source_store_idx, long source_buffer_idx, e_earsbufobj_in_out dest, long dest_store_idx, long dest_buffer_idx)
 {
     t_buffer_obj *from = earsbufobj_get_stored_buffer_obj(e_ob, source, source_store_idx, source_buffer_idx);
@@ -1896,31 +2119,35 @@ void earsbufobj_mutex_unlock(t_earsbufobj *e_ob)
 
 
 
-double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
+double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
 {
     double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
-    switch (is_envelope ? e_ob->l_envtimeunit : e_ob->l_timeunit) {
-        case EARSBUFOBJ_TIMEUNIT_SAMPS:
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
             return (1000. * value / buffer_getsamplerate(buf)) / size_ms;
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+        case EARS_TIMEUNIT_DURATION_RATIO:
             return value;
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+        case EARS_TIMEUNIT_NUM_INTERVALS:
             return 1./value;
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+        case EARS_TIMEUNIT_NUM_ONSETS:
             return 1./(value-1);
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_SECONDS:
+        case EARS_TIMEUNIT_SECONDS:
             return (value * 1000. / size_ms);
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_MS:
+        case EARS_TIMEUNIT_LOGSECONDS:
+            return (pow(10, value) * 1000. / size_ms);
+            break;
+
+        case EARS_TIMEUNIT_MS:
         default:
             return value / size_ms;
             break;
@@ -1929,30 +2156,34 @@ double earsbufobj_input_to_ratio(t_earsbufobj *e_ob, double value, t_buffer_obj 
 
 
 
-double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
+double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
 {
-    switch (is_envelope ? e_ob->l_envtimeunit : e_ob->l_timeunit) {
-        case EARSBUFOBJ_TIMEUNIT_SAMPS:
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
             return ears_samps_to_ms(value, buffer_getsamplerate(buf));
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+        case EARS_TIMEUNIT_DURATION_RATIO:
             return ears_buffer_get_size_ms((t_object *)e_ob, buf) * value;
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+        case EARS_TIMEUNIT_NUM_INTERVALS:
             return ears_buffer_get_size_ms((t_object *)e_ob, buf) * (1./value);
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+        case EARS_TIMEUNIT_NUM_ONSETS:
             return ears_buffer_get_size_ms((t_object *)e_ob, buf) * (1./(value-1));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_SECONDS:
+        case EARS_TIMEUNIT_SECONDS:
             return value*1000.;
             break;
-            
-        case EARSBUFOBJ_TIMEUNIT_MS:
+
+        case EARS_TIMEUNIT_LOGSECONDS:
+            return pow(10, value)*1000.;
+            break;
+
+        case EARS_TIMEUNIT_MS:
         default:
             return value;
             break;
@@ -1960,31 +2191,35 @@ double earsbufobj_input_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *bu
 }
 
 // TO DO: handle negative values
-double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
 {
     double res = 0;
-    switch (is_envelope ? e_ob->l_envtimeunit : e_ob->l_timeunit) {
-        case EARSBUFOBJ_TIMEUNIT_SAMPS:
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
             res = value;
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+        case EARS_TIMEUNIT_DURATION_RATIO:
             res = ears_buffer_get_size_samps((t_object *)e_ob, buf) * value;
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+        case EARS_TIMEUNIT_NUM_INTERVALS:
             res = ears_buffer_get_size_samps((t_object *)e_ob, buf) * (1./value);
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+        case EARS_TIMEUNIT_NUM_ONSETS:
             res = ears_buffer_get_size_samps((t_object *)e_ob, buf) * (1./(value-1));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_SECONDS:
+        case EARS_TIMEUNIT_SECONDS:
             res = ears_ms_to_fsamps(value*1000., buffer_getsamplerate(buf));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_MS:
+        case EARS_TIMEUNIT_LOGSECONDS:
+            res = ears_ms_to_fsamps(pow(10, value)*1000., buffer_getsamplerate(buf));
+            break;
+
+        case EARS_TIMEUNIT_MS:
         default:
             res = ears_ms_to_fsamps(value, buffer_getsamplerate(buf));
             break;
@@ -1992,39 +2227,88 @@ double earsbufobj_input_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj
     return res;
 }
 
-long earsbufobj_input_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope)
+long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
 {
-    return round(earsbufobj_input_to_fsamps(e_ob, value, buf, is_envelope));
+    return round(earsbufobj_time_to_fsamps(e_ob, value, buf, is_envelope, is_analysis));
 }
 
 
-double earsbufobj_input_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope)
+double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope, bool is_analysis)
 {
     switch (new_timeunit) {
-        case EARSBUFOBJ_TIMEUNIT_SAMPS:
-            return earsbufobj_input_to_fsamps(e_ob, value, buf, is_envelope);
+        case EARS_TIMEUNIT_SAMPS:
+            return earsbufobj_time_to_fsamps(e_ob, value, buf, is_envelope, is_analysis);
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
-            return earsbufobj_input_to_ratio(e_ob, value, buf, is_envelope);
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
-            return 1./earsbufobj_input_to_ratio(e_ob, value, buf, is_envelope);
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            return 1./earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
-            return 1 + (1./earsbufobj_input_to_ratio(e_ob, value, buf, is_envelope));
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            return 1 + (1./earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_SECONDS:
-            return earsbufobj_input_to_ms(e_ob, value, buf, is_envelope)/1000.;
+        case EARS_TIMEUNIT_SECONDS:
+            return earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis)/1000.;
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_MS:
+        case EARS_TIMEUNIT_LOGSECONDS:
+            return log10(earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis)/1000.);
+            break;
+
+        case EARS_TIMEUNIT_MS:
         default:
-            return earsbufobj_input_to_ms(e_ob, value, buf, is_envelope);
+            return earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis);
             break;
+    }
+}
+
+
+
+double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to)
+{
+    t_earsbufobj e_ob;
+    e_ob.l_ampunit = from;
+    switch (to) {
+        case EARS_AMPUNIT_LINEAR:
+            return earsbufobj_amplitude_to_linear(&e_ob, value);
+            break;
+            
+        case EARS_AMPUNIT_DECIBEL:
+        default:
+            return earsbufobj_amplitude_to_db(&e_ob, value);
+            break;
+    }
+}
+
+
+
+double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to)
+{
+    t_earsbufobj e_ob;
+    e_ob.l_frequnit = from;
+    switch (to) {
+        case EARS_FREQUNIT_CENTS:
+            return earsbufobj_freq_to_cents(&e_ob, value);
+            break;
+            
+        case EARS_FREQUNIT_MIDI:
+            return earsbufobj_freq_to_midi(&e_ob, value);
+            break;
+
+        case EARS_FREQUNIT_BPM:
+            return earsbufobj_freq_to_hz(&e_ob, value)*60.;
+            break;
+
+        case EARS_FREQUNIT_HERTZ:
+        default:
+            return earsbufobj_freq_to_hz(&e_ob, value);
+            break;
+            
     }
 }
 
@@ -2035,57 +2319,66 @@ double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit fr
     t_earsbufobj e_ob;
     e_ob.l_timeunit = from;
     switch (to) {
-        case EARSBUFOBJ_TIMEUNIT_SAMPS:
-            return earsbufobj_input_to_fsamps(&e_ob, value, buf, false);
+        case EARS_TIMEUNIT_SAMPS:
+            return earsbufobj_time_to_fsamps(&e_ob, value, buf, false);
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
-            return earsbufobj_input_to_ratio(&e_ob, value, buf, false);
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return earsbufobj_time_to_durationratio(&e_ob, value, buf, false);
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
-            return 1./earsbufobj_input_to_ratio(&e_ob, value, buf, false);
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            return 1./earsbufobj_time_to_durationratio(&e_ob, value, buf, false);
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
-            return 1 + (1./earsbufobj_input_to_ratio(&e_ob, value, buf, false));
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            return 1 + (1./earsbufobj_time_to_durationratio(&e_ob, value, buf, false));
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_SECONDS:
-            return earsbufobj_input_to_ms(&e_ob, value, buf, false)/1000.;
+        case EARS_TIMEUNIT_SECONDS:
+            return earsbufobj_time_to_ms(&e_ob, value, buf, false)/1000.;
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_MS:
+        case EARS_TIMEUNIT_LOGSECONDS:
+            return log10(earsbufobj_time_to_ms(&e_ob, value, buf, false)/1000.);
+            break;
+            
+        case EARS_TIMEUNIT_MS:
         default:
-            return earsbufobj_input_to_ms(&e_ob, value, buf, false);
+            return earsbufobj_time_to_ms(&e_ob, value, buf, false);
             break;
     }
 }
 
+
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf)
 {
     switch (e_ob->l_timeunit) {
-        case EARSBUFOBJ_TIMEUNIT_SAMPS:
+        case EARS_TIMEUNIT_SAMPS:
             return atom_getlong(v);
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+        case EARS_TIMEUNIT_DURATION_RATIO:
             return ears_buffer_get_size_samps((t_object *)e_ob, buf) * atom_getfloat(v);
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+        case EARS_TIMEUNIT_NUM_INTERVALS:
             return ears_buffer_get_size_samps((t_object *)e_ob, buf) * (1./atom_getfloat(v));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+        case EARS_TIMEUNIT_NUM_ONSETS:
             return ears_buffer_get_size_samps((t_object *)e_ob, buf) * (1./(atom_getfloat(v)-1));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_SECONDS:
+        case EARS_TIMEUNIT_SECONDS:
             return ears_ms_to_samps(atom_getfloat(v)*1000., buffer_getsamplerate(buf));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_MS:
+        case EARS_TIMEUNIT_LOGSECONDS:
+            return ears_ms_to_samps(pow(10, atom_getfloat(v))*1000., buffer_getsamplerate(buf));
+            break;
+
+        case EARS_TIMEUNIT_MS:
         default:
             return ears_ms_to_samps(atom_getfloat(v), buffer_getsamplerate(buf));
             break;
@@ -2095,27 +2388,31 @@ long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf)
 void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf, t_atom *a)
 {
     switch (e_ob->l_timeunit) {
-        case EARSBUFOBJ_TIMEUNIT_SAMPS:
+        case EARS_TIMEUNIT_SAMPS:
             atom_setlong(a, samps);
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+        case EARS_TIMEUNIT_DURATION_RATIO:
             atom_setfloat(a, ((float)samps)/ears_buffer_get_size_samps((t_object *)e_ob, buf));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+        case EARS_TIMEUNIT_NUM_INTERVALS:
             atom_setfloat(a, 1./(((float)samps)/ears_buffer_get_size_samps((t_object *)e_ob, buf)));
             break;
             
-        case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+        case EARS_TIMEUNIT_NUM_ONSETS:
             atom_setfloat(a, 1 + (1./(((float)samps)/ears_buffer_get_size_samps((t_object *)e_ob, buf))));
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_SECONDS:
+        case EARS_TIMEUNIT_SECONDS:
             atom_setfloat(a, ears_samps_to_ms(samps, buffer_getsamplerate(buf))/1000.);
             break;
 
-        case EARSBUFOBJ_TIMEUNIT_MS:
+        case EARS_TIMEUNIT_LOGSECONDS:
+            atom_setfloat(a, log10(ears_samps_to_ms(samps, buffer_getsamplerate(buf))/1000.));
+            break;
+
+        case EARS_TIMEUNIT_MS:
         default:
             atom_setfloat(a, ears_samps_to_ms(samps, buffer_getsamplerate(buf)));
             break;
@@ -2124,14 +2421,14 @@ void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf,
 
 
 
-double earsbufobj_input_to_linear(t_earsbufobj *e_ob, double value)
+double earsbufobj_amplitude_to_linear(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_ampunit) {
-        case EARSBUFOBJ_AMPUNIT_DECIBEL:
+        case EARS_AMPUNIT_DECIBEL:
             return ears_db_to_linear(value);
             break;
             
-        case EARSBUFOBJ_AMPUNIT_LINEAR:
+        case EARS_AMPUNIT_LINEAR:
         default:
             return value;
             break;
@@ -2139,14 +2436,14 @@ double earsbufobj_input_to_linear(t_earsbufobj *e_ob, double value)
 }
 
 
-double earsbufobj_input_to_db(t_earsbufobj *e_ob, double value)
+double earsbufobj_amplitude_to_db(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_ampunit) {
-        case EARSBUFOBJ_AMPUNIT_LINEAR:
+        case EARS_AMPUNIT_LINEAR:
             return ears_linear_to_db(value);
             break;
             
-        case EARSBUFOBJ_AMPUNIT_DECIBEL:
+        case EARS_AMPUNIT_DECIBEL:
         default:
             return value;
             break;
@@ -2156,15 +2453,15 @@ double earsbufobj_input_to_db(t_earsbufobj *e_ob, double value)
 double earsbufobj_input_to_radians(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_ampunit) {
-        case EARSBUFOBJ_ANGLEUNIT_DEGREES:
+        case EARS_ANGLEUNIT_DEGREES:
             return ears_deg_to_rad(value);
             break;
 
-        case EARSBUFOBJ_ANGLEUNIT_TURNS:
+        case EARS_ANGLEUNIT_TURNS:
             return value * TWOPI;
             break;
 
-        case EARSBUFOBJ_ANGLEUNIT_RADIANS:
+        case EARS_ANGLEUNIT_RADIANS:
         default:
             return value;
             break;
@@ -2183,7 +2480,7 @@ t_llll *earsbufobj_llllelem_to_linear(t_earsbufobj *e_ob, t_llllelem *elem)
     for (t_llllelem *el = out->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             switch (e_ob->l_envampunit) {
-                case EARSBUFOBJ_AMPUNIT_DECIBEL:
+                case EARS_AMPUNIT_DECIBEL:
                 {
                     
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
@@ -2196,7 +2493,7 @@ t_llll *earsbufobj_llllelem_to_linear(t_earsbufobj *e_ob, t_llllelem *elem)
             }
         } else {
             switch (e_ob->l_ampunit) {
-                case EARSBUFOBJ_AMPUNIT_DECIBEL:
+                case EARS_AMPUNIT_DECIBEL:
                     hatom_setdouble(&el->l_hatom, ears_db_to_linear(hatom_getdouble(&el->l_hatom)));
                     break;
                 default:
@@ -2221,7 +2518,7 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
     for (t_llllelem *el = out->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             switch (e_ob->l_envampunit) {
-                case EARSBUFOBJ_AMPUNIT_DECIBEL:
+                case EARS_AMPUNIT_DECIBEL:
                 {
                     
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
@@ -2233,35 +2530,42 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
                     break;
             }
             switch (e_ob->l_envtimeunit) {
-                case EARSBUFOBJ_TIMEUNIT_MS:
+                case EARS_TIMEUNIT_MS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                case EARS_TIMEUNIT_SECONDS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+                case EARS_TIMEUNIT_LOGSECONDS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(pow(10, hatom_getdouble(&sub_ll->l_head->l_hatom))*1000., sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_RATIO:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+                case EARS_TIMEUNIT_NUM_INTERVALS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+                case EARS_TIMEUNIT_NUM_ONSETS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
@@ -2273,7 +2577,7 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
             }
         } else {
             switch (e_ob->l_ampunit) {
-                case EARSBUFOBJ_AMPUNIT_DECIBEL:
+                case EARS_AMPUNIT_DECIBEL:
                     hatom_setdouble(&el->l_hatom, ears_db_to_linear(hatom_getdouble(&el->l_hatom)));
                     break;
                 default:
@@ -2307,11 +2611,11 @@ t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem,
 double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_ampunit) {
-        case EARSBUFOBJ_AMPUNIT_DECIBEL:
+        case EARS_AMPUNIT_DECIBEL:
             return ears_linear_to_db(value);
             break;
             
-        case EARSBUFOBJ_AMPUNIT_LINEAR:
+        case EARS_AMPUNIT_LINEAR:
         default:
             return value;
             break;
@@ -2353,7 +2657,7 @@ void earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(t_earsbufobj *e_
             if (hatom_gettype(&el->l_hatom) == H_LLLL) {
                 t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                 if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom)) {
-                    double ctu = earsbufobj_input_convert_timeunit(e_ob, hatom_getdouble(&sub_ll->l_head->l_hatom), buf, dest_envtimeunit, true);
+                    double ctu = earsbufobj_convert_timeunit(e_ob, hatom_getdouble(&sub_ll->l_head->l_hatom), buf, dest_envtimeunit, true);
                     hatom_setdouble(&sub_ll->l_head->l_hatom, ctu);
                 }
             }
@@ -2393,18 +2697,22 @@ t_llll *earsbufobj_llllelem_convert_envtimeunit_and_normalize_range(t_earsbufobj
     return out;
 }
 
-double earsbufobj_input_to_cents(t_earsbufobj *e_ob, double value)
+double earsbufobj_pitch_to_cents(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_pitchunit) {
-        case EARSBUFOBJ_PITCHUNIT_CENTS:
+        case EARS_PITCHUNIT_CENTS:
             return value;
             break;
             
-        case EARSBUFOBJ_PITCHUNIT_MIDI:
+        case EARS_PITCHUNIT_MIDI:
             return value*100.;
             break;
             
-        case EARSBUFOBJ_PITCHUNIT_FREQRATIO:
+        case EARS_PITCHUNIT_HERTZ:
+            return ears_hz_to_cents(value, EARS_MIDDLE_A_TUNING);
+            break;
+            
+        case EARS_PITCHUNIT_FREQRATIO:
             return ears_ratio_to_cents(value);
             break;
 
@@ -2415,9 +2723,84 @@ double earsbufobj_input_to_cents(t_earsbufobj *e_ob, double value)
 }
 
 
+double earsbufobj_freq_to_hz(t_earsbufobj *e_ob, double value)
+{
+    switch (e_ob->l_frequnit) {
+        case EARS_FREQUNIT_CENTS:
+            return ears_cents_to_hz(value, EARS_MIDDLE_A_TUNING);
+            break;
+            
+        case EARS_FREQUNIT_MIDI:
+            return ears_cents_to_hz(value*100., EARS_MIDDLE_A_TUNING);
+            break;
+
+        case EARS_FREQUNIT_BPM:
+            return value/60.;
+            break;
+
+        case EARS_FREQUNIT_HERTZ:
+            return value;
+            break;
+            
+        default:
+            return value;
+            break;
+    }
+}
+
+double earsbufobj_freq_to_cents(t_earsbufobj *e_ob, double value)
+{
+    switch (e_ob->l_frequnit) {
+        case EARS_FREQUNIT_CENTS:
+            return value;
+            break;
+            
+        case EARS_FREQUNIT_MIDI:
+            return value * 100;
+            break;
+
+        case EARS_FREQUNIT_BPM:
+            return ears_hz_to_cents(value/60., EARS_MIDDLE_A_TUNING);
+            break;
+
+        case EARS_FREQUNIT_HERTZ:
+            return ears_hz_to_cents(value, EARS_MIDDLE_A_TUNING);
+            break;
+            
+        default:
+            return value;
+            break;
+    }
+}
+
+double earsbufobj_freq_to_midi(t_earsbufobj *e_ob, double value)
+{
+    switch (e_ob->l_frequnit) {
+        case EARS_FREQUNIT_CENTS:
+            return value/100.;
+            break;
+            
+        case EARS_FREQUNIT_MIDI:
+            return value;
+            break;
+
+        case EARS_FREQUNIT_BPM:
+            return ears_hz_to_cents(value/60., EARS_MIDDLE_A_TUNING)/100.;
+            break;
+            
+        case EARS_FREQUNIT_HERTZ:
+            return ears_hz_to_cents(value, EARS_MIDDLE_A_TUNING)/100.;
+            break;
+            
+        default:
+            return value;
+            break;
+    }
+}
+
 
 // llllelem can be either a number or a t_pts
-t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
+t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
 {
     t_llll *out = llll_get();
     llll_appendhatom_clone(out, &elem->l_hatom);
@@ -2429,14 +2812,21 @@ t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem 
     for (t_llllelem *el = out->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             switch (e_ob->l_pitchunit) {
-                case EARSBUFOBJ_PITCHUNIT_FREQRATIO:
+                case EARS_PITCHUNIT_FREQRATIO:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_ratio_to_cents(hatom_getdouble(&sub_ll->l_head->l_next->l_hatom)));
                 }
                     break;
-                case EARSBUFOBJ_PITCHUNIT_MIDI:
+                case EARS_PITCHUNIT_HERTZ:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_hz_to_cents(hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), EARS_MIDDLE_A_TUNING));
+                }
+                    break;
+                case EARS_PITCHUNIT_MIDI:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
@@ -2447,35 +2837,42 @@ t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem 
                     break;
             }
             switch (e_ob->l_envtimeunit) {
-                case EARSBUFOBJ_TIMEUNIT_MS:
+                case EARS_TIMEUNIT_MS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_SECONDS:
+                case EARS_TIMEUNIT_SECONDS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_DURATION_RATIO:
+                case EARS_TIMEUNIT_LOGSECONDS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(pow(10, hatom_getdouble(&sub_ll->l_head->l_hatom))*1000., sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_RATIO:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_NUM_INTERVALS:
+                case EARS_TIMEUNIT_NUM_INTERVALS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
                 }
                     break;
-                case EARSBUFOBJ_TIMEUNIT_NUM_ONSETS:
+                case EARS_TIMEUNIT_NUM_ONSETS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
@@ -2487,10 +2884,13 @@ t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem 
             }
         } else {
             switch (e_ob->l_pitchunit) {
-                case EARSBUFOBJ_PITCHUNIT_FREQRATIO:
+                case EARS_PITCHUNIT_FREQRATIO:
                     hatom_setdouble(&el->l_hatom, ears_ratio_to_cents(hatom_getdouble(&el->l_hatom)));
                     break;
-                case EARSBUFOBJ_PITCHUNIT_MIDI:
+                case EARS_PITCHUNIT_HERTZ:
+                    hatom_setdouble(&el->l_hatom, ears_hz_to_cents(hatom_getdouble(&el->l_hatom), EARS_MIDDLE_A_TUNING));
+                    break;
+                case EARS_PITCHUNIT_MIDI:
                     hatom_setdouble(&el->l_hatom, 100*hatom_getdouble(&el->l_hatom));
                     break;
                 default:
@@ -2501,3 +2901,5 @@ t_llll *earsbufobj_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem 
     
     return out;
 }
+
+

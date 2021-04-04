@@ -214,10 +214,10 @@ void buf_clip_bang(t_buf_clip *x)
                 ears_buffer_clone((t_object *)x, in, out);
         } else if (env->l_depth == 1 && env->l_head) {
             // clip is a single number
-            ears_buffer_clip((t_object *)x, in, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARSBUFOBJ_AMPUNIT_DECIBEL);
+            ears_buffer_clip((t_object *)x, in, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARS_AMPUNIT_DECIBEL);
         } else {
             // clip is an envelope in llll form
-            ears_buffer_clip_envelope((t_object *)x, in, out, env, x->e_ob.l_envampunit == EARSBUFOBJ_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+            ears_buffer_clip_envelope((t_object *)x, in, out, env, x->e_ob.l_envampunit == EARS_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);
