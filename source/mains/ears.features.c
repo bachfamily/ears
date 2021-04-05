@@ -63,12 +63,19 @@ typedef struct _buf_features {
     long               *temporalmodes;
     t_llll             **algorithm_args;
     t_ears_essentia_extractors_library   extractors_lib;
+
+    long               num_outlets;
+    long               *features_numoutputs;
+    long               *outlet_featureidx;
+    long               *outlet_featureoutputidx;
+
     
     char               must_recreate_extractors;
     double             curr_sr;
     
     char               summarization;
-    
+    char               summarizationweight;
+
     double             a_envattacktime;
     double             a_envreleasetime;
 
@@ -86,6 +93,7 @@ void			buf_features_anything(t_buf_features *x, t_symbol *msg, long ac, t_atom *
 void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s);
 void buf_features_inletinfo(t_buf_features *x, void *b, long a, char *t);
 
+t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *x);
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
@@ -150,6 +158,9 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
+    earsbufobj_class_add_frequnit_attr(c);
+    earsbufobj_class_add_pitchunit_attr(c);
+    earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     
     earsbufobj_class_add_winsize_attr(c);
@@ -184,11 +195,11 @@ int C74_EXPORT main(void)
     // 2 (linear): same as the previous one, and the samples are interpolated linearly.
 
     
-    CLASS_ATTR_LONG(c, "summary", 0, t_buf_features, summarization);
-    CLASS_ATTR_STYLE_LABEL(c,"summary",0,"text","Output Buffer Frame Interpolation Mode");
-    CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean Loudness-weighted Mean")
+    CLASS_ATTR_CHAR(c, "summary", 0, t_buf_features, summarization);
+    CLASS_ATTR_STYLE_LABEL(c,"summary",0,"text","Summarization Mode");
+    CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean");
     CLASS_ATTR_BASIC(c, "summary", 0);
-    CLASS_ATTR_FILTER_CLIP(c, "summary", 0, 6);
+    CLASS_ATTR_FILTER_CLIP(c, "summary", 0, 4);
     // @description Sets the summarization mode, for features that are requested as static but needs to be computed on a frame-by-frame basis.
     // Available modes are:
     // <b>First</b>: take first frame; <br />
@@ -197,6 +208,13 @@ int C74_EXPORT main(void)
     // <b>Mean</b>: average through frames; <br />
     // <b>Loudness-weighted Mean</b>: average through frames, weighting by frame loudness (default)<br />
 
+    
+    CLASS_ATTR_CHAR(c, "summaryweight", 0, t_buf_features, summarizationweight);
+    CLASS_ATTR_STYLE_LABEL(c,"summaryweight",0,"text","Summarization Weight");
+    CLASS_ATTR_ENUMINDEX(c, "summaryweight", 0, "None RMS Loudness");
+    CLASS_ATTR_BASIC(c, "summaryweight", 0);
+    CLASS_ATTR_FILTER_CLIP(c, "summaryweight", 0, 3);
+    // @description Sets the summarization weight (only applicable when <m>summary</m> is set to "Mean"): None, RMS, Loudness.
 
     
     
@@ -262,18 +280,8 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             
             
             
-        case EARS_FEATURE_DURATION:
-            return "Duration";
-            break;
 
             
-
-
-            
-        case EARS_FEATURE_SPECTRALFLATNESS:
-            return "Spectral flatness";
-            break;
-
             
             
         case EARS_FEATURE_FLUX:
@@ -456,6 +464,174 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             return "Temporal kurtosis";
             break;
 
+
+        case EARS_FEATURE_SPECTRALENERGY:
+            return "Spectral energy";
+            break;
+
+        case EARS_FEATURE_SPECTRALENTROPY:
+            return "Spectral entropy";
+            break;
+
+        case EARS_FEATURE_TEMPORALFLATNESS:
+            return "Temporal flatness";
+            break;
+
+        case EARS_FEATURE_SPECTRALFLATNESS:
+            return "Spectral flatness";
+            break;
+
+        case EARS_FEATURE_SPECTRALGEOMETRICMEAN:
+            return "Geometric mean";
+            break;
+
+        case EARS_FEATURE_INSTANTPOWER:
+            return "Instant power";
+            break;
+
+        case EARS_FEATURE_SPECTRALMEAN:
+            return "Spectral mean";
+            break;
+
+        case EARS_FEATURE_SPECTRALMEDIAN:
+            return "Spectral median";
+            break;
+
+        case EARS_FEATURE_SPECTRALRMS:
+            return "Spectral root mean square";
+            break;
+
+        case EARS_FEATURE_TEMPORALVARIANCE:
+            return "Temporal variance";
+            break;
+
+        case EARS_FEATURE_SPECTRALVARIANCE:
+            return "Spectral variance";
+            break;
+
+            // Tonal
+            
+        case EARS_FEATURE_CHORDSDETECTION:
+            return "Chords detection";
+            break;
+
+        case EARS_FEATURE_DISSONANCE:
+            return "Dissonance";
+            break;
+
+        case EARS_FEATURE_HPCP:
+            return "HPCP";
+            break;
+
+        case EARS_FEATURE_HARMONICPEAKS:
+            return "Harmonic peaks";
+            break;
+
+        case EARS_FEATURE_HIGHRESOLUTIONFEATURES:
+            return "High resolution features";
+            break;
+
+        case EARS_FEATURE_INHARMONICITY:
+            return "Inharmonicity";
+            break;
+
+        case EARS_FEATURE_KEY:
+            return "Key";
+            break;
+            
+        case EARS_FEATURE_KEYEXTRACTOR:
+            return "Key extractor";
+            break;
+
+        case EARS_FEATURE_ODDTOEVENHARMONICENERGYRATIO:
+            return "Odd-to-even harmonic energy ratio";
+            break;
+
+        case EARS_FEATURE_PITCHSALIENCE:
+            return "Pitch salience";
+            break;
+
+        case EARS_FEATURE_SPECTRUMCQ:
+            return "Constant-Q Spectrum";
+            break;
+
+        case EARS_FEATURE_TRISTIMULUS:
+            return "Tristimulus";
+            break;
+
+        case EARS_FEATURE_TUNINGFREQUENCY:
+            return "Tuning frequency";
+            break;
+
+// FINGERPRINTING
+        case EARS_FEATURE_CHROMAPRINTER:
+            return "Chromaprinter";
+            break;
+
+// DURATION/SILENCE
+        case EARS_FEATURE_DURATION:
+            return "Duration";
+            break;
+
+        case EARS_FEATURE_EFFECTIVEDURATION:
+            return "Effective duration";
+            break;
+
+        case EARS_FEATURE_SILENCERATE:
+            return "Silence rate";
+            break;
+            
+// LOUDNESS/DYNAMICS
+        case EARS_FEATURE_DYNAMICCOMPLEXITY:
+            return "Dynamic complexity";
+            break;
+
+        case EARS_FEATURE_LARM:
+            return "LARM long-term loudness";
+            break;
+
+        case EARS_FEATURE_LEQ:
+            return "Equivalent sound level";
+            break;
+
+        case EARS_FEATURE_LOUDNESS:
+            return "Loudness";
+            break;
+            
+        case EARS_FEATURE_LOUDNESSVICKERS:
+            return "Vickers's loudness";
+            break;
+
+        case EARS_FEATURE_REPLAYGAIN:
+            return "Replay Gain loudness value";
+            break;
+            
+// Pitch
+            
+        case EARS_FEATURE_MULTIPITCHKLAPURI:
+            return "Multi-pitch Klapuri";
+            break;
+
+        case EARS_FEATURE_MULTIPITCHMELODIA:
+            return "Multi-pitch Melodia";
+            break;
+
+        case EARS_FEATURE_PITCHSALIENCEFUNCTION:
+            return "Pitch salience function";
+            break;
+
+        case EARS_FEATURE_PITCHYIN:
+            return "Pitch Yin";
+            break;
+
+        case EARS_FEATURE_PITCHYINFFT:
+            return "Pitch Yin FFT";
+            break;
+
+        case EARS_FEATURE_PITCHYINPROBABILISTIC:
+            return "Pitch Yin probabilistic";
+            break;
+
         default:
             return "Unknown feature";
             break;
@@ -623,7 +799,7 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
     if (s == gensym("danceability"))
         return EARS_FEATURE_DANCEABILITY;
 
-    if (s == gensym("loopbmpestimator"))
+    if (s == gensym("loopbpmestimator"))
         return EARS_FEATURE_LOOPBPMESTIMATOR;
     
     if (s == gensym("onsetdetection"))
@@ -636,62 +812,242 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
     if (s == gensym("spectralcentralmoments"))
         return EARS_FEATURE_SPECTRALCENTRALMOMENTS;
 
-    if (s == gensym("temporalcentralmoments"))
+    if (s == gensym("temporalcentralmoments")){
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALCENTRALMOMENTS;
+    }
 
     if (s == gensym("spectralrawmoments"))
         return EARS_FEATURE_SPECTRALRAWMOMENTS;
     
-    if (s == gensym("temporalrawmoments"))
+    if (s == gensym("temporalrawmoments")){
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALRAWMOMENTS;
+    }
     
-    if (s == gensym("temporalcentroid"))
+    if (s == gensym("temporalcentroid")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALCENTROID;
+    }
 
     if (s == gensym("spectralcentroid"))
         return EARS_FEATURE_SPECTRALCENTROID;
 
-    if (s == gensym("temporalcrest"))
+    if (s == gensym("temporalcrest")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALCREST;
+    }
     
     if (s == gensym("spectralcrest"))
         return EARS_FEATURE_SPECTRALCREST;
 
-    if (s == gensym("temporaldecrease"))
+    if (s == gensym("temporaldecrease")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALDECREASE;
+    }
     
     if (s == gensym("spectraldecrease"))
         return EARS_FEATURE_SPECTRALDECREASE;
 
-    if (s == gensym("temporaldistributionshape"))
+    if (s == gensym("temporaldistributionshape")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALDISTRIBUTIONSHAPE;
+    }
     
     if (s == gensym("spectraldistributionshape"))
         return EARS_FEATURE_SPECTRALDISTRIBUTIONSHAPE;
     
-    if (s == gensym("temporalspread"))
+    if (s == gensym("temporalspread")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALSPREAD;
+    }
     
     if (s == gensym("spectralspread"))
         return EARS_FEATURE_SPECTRALSPREAD;
 
-    if (s == gensym("temporalskewness"))
+    if (s == gensym("temporalskewness")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALSKEWNESS;
+    }
     
     if (s == gensym("spectralskewness"))
         return EARS_FEATURE_SPECTRALSKEWNESS;
     
-    if (s == gensym("temporalkurtosis"))
+    if (s == gensym("temporalkurtosis")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_TEMPORALKURTOSIS;
+    }
     
     if (s == gensym("spectralkurtosis"))
         return EARS_FEATURE_SPECTRALKURTOSIS;
-    
 
+    if (s == gensym("spectralenergy"))
+        return EARS_FEATURE_SPECTRALENERGY;
+
+    if (s == gensym("spectralentropy"))
+        return EARS_FEATURE_SPECTRALENTROPY;
+
+    if (s == gensym("temporalflatness")) {
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_TEMPORALFLATNESS;
+    }
+
+    if (s == gensym("spectralflatness"))
+        return EARS_FEATURE_SPECTRALFLATNESS;
+    
+    if (s == gensym("spectralgeometricmean"))
+        return EARS_FEATURE_SPECTRALGEOMETRICMEAN;
+
+    
+    if (s == gensym("instantpower"))
+        return EARS_FEATURE_INSTANTPOWER;
+    
+    if (s == gensym("spectralmean"))
+        return EARS_FEATURE_SPECTRALMEAN;
+    
+    if (s == gensym("spectralmedian"))
+        return EARS_FEATURE_SPECTRALMEDIAN;
+    
+    if (s == gensym("spectralrms"))
+        return EARS_FEATURE_SPECTRALRMS;
+    
+    if (s == gensym("temporalvariance"))
+        return EARS_FEATURE_TEMPORALVARIANCE;
+    
+    if (s == gensym("spectralvariance"))
+        return EARS_FEATURE_SPECTRALVARIANCE;
+    
+    if (s == gensym("instantpower"))
+        return EARS_FEATURE_INSTANTPOWER;
+
+    if (s == gensym("chordsdetection")) {
+        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_CHORDSDETECTION;
+    }
+    
+    if (s == gensym("dissonance"))
+        return EARS_FEATURE_DISSONANCE;
+    if (s == gensym("hpcp"))
+        return EARS_FEATURE_HPCP;
+    if (s == gensym("harmonicpeaks")) {
+        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_HARMONICPEAKS;
+    }
+    if (s == gensym("highresolutionfeatures"))
+        return EARS_FEATURE_HIGHRESOLUTIONFEATURES;
+    if (s == gensym("inharmonicity"))
+        return EARS_FEATURE_INHARMONICITY;
+    if (s == gensym("key")) {
+        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_KEY;
+    }
+    if (s == gensym("keyextractor")) {
+        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_KEYEXTRACTOR;
+    }
+    if (s == gensym("oddtoevenharmonicenergyratio"))
+        return EARS_FEATURE_ODDTOEVENHARMONICENERGYRATIO;
+    if (s == gensym("pitchsalience"))
+        return EARS_FEATURE_PITCHSALIENCE;
+    if (s == gensym("spectrumcq"))
+        return EARS_FEATURE_SPECTRUMCQ;
+    if (s == gensym("tristimulus"))
+        return EARS_FEATURE_TRISTIMULUS;
+    if (s == gensym("tuningfrequency"))
+        return EARS_FEATURE_TUNINGFREQUENCY;
+    
+    // FINGERPRINTING
+    if (s == gensym("chromaprinter")) {
+        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_CHROMAPRINTER;
+    }
+    
+    // DURATION/SILENCE
+    if (s == gensym("duration")){
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_DURATION;
+    }
+    if (s == gensym("effectiveduration")){
+        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            *err = EARS_ERR_INVALID_MODE;
+        return EARS_FEATURE_EFFECTIVEDURATION;
+    }
+    if (s == gensym("silencerate"))
+        return EARS_FEATURE_SILENCERATE;
+    
+    // LOUDNESS/DYNAMICS
+    if (s == gensym("dynamiccomplecity"))
+        return EARS_FEATURE_DYNAMICCOMPLEXITY;
+    if (s == gensym("larm"))
+        return EARS_FEATURE_LARM;
+    if (s == gensym("leq"))
+        return EARS_FEATURE_LEQ;
+    if (s == gensym("loudness"))
+        return EARS_FEATURE_LOUDNESS;
+    if (s == gensym("loudnessvickers"))
+        return EARS_FEATURE_LOUDNESSVICKERS;
+    if (s == gensym("replaygain"))
+        return EARS_FEATURE_REPLAYGAIN;
+
+    // PITCH
+    if (s == gensym("multipitchklapuri"))
+        return EARS_FEATURE_MULTIPITCHKLAPURI;
+    if (s == gensym("multipitchmelodia"))
+        return EARS_FEATURE_MULTIPITCHMELODIA;
+    if (s == gensym("pitchsaliencefunction"))
+        return EARS_FEATURE_PITCHSALIENCEFUNCTION;
+    if (s == gensym("pitchyin"))
+        return EARS_FEATURE_PITCHYIN;
+    if (s == gensym("pitchyinfft"))
+        return EARS_FEATURE_PITCHYINFFT;
+    if (s == gensym("pitchyinprobabilistic"))
+        return EARS_FEATURE_PITCHYINPROBABILISTIC;
 
     return EARS_FEATURE_UNKNOWN;
 }
 
+long ears_features_feature_to_numouts(e_ears_feature feat)
+{
+    switch (feat) {
+        case EARS_FEATURE_LOGATTACKTIME:
+        case EARS_FEATURE_TEMPORALDISTRIBUTIONSHAPE:
+        case EARS_FEATURE_SPECTRALDISTRIBUTIONSHAPE:
+            return 3;
+            break;
+
+        case EARS_FEATURE_MIN:
+        case EARS_FEATURE_MAX:
+        case EARS_FEATURE_MFCC:
+        case EARS_FEATURE_BFCC:
+        case EARS_FEATURE_GFCC:
+        case EARS_FEATURE_LPC:
+        case EARS_FEATURE_SPECTRALCONTRAST:
+        case EARS_FEATURE_BEATTRACKERMULTIFEATURE:
+        case EARS_FEATURE_BEATSLOUDNESS:
+            return 2;
+            break;
+
+        default:
+            return 1;
+            break;
+    }
+}
 
 void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
 {
@@ -699,17 +1055,41 @@ void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
         if (a == 0)
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
     } else {
-        if (a < x->num_features) {  // @out 0 @type symbol/list @digest Output buffer names
-            if (x->temporalmodes[a] == EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-                sprintf(s, "llll: %s (static)", ears_features_feature_to_description((e_ears_feature)x->features[a]));
-            else if (x->temporalmodes[a] == EARS_ESSENTIA_TEMPORALMODE_TIMESERIES)
-                sprintf(s, "llll: %s (time series)", ears_features_feature_to_description((e_ears_feature)x->features[a]));
-            else if (x->temporalmodes[a] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-                sprintf(s, "buffer: %s", ears_features_feature_to_description((e_ears_feature)x->features[a]));
+        long featidx = x->outlet_featureidx[a];
+        long outidx = x->outlet_featureoutputidx[a];
+        const char *feat_desc = ears_features_feature_to_description((e_ears_feature)x->features[featidx]);
+        if (featidx < x->num_features) {
+            char *type = NULL;
+            const char *unit = NULL;
+            llllobj_get_llll_outlet_type_as_string((t_object *) x, LLLL_OBJ_VANILLA, a, &type);
+
+            const char *feat_out_desc = "";
+            if (featidx < x->extractors_lib.num_extractors) {
+                long map = x->extractors_lib.extractors[featidx].output_map[outidx];
+                if (map >= 0)
+                    feat_out_desc = x->extractors_lib.extractors[featidx].output_desc[map];
+                if (x->extractors_lib.extractors[featidx].essentia_output_pitchunit[map] != EARS_PITCHUNIT_UNKNOWN) {
+                    unit = ears_pitchunit_to_abbrev(x->extractors_lib.extractors[featidx].output_pitchunit);
+                } else if (x->extractors_lib.extractors[featidx].essentia_output_frequnit[map] != EARS_FREQUNIT_UNKNOWN) {
+                    unit = ears_frequnit_to_abbrev(x->extractors_lib.extractors[featidx].output_frequnit);
+                } else if (x->extractors_lib.extractors[featidx].essentia_output_ampunit[map] != EARS_AMPUNIT_UNKNOWN) {
+                    unit = ears_ampunit_to_abbrev(x->extractors_lib.extractors[featidx].output_ampunit);
+                } else if (x->extractors_lib.extractors[featidx].essentia_output_timeunit[map] != EARS_TIMEUNIT_UNKNOWN) {
+                    unit = ears_timeunit_to_abbrev(x->extractors_lib.extractors[featidx].output_timeunit);
+                }
+            }
+
+            if (x->temporalmodes[featidx] == EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+                sprintf(s, "llll (%s): %s - %s%s%s (static)", type, feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
+            else if (x->temporalmodes[featidx] == EARS_ESSENTIA_TEMPORALMODE_TIMESERIES)
+                sprintf(s, "llll (%s): %s - %s%s%s (time series)", type, feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
+            else if (x->temporalmodes[featidx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+                sprintf(s, "buffer: %s - %s%s%s", feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
         } else {
             sprintf(s, "Unused outlet");
         }
         // @out 0 @loop 1 @type llll/buffer @digest Feature for the corresponding key
+        // @descritpion Feature for one of the introduced key; some features require multiple outlets (see outlet assistance).
     }
 }
 
@@ -736,13 +1116,49 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
         llll_free(x->algorithm_args[i]);
     x->num_features = new_num_features;
     x->features = (long *)bach_resizeptr(x->features, new_num_features * sizeof(long));
+    x->features_numoutputs = (long *)bach_resizeptr(x->features_numoutputs, new_num_features * sizeof(long));
     x->temporalmodes = (long *)bach_resizeptr(x->temporalmodes, new_num_features * sizeof(long));
     x->algorithm_args = (t_llll **)bach_resizeptr(x->algorithm_args, new_num_features * sizeof(t_llll *));
     for (long i = 0; i < new_num_features; i++)
         x->algorithm_args[i] = llll_get();
-
-    long i = 0;
+    
+    // finding number of outlets
     t_ears_err temporalmode_err = EARS_ERR_NONE;
+    long temporalmode;
+    long i = 0;
+    long tot_num_outlets = 0;
+    for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
+        e_ears_feature feat = EARS_FEATURE_UNKNOWN;
+        if (hatom_gettype(&el->l_hatom) == H_SYM) {
+            feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
+        }
+        x->features_numoutputs[i] = ears_features_feature_to_numouts(feat);
+        tot_num_outlets += x->features_numoutputs[i];
+    }
+
+    x->outlet_featureidx = (long *)bach_resizeptr(x->outlet_featureidx, tot_num_outlets * sizeof(long));
+    x->outlet_featureoutputidx = (long *)bach_resizeptr(x->outlet_featureoutputidx, tot_num_outlets * sizeof(long));
+
+    x->num_outlets = tot_num_outlets;
+    
+    i = 0;
+    long o_offset = 0;
+    for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
+        e_ears_feature feat = EARS_FEATURE_UNKNOWN;
+        if (hatom_gettype(&el->l_hatom) == H_SYM) {
+            feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
+        }
+        long this_num_outputs = ears_features_feature_to_numouts(feat);
+        for (long o = 0; o < this_num_outputs; o++) {
+            x->outlet_featureidx[o_offset+o] = i;
+            x->outlet_featureoutputidx[o_offset+o] = o;
+        }
+        o_offset += this_num_outputs;
+    }
+    
+
+    i = 0;
+    temporalmode_err = EARS_ERR_NONE;
     for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
         x->features[i] = EARS_FEATURE_UNKNOWN;
         x->temporalmodes[i] = EARS_ESSENTIA_TEMPORALMODE_WHOLE;
@@ -809,11 +1225,15 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->num_features = 1;
         x->features = (long *)bach_newptrclear(1 * sizeof(long));
+        x->features_numoutputs = (long *)bach_newptrclear(1 * sizeof(long));
+        x->outlet_featureoutputidx = (long *)bach_newptrclear(1 * sizeof(long));
+        x->outlet_featureidx = (long *)bach_newptrclear(1 * sizeof(long));
         x->temporalmodes = (long *)bach_newptrclear(1 * sizeof(long));
         x->algorithm_args = (t_llll **)bach_newptrclear(1 * sizeof(t_llll *));
         x->algorithm_args[0] = llll_get();
         
-        x->summarization = EARS_ESSENTIA_SUMMARIZATION_LOUDNESSWEIGHTEDMEAN;
+        x->summarization = EARS_ESSENTIA_SUMMARIZATION_MEAN;
+        x->summarizationweight = EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS;
 
         // default analysis parameters
         x->a_envattacktime = 10;
@@ -833,15 +1253,36 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
             llll_free(args);
             return NULL;
         }
+
+        long numoutlets = x->num_outlets;
         
         x->e_ob.l_envtimeunit = EARS_TIMEUNIT_MS; // this is used for the envelope analysis
         
         attr_args_process(x, argc-true_ac, argv+true_ac);
         
+        if (numoutlets >= LLLL_MAX_OUTLETS) {
+            object_error((t_object *)x, "Too many outlets!");
+            llll_free(args);
+            return NULL;
+        }
+
+        // creating dummy extractors, just to have descriptions for the outlets
+        {
+            t_ears_essentia_analysis_params params = buf_features_get_default_params(x);
+            if (x->extractors_lib.num_extractors > 0)
+                ears_essentia_extractors_library_free(&x->extractors_lib);
+            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params);
+            x->must_recreate_extractors = true; //still will have to re-create them
+        }
+        
+        
+
         char outtypes[LLLL_MAX_OUTLETS];
-        for (long i = 0; i < x->num_features; i++)
-            outtypes[x->num_features-i-1] = (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER ? 'E' : '4');
-        outtypes[x->num_features] = 0;
+        for (long o = 0; o < numoutlets; o++) {
+            long feature_idx = x->outlet_featureidx[o];
+            outtypes[numoutlets-o-1] = (x->temporalmodes[feature_idx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER ? 'E' : '4');
+        }
+        outtypes[numoutlets] = 0;
         earsbufobj_setup((t_earsbufobj *)x, "E", outtypes, NULL);
         llll_free(args);
     }
@@ -853,6 +1294,9 @@ void buf_features_free(t_buf_features *x)
 {
     ears_essentia_extractors_library_free(&x->extractors_lib);
     bach_freeptr(x->features);
+    bach_freeptr(x->features_numoutputs);
+    bach_freeptr(x->outlet_featureoutputidx);
+    bach_freeptr(x->outlet_featureidx);
     bach_freeptr(x->temporalmodes);
     for (long i = 0; i < x->num_features; i++)
         llll_free(x->algorithm_args[i]);
@@ -874,6 +1318,63 @@ void setExtractorDefaultOptions(essentia::Pool &options) {
 }
 
 
+t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *x)
+{
+    t_ears_essentia_analysis_params params;
+    // windowing
+    params.framesize_samps = 2048;
+    params.hopsize_samps = 1024;
+    params.duration_samps = 44100;
+    params.windowType = "hann";
+    params.startFromZero = 0;
+    params.lastFrameToEndOfFile = 0;
+
+    params.envelope_attack_time_samps = 441;
+    params.envelope_release_time_samps = 4410;
+    params.envelope_rectify = 1;
+    // CQT
+    params.binsPerOctave = 12;
+    params.minFrequency = ears_cents_to_hz(earsbufobj_pitch_to_cents((t_earsbufobj *)x, 2400), EARS_MIDDLE_A_TUNING);
+    params.numberBins = 84;
+    params.threshold = 0.01;
+    params.minimumKernelSize = 4;
+    params.scale = 1;
+    
+    params.onsetDetectionMethod = "";
+    
+    params.HPCP_bandPreset = true;
+    params.HPCP_bandSplitFrequency = 500;
+    params.HPCP_harmonics = 0;
+    params.HPCP_maxFrequency = 5000;
+    params.HPCP_maxShifted = false;
+    params.HPCP_minFrequency = 40;
+    params.HPCP_nonLinear = false;
+    params.HPCP_normalized = "unitMax";
+    params.HPCP_referenceFrequency = EARS_MIDDLE_A_TUNING;
+    params.HPCP_size = 12;
+    params.HPCP_weightType = "squaredCosine";
+    params.HPCP_windowSize = 1;
+    
+    params.PEAKS_magnitudeThreshold = 0;
+    params.PEAKS_maxFrequency = 5000;
+    params.PEAKS_minFrequency = 0;
+    params.PEAKS_maxPeaks = 100;
+    params.PEAKS_orderBy = "frequency";
+    
+    params.YIN_minFrequency = 20;
+    params.YIN_maxFrequency = 22050;
+    params.YIN_tolerance = 1;
+
+    
+    params.summarization = EARS_ESSENTIA_SUMMARIZATION_MEAN;
+    params.summarizationweight = EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS;
+
+    params.numGriffinLimIterations = 10;
+    params.verbose = false;
+    return params;
+}
+
+
 t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buffer_obj *buf)
 {
     t_ears_essentia_analysis_params params = earsbufobj_get_essentia_analysis_params((t_earsbufobj *)x, buf);
@@ -883,6 +1384,32 @@ t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buf
     params.envelope_release_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envreleasetime, buf, true, false);
     
     params.summarization = (e_ears_essentia_summarization) x->summarization;
+    params.summarizationweight = (e_ears_essentia_summarizationweight) x->summarizationweight;
+
+    // TO DO: Expose these
+    params.HPCP_bandPreset = true;
+    params.HPCP_bandSplitFrequency = 500;
+    params.HPCP_harmonics = 0;
+    params.HPCP_maxFrequency = 5000;
+    params.HPCP_maxShifted = false;
+    params.HPCP_minFrequency = 40;
+    params.HPCP_nonLinear = false;
+    params.HPCP_normalized = "unitMax";
+    params.HPCP_referenceFrequency = EARS_MIDDLE_A_TUNING;
+    params.HPCP_size = 12;
+    params.HPCP_weightType = "squaredCosine";
+    params.HPCP_windowSize = 1;
+
+    params.PEAKS_magnitudeThreshold = 0;
+    params.PEAKS_maxFrequency = 5000;
+    params.PEAKS_minFrequency = 0;
+    params.PEAKS_maxPeaks = 100;
+    params.PEAKS_orderBy = "frequency";
+
+    params.YIN_minFrequency = 20;
+    params.YIN_maxFrequency = 22050;
+    params.YIN_tolerance = 1;
+    params.verbose = true;
     return params;
 }
 
@@ -903,18 +1430,24 @@ void buf_features_bang(t_buf_features *x)
     Pool options;
     setExtractorDefaultOptions(options);
     
-    t_llll **res = (t_llll **)bach_newptr(x->num_features * sizeof(t_llll *));
-    t_buffer_obj **res_buf = (t_buffer_obj **)bach_newptr(x->num_features * sizeof(t_buffer_obj *));
-    for (long i = 0; i < x->num_features; i++)
+    t_llll **res = (t_llll **)bach_newptr(x->num_outlets * sizeof(t_llll *));
+    t_buffer_obj **res_buf = (t_buffer_obj **)bach_newptr(x->num_outlets * sizeof(t_buffer_obj *));
+    for (long i = 0; i < x->num_outlets; i++)
         res[i] = llll_get();
 
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        long o = 0;
         for (long i = 0; i < x->num_features; i++) {
-            if (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-                res_buf[i] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, earsbufobj_outlet_to_bufoutlet((t_earsbufobj *)x, i), count);
-            else
-                res_buf[i] = NULL;
+            if (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER) {
+                for (long t = 0; t < x->features_numoutputs[i]; t++) {
+                    res_buf[o] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, earsbufobj_outlet_to_bufoutlet((t_earsbufobj *)x, o), count);
+                    o++;
+                }
+            } else {
+                for (long t = 0; t < x->features_numoutputs[i]; t++)
+                    res_buf[o++] = NULL;
+            }
         }
 
         double sr = ears_buffer_get_sr((t_object *)x, in);
@@ -925,36 +1458,46 @@ void buf_features_bang(t_buf_features *x)
 
         t_ears_essentia_analysis_params params = buf_features_get_params(x, in);
         
-        if (x->must_recreate_extractors) {
+//        if (x->must_recreate_extractors) { // potentially we may need to do this all the time, as parameters may also depend on the buffers
             if (x->extractors_lib.num_extractors > 0)
                 ears_essentia_extractors_library_free(&x->extractors_lib);
             ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, sr, x->algorithm_args, &x->extractors_lib, &params);
-            x->must_recreate_extractors = false;
-        }
+//            x->must_recreate_extractors = false;
+//        }
     
         // set output buffer for writing
-        for (long i = 0; i < MIN(x->extractors_lib.num_extractors, x->num_features); i++) {
-            x->extractors_lib.extractors[i].result_buf[0] = res_buf[i];
-            // TO DO: interface for multi-outlets
+        for (long o = 0; o < x->num_outlets; o++) {
+            long feat_idx = x->outlet_featureidx[o];
+            long feat_idxout = x->outlet_featureoutputidx[o];
+            long map = x->extractors_lib.extractors[feat_idx].output_map[feat_idxout];
+            if (map >= 0)
+                x->extractors_lib.extractors[feat_idx].result_buf[map] = res_buf[o];
         }
         
         // compute descriptors
         ears_essentia_extractors_library_compute((t_earsbufobj *)x, in, &x->extractors_lib, &params, x->buffer_output_interpolation_mode);
         
-        // get the lll result, if any
-        for (long i = 0; i < MIN(x->extractors_lib.num_extractors, x->num_features); i++) {
-            if (x->extractors_lib.extractors[i].result[0])
-                llll_chain_clone(res[i], x->extractors_lib.extractors[i].result[0]);
-            // TO DO: interface for multi-outlets
+        // get the llll result, if any
+        for (o = 0; o < x->num_outlets; o++) {
+            long feat_idx = x->outlet_featureidx[o];
+            long feat_outidx = x->outlet_featureoutputidx[o];
+            long map = x->extractors_lib.extractors[feat_idx].output_map[feat_outidx];
+            if (map >= 0 && x->extractors_lib.extractors[feat_idx].result[map]) {
+                if (x->extractors_lib.extractors[feat_idx].result[map]->l_size == 1 && x->extractors_lib.extractors[feat_idx].result[map]->l_depth == 1)
+                    llll_chain_clone(res[o], x->extractors_lib.extractors[feat_idx].result[map]);
+                else
+                    llll_appendllll_clone(res[o], x->extractors_lib.extractors[feat_idx].result[map]);
+            }
         }
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
-    for (long i = 0; i < x->num_features; i++) {
-        if (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            earsbufobj_outlet_buffer((t_earsbufobj *)x, i);
+    for (long o = 0; o < x->num_outlets; o++) {
+        long feat_idx = x->outlet_featureidx[o];
+        if (x->temporalmodes[feat_idx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            earsbufobj_outlet_buffer((t_earsbufobj *)x, o);
         else
-            earsbufobj_outlet_llll((t_earsbufobj *)x, i, res[i]);
+            earsbufobj_outlet_llll((t_earsbufobj *)x, o, res[o]);
     }
     
     for (long i = 0; i < x->num_features; i++)
@@ -985,6 +1528,7 @@ void buf_features_anything(t_buf_features *x, t_symbol *msg, long ac, t_atom *av
     }
     llll_free(parsed);
 }
+
 
 
 

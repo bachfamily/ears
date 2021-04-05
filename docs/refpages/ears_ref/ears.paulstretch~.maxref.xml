@@ -65,10 +65,11 @@
 		</objarg>
 		<objarg name="factor" optional="1" type="float/llll">
 			<digest>
-				Stretch factor
+				Stretch factor or duration
 			</digest>
 			<description>
-				Sets the stretch factor, either as a single number or as an llll
+				Sets the stretch factor or the total duration, depending on the <m>timeunit</m> attribute
+				This can be either as a single number or as an llll
 				containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>]
 				[<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
 				where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
@@ -253,13 +254,27 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="antimeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Analysis Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="envtimeunit" get="1" set="1" type="int" size="1">
 			<digest>
 				Envelope Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values inside envelopes: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+				Sets the unit for time values inside envelopes: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
 				The default is Relative.
 			</description>
 			<attributelist>
@@ -322,28 +337,14 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="winsize" get="1" set="1" type="float" size="1">
-			<digest>
-				Windows Size
-			</digest>
-			<description>
-				Sets the windows size (the unit depends on the <m>timeunit</m> attribute)
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Windows Size" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 	</attributelist>

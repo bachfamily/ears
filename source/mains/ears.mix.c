@@ -117,6 +117,9 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
+    earsbufobj_class_add_resamplingpolicy_attr(c);
+    earsbufobj_class_add_resamplingfiltersize_attr(c);
+
     CLASS_ATTR_CHAR(c, "normalize", 0, t_buf_mix, normalization_mode);
     CLASS_ATTR_STYLE_LABEL(c,"normalize",0,"enumindex","Normalize Output");
     CLASS_ATTR_ENUMINDEX(c,"normalize", 0, "Never Always Overload Protection Only");
@@ -241,7 +244,7 @@ void buf_mix_bang(t_buf_mix *x)
     
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
     
-    ears_buffer_mix((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+    ears_buffer_mix((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     

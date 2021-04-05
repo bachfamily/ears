@@ -261,7 +261,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Full Spectrum" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -275,6 +274,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Synthesis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number of Griffin-Lim Iterations" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -323,7 +323,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Output" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -337,21 +336,8 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Synthesis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Sample Rate" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="startfromzero" get="1" set="1" type="int" size="1">
-			<digest>
-				First Window Starts At Zero
-			</digest>
-			<description>
-				If on, the first window is centered at winsize/2; if off (default), the first window is centered at zero.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="First Window Starts At Zero" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="timeunit" get="1" set="1" type="int" size="1">
@@ -359,31 +345,14 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="wintype" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Window Type
-			</digest>
-			<description>
-				Sets the synthesis window type.
-				Available windows are the ones allowed by the Essentia library:
-				"hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Synthesis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 	</attributelist>

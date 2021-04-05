@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 755.0, 557.0 ],
+		"rect" : [ 311.0, 99.0, 755.0, 557.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 755.0, 531.0 ],
+						"rect" : [ 311.0, 125.0, 755.0, 531.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -109,13 +109,27 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-1",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 19.25, 453.999994499999957, 493.0, 21.0 ],
+									"text" : "In case of mismatch, the output sample rate is decided via the resampling attributes.",
+									"textcolor" : [ 0.501961, 0.501961, 0.501961, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"attr" : "xfadetype",
 									"id" : "obj-45",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 472.25, 329.5, 216.0, 23.0 ]
+									"patching_rect" : [ 472.25, 296.5, 216.0, 23.0 ]
 								}
 
 							}
@@ -127,7 +141,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 455.5, 304.0, 217.0, 23.0 ]
+									"patching_rect" : [ 455.5, 271.0, 217.0, 23.0 ]
 								}
 
 							}
@@ -139,7 +153,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 431.25, 279.0, 150.0, 23.0 ]
+									"patching_rect" : [ 431.25, 246.0, 150.0, 23.0 ]
 								}
 
 							}
@@ -153,7 +167,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 531.25, 358.5, 180.0, 54.0 ],
+									"patching_rect" : [ 531.25, 325.5, 180.0, 54.0 ],
 									"text" : "If two arguments are provided then they are left and right crossfade time"
 								}
 
@@ -166,7 +180,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 416.25, 439.0, 287.5, 50.999988999999999 ]
+									"patching_rect" : [ 416.25, 400.000005499999929, 249.5, 51.999989000000028 ]
 								}
 
 							}
@@ -177,7 +191,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 416.25, 407.0, 46.0, 23.0 ],
+									"patching_rect" : [ 416.25, 374.0, 46.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -191,7 +205,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 416.25, 374.0, 116.0, 23.0 ],
+									"patching_rect" : [ 416.25, 341.0, 116.0, 23.0 ],
 									"text" : "ears.join~ 300 500"
 								}
 
@@ -206,7 +220,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 115.25, 332.5, 133.0, 40.0 ],
+									"patching_rect" : [ 115.25, 324.5, 133.0, 40.0 ],
 									"text" : "Argument is crossfade time"
 								}
 
@@ -219,7 +233,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 19.25, 406.0, 287.5, 50.999988999999999 ]
+									"patching_rect" : [ 19.25, 398.0, 287.5, 50.999988999999999 ]
 								}
 
 							}
@@ -230,7 +244,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 19.25, 374.0, 46.0, 23.0 ],
+									"patching_rect" : [ 19.25, 366.0, 46.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -256,7 +270,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 19.25, 341.0, 98.0, 23.0 ],
+									"patching_rect" : [ 19.25, 333.0, 98.0, 23.0 ],
 									"text" : "ears.join~ 1000"
 								}
 
@@ -376,8 +390,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 19.25, 475.0, 377.0, 36.0 ],
-									"text" : "Click here to learn about the common features of ears modules, including in-place operations and dynamic allocation."
+									"patching_rect" : [ 19.25, 475.0, 499.0, 36.0 ],
+									"text" : "Click here to learn about the common features of ears modules, including resampling attributes, in-place operations and dynamic allocation."
 								}
 
 							}

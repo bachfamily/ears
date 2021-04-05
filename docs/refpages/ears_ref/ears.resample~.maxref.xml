@@ -239,6 +239,34 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="antimeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Analysis Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="filtersize" get="1" set="1" type="int" size="1">
+			<digest>
+				Filter Size
+			</digest>
+			<description>
+				Sets the resampling filter size in samples
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Filter Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -271,19 +299,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="winsize" get="1" set="1" type="int" size="1">
-			<digest>
-				Window Width
-			</digest>
-			<description>
-				Sets the resampling window width
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Width" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>

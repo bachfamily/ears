@@ -39,9 +39,6 @@ typedef enum {
     EARS_FEATURE_MAX,
     EARS_FEATURE_WELCH,
     
-    EARS_FEATURE_DURATION,
-    
-    EARS_FEATURE_SPECTRALFLATNESS,
     EARS_FEATURE_FLUX,
 
     EARS_FEATURE_ZEROCROSSINGRATE,
@@ -94,7 +91,57 @@ typedef enum {
     EARS_FEATURE_SPECTRALSKEWNESS,
     EARS_FEATURE_TEMPORALKURTOSIS,
     EARS_FEATURE_SPECTRALKURTOSIS,
+    EARS_FEATURE_SPECTRALENERGY,
+    EARS_FEATURE_SPECTRALENTROPY,
+    EARS_FEATURE_TEMPORALFLATNESS,
+    EARS_FEATURE_SPECTRALFLATNESS,
+    EARS_FEATURE_SPECTRALGEOMETRICMEAN,
+    EARS_FEATURE_INSTANTPOWER,
+    EARS_FEATURE_SPECTRALMEAN,
+    EARS_FEATURE_SPECTRALMEDIAN,
+    EARS_FEATURE_SPECTRALRMS,
+    EARS_FEATURE_TEMPORALVARIANCE,
+    EARS_FEATURE_SPECTRALVARIANCE,
+
+    // TONAL
+    EARS_FEATURE_CHORDSDETECTION,
+    EARS_FEATURE_DISSONANCE,
+    EARS_FEATURE_HPCP,
+    EARS_FEATURE_HARMONICPEAKS,
+    EARS_FEATURE_HIGHRESOLUTIONFEATURES,
+    EARS_FEATURE_INHARMONICITY,
+    EARS_FEATURE_KEY,
+    EARS_FEATURE_KEYEXTRACTOR,
+    EARS_FEATURE_ODDTOEVENHARMONICENERGYRATIO,
+    EARS_FEATURE_PITCHSALIENCE,
+    EARS_FEATURE_SPECTRUMCQ,
+    EARS_FEATURE_TRISTIMULUS,
+    EARS_FEATURE_TUNINGFREQUENCY,
     
+    // FINGERPRINTING
+    EARS_FEATURE_CHROMAPRINTER,
+    
+    // DURATION/SILENCE
+    EARS_FEATURE_DURATION,
+    EARS_FEATURE_EFFECTIVEDURATION,
+    EARS_FEATURE_SILENCERATE,
+    
+    // LOUDNESS/DYNAMICS
+    EARS_FEATURE_DYNAMICCOMPLEXITY,
+    EARS_FEATURE_LARM,
+    EARS_FEATURE_LEQ,
+    EARS_FEATURE_LOUDNESS,
+    EARS_FEATURE_LOUDNESSVICKERS,
+    EARS_FEATURE_REPLAYGAIN,
+ 
+    
+    // PITCH
+    EARS_FEATURE_MULTIPITCHKLAPURI,
+    EARS_FEATURE_MULTIPITCHMELODIA,
+    EARS_FEATURE_PITCHSALIENCEFUNCTION,
+    EARS_FEATURE_PITCHYIN,
+    EARS_FEATURE_PITCHYINFFT,
+    EARS_FEATURE_PITCHYINPROBABILISTIC,
 
 } e_ears_feature;
 
@@ -110,9 +157,15 @@ typedef enum {
     EARS_ESSENTIA_SUMMARIZATION_LAST,
     EARS_ESSENTIA_SUMMARIZATION_MIDDLE,
     EARS_ESSENTIA_SUMMARIZATION_MEAN,
-    EARS_ESSENTIA_SUMMARIZATION_LOUDNESSWEIGHTEDMEAN,
+    EARS_ESSENTIA_SUMMARIZATION_MODE,
 } e_ears_essentia_summarization;
 
+
+typedef enum {
+    EARS_ESSENTIA_SUMMARIZATIONWEIGHT_NONE = 0,
+    EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS,
+    EARS_ESSENTIA_SUMMARIZATIONWEIGHT_LOUDNESS,
+} e_ears_essentia_summarizationweight;
 
 
 typedef enum {
@@ -122,6 +175,11 @@ typedef enum {
     EARS_ESSENTIA_EXTRACTOR_INPUT_ENVELOPE,
     EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMCENTRALMOMENTS,
     EARS_ESSENTIA_EXTRACTOR_INPUT_ENVELOPECENTRALMOMENTS,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKSANDFZERO,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH,
 } e_ears_essentia_extractor_input_type;
 
 typedef enum {
@@ -150,21 +208,28 @@ typedef struct _ears_essentia_extractor
     const char  *essentia_input_label[EARS_ESSENTIA_EXTRACTOR_MAX_INPUTS];
     e_ears_essentia_extractor_input_type  input_type;
 
-    long num_outputs;
+    // Essentia output
+    long        essentia_num_outputs;
     const char  *essentia_output_label[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     char        essentia_output_type[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // essentia type
+    
+    // Actual extractor output
+    long        num_outputs;
     const char  *output_desc[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // actual description used
     char        output_type[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // actual type used when outputting
-
+    int         output_map[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    
     e_ears_essentia_temporalmode          temporalmode;
 
     e_ears_timeunit     essentia_output_timeunit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     e_ears_ampunit      essentia_output_ampunit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     e_ears_frequnit     essentia_output_frequnit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    e_ears_pitchunit     essentia_output_pitchunit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
 
     e_ears_timeunit     output_timeunit;
     e_ears_ampunit      output_ampunit;
     e_ears_frequnit     output_frequnit;
+    e_ears_pitchunit     output_pitchunit;
 
     bool                        has_spec_metadata;
     t_ears_spectralbuf_metadata specdata;
@@ -188,6 +253,11 @@ typedef struct _ears_essentia_extractors_library
     Algorithm *alg_SpectrumCentralMoments;
     Algorithm *alg_EnvelopeCentralMoments;
     Algorithm *alg_Loudness;
+    Algorithm *alg_EqualLoudness;
+    Algorithm *alg_RMS;
+    Algorithm *alg_SpectralPeaks;
+    Algorithm *alg_HPCP;
+    Algorithm *alg_YinFFT;
 } t_ears_essentia_extractors_library;
 
 
@@ -196,7 +266,9 @@ typedef struct _ears_essentia_analysis_params
     // windowing
     int      framesize_samps; // must be even
     Real     hopsize_samps;
+    e_ears_timeunit sizes_unit;
     long     duration_samps;
+    
     const char  *windowType;
     bool        startFromZero;
     bool        lastFrameToEndOfFile;
@@ -217,11 +289,43 @@ typedef struct _ears_essentia_analysis_params
     // Onset detection
     const char *onsetDetectionMethod;
     
+    
+    // Spectral Peaks
+    
+    Real    PEAKS_magnitudeThreshold;
+    Real    PEAKS_maxFrequency;
+    Real    PEAKS_minFrequency;
+    int     PEAKS_maxPeaks;
+    const char *PEAKS_orderBy;
+    
+    // HPCP
+    bool    HPCP_bandPreset;
+    Real    HPCP_bandSplitFrequency;
+    int     HPCP_harmonics;
+    Real    HPCP_maxFrequency;
+    bool    HPCP_maxShifted;
+    Real    HPCP_minFrequency;
+    bool    HPCP_nonLinear;
+    const char *HPCP_normalized;
+    Real    HPCP_referenceFrequency;
+    int     HPCP_size;
+    const char *HPCP_weightType;
+    Real    HPCP_windowSize;
+    
+    // Yin
+    Real YIN_minFrequency;
+    Real YIN_maxFrequency;
+    Real YIN_tolerance;
+
     // Summarization mode
     e_ears_essentia_summarization summarization;
+    e_ears_essentia_summarizationweight summarizationweight;
     
     // Griffin Lim
     int     numGriffinLimIterations;
+    
+    //
+    bool verbose;
     
 } t_ears_essentia_analysis_params;
 

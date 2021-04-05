@@ -79,6 +79,8 @@ class_addmethod(c, (method)buf_ ## NAME ## _inletinfo,            "inletinfo",  
 earsbufobj_add_common_methods(c); \
 
 
+#define EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH (11)  /// < Should we increase this?
+
 typedef enum _earsbufobj_in_out
 {
     EARSBUFOBJ_IN = 0,
@@ -167,6 +169,10 @@ typedef struct _earsbufobj
     char                    l_frequnit;       ///< Frequency unit
     char                    l_angleunit;      ///< Angle unit
     
+    // Resampling modes
+    char                    l_resamplingpolicy;
+    long                    l_resamplingfilterwidth;
+    
     // analysis
     double                  a_winsize;
     double                  a_hopsize;
@@ -232,6 +238,8 @@ void earsbufobj_class_add_overlap_attr(t_class *c);
 void earsbufobj_class_add_wintype_attr(t_class *c);
 void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
 
+void earsbufobj_class_add_resamplingpolicy_attr(t_class *c);
+void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c);
 
 /// Basic API
 void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store_index, long buffer_index, t_symbol *buf_name);
@@ -301,6 +309,7 @@ long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *bu
 double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
 double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
 double earsbufobj_pitch_to_cents(t_earsbufobj *e_ob, double value);
+double earsbufobj_pitch_to_hz(t_earsbufobj *e_ob, double value);
 double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope = false, bool is_analysis = false); // generic one
 double earsbufobj_freq_to_hz(t_earsbufobj *e_ob, double value);
 double earsbufobj_freq_to_midi(t_earsbufobj *e_ob, double value);
@@ -310,6 +319,7 @@ double earsbufobj_freq_to_cents(t_earsbufobj *e_ob, double value);
 double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to);
 double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to);
 double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to);
+double ears_convert_pitchunit(double value, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to);
 
 
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf);

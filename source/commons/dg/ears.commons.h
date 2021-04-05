@@ -37,7 +37,6 @@
 #include "ears.utils.h"
 #include "notation.h"
 
-
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
 #include "mpg123.h"
 #endif
@@ -51,10 +50,11 @@ static bool ears_is_freeing = false;
 
 typedef struct _ears_spectralbuf_metadata {
     double              original_audio_signal_sr;
-    double              binsize; // size of a bin, in whatever unit is pertinent (e.g. Hz)
-    double              offset;  // offset of the first bin,in whatever unit is pertinent (e.g. Hz)
-    e_ears_frequnit     frequnit;
-    t_symbol            *type; // spectrogram type
+    double              binsize;    // size of a bin, in whatever unit is pertinent (e.g. Hz), use 0 for "irregular"
+    double              offset;     // offset of the first bin,in whatever unit is pertinent (e.g. Hz)
+    t_llll              *bins;      // Detailed position of each bin, in the frequnit
+    e_ears_frequnit     frequnit;   // Bin unit
+    t_symbol            *type;      // spectrogram type
 } t_ears_spectralbuf_metadata;
 
 
@@ -173,6 +173,17 @@ typedef enum {
 
 
 
+/** Resampling policy
+ @ingroup misc */
+typedef enum {
+    EARS_RESAMPLINGPOLICY_DONT =         0,    ///< Don't resample
+    EARS_RESAMPLINGPOLICY_TOLOWESTSR =   1,    ///< Resample to the lowest sample rate
+    EARS_RESAMPLINGPOLICY_TOHIGHESTSR =  2,    ///< Resample to the highest sample rate
+    EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR =  3,    ///< Resample to the most common sample rate
+    EARS_RESAMPLINGPOLICY_TOCURRENTMAXSR =  4,    ///< Resample to the current Max sample rate
+} e_ears_resamplingpolicy;
+
+
 
 typedef struct _ears_envelope_iterator
 {
@@ -214,7 +225,8 @@ t_ears_err ears_buffer_fade_ms_inplace(t_object *ob, t_buffer_obj *buf, long fad
 
 t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
                               long *xfade_samples, char also_fade_boundaries,
-                              e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping);
+                              e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping,
+                              e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
 t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels); // also work inplace, with source == dest
 t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, char thresh_is_in_decibel, e_slope_mapping slopemapping); // also work inplace, with source == dest
 t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels); // also work inplace, with source == dest
@@ -223,8 +235,10 @@ t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_ob
 t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *drive, e_slope_mapping slopemapping); // also work inplace, with source == dest
 t_ears_err ears_buffer_normalize(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double linear_amp_level, double mix); // also work inplace, with source == dest
 t_ears_err ears_buffer_normalize_rms(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double linear_amp_level, double mix); // also work inplace, with source == dest
-t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest, t_llll *gains, long *offset_samps, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping);
-t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping);
+t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest, t_llll *gains, long *offset_samps,
+                           e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping,
+                           e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
 t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type);
 
 /// Panning operations
@@ -234,12 +248,13 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
 
 
 // operations: DESTRUCTIVE: buf is modified 
-t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *addend);
-t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *factor);
+t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *addend, long resamplingfiltersize);
+t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *factor, long resamplingfiltersize);
 
 t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
                             t_hatom *arguments, long num_arguments,
-                            t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping);
+                            t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping,
+                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
 
 
 // Buffers <-> llll or array conversions
@@ -251,9 +266,11 @@ t_atom_long ears_buffer_channel_to_double_array(t_object *ob, t_buffer_obj *buf,
 
 // Basic operations
 t_ears_err ears_buffer_setempty(t_object *ob, t_buffer_obj *buf, long num_channels);
-t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel);
-t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **source, t_buffer_obj *dest);
-t_ears_err ears_buffer_pack_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest);
+t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0);
+t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **source, t_buffer_obj *dest,
+                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+t_ears_err ears_buffer_pack_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest,
+                                      e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
 t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *right, t_buffer_obj *dest);
 t_ears_err ears_buffer_slice(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest_left, t_buffer_obj *dest_right, long split_sample);
 t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **dest, long *start_samples, long *end_samples, long num_regions);
@@ -315,6 +332,7 @@ t_ears_err ears_spectralbuf_metadata_remove(t_object *ob, t_buffer_obj *buf);
 double ears_spectralbuf_get_binoffset(t_object *ob, t_buffer_obj *buf);
 double ears_spectralbuf_get_binsize(t_object *ob, t_buffer_obj *buf);
 e_ears_frequnit ears_spectralbuf_get_binunit(t_object *ob, t_buffer_obj *buf);
+t_llll* ears_spectralbuf_get_bins(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
 
 
@@ -370,9 +388,10 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
 
 
 // convenience
-void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double offset, e_ears_frequnit frequnit, t_symbol *type);
+void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double offset, e_ears_frequnit frequnit, t_symbol *type, t_llll* bins, bool also_free_bins = false);
 
 
+t_llll *ears_ezarithmser(double from, double step, long numitems);
 
 
 #endif // _EARS_BUF_COMMONS_H_

@@ -67,6 +67,13 @@ typedef enum _ears_angleunit
 } e_ears_angleunit;
 
 
+std::vector<double> llll_to_vector_double(t_llll *ll);
+
+const char *ears_ampunit_to_abbrev(e_ears_ampunit u);
+const char *ears_timeunit_to_abbrev(e_ears_timeunit u);
+const char *ears_pitchunit_to_abbrev(e_ears_pitchunit u);
+const char *ears_frequnit_to_abbrev(e_ears_frequnit u);
+
 e_ears_timeunit ears_timeunit_from_symbol(t_symbol *s);
 e_ears_ampunit ears_ampunit_from_symbol(t_symbol *s);
 e_ears_pitchunit ears_pitchunit_from_symbol(t_symbol *s);

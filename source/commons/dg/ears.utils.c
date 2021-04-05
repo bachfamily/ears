@@ -1,7 +1,6 @@
 #include "ears.utils.h"
 #include "llll_files.h"
 
-
 void ears_symbol_split_unit(t_symbol *s, double *val, t_symbol **unit)
 {
     char val_str[4096];
@@ -218,4 +217,6 @@ t_object *ears_buffer_getobject(t_symbol *name)
     
     return (rtn);
 }
+
+
 

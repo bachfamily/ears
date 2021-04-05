@@ -28,4 +28,5 @@ t_object *ears_buffer_getobject(t_symbol *name);
 long ears_polybuffer_symbol_is_polybuffer(t_symbol *s);
 t_object *ears_polybuffer_getobject(t_symbol *name);
 
+
 #endif // _EARS_CONVERSIONS_H_

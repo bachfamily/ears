@@ -49,7 +49,8 @@
 			</digest>
 			<description>
 				A list of symbols among the following ones: "min", "max", "maxabs", "rms", "length"
-				"numchannels", "sr", "numsamples". For every symbol an outlet is created, which
+				"numchannels", "sr", "numsamples". Plus, for spectral buffers: "spectral", "audiosr", "binsize", "binoffset",
+				"spectype", "binunit". For every symbol an outlet is created, which
 				will output the corresponding information.
 			</description>
 		</objarg>
@@ -249,9 +250,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />

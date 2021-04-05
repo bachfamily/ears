@@ -103,6 +103,9 @@ void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *
                     t_hashtab *htspec = ears_hashtab_spectrograms_get();
                     if (hashtab_lookup(htspec, name, &meta) == MAX_ERR_NONE) {
                         if (meta) {
+                            t_ears_spectralbuf_metadata *data = (t_ears_spectralbuf_metadata *)meta;
+                            llll_free(data->bins);
+                            data->bins = NULL;
                             hashtab_delete(htspec, name); // also frees memory
                         }
                     }
@@ -509,6 +512,9 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_frequnit = EARS_FREQUNIT_HERTZ;
     e_ob->l_angleunit = EARS_ANGLEUNIT_RADIANS;
     e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+    
+    e_ob->l_resamplingpolicy = EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR;
+    e_ob->l_resamplingfilterwidth = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH;
     
     e_ob->a_winsize = 2048;
     e_ob->a_hopsize = 1024;
@@ -1416,6 +1422,27 @@ void earsbufobj_class_add_slopemapping_attr(t_class *c)
     // @description Sets the function to be used for slope mapping: either bach (default) or Max.
 }
 
+void earsbufobj_class_add_resamplingpolicy_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c,"resamplingpolicy",0, t_earsbufobj, l_resamplingpolicy);
+    CLASS_ATTR_STYLE_LABEL(c,"resamplingpolicy",0,"enumindex","Resampling Policy");
+    CLASS_ATTR_ENUMINDEX(c,"resamplingpolicy", 0, "Don't To Lowest To Highest To Most Common To Max Current");
+    CLASS_ATTR_CATEGORY(c, "resamplingpolicy", 0, "Resampling");
+    // @description Sets the resampling policy used when buffers have different sample rates:
+    // "Don't" (no resampling - beware: temporality is not preserved!), "To lowest" (buffers are to the lowest sample rate),
+    // "To highest" (buffers are converted to the highest sample rate), "To most common" (buffers are to the most common
+    // sample rate), "To Max Current" (buffers are converted to the current Max sample rate).
+}
+
+
+void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c,"resamplingfiltersize",0, t_earsbufobj, l_resamplingfilterwidth);
+    CLASS_ATTR_STYLE_LABEL(c,"resamplingfiltersize",0,"text","Resampling Filter Size");
+    CLASS_ATTR_CATEGORY(c, "resamplingfiltersize", 0, "Resampling");
+    // @description Sets the resampling filter size.
+}
+
 
 t_max_err earsbufobj_setattr_envtimeunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
@@ -2287,6 +2314,8 @@ double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from
 
 
 
+
+
 double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to)
 {
     t_earsbufobj e_ob;
@@ -2309,6 +2338,36 @@ double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit fr
             return earsbufobj_freq_to_hz(&e_ob, value);
             break;
             
+    }
+}
+
+
+
+
+
+double ears_convert_pitchunit(double value, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to)
+{
+    t_earsbufobj e_ob;
+    e_ob.l_pitchunit = from;
+    switch (to) {
+            
+        case EARS_PITCHUNIT_MIDI:
+            return earsbufobj_pitch_to_cents(&e_ob, value)/100.;
+            break;
+            
+        case EARS_PITCHUNIT_FREQRATIO:
+            return ears_cents_to_ratio(earsbufobj_pitch_to_cents(&e_ob, value));
+            break;
+            
+        case EARS_PITCHUNIT_HERTZ:
+            return earsbufobj_pitch_to_hz(&e_ob, value);
+            break;
+
+        default:
+        case EARS_PITCHUNIT_CENTS:
+            return earsbufobj_pitch_to_cents(&e_ob, value);
+            break;
+
     }
 }
 
@@ -2721,6 +2780,32 @@ double earsbufobj_pitch_to_cents(t_earsbufobj *e_ob, double value)
             break;
     }
 }
+
+double earsbufobj_pitch_to_hz(t_earsbufobj *e_ob, double value)
+{
+    switch (e_ob->l_pitchunit) {
+        case EARS_PITCHUNIT_CENTS:
+            return ears_cents_to_hz(value, EARS_MIDDLE_A_TUNING);
+            break;
+            
+        case EARS_PITCHUNIT_MIDI:
+            return ears_cents_to_hz(value*100., EARS_MIDDLE_A_TUNING);
+            break;
+            
+        case EARS_PITCHUNIT_HERTZ:
+            return value;
+            break;
+            
+        case EARS_PITCHUNIT_FREQRATIO:
+            return ears_cents_to_hz(ears_ratio_to_cents(value), EARS_MIDDLE_A_TUNING);
+            break;
+            
+        default:
+            return value;
+            break;
+    }
+}
+
 
 
 double earsbufobj_freq_to_hz(t_earsbufobj *e_ob, double value)

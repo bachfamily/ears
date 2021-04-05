@@ -231,6 +231,78 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="audiosr" get="1" set="1" type="float" size="1">
+			<digest>
+				Audio Sample Rate for Spectral Buffers
+			</digest>
+			<description>
+				Sets the audio sample rate for spectral buffers
+				Negative or zero values mean: don't change.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Spectral Buffers" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Audio Sample Rate for Spectral Buffers" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="binoffset" get="1" set="1" type="float" size="1">
+			<digest>
+				Bin Offset
+			</digest>
+			<description>
+				Sets the bin offset for spectral buffers.
+				Negative values mean: don't change (beware: a 0 value means: change to zero, so use strictly
+				negative values to mean "don't change").
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Spectral Buffers" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bin Offset" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="bins" get="1" set="1" type="llll" size="1">
+			<digest>
+				Bin Positions
+			</digest>
+			<description>
+				Sets the position of each individual spectral bin, in the <m>binunit</m>.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Spectral Buffers" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bin Positions" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="binsize" get="1" set="1" type="float" size="1">
+			<digest>
+				Bin Size
+			</digest>
+			<description>
+				Sets the bin size for spectral buffers.
+				Negative or zero values mean: don't change.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Spectral Buffers" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bin Size" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="binunit" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Spectral Pitch Unit
+			</digest>
+			<description>
+				Sets the unit for spectral bins: Keep (keep previous one) Cents, MIDI, Hertz (frequency), or frequency ratio.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Spectral Buffers" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Spectral Pitch Unit" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="channelmodedown" get="1" set="1" type="int" size="1">
 			<digest>
 				Down-Mixing Channel Conversion
@@ -274,7 +346,7 @@
 			</digest>
 			<description>
 				Sets the buffer duration (unit given by the <m>timeunit</m> attribute)
-				0 means: don't change.
+				Negative or zero values mean mean: don't change.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Duration" />
@@ -308,7 +380,7 @@
 				Number Of Output Channels
 			</digest>
 			<description>
-				Sets the number of output channels. 0 means: don't change.
+				Sets the number of output channels. Negative or zero values mean: don't change.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number Of Output Channels" />
@@ -342,13 +414,29 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
+		<attribute name="spectype" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Spectral Type
+			</digest>
+			<description>
+				Sets the spectral type for spectral buffers.
+				A "keep" symbol means: don't change; a "none" symbol means: turn to ordinary buffer.
+				Any other symbol ("stft", "cqt", ...) will turn the buffer into a spectral buffer
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Spectral Type" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Spectral Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="sr" get="1" set="1" type="float" size="1">
 			<digest>
 				Sample Rate
 			</digest>
 			<description>
 				Sets the sample rate for the buffer
-				0 means: don't change.
+				Negative or zero values mean: don't change.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Sample Rate" />
@@ -361,9 +449,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />

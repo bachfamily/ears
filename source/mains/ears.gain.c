@@ -111,7 +111,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
-    
+    earsbufobj_class_add_resamplingfiltersize_attr(c);
+
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -219,7 +220,7 @@ void buf_gain_bang(t_buf_gain *x)
                 t_buffer_ref *ref = buffer_ref_new((t_object *)x, hatom_getsym(&env->l_head->l_hatom));
                 if (in != out)
                     ears_buffer_clone((t_object *)x, in, out);
-                ears_buffer_multiply_inplace((t_object *)x, out, buffer_ref_getobject(ref));
+                ears_buffer_multiply_inplace((t_object *)x, out, buffer_ref_getobject(ref), x->e_ob.l_resamplingfilterwidth);
                 object_free(ref);
             } else {
                 // gain is a single number

@@ -262,8 +262,7 @@
 				Envelope Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values inside envelopes: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+				Sets the unit for time values inside envelopes: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
 				The default is Relative.
 			</description>
 			<attributelist>

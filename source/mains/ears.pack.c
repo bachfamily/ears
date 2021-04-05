@@ -148,6 +148,8 @@ int C74_EXPORT main(void)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_resamplingpolicy_attr(c);
+    earsbufobj_class_add_resamplingfiltersize_attr(c);
 
     
     CLASS_ATTR_LLLL(c, "triggers", 0, t_buf_pack, n_triggers, buf_pack_getattr_triggers, buf_pack_setattr_triggers);
@@ -275,7 +277,7 @@ void buf_pack_bang(t_buf_pack *x)
     }
 
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-    ears_buffer_pack_from_llll((t_object *)x, buffers, out);
+    ears_buffer_pack_from_llll((t_object *)x, buffers, out, (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     llll_free(buffers);

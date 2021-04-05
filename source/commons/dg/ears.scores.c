@@ -480,7 +480,8 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
 
     
     // mixing
-    ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode, earsbufobj_get_slope_mapping(e_ob));
+    ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode,
+                              earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth);
     
     // freeing buffers
     for (t_llllelem *el = sources->l_head; el; el = el->l_next) {

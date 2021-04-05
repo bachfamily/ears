@@ -109,10 +109,10 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
 
-    CLASS_ATTR_LONG(c, "winsize", 0, t_buf_resample, window_width);
-    CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Window Width");
-    CLASS_ATTR_BASIC(c, "winsize", 0);
-    // @description Sets the resampling window width
+    CLASS_ATTR_LONG(c, "filtersize", 0, t_buf_resample, window_width);
+    CLASS_ATTR_STYLE_LABEL(c,"filtersize",0,"text","Filter Size");
+    CLASS_ATTR_BASIC(c, "filtersize", 0);
+    // @description Sets the resampling filter size in samples
 
     
     class_register(CLASS_BOX, c);
@@ -148,7 +148,7 @@ t_buf_resample *buf_resample_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_resample*)object_alloc_debug(s_tag_class);
     if (x) {
         x->resamplefactor = llll_get();
-        x->window_width = 11; // was: 7
+        x->window_width = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH; // was: 7
         llll_appenddouble(x->resamplefactor, 1.);
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);

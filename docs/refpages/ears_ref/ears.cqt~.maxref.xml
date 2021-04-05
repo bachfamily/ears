@@ -252,16 +252,31 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="antimeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Analysis Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="binsperoctave" get="1" set="1" type="int" size="1">
 			<digest>
-				
+				Bins Per Octave
 			</digest>
 			<description>
 				Sets the number of bins per octave
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bins Per Octave" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -275,22 +290,8 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Downmix to Mono" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
-			</attributelist>
-		</attribute>
-		<attribute name="hopsize" get="1" set="1" type="float" size="1">
-			<digest>
-				Hop Size
-			</digest>
-			<description>
-				Sets the analysis hop size (the unit depends on the <m>timeunit</m> attribute)
-				Floating point values are allowed.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Hop Size" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="minkernelsize" get="1" set="1" type="int" size="1">
@@ -303,7 +304,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Minimum Kernel Size" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -312,7 +312,7 @@
 				Minimum Pitch
 			</digest>
 			<description>
-				Sets the minimum pitch (in the pitch unit).
+				Sets the minimum pitch (in the <m>pitchunit</m>).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
@@ -352,7 +352,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Total Number of Bins" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -375,7 +374,7 @@
 				Pitch Values Are In
 			</digest>
 			<description>
-				Sets the unit for pitch values: Cents (default), MIDI, or frequency ratio.
+				Sets the unit for pitch values: Cents (default), MIDI, Hertz (frequency), or frequency ratio.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Values Are In" />
@@ -393,6 +392,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Output" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -410,19 +410,6 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="startfromzero" get="1" set="1" type="int" size="1">
-			<digest>
-				Bins Per Octave
-			</digest>
-			<description>
-				If on, the first window is centered at winsize/2; if off (default), the first window is centered at zero.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bins Per Octave" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
 		<attribute name="thresh" get="1" set="1" type="float" size="1">
 			<digest>
 				Threshold
@@ -433,6 +420,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Threshold" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -441,30 +429,14 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="wintype" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Window Type
-			</digest>
-			<description>
-				Sets the window type.
-				Available windows are the ones allowed by the Essentia library:
-				"hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 	</attributelist>

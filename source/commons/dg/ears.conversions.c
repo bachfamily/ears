@@ -1,5 +1,96 @@
 #include "ears.conversions.h"
+#include <vector>
 
+
+std::vector<double> llll_to_vector_double(t_llll *ll)
+{
+    std::vector<double> res;
+    for (t_llllelem *el = ll->l_head; el; el = el->l_next)
+        res.push_back(hatom_getdouble(&el->l_hatom));
+    return res;
+}
+
+const char *ears_ampunit_to_abbrev(e_ears_ampunit u)
+{
+    switch (u) {
+        case EARS_AMPUNIT_LINEAR:
+            return "[lin]";
+            break;
+        case EARS_AMPUNIT_DECIBEL:
+            return "[dB]";
+            break;
+        default:
+            return "[]";
+            break;
+    }
+}
+
+
+const char *ears_timeunit_to_abbrev(e_ears_timeunit u)
+{
+    switch (u) {
+        case EARS_TIMEUNIT_MS:
+            return "[ms]";
+            break;
+        case EARS_TIMEUNIT_SECONDS:
+            return "[s]";
+            break;
+        case EARS_TIMEUNIT_SAMPS:
+            return "[samps]";
+            break;
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return "[durratio]";
+            break;
+        default:
+            return "[]";
+            break;
+    }
+}
+
+
+const char *ears_pitchunit_to_abbrev(e_ears_pitchunit pu)
+{
+    switch (pu) {
+        case EARS_PITCHUNIT_FREQRATIO:
+            return "[freqratio]";
+            break;
+        case EARS_PITCHUNIT_HERTZ:
+            return "[Hz]";
+            break;
+        case EARS_PITCHUNIT_MIDI:
+            return "[MIDI]";
+            break;
+        case EARS_PITCHUNIT_CENTS:
+            return "[cents]";
+            break;
+        default:
+            return "[]";
+            break;
+    }
+}
+
+
+
+const char *ears_frequnit_to_abbrev(e_ears_frequnit u)
+{
+    switch (u) {
+        case EARS_FREQUNIT_HERTZ:
+            return "[Hz]";
+            break;
+        case EARS_FREQUNIT_MIDI:
+            return "[MIDI]";
+            break;
+        case EARS_FREQUNIT_CENTS:
+            return "[cents]";
+            break;
+        case EARS_FREQUNIT_BPM:
+            return "[bpm]";
+            break;
+        default:
+            return "[]";
+            break;
+    }
+}
 
 e_ears_timeunit ears_timeunit_from_symbol(t_symbol *s)
 {
@@ -28,7 +119,6 @@ t_symbol *ears_pitchunit_to_symbol(e_ears_pitchunit u)
         default: return gensym("unknown"); break;
     }
 }
-
 e_ears_pitchunit ears_pitchunit_from_symbol(t_symbol *s)
 {
     if (s == gensym("Cents") || s == gensym("cents") || s == gensym("midicents") || s == gensym("MIDIcents"))

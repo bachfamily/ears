@@ -44,7 +44,7 @@
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
-
+#include <vector>
 
 
 typedef struct _buf_format {
@@ -59,6 +59,7 @@ typedef struct _buf_format {
     double              binsize;
     double              binoffset;
     t_symbol*           binunit;
+    t_llll*             bins;
     
     char                resample;
     char                channelmode_upmix;
@@ -85,6 +86,9 @@ static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
 EARSBUFOBJ_ADD_IO_METHODS(format)
+
+DEFINE_LLLL_ATTR_DEFAULT_GETTER(t_buf_format, bins, buf_format_getattr_bins);
+DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_format, bins, buf_format_setattr_bins);
 
 
 /**********************************************************************/
@@ -195,8 +199,15 @@ int C74_EXPORT main(void)
     CLASS_ATTR_SYM(c, "binunit", 0, t_buf_format, binunit);
     CLASS_ATTR_STYLE_LABEL(c,"binunit",0,"enumindex","Spectral Pitch Unit");
     CLASS_ATTR_ENUM(c,"binunit", 0, "keep cents MIDI hertz freqratio");
+    CLASS_ATTR_CATEGORY(c, "binunit", 0, "Spectral Buffers");
     // @description Sets the unit for spectral bins: Keep (keep previous one) Cents, MIDI, Hertz (frequency), or frequency ratio.
 
+    CLASS_ATTR_LLLL(c, "bins", 0, t_buf_format, bins, buf_format_getattr_bins, buf_format_setattr_bins);
+    CLASS_ATTR_STYLE_LABEL(c,"bins",0,"text","Bin Positions");
+    CLASS_ATTR_CATEGORY(c, "bins", 0, "Spectral Buffers");
+    // @description Sets the position of each individual spectral bin, in the <m>binunit</m>.
+
+    
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -236,6 +247,7 @@ t_buf_format *buf_format_new(t_symbol *s, short argc, t_atom *argv)
         x->binunit = gensym("keep");
         x->binoffset = -1;
         x->binsize = -1;
+        x->bins = llll_from_text_buf("keep");
         x->channelmode_upmix = EARS_CHANNELCONVERTMODE_CYCLE;
         x->channelmode_downmix = EARS_CHANNELCONVERTMODE_CYCLE;
 
@@ -261,6 +273,7 @@ t_buf_format *buf_format_new(t_symbol *s, short argc, t_atom *argv)
 
 void buf_format_free(t_buf_format *x)
 {
+    llll_free(x->bins);
     earsbufobj_free((t_earsbufobj *)x);
 }
 
@@ -280,6 +293,7 @@ void buf_format_bang(t_buf_format *x)
     t_symbol *binunit = x->binunit;
     double binsize = x->binsize;
     double binoffset = x->binoffset;
+    t_llll *bins = x->bins;
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
@@ -319,7 +333,11 @@ void buf_format_bang(t_buf_format *x)
         long is_spectral = ears_buffer_is_spectral((t_object *)x, out);
         if (is_spectral == 0 && must_be_spectral == 1) {
             t_ears_spectralbuf_metadata data;
-            ears_spectralbuf_metadata_fill(&data, audiosr, binsize, binoffset, u, spectype);
+            if (!bins->l_head || hatom_gettype(&bins->l_head->l_hatom) == H_SYM) {
+                ears_spectralbuf_metadata_fill(&data, audiosr, binsize, binoffset, u, spectype, NULL, false);
+            } else {
+                ears_spectralbuf_metadata_fill(&data, audiosr, binsize, binoffset, u, spectype, bins, false);
+            }
             ears_spectralbuf_metadata_set((t_object *)x, out, &data);
         } else if (is_spectral == 1 && must_be_spectral == 0) {
             ears_spectralbuf_metadata_remove((t_object *)x, out);
@@ -336,6 +354,10 @@ void buf_format_bang(t_buf_format *x)
                     data->frequnit = u;
                 if (audiosr > 0)
                     data->original_audio_signal_sr = audiosr;
+                if (bins && !(bins->l_head && hatom_gettype(&bins->l_head->l_hatom) == H_SYM)) {
+                    llll_free(data->bins);
+                    data->bins = llll_clone(bins);
+                }
             }
         }
     }

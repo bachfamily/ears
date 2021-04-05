@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 742.0, 557.0 ],
+		"rect" : [ 100.0, 100.0, 742.0, 554.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 742.0, 531.0 ],
+						"rect" : [ 0.0, 26.0, 742.0, 528.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -329,7 +329,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 742.0, 531.0 ],
+						"rect" : [ 0.0, 26.0, 742.0, 528.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -819,7 +819,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 742.0, 531.0 ],
+						"rect" : [ 100.0, 126.0, 742.0, 528.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -849,6 +849,20 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-1",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 17.25, 458.0, 493.0, 21.0 ],
+									"text" : "In case of mismatch, the output sample rate is decided via the resampling attributes.",
+									"textcolor" : [ 0.501961, 0.501961, 0.501961, 1.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"bubble" : 1,
 									"bubbleside" : 2,
@@ -968,7 +982,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u313006564",
+									"buffername" : "u099000919",
 									"id" : "obj-31",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -991,8 +1005,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 19.25, 475.0, 377.0, 36.0 ],
-									"text" : "Click here to learn about the common features of ears modules, including in-place operations and dynamic allocation."
+									"patching_rect" : [ 17.25, 481.0, 512.0, 36.0 ],
+									"text" : "Click here to learn about the common features of ears modules, including resampling attributes, in-place operations and dynamic allocation."
 								}
 
 							}
@@ -1004,7 +1018,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 30.25, 504.0, 152.0, 23.0 ],
+									"patching_rect" : [ 28.25, 510.0, 152.0, 23.0 ],
 									"text" : "load ears.help.commons"
 								}
 
@@ -1017,7 +1031,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 30.25, 539.0, 57.0, 23.0 ],
+									"patching_rect" : [ 28.25, 545.0, 57.0, 23.0 ],
 									"text" : "pcontrol"
 								}
 
@@ -1187,7 +1201,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 742.0, 531.0 ],
+						"rect" : [ 0.0, 26.0, 742.0, 528.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

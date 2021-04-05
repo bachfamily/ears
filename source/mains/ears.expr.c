@@ -115,6 +115,9 @@ int C74_EXPORT main(void)
 
     earsbufobj_class_add_envtimeunit_attr(c);
 
+    earsbufobj_class_add_resamplingpolicy_attr(c);
+    earsbufobj_class_add_resamplingfiltersize_attr(c);
+
     CLASS_ATTR_CHAR(c, "normalize", 0, t_buf_expr, normalization_mode);
     CLASS_ATTR_STYLE_LABEL(c,"normalize",0,"enumindex","Normalize Output");
     CLASS_ATTR_ENUMINDEX(c,"normalize", 0, "Never Always Overload Protection Only");
@@ -363,7 +366,7 @@ void buf_expr_bang(t_buf_expr *x)
     
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
     ears_buffer_expr((t_object *)x, x->n_lexpr, x->arguments, x->e_ob.l_numins, out, (e_ears_normalization_modes)normalization_mode,
-                     x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                     x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }

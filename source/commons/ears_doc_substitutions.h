@@ -188,3 +188,20 @@ CLASS_ATTR_ENUMINDEX(c,"angleunit", 0, "Radians Degrees Turns");
 CLASS_ATTR_ACCESSORS(c, "angleunit", NULL, earsbufobj_setattr_angleunit);
 CLASS_ATTR_BASIC(c, "angleunit", 0);
 // @description Sets the unit for angles: Radians (default), Degrees, or Turns.
+
+#define earsbufobj_class_add_resamplingpolicy_attr
+CLASS_ATTR_CHAR(c,"resamplingpolicy",0, t_earsbufobj, l_resamplingpolicy);
+CLASS_ATTR_STYLE_LABEL(c,"resamplingpolicy",0,"enumindex","Resampling Policy");
+CLASS_ATTR_ENUMINDEX(c,"resamplingpolicy", 0, "Don't To Lowest To Highest To Most Common To Max Current");
+CLASS_ATTR_CATEGORY(c, "resamplingpolicy", 0, "Resampling");
+// @description Sets the resampling policy used when buffers have different sample rates:
+// "Don't" (no resampling - beware: temporality is not preserved!), "To lowest" (buffers are to the lowest sample rate),
+// "To highest" (buffers are converted to the highest sample rate), "To most common" (buffers are to the most common
+// sample rate), "To Max Current" (buffers are converted to the current Max sample rate).
+
+#define earsbufobj_class_add_resamplingfiltersize_attr
+CLASS_ATTR_CHAR(c,"resamplingfiltersize",0, t_earsbufobj, l_resamplingfilterwidth);
+CLASS_ATTR_STYLE_LABEL(c,"resamplingfiltersize",0,"text","Resampling Filter Size");
+CLASS_ATTR_CATEGORY(c, "resamplingfiltersize", 0, "Resampling");
+// @description Sets the resampling filter size.
+

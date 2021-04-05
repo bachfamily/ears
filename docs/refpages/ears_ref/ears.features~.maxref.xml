@@ -241,17 +241,46 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="bufinterp" get="1" set="1" type="int" size="1">
+		<attribute name="ampunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Output Buffer Interpolation Order
+				Amplitude Values Are In
 			</digest>
 			<description>
-				Sets the interpolation order for output buffers.
+				Sets the unit for amplitudes: Linear (default) or Decibel (0dB corresponding to 1. in the linear scale).
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Interpolation Order" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Are In" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="antimeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Analysis Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="bufinterp" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Buffer Frame Interpolation Mode
+			</digest>
+			<description>
+				Sets the interpolation mode for output buffers: <br />
+				0 (don't resample, default): the output buffer has one sample per analysis frame, and its sample rate will be changed accordingly; <br />
+				1 (lower neighbor): the output buffer is resampled to the same samplerate as the input buffer but the samples are not interpolated; <br />
+				2 (linear): same as the previous one, and the samples are interpolated linearly.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Frame Interpolation Mode" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="envattack" get="1" set="1" type="float" size="1">
@@ -259,11 +288,11 @@
 				Envelope Attack Time
 			</digest>
 			<description>
-				Sets the attack time for computing envelopes (the unit depends on the <m>timeunit</m> attribute)
+				Sets the attack time for computing envelopes (the unit depends on the <m>envtimeunit</m> attribute)
 				Floating point values are allowed.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Envelopes" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Attack Time" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
@@ -274,29 +303,41 @@
 				Envelope Release Time
 			</digest>
 			<description>
-				Sets the attack time for computing envelopes (the unit depends on the <m>timeunit</m> attribute)
+				Sets the attack time for computing envelopes (the unit depends on the <m>envtimeunit</m> attribute)
 				Floating point values are allowed.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Envelopes" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Release Time" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="hopsize" get="1" set="1" type="float" size="1">
+		<attribute name="envtimeunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Hop Size
+				Envelope Time Values Are In
 			</digest>
 			<description>
-				Sets the analysis hop size (the unit depends on the <m>timeunit</m> attribute)
-				Floating point values are allowed.
+				Sets the unit for time values inside envelopes: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is Relative.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Hop Size" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="frequnit" get="1" set="1" type="int" size="1">
+			<digest>
+				Frequency Values Are In
+			</digest>
+			<description>
+				Sets the unit for pitch values: Hertz (default), BPM, Cents, MIDI
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frequency Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
@@ -365,17 +406,48 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="startfromzero" get="1" set="1" type="int" size="1">
+		<attribute name="pitchunit" get="1" set="1" type="int" size="1">
 			<digest>
-				First Window Starts At Zero
+				Pitch Values Are In
 			</digest>
 			<description>
-				If on, the first window is centered at winsize/2; if off (default), the first window is centered at zero.
+				Sets the unit for pitch values: Cents (default), MIDI, Hertz (frequency), or frequency ratio.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="First Window Starts At Zero" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Values Are In" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="summary" get="1" set="1" type="int" size="1">
+			<digest>
+				Summarization Mode
+			</digest>
+			<description>
+				Sets the summarization mode, for features that are requested as static but needs to be computed on a frame-by-frame basis.
+				Available modes are:
+				<b>First</b>: take first frame; <br />
+				<b>Last</b>: last last frame; <br />
+				<b>Middle</b>: take middle frame; <br />
+				<b>Mean</b>: average through frames; <br />
+				<b>Loudness-weighted Mean</b>: average through frames, weighting by frame loudness (default)<br />
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="summaryweight" get="1" set="1" type="int" size="1">
+			<digest>
+				Summarization Weight
+			</digest>
+			<description>
+				Sets the summarization weight (only applicable when <m>summary</m> is set to "Mean"): None, RMS, Loudness.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Weight" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="timeunit" get="1" set="1" type="int" size="1">
@@ -383,44 +455,14 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="winsize" get="1" set="1" type="float" size="1">
-			<digest>
-				Windows Size
-			</digest>
-			<description>
-				Sets the analysis frame size (the unit depends on the <m>timeunit</m> attribute)
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Windows Size" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="wintype" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Window Type
-			</digest>
-			<description>
-				Sets the window type.
-				Available windows are the ones allowed by the Essentia library:
-				"hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 	</attributelist>

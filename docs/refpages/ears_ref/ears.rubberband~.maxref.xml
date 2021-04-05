@@ -317,8 +317,7 @@
 				Envelope Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values inside envelopes: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
+				Sets the unit for time values inside envelopes: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
 				The default is Relative.
 			</description>
 			<attributelist>
@@ -465,7 +464,7 @@
 				Pitch Values Are In
 			</digest>
 			<description>
-				Sets the unit for pitch values: Cents (default), MIDI, or frequency ratio.
+				Sets the unit for pitch values: Cents (default), MIDI, Hertz (frequency), or frequency ratio.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Values Are In" />
@@ -525,9 +524,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Seconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
-				Intervals (divisions of the buffer length) or Onsets (i.e. Intervals+1).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />

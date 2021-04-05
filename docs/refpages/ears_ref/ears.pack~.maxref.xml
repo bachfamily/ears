@@ -276,6 +276,37 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="resamplingfiltersize" get="1" set="1" type="int" size="1">
+			<digest>
+				Resampling Filter Size
+			</digest>
+			<description>
+				Sets the resampling filter size.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Filter Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="resamplingpolicy" get="1" set="1" type="int" size="1">
+			<digest>
+				Resampling Policy
+			</digest>
+			<description>
+				Sets the resampling policy used when buffers have different sample rates:
+				"Don't" (no resampling - beware: temporality is not preserved!), "To lowest" (buffers are to the lowest sample rate),
+				"To highest" (buffers are converted to the highest sample rate), "To most common" (buffers are to the most common
+				sample rate), "To Max Current" (buffers are converted to the current Max sample rate).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Policy" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="triggers" get="1" set="1" type="llll" size="1">
 			<digest>
 				Triggers
