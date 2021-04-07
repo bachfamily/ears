@@ -56,7 +56,8 @@ class BpmHistogram : public AlgorithmComposite {
   Real _minBpm, _maxBpm;
   Real _frameRate;
   Real _bpmTolerance;
-  int _frameSize, _hopSize;
+  int _frameSize;
+  Real _hopSize;
   int _maxPeaks;
   int _preferredBufferSize;
   bool _normalize;

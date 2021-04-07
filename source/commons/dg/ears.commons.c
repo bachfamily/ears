@@ -3782,6 +3782,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         }
     }
     
+    ears_buffer_copy_format(ob, source[0], dest); // we consider the first as "master"
     
     /// All buffers have been locked. Now we need to harmonize numchannels and sampsize.
     /// As a rule: we take the property of the first one.

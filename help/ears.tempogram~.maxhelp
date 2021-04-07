@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 334.0, 79.0, 836.0, 566.0 ],
+		"rect" : [ 100.0, 82.0, 836.0, 566.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -90,43 +90,38 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"id" : "obj-8",
-									"maxclass" : "newobj",
+									"attr" : "antimeunit",
+									"id" : "obj-22",
+									"maxclass" : "attrui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 180.0, 113.0, 23.0 ],
-									"text" : "ears.normalize~ ="
+									"patching_rect" : [ 261.0, 298.0, 226.0, 23.0 ]
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"id" : "obj-1",
-									"maxclass" : "newobj",
+									"id" : "obj-20",
+									"maxclass" : "comment",
 									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 149.0, 109.0, 23.0 ],
-									"text" : "ears.expr~ $f1**2"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "u230001008",
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
-									"fontface" : 0,
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
-									"id" : "obj-7",
-									"maxclass" : "ears.specshow~",
-									"maxcolor" : [ 0.996078431372549, 0.996078431372549, 0.996078431372549, 1.0 ],
-									"maxvalue" : 0.01,
-									"mincolor" : [ 0.0, 0.0, 0.0, 1.0 ],
-									"numinlets" : 3,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 208.75, 812.0, 324.0 ]
+									"patching_rect" : [ 261.0, 275.0, 277.0, 21.0 ],
+									"text" : "The temporal analysis unit is always the same:",
+									"textcolor" : [ 0.498039215686275, 0.498039215686275, 0.498039215686275, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-19",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 497.0, 216.0, 234.0, 36.0 ],
+									"text" : "Good defaults are bigframesize ~ 4s and bigoverlap ~ 16",
+									"textcolor" : [ 0.498039215686275, 0.498039215686275, 0.498039215686275, 1.0 ]
 								}
 
 							}
@@ -135,25 +130,88 @@
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
-									"id" : "obj-5",
-									"linecount" : 2,
+									"id" : "obj-18",
+									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 121.0, 140.5, 107.0, 40.0 ],
-									"text" : "Square the magnitude"
+									"patching_rect" : [ 366.5, 194.0, 126.0, 69.0 ],
+									"text" : "Tempogram analysis parameters (bigger frames)"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"id" : "obj-4",
-									"maxclass" : "message",
-									"numinlets" : 2,
+									"attr" : "bigoverlap",
+									"id" : "obj-12",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 80.5, 87.0, 23.0 ],
-									"text" : "earsBufAnton"
+									"patching_rect" : [ 188.375, 232.0, 178.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "bigframesize",
+									"id" : "obj-7",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 188.125, 207.0, 178.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-16",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 213.375, 118.0, 96.0, 54.0 ],
+									"text" : "FFT Analysis parameters"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "wintype",
+									"id" : "obj-37",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 18.625, 153.0, 199.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "framesize",
+									"id" : "obj-32",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 18.625, 110.5, 199.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "hopsize",
+									"id" : "obj-30",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 18.625, 133.5, 199.0, 23.0 ]
 								}
 
 							}
@@ -164,10 +222,10 @@
 									"id" : "obj-14",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 10.0, 115.0, 360.0, 23.0 ],
-									"text" : "ears.stft~"
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 182.0, 410.0, 111.0, 23.0 ],
+									"text" : "ears.tempogram~"
 								}
 
 							}
@@ -177,49 +235,63 @@
 									"filename" : "helpname.js",
 									"id" : "obj-10",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.stft~" ],
+									"jsarguments" : [ "ears.tempogram~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 203.647994995117188, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 373.160003662109375, 57.599853515625 ]
 								}
 
 							}
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
-									"destination" : [ "obj-8", 0 ],
-									"source" : [ "obj-1", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-1", 0 ],
-									"source" : [ "obj-14", 0 ]
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-12", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
-									"source" : [ "obj-4", 0 ]
+									"source" : [ "obj-22", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-7", 0 ],
-									"source" : [ "obj-8", 0 ]
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-30", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-32", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-37", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-7", 0 ]
 								}
 
 							}
  ]
 					}
 ,
-					"patching_rect" : [ 36.0, 121.0, 112.0, 22.0 ],
+					"patching_rect" : [ 40.0, 127.0, 62.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -228,7 +300,7 @@
 						"tags" : ""
 					}
 ,
-					"text" : "p \"power spectrum\"",
+					"text" : "p analysis",
 					"varname" : "basic_tab[1]"
 				}
 
@@ -242,13 +314,13 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 299.0, 205.0, 142.0, 22.0 ],
+					"patching_rect" : [ 299.0, 205.0, 186.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"filename" : "helpstarter.js",
 						"parameter_enable" : 0
 					}
 ,
-					"text" : "js helpstarter.js ears.stft~"
+					"text" : "js helpstarter.js ears.tempogram~"
 				}
 
 			}
@@ -271,7 +343,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 334.0, 105.0, 836.0, 540.0 ],
+						"rect" : [ 100.0, 108.0, 836.0, 540.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -302,14 +374,62 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"hidden" : 1,
-									"id" : "obj-39",
-									"linecount" : 3,
+									"attr" : "freqlabelcolor",
+									"id" : "obj-13",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 519.0, 266.5, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "freqgridcolor",
+									"id" : "obj-9",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 519.0, 238.0, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"buffername" : "earsBufDrumLoop",
+									"id" : "obj-23",
+									"maxclass" : "waveform~",
+									"numinlets" : 5,
+									"numoutlets" : 6,
+									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
+									"patching_rect" : [ 573.0, 10.0, 182.5, 39.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-1",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "float", "bang" ],
+									"patching_rect" : [ 573.0, 55.5, 222.0, 23.0 ],
+									"text" : "buffer~ earsBufDrumLoop drumLoop"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-15",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 639.0, 141.0, 139.0, 50.0 ],
-									"text" : "If not set, every channel will become an analysis buffer"
+									"patching_rect" : [ 654.27793296089385, 159.5, 173.0, 36.0 ],
+									"text" : "If not set, every channel will become an analysis buffer",
+									"textcolor" : [ 0.498039215686275, 0.498039215686275, 0.498039215686275, 1.0 ]
 								}
 
 							}
@@ -319,11 +439,11 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-38",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 542.0, 139.0, 96.0, 54.0 ],
+									"patching_rect" : [ 523.02793296089385, 159.5, 129.25, 40.0 ],
 									"text" : "Downmix channels to mono"
 								}
 
@@ -336,140 +456,20 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 390.0, 154.5, 150.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-35",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 444.0, 435.0, 58.0, 36.0 ],
-									"text" : "buffer is spectral"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-34",
-									"maxclass" : "toggle",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "int" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 444.0, 410.0, 24.0, 24.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-18",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 755.0, 435.0, 55.0, 36.0 ],
-									"text" : "original\naudio sr"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"format" : 6,
-									"id" : "obj-19",
-									"maxclass" : "flonum",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "bang" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 759.0, 410.0, 56.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "",
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
-									"fontface" : 0,
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
-									"id" : "obj-1",
-									"maxclass" : "ears.specshow~",
-									"maxcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ],
-									"maxvalue" : -3.14159,
-									"mincolor" : [ 0.0, 0.043137254901961, 0.996078431372549, 1.0 ],
-									"minvalue" : 3.14159,
-									"numinlets" : 3,
-									"numoutlets" : 0,
-									"patching_rect" : [ 254.5, 363.0, 170.900342844654517, 107.25 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "",
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
-									"fontface" : 0,
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
-									"id" : "obj-7",
-									"maxclass" : "ears.specshow~",
-									"maxvalue" : 0.1,
-									"numinlets" : 3,
-									"numoutlets" : 0,
-									"patching_rect" : [ 15.0, 351.0, 229.02793296089385, 130.75 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-22",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 601.5, 435.0, 69.0, 36.0 ],
-									"text" : "number\nof frames"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-21",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 525.0, 435.0, 58.0, 36.0 ],
-									"text" : "number of bins"
+									"patching_rect" : [ 377.0, 169.0, 150.0, 23.0 ]
 								}
 
 							}
 , 							{
 								"box" : 								{
 									"id" : "obj-11",
-									"linecount" : 2,
+									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 675.0, 435.0, 62.0, 36.0 ],
-									"text" : "spectrum\nsr"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"format" : 6,
-									"id" : "obj-9",
-									"maxclass" : "flonum",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "bang" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 680.25, 410.0, 50.0, 23.0 ]
+									"patching_rect" : [ 677.0, 104.5, 150.0, 50.0 ],
+									"text" : "The bins will however always start from tempo = 0 to maxtempo",
+									"textcolor" : [ 0.498039215686275, 0.498039215686275, 0.498039215686275, 1.0 ]
 								}
 
 							}
@@ -478,207 +478,55 @@
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
-									"id" : "obj-3",
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 547.0, 343.0, 210.0, 25.0 ],
-									"text" : "Double click to see bins as rows"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-33",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 444.0, 343.0, 101.0, 23.0 ],
-									"text" : "ears.normalize~"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-31",
-									"maxclass" : "number",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "bang" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 601.5, 410.0, 50.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-28",
-									"maxclass" : "number",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "bang" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 522.75, 410.0, 50.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-25",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 5,
-									"outlettype" : [ "list", "list", "list", "list", "list" ],
-									"patching_rect" : [ 444.0, 372.5, 334.0, 23.0 ],
-									"text" : "ears.info~ spectral numchannels numsamples sr audiosr"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"bubble" : 1,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-16",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 587.0, 206.0, 96.0, 40.0 ],
-									"text" : "Analysis parameters"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"bubble" : 1,
-									"bubblepoint" : 0.0,
-									"bubbleside" : 3,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-13",
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 228.0, 313.0, 126.0, 25.0 ],
-									"text" : "Phases spectrum"
-								}
-
-							}
-, 							{
-								"box" : 								{
 									"id" : "obj-6",
 									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 386.0, 288.0, 259.0, 50.0 ],
-									"text" : "output buffers are provided in \"matrix\" form:\n• one channel per bin\n• one sample per analysis window"
+									"patching_rect" : [ 529.0, 100.0, 146.0, 54.0 ],
+									"text" : "Minimum and maximum tempo for analysis"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"bubble" : 1,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
+									"attr" : "maxtempo",
+									"id" : "obj-3",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 377.0, 133.0, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "mintempo",
 									"id" : "obj-2",
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 26.0, 313.0, 150.0, 25.0 ],
-									"text" : "Magnitudes spectrum"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"attr" : "wintype",
-									"id" : "obj-37",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 386.0, 239.0, 199.0, 23.0 ]
+									"patching_rect" : [ 377.0, 104.5, 150.0, 23.0 ]
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"attr" : "framesize",
-									"id" : "obj-32",
-									"maxclass" : "attrui",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 386.0, 196.5, 199.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"attr" : "hopsize",
-									"id" : "obj-30",
-									"maxclass" : "attrui",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 386.0, 219.5, 199.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"bubble" : 1,
+									"buffername" : "u434001487",
+									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
+									"fontface" : 0,
 									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-23",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
+									"fontsize" : 10.0,
+									"freqgridcolor" : [ 0.678, 0.0, 0.764705882352941, 0.0 ],
+									"freqlabelcolor" : [ 0.678, 0.0, 0.764705882352941, 1.0 ],
+									"id" : "obj-7",
+									"maxclass" : "ears.specshow~",
+									"maxvalue" : 0.1,
+									"numinlets" : 3,
 									"numoutlets" : 0,
-									"patching_rect" : [ 200.0, 201.5, 119.0, 40.0 ],
-									"text" : "Polar output (defaults to on)"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"attr" : "polar",
-									"id" : "obj-20",
-									"maxclass" : "attrui",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 48.0, 201.5, 150.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"bubble" : 1,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-12",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 200.0, 159.5, 136.0, 40.0 ],
-									"text" : "Full spectrum flag (defaults to off)"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"attr" : "fullspectrum",
-									"id" : "obj-15",
-									"maxclass" : "attrui",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 48.0, 168.0, 150.0, 23.0 ]
+									"patching_rect" : [ 15.0, 212.5, 481.02793296089385, 267.25 ]
 								}
 
 							}
@@ -728,30 +576,6 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "earsBufAnton",
-									"id" : "obj-24",
-									"maxclass" : "waveform~",
-									"numinlets" : 5,
-									"numoutlets" : 6,
-									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 605.5, 10.0, 182.5, 39.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-8",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "float", "bang" ],
-									"patching_rect" : [ 605.5, 56.5, 170.0, 23.0 ],
-									"text" : "buffer~ earsBufAnton anton"
-								}
-
-							}
-, 							{
-								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -759,7 +583,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 110.0, 127.5, 146.0, 25.0 ],
+									"patching_rect" : [ 131.0, 127.5, 129.0, 25.0 ],
 									"text" : "Send buffer name"
 								}
 
@@ -771,8 +595,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 127.5, 87.0, 23.0 ],
-									"text" : "earsBufAnton"
+									"patching_rect" : [ 15.0, 127.5, 114.0, 23.0 ],
+									"text" : "earsBufDrumLoop"
 								}
 
 							}
@@ -783,10 +607,10 @@
 									"id" : "obj-14",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 15.0, 288.0, 360.0, 23.0 ],
-									"text" : "ears.stft~"
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 15.0, 169.0, 111.0, 23.0 ],
+									"text" : "ears.tempogram~"
 								}
 
 							}
@@ -796,7 +620,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-10",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.stft~", 90 ],
+									"jsarguments" : [ "ears.tempogram~", 90 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
@@ -809,24 +633,14 @@
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
-									"destination" : [ "obj-1", 0 ],
-									"source" : [ "obj-14", 1 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-33", 0 ],
-									"midpoints" : [ 24.5, 340.5, 453.5, 340.5 ],
-									"order" : 0,
-									"source" : [ "obj-14", 0 ]
+									"destination" : [ "obj-7", 0 ],
+									"source" : [ "obj-13", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
-									"order" : 1,
 									"source" : [ "obj-14", 0 ]
 								}
 
@@ -834,49 +648,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
-									"source" : [ "obj-15", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-14", 0 ],
-									"source" : [ "obj-20", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-19", 0 ],
-									"source" : [ "obj-25", 4 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-28", 0 ],
-									"source" : [ "obj-25", 1 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-31", 0 ],
-									"source" : [ "obj-25", 2 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-34", 0 ],
-									"source" : [ "obj-25", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-9", 0 ],
-									"source" : [ "obj-25", 3 ]
+									"source" : [ "obj-2", 0 ]
 								}
 
 							}
@@ -899,21 +671,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
-									"source" : [ "obj-30", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-14", 0 ],
-									"source" : [ "obj-32", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-25", 0 ],
-									"source" : [ "obj-33", 0 ]
+									"source" : [ "obj-3", 0 ]
 								}
 
 							}
@@ -927,14 +685,14 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
-									"source" : [ "obj-37", 0 ]
+									"source" : [ "obj-4", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-14", 0 ],
-									"source" : [ "obj-4", 0 ]
+									"destination" : [ "obj-7", 0 ],
+									"source" : [ "obj-9", 0 ]
 								}
 
 							}
@@ -961,13 +719,13 @@
 					"filename" : "helpname.js",
 					"id" : "obj-4",
 					"ignoreclick" : 1,
-					"jsarguments" : [ "ears.stft~" ],
+					"jsarguments" : [ "ears.tempogram~" ],
 					"maxclass" : "jsui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 10.0, 10.0, 203.647994995117188, 57.599853515625 ]
+					"patching_rect" : [ 10.0, 10.0, 373.160003662109375, 57.599853515625 ]
 				}
 
 			}
@@ -1058,7 +816,7 @@
 				"implicit" : 1
 			}
 , 			{
-				"name" : "ears.stft~.mxo",
+				"name" : "ears.tempogram~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -1066,19 +824,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.info~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.normalize~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
 				"name" : "ears.specshow~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.expr~.mxo",
 				"type" : "iLaX"
 			}
  ],

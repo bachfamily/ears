@@ -52,7 +52,9 @@
 typedef struct _buf_specshow {
     t_jbox      n_obj;
 
-    t_jsurface  *n_surface;
+    t_symbol     *n_buffername;
+    t_buffer_ref *n_buffer_reference;
+    t_jsurface   *n_surface;
     
     long         n_must_recreate_surface;
     t_buffer_obj *n_last_buffer;
@@ -88,6 +90,8 @@ typedef struct _buf_specshow {
     t_jrgba     n_grid_time_color;
     t_atom      n_grid_freq_step;
     t_jrgba     n_grid_freq_color;
+    t_jrgba     n_label_time_color;
+    t_jrgba     n_label_freq_color;
 
     t_systhread_mutex    n_mutex;
 
@@ -111,6 +115,9 @@ void buf_specshow_assist(t_buf_specshow *x, void *b, long m, long a, char *s);
 void buf_specshow_inletinfo(t_buf_specshow *x, void *b, long a, char *t);
 void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview);
 t_max_err buf_specshow_notify(t_buf_specshow *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
+
+void buf_specshow_set(t_buf_specshow *x, t_symbol *s);
+t_max_err buf_specshow_setattr_buffername(t_buf_specshow *x, void *attr, long argc, t_atom *argv);
 
 void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf);
 
@@ -142,6 +149,7 @@ void ext_main(void *r)
     // @description A symbol is considered as a buffer containing a spectrogram, i.e.
     // one bin for channel and one window for sample. The spectrogram is displayed
 
+    class_addmethod(c, (method)buf_specshow_set, "set", A_SYM, 0);
     class_addmethod(c, (method)buf_specshow_anything, "anything",    A_GIMME, 0);
     class_addmethod(c, (method)buf_specshow_float, "float",    A_FLOAT, 0);
     class_addmethod(c, (method)buf_specshow_int, "int",    A_LONG, 0);
@@ -150,6 +158,16 @@ void ext_main(void *r)
     class_addmethod(c, (method)buf_specshow_notify,        "notify",    A_CANT, 0);
 
     // attributes
+    
+    CLASS_ATTR_SYM(c, "buffername", 0, t_buf_specshow, n_buffername);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "buffername", 0, "");
+    CLASS_ATTR_STYLE_LABEL(c, "buffername", 0, "text", "buffer~ Object Name");
+    CLASS_ATTR_ACCESSORS(c, "buffername", NULL, buf_specshow_setattr_buffername);
+    CLASS_ATTR_BASIC(c, "buffername", 0);
+    CLASS_ATTR_CATEGORY(c, "buffername", 0, "Behavior");
+    // @description Sets the name of the buffer to which the object is attached.
+
+    
     CLASS_ATTR_RGBA(c, "mincolor", 0, t_buf_specshow, n_mincolor);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "mincolor", 0, "1. 1. 1. 1.0");
     CLASS_ATTR_STYLE_LABEL(c, "mincolor", 0, "rgba", "Lowest Color");
@@ -198,6 +216,13 @@ void ext_main(void *r)
     CLASS_ATTR_CATEGORY(c, "timegridcolor", 0, "Grid");
     // @description Sets the color of the time grid
     
+    
+    CLASS_ATTR_RGBA(c, "timelabelcolor", 0, t_buf_specshow, n_label_time_color);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timelabelcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
+    CLASS_ATTR_STYLE_LABEL(c, "timelabelcolor", 0, "rgba", "Time Grid Label Color");
+    CLASS_ATTR_CATEGORY(c, "timelabelcolor", 0, "Grid");
+    // @description Sets the color of the time grid labels.
+    
     CLASS_ATTR_DOUBLE(c, "timegrid", 0, t_buf_specshow, n_grid_time_step_ms);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timegrid", 0, "1000.");
     CLASS_ATTR_STYLE_LABEL(c, "timegrid", 0, "text", "Time Grid Step");
@@ -209,6 +234,12 @@ void ext_main(void *r)
     CLASS_ATTR_STYLE_LABEL(c, "freqgridcolor", 0, "rgba", "Frequency Grid Color");
     CLASS_ATTR_CATEGORY(c, "freqgridcolor", 0, "Grid");
     // @description Sets the color of the vertical grid.
+
+    CLASS_ATTR_RGBA(c, "freqlabelcolor", 0, t_buf_specshow, n_label_freq_color);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqlabelcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
+    CLASS_ATTR_STYLE_LABEL(c, "freqlabelcolor", 0, "rgba", "Frequency Grid Label Color");
+    CLASS_ATTR_CATEGORY(c, "freqlabelcolor", 0, "Grid");
+    // @description Sets the color of the vertical grid labels.
     
     CLASS_ATTR_ATOM(c, "freqgrid", 0, t_buf_specshow, n_grid_freq_step);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqgrid", 0, "auto");
@@ -245,6 +276,38 @@ t_max_err buf_specshow_notify(t_buf_specshow *x, t_symbol *s, t_symbol *msg, voi
     if (msg == _sym_attr_modified) {
         x->n_must_recreate_surface = true;
         jbox_redraw((t_jbox *)x);
+    }
+    
+    return buffer_ref_notify(x->n_buffer_reference, s, msg, sender, data);
+}
+
+void buf_specshow_set(t_buf_specshow *x, t_symbol *s)
+{
+    systhread_mutex_lock(x->n_mutex);
+    if (ears_buffer_symbol_is_buffer(s)) {
+        x->n_last_buffer = ears_buffer_getobject(s);
+        x->n_buffername = s;
+        
+        if (!x->n_buffer_reference)
+            x->n_buffer_reference = buffer_ref_new((t_object *)x, s);
+        else
+            buffer_ref_set(x->n_buffer_reference, s);
+        x->n_must_recreate_surface = true;
+        jbox_redraw((t_jbox *)x);
+        systhread_mutex_unlock(x->n_mutex);
+    } else {
+        systhread_mutex_unlock(x->n_mutex);
+        if (s != _llllobj_sym_empty_symbol)
+            object_error((t_object *)x, "Input symbol does not correspond to a buffer!");
+    }
+}
+
+t_max_err buf_specshow_setattr_buffername(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_SYM) {
+            buf_specshow_set(x, atom_getsym(argv));
+        }
     }
     return MAX_ERR_NONE;
 }
@@ -344,14 +407,7 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
     if (parsed && parsed->l_head) {
         if (inlet == 0) {
             if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
-                t_symbol *buffer = hatom_getsym(&parsed->l_head->l_hatom);
-                if (ears_buffer_symbol_is_buffer(buffer)) {
-                    x->n_last_buffer = ears_buffer_getobject(buffer);
-                    x->n_must_recreate_surface = true;
-                    jbox_redraw((t_jbox *)x);
-                } else {
-                    object_error((t_object *)x, "Input symbol does not correspond to a buffer!");
-                }
+                buf_specshow_set(x, hatom_getsym(&parsed->l_head->l_hatom));
             }
         } else if (inlet == 1) { // start display
             if (parsed && parsed->l_head && is_hatom_number(&parsed->l_head->l_hatom)) {
@@ -468,6 +524,7 @@ const char *get_frequnit_abbr(t_buf_specshow *x)
             break;
     }
 }
+
 void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
 {
     t_rect src, rect;
@@ -506,7 +563,7 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     
     jgraphics_image_surface_draw(g, x->n_surface, src, fullrect);
     
-     
+    
     // paint grids
     double length = x->n_length_ms;
     double grid_time_step = x->n_grid_time_step_ms;
@@ -514,9 +571,11 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     if (atom_gettype(&x->n_grid_freq_step) == A_SYM) {
         if (atom_getsym(&x->n_grid_freq_step) == _llllobj_sym_auto) {
             if (x->n_type == gensym("stft")) {
-                grid_freq_step = 4000;
+                grid_freq_step = 1000 * floor(1100./rect.height);
             } else if (x->n_type == gensym("cqt")) {
-                grid_freq_step = 1200;
+                grid_freq_step = 1200 * floor(400./rect.height);
+            } else if (x->n_type == gensym("tempogram")) {
+                grid_freq_step = 10 * floor(3000./rect.height);
             }
         }
     } else {
@@ -525,8 +584,6 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     if (grid_time_step > 0 || grid_freq_step > 0) {
         t_jfont *jf_text = jfont_create_debug(jbox_get_fontname((t_object *)x)->s_name, (t_jgraphics_font_slant)jbox_get_font_slant((t_object *)x),
                                               (t_jgraphics_font_weight)jbox_get_font_weight((t_object *)x), jbox_get_fontsize((t_object *)x));
-        t_jrgba grid_time_color = x->n_grid_time_color;
-        t_jrgba grid_freq_color = x->n_grid_freq_color;
         char text[1024];
         double text_ends = -1;
         double tw, th;
@@ -537,12 +594,12 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
                 if (o > dend)
                     break;
                 double h = onset_to_xpos(x, &rect, o);
-                paint_line(g, grid_time_color, h, 0, h, rect.height, 1);
+                paint_line(g, x->n_grid_time_color, h, 0, h, rect.height, 1);
                 if (h > text_ends) {
                     sprintf(text, " %dms", (int)o);
                     jfont_text_measure(jf_text, text, &tw, &th);
                     text_ends = h + tw;
-                    write_text_standard(g, jf_text, grid_time_color, text, h, 0, rect.width, rect.height);
+                    write_text_standard(g, jf_text, x->n_label_time_color, text, h, 0, rect.width, rect.height);
                 }
             }
         }
@@ -555,11 +612,11 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
             const char *unit = get_frequnit_abbr(x);
             for (double b = offset; b < max; b += grid_freq_step) {
                 double v = freq_to_ypos(x, &rect, b);
-                paint_line(g, grid_freq_color, 0, v, rect.width, v, 1);
+                paint_line(g, x->n_grid_freq_color, 0, v, rect.width, v, 1);
                 if (v > 2 * jbox_get_fontsize((t_object *)x)) {
                     sprintf(text, " %d%s", (int)b, unit);
                     jfont_text_measure(jf_text, text, &tw, &th);
-                    write_text_standard(g, jf_text, grid_freq_color, text, 0, v - th, rect.width, rect.height);
+                    write_text_standard(g, jf_text, x->n_label_freq_color, text, 0, v - th, rect.width, rect.height);
                 }
             }
         }
@@ -570,5 +627,4 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
 systhread_mutex_unlock(x->n_mutex);
 
 }
-
 

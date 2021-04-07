@@ -352,6 +352,13 @@ typedef struct _ears_essentia_analysis_params
     Real YIN_minFrequency;
     Real YIN_maxFrequency;
     Real YIN_tolerance;
+    
+    // Tempograms
+    Real TEMPO_bigFrameSize;
+    Real TEMPO_bigOverlap;
+    Real TEMPO_minBpm;
+    Real TEMPO_maxBpm;
+    Real TEMPO_maxPeaks;
 
     // Summarization mode
     e_ears_essentia_summarization summarization;
@@ -382,6 +389,8 @@ t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, 
 t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double force_sr);
 
 t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit);
+
+t_ears_err ears_vector_tempogram(t_object *ob, std::vector<Real> samples, double sr, std::vector<Real> &frequencyBands, t_buffer_obj *dest, t_ears_essentia_analysis_params *params);
 
 t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *phases, bool interpolate, int maxPeaks, double minPeakDistance, t_symbol *orderBy, double threshold, e_ears_timeunit timeunit, e_ears_angleunit angleunit, t_ears_err *err);
 

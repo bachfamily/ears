@@ -82,8 +82,8 @@ BpmHistogram::~BpmHistogram() {
 void BpmHistogram::configure() {
   _frameRate = parameter("frameRate").toReal();
   _frameSize = int(parameter("frameSize").toReal()*_frameRate);
-  _frameSize = nextPowerTwo(int(ceil(Real(_frameSize))));
   _hopSize = int(_frameSize/parameter("overlap").toReal());
+  _frameSize = nextPowerTwo(int(ceil(Real(_frameSize))));
   int zeroPadding = parameter("zeroPadding").toInt()*_frameSize;
   _binWidth = _frameRate/(_frameSize+zeroPadding);
   _maxPeaks = parameter("maxPeaks").toInt();

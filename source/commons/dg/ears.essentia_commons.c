@@ -788,6 +788,181 @@ t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *ph
 }
 
 
+
+
+t_ears_err ears_vector_tempogram(t_object *ob, std::vector<Real> samples, double sr, std::vector<Real> &frequencyBands, t_buffer_obj *dest, t_ears_essentia_analysis_params *params)
+{
+    
+    t_ears_err err = EARS_ERR_NONE;
+    long outframecount_ceil = ceil(1 + ((samples.size() * 1.) / params->hopsize_samps));
+    double dur_ms = 1000. * samples.size()/sr;
+    
+    std::vector<essentia::Real> framedata;
+    std::vector<essentia::Real> wframedata;
+    std::vector<essentia::Real> spectrumdata;
+    std::vector<essentia::Real> framebandsdata;
+    std::vector<std::vector<essentia::Real>> bands;
+    std::vector<essentia::Real> novelty;
+
+    essentia::standard::Algorithm *frameCutter, *windower, *spectrum, *freqBands, *noveltyCurve, *bpmHistogram;
+    Real frameRate = sr/Real(params->hopsize_samps);
+    
+    // outputs
+    Real bpm;
+    std::vector<essentia::Real> bpmCandidates;
+    std::vector<essentia::Real> bpmMagnitudes;
+    TNT::Array2D<essentia::Real> tempogram;
+    std::vector<essentia::Real> frameBpms;
+    std::vector<essentia::Real> ticks;
+    std::vector<essentia::Real> ticksMagnitude;
+    std::vector<essentia::Real> sinusoid;
+    
+    try {
+        frameCutter = essentia::standard::AlgorithmFactory::create("FrameCutter",
+                                                                   "frameSize", params->framesize_samps,
+                                                                   "hopSize", (Real)params->hopsize_samps,
+                                                                   "startFromZero", params->startFromZero,
+                                                                   "lastFrameToEndOfFile", params->lastFrameToEndOfFile);
+        // windowing algorithm:
+        windower = essentia::standard::AlgorithmFactory::create("Windowing",
+                                                                "zeroPadding", 0,
+                                                                "size", params->framesize_samps,
+                                                                "type", params->windowType);
+        
+        // fft algorithm:
+        spectrum = essentia::standard::AlgorithmFactory::create("Spectrum");
+        
+        freqBands = essentia::standard::AlgorithmFactory::create("FrequencyBands",
+                                              "sampleRate", sr,
+                                              "frequencyBands", frequencyBands);
+
+        noveltyCurve = standard::AlgorithmFactory::create("NoveltyCurve",
+                                                          "frameRate", frameRate,
+                                                          "normalize", false,
+                                                          "weightCurveType",
+                                                          "flat");
+        
+        bpmHistogram = standard::AlgorithmFactory::create("BpmHistogram",
+                                                          "frameRate", frameRate,
+                                                          "frameSize", params->TEMPO_bigFrameSize, // this is in seconds
+                                                          "zeroPadding", 0,
+                                                          "overlap", params->TEMPO_bigOverlap,
+                                                          "maxPeaks", params->TEMPO_maxPeaks,
+                                                          "windowType", params->windowType,
+                                                          "minBpm", params->TEMPO_minBpm,
+                                                          "maxBpm", params->TEMPO_maxBpm,
+                                                          "tempoChange", 5, // 5 seconds
+                                                          "constantTempo", false,
+                                                          "bpm", 0,
+                                                          "weightByMagnitude", true);
+
+/*        bpmHistogram = essentia::standard::AlgorithmFactory::create("BpmHistogram",
+                                                                    "frameRate", frameRate,
+                                                                    "minBpm", params->TEMPO_minBpm,
+                                                                    "maxBpm", params->TEMPO_maxBpm);
+*/
+        
+        frameCutter->input("signal").set(samples);
+        frameCutter->output("frame").set(framedata);
+        windower->input("frame").set(framedata);
+        windower->output("frame").set(wframedata);
+        spectrum->input("frame").set(wframedata);
+        spectrum->output("spectrum").set(spectrumdata);
+        freqBands->input("spectrum").set(spectrumdata);
+        freqBands->output("bands").set(framebandsdata);
+        noveltyCurve->input("frequencyBands").set(bands);
+        noveltyCurve->output("novelty").set(novelty);
+        bpmHistogram->input("novelty").set(novelty);
+        bpmHistogram->output("bpm").set(bpm);
+        bpmHistogram->output("bpmCandidates").set(bpmCandidates);
+        bpmHistogram->output("bpmMagnitudes").set(bpmMagnitudes);
+        bpmHistogram->output("tempogram").set(tempogram);
+        bpmHistogram->output("frameBpms").set(frameBpms);
+        bpmHistogram->output("ticks").set(ticks);
+        bpmHistogram->output("ticksMagnitude").set(ticksMagnitude);
+        bpmHistogram->output("sinusoid").set(sinusoid);
+
+    } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  return EARS_ERR_ESSENTIA;   }
+    
+    try {
+        frameCutter->reset();
+        while (true) {
+            frameCutter->compute(); // new frame
+            if (!framedata.size()) {
+                break;
+            }
+
+            windower->compute();
+            spectrum->compute();
+            freqBands->compute();
+            bands.push_back(framebandsdata);
+        }
+        
+        noveltyCurve->compute();
+        bpmHistogram->compute();
+    }
+    catch (essentia::EssentiaException e)
+    {
+        object_error(ob, e.what());
+    }
+
+    
+    long numframes = tempogram.dim1();
+    long numbins = tempogram.dim2();
+    double new_sr = params->TEMPO_bigOverlap / params->TEMPO_bigFrameSize; // sr/(params->hopsize_samps); // sr of the windowed signal
+    ears_buffer_set_sr(ob, dest, new_sr);
+    ears_buffer_set_size_and_numchannels(ob, dest, numframes, numbins);
+    
+    t_ears_spectralbuf_metadata data;
+    t_llll *bins = ears_ezarithmser(0, 1, numbins);
+    ears_spectralbuf_metadata_fill(&data, sr, 1, 0, EARS_FREQUNIT_BPM, gensym("tempogram"), bins, false);
+    ears_spectralbuf_metadata_set(ob, dest, &data);
+    llll_free(bins);
+    
+    float *dest_sample = buffer_locksamples(dest);
+    
+    if (!dest_sample) {
+        err = EARS_ERR_CANT_WRITE;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(dest);   // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(dest);     // number of floats long the buffer is for a single channel
+        
+        if (channelcount != numbins || framecount != numframes) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error(ob, "Cannot write buffer");
+        } else {
+            
+                for (int f = 0; f < numframes; f++) {
+                    for (int b = 0; b < numbins; b++) {
+                        dest_sample[f*numbins + b] = tempogram[f][b];
+                    }
+                }
+            
+        }
+        
+        buffer_setdirty(dest);
+        buffer_unlocksamples(dest);
+        
+    }
+    
+    
+    delete noveltyCurve;
+    delete bpmHistogram;
+    delete freqBands;
+    delete frameCutter;
+    delete windower;
+    delete spectrum;
+    
+    return err;
+}
+
+
+
+
+
+
+
 void convert_timeunit(t_ears_essentia_extractors_library *lib, long extractor_idx, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_timeunit to)
 {
     for (long i = 0; i < vec.size(); i++)
