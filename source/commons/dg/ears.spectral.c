@@ -146,7 +146,7 @@ long optimize_windowsize(long n)
 }
 
 
-t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double stretchfactor, long winsize_samps, char spectral)
+t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double stretchfactor, long framesize_samps, char spectral)
 {
     
     if (!source || !dest)
@@ -175,11 +175,11 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
         }
 
         // make sure that windowsize is even and larger than 16
-        if (winsize_samps<16)
-            winsize_samps=16;
-        winsize_samps=optimize_windowsize(winsize_samps);
-        winsize_samps=(long)(winsize_samps/2)*2;
-        long half_winsize_samps=(long)(winsize_samps/2);
+        if (framesize_samps<16)
+            framesize_samps=16;
+        framesize_samps=optimize_windowsize(framesize_samps);
+        framesize_samps=(long)(framesize_samps/2)*2;
+        long half_framesize_samps=(long)(framesize_samps/2);
         
         // correct the end of the smp by adding a little fade out
         long end_size = MAX(16, (long)(sr*0.05));
@@ -189,9 +189,9 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
         
         // compute the displacement inside the input file
         double start_pos = 0.;
-        double displace_pos = (winsize_samps*0.5)/stretchfactor;
+        double displace_pos = (framesize_samps*0.5)/stretchfactor;
         
-        t_atom_long outframecount = ((long)(ceil(framecount/displace_pos)-1))* half_winsize_samps + winsize_samps;
+        t_atom_long outframecount = ((long)(ceil(framecount/displace_pos)-1))* half_framesize_samps + framesize_samps;
         
         if (source == dest) { // inplace operation!
             ears_buffer_set_size(ob, source, outframecount);
@@ -201,10 +201,10 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
         }
         
         // create window function
-        float *window = (float *)bach_newptr(winsize_samps * sizeof(float));
-        for (long i = 0; i < winsize_samps; i++)                                // this window is not in the original paulstretch algorithm
-            window[i] = sqrt(0.5 * (1 - cos(TWOPI * i / (winsize_samps - 1)))); // square root of hann should ensure perfect reconstruction
-//            window[i] = pow(1 - pow(rescale(i, 0, winsize_samps - 1, -1., 1.), 2.), 1.25); // < this was the previously used window
+        float *window = (float *)bach_newptr(framesize_samps * sizeof(float));
+        for (long i = 0; i < framesize_samps; i++)                                // this window is not in the original paulstretch algorithm
+            window[i] = sqrt(0.5 * (1 - cos(TWOPI * i / (framesize_samps - 1)))); // square root of hann should ensure perfect reconstruction
+//            window[i] = pow(1 - pow(rescale(i, 0, framesize_samps - 1, -1., 1.), 2.), 1.25); // < this was the previously used window
         
         float *dest_sample = buffer_locksamples(dest);
         
@@ -213,9 +213,9 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             // fft buffers
-            long nfft = winsize_samps;
-            kiss_fft_cpx *fin = (kiss_fft_cpx *)bach_newptrclear(winsize_samps * sizeof(kiss_fft_cpx));
-            kiss_fft_cpx *fout = (kiss_fft_cpx *)bach_newptr(winsize_samps * sizeof(kiss_fft_cpx));
+            long nfft = framesize_samps;
+            kiss_fft_cpx *fin = (kiss_fft_cpx *)bach_newptrclear(framesize_samps * sizeof(kiss_fft_cpx));
+            kiss_fft_cpx *fout = (kiss_fft_cpx *)bach_newptr(framesize_samps * sizeof(kiss_fft_cpx));
             kiss_fft_cfg cfg = kiss_fft_alloc(nfft, false, NULL, NULL);
             kiss_fft_cfg cfginv = kiss_fft_alloc(nfft, true, NULL, NULL);
 
@@ -229,7 +229,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
                 // get the windowed buffer
                 long istart_pos=(long)(floor(start_pos));
                 for (long c = 0; c < channelcount; c++) {
-                    for (long i = 0; i < winsize_samps; i++)
+                    for (long i = 0; i < framesize_samps; i++)
                         fin[i].r = (istart_pos+i >= framecount ? 0. : orig_sample_wk[(istart_pos+i)*channelcount + c]) * window[i];
                     
                     if (spectral) {
@@ -237,20 +237,20 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
                         bach_fft_kiss(cfg, nfft, false, fin, fout);
                         
                         // randomizing the phase
-                        for (long i = 0; i < winsize_samps; i++)
+                        for (long i = 0; i < framesize_samps; i++)
                             fout[i] = polar_to_cpx(get_cpx_ampli(fout[i]), random_double_in_range(0., TWOPI));
                         
                         // performing inverse FFT
                         bach_fft_kiss(cfginv, nfft, true, fout, fin);
                         
                         // applying window again
-                        for (long i = 0; i < winsize_samps; i++)
+                        for (long i = 0; i < framesize_samps; i++)
                             fin[i].r *= window[i];
                     }
                     
                     // then overlap-adding the window
-                    for (long i = 0; i < winsize_samps; i++)
-                        dest_sample[(i + (n * half_winsize_samps)) * channelcount + c] += fin[i].r;
+                    for (long i = 0; i < framesize_samps; i++)
+                        dest_sample[(i + (n * half_framesize_samps)) * channelcount + c] += fin[i].r;
                 }
                 
                 start_pos += displace_pos;
@@ -277,7 +277,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
 
 
 
-t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *stretchenv, long winsize_samps, char spectral, e_slope_mapping slopemapping, e_ears_timeunit factor_timeunit)
+t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *stretchenv, long framesize_samps, char spectral, e_slope_mapping slopemapping, e_ears_timeunit factor_timeunit)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -299,11 +299,11 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
         buffer_unlocksamples(source);
         
         //  make sure that windowsize is even and larger than 16
-        if (winsize_samps<16)
-            winsize_samps=16;
-        winsize_samps=optimize_windowsize(winsize_samps);
-        winsize_samps=(long)(winsize_samps/2)*2;
-        long half_winsize_samps=(long)(winsize_samps/2);
+        if (framesize_samps<16)
+            framesize_samps=16;
+        framesize_samps=optimize_windowsize(framesize_samps);
+        framesize_samps=(long)(framesize_samps/2)*2;
+        long half_framesize_samps=(long)(framesize_samps/2);
         
         // correct the end of the smp by adding a little fade out
         long end_size = MAX(16, (long)(sr*0.05));
@@ -316,9 +316,9 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
         long n = 0;
         double start_pos = 0.;
         char have_warned = false;
-        t_atom_long outframecount = half_winsize_samps;
+        t_atom_long outframecount = half_framesize_samps;
         while (true) {
-            outframecount += half_winsize_samps;
+            outframecount += half_framesize_samps;
 
             double stretchfactor = ears_convert_timeunit(ears_envelope_iterator_walk_interp(&eei, start_pos, framecount), source, factor_timeunit, EARS_TIMEUNIT_DURATION_RATIO);
             // checking stretch factor
@@ -329,7 +329,7 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                     have_warned = true;
                 }
             }
-            start_pos += (winsize_samps*0.5)/stretchfactor;
+            start_pos += (framesize_samps*0.5)/stretchfactor;
             n++;
             if (start_pos >= framecount)
                 break;
@@ -346,9 +346,9 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
         }
         
         // create window function
-        float *window = (float *)bach_newptr(winsize_samps * sizeof(float));
-        for (long i = 0; i < winsize_samps; i++)
-            window[i] = pow(1 - pow(rescale(i, 0, winsize_samps - 1, -1., 1.), 2.), 1.25);
+        float *window = (float *)bach_newptr(framesize_samps * sizeof(float));
+        for (long i = 0; i < framesize_samps; i++)
+            window[i] = pow(1 - pow(rescale(i, 0, framesize_samps - 1, -1., 1.), 2.), 1.25);
         
         float *dest_sample = buffer_locksamples(dest);
         
@@ -357,9 +357,9 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             // fft buffers
-            long nfft = winsize_samps;
-            kiss_fft_cpx *fin = (kiss_fft_cpx *)bach_newptrclear(winsize_samps * sizeof(kiss_fft_cpx));
-            kiss_fft_cpx *fout = (kiss_fft_cpx *)bach_newptr(winsize_samps * sizeof(kiss_fft_cpx));
+            long nfft = framesize_samps;
+            kiss_fft_cpx *fin = (kiss_fft_cpx *)bach_newptrclear(framesize_samps * sizeof(kiss_fft_cpx));
+            kiss_fft_cpx *fout = (kiss_fft_cpx *)bach_newptr(framesize_samps * sizeof(kiss_fft_cpx));
             kiss_fft_cfg cfg = kiss_fft_alloc(nfft, false, NULL, NULL);
             kiss_fft_cfg cfginv = kiss_fft_alloc(nfft, true, NULL, NULL);
             
@@ -373,7 +373,7 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                 // get the windowed buffer
                 long istart_pos=(long)(floor(start_pos));
                 for (long c = 0; c < channelcount; c++) {
-                    for (long i = 0; i < winsize_samps; i++)
+                    for (long i = 0; i < framesize_samps; i++)
                         fin[i].r = (istart_pos+i >= framecount ? 0. : orig_sample_wk[(istart_pos+i)*channelcount + c]) * window[i];
                     
                     if (spectral) {
@@ -381,20 +381,20 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                         bach_fft_kiss(cfg, nfft, false, fin, fout);
                         
                         // randomizing the phase
-                        for (long i = 0; i < winsize_samps; i++)
+                        for (long i = 0; i < framesize_samps; i++)
                             fout[i] = polar_to_cpx(get_cpx_ampli(fout[i]), random_double_in_range(0., TWOPI));
                         
                         // performing inverse FFT
                         bach_fft_kiss(cfginv, nfft, true, fout, fin);
                         
                         // applying window again
-                        for (long i = 0; i < winsize_samps; i++)
+                        for (long i = 0; i < framesize_samps; i++)
                             fin[i].r *= window[i];
                     }
                     
                     // then overlap-adding the window
-                    for (long i = 0; i < winsize_samps; i++)
-                        dest_sample[(i + (n * half_winsize_samps)) * channelcount + c] += fin[i].r;
+                    for (long i = 0; i < framesize_samps; i++)
+                        dest_sample[(i + (n * half_framesize_samps)) * channelcount + c] += fin[i].r;
                 }
                 
                 double stretchfactor = ears_convert_timeunit(ears_envelope_iterator_walk_interp(&eei, start_pos, framecount), source, factor_timeunit, EARS_TIMEUNIT_DURATION_RATIO);
@@ -402,7 +402,7 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                 
                 if (stretchfactor < PAULSTRETCH_MIN_STRETCH_FACTOR)
                     stretchfactor = PAULSTRETCH_MIN_STRETCH_FACTOR;
-                start_pos += (winsize_samps*0.5)/stretchfactor;
+                start_pos += (framesize_samps*0.5)/stretchfactor;
                 n++;
                 if (start_pos >= framecount)
                     break;

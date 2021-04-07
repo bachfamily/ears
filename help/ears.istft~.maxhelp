@@ -448,7 +448,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 784.0, 498.0 ],
+						"rect" : [ 39.0, 105.0, 784.0, 498.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -578,7 +578,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "earsBufResynth",
-									"chanoffset" : 0,
 									"id" : "obj-9",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -607,7 +606,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 270.0, 432.0, 23.0 ],
+									"patching_rect" : [ 15.0, 270.0, 183.0, 23.0 ],
 									"text" : "ears.istft~ earsBufResynth"
 								}
 
@@ -659,8 +658,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 15.0, 194.0, 432.0, 23.0 ],
-									"text" : "ears.stft~ @winsize 2048 @hopsize 1024 @timeunit samps @downmix 0"
+									"patching_rect" : [ 15.0, 194.0, 183.0, 23.0 ],
+									"text" : "ears.stft~ @downmix 0"
 								}
 
 							}
@@ -870,7 +869,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 39.0, 105.0, 784.0, 498.0 ],
+						"rect" : [ 0.0, 26.0, 784.0, 498.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

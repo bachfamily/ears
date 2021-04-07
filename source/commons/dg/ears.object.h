@@ -174,11 +174,14 @@ typedef struct _earsbufobj
     long                    l_resamplingfilterwidth;
     
     // analysis
-    double                  a_winsize;
+    double                  a_framesize;
     double                  a_hopsize;
     t_atom                  a_numframes;
     double                  a_overlap;
     t_symbol                *a_wintype;
+    char                    a_winnorm; //< if set, window is normalized to have area of 1 and then scaled by a factor of 2
+    long                    a_zeropadding;
+    char                    a_zerophase;
     char                    a_lastframetoendoffile;
     char                    a_winstartfromzero;
     
@@ -231,12 +234,15 @@ void earsbufobj_class_add_frequnit_attr(t_class *c);
 void earsbufobj_class_add_angleunit_attr(t_class *c);
 void earsbufobj_class_add_naming_attr(t_class *c);
 void earsbufobj_class_add_slopemapping_attr(t_class *c);
-void earsbufobj_class_add_winsize_attr(t_class *c);
+void earsbufobj_class_add_framesize_attr(t_class *c);
 void earsbufobj_class_add_hopsize_attr(t_class *c);
 void earsbufobj_class_add_numframes_attr(t_class *c);
 void earsbufobj_class_add_overlap_attr(t_class *c);
 void earsbufobj_class_add_wintype_attr(t_class *c);
 void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
+void earsbufobj_class_add_winnormalized_attr(t_class *c);
+void earsbufobj_class_add_zerophase_attr(t_class *c);
+void earsbufobj_class_add_zeropadding_attr(t_class *c);
 
 void earsbufobj_class_add_resamplingpolicy_attr(t_class *c);
 void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c);

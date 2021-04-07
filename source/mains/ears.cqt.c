@@ -118,7 +118,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_angleunit_attr(c);
     earsbufobj_class_add_pitchunit_attr(c);
 
-    earsbufobj_class_add_winsize_attr(c);
+    earsbufobj_class_add_framesize_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
@@ -248,12 +248,12 @@ t_ears_essentia_analysis_params buf_cqt_get_params(t_buf_cqt *x, t_buffer_obj *b
 {
     t_ears_essentia_analysis_params params = earsbufobj_get_essentia_analysis_params((t_earsbufobj *)x, buf);
     
-    params.binsPerOctave = x->a_binsPerOctave;
-    params.minFrequency = ears_cents_to_hz(earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->a_minPitch), EARS_MIDDLE_A_TUNING);
-    params.numberBins = x->a_numberBins;
-    params.threshold = x->a_threshold;
-    params.minimumKernelSize = x->a_minimumKernelSize;
-    params.scale = x->a_scale;
+    params.CQT_binsPerOctave = x->a_binsPerOctave;
+    params.CQT_minFrequency = ears_cents_to_hz(earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->a_minPitch), EARS_MIDDLE_A_TUNING);
+    params.CQT_numberBins = x->a_numberBins;
+    params.CQT_threshold = x->a_threshold;
+    params.CQT_minimumKernelSize = x->a_minimumKernelSize;
+    params.CQT_scale = x->a_scale;
     return params;
 }
 

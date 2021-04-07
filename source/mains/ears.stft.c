@@ -109,7 +109,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
 
-    earsbufobj_class_add_winsize_attr(c);
+    earsbufobj_class_add_framesize_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);

@@ -205,3 +205,84 @@ CLASS_ATTR_STYLE_LABEL(c,"resamplingfiltersize",0,"text","Resampling Filter Size
 CLASS_ATTR_CATEGORY(c, "resamplingfiltersize", 0, "Resampling");
 // @description Sets the resampling filter size.
 
+
+
+#define earsbufobj_class_add_slopemapping_attr
+CLASS_ATTR_CHAR(c,"slopemapping",0, t_earsbufobj, l_slopemapping);
+CLASS_ATTR_STYLE_LABEL(c,"slopemapping",0,"enumindex","Slope Mapping");
+CLASS_ATTR_ENUMINDEX(c,"slopemapping", 0, "bach Max");
+// @description Sets the function to be used for slope mapping: either bach (default) or Max.
+
+
+
+
+#define earsbufobj_class_add_framesize_attr
+CLASS_ATTR_DOUBLE(c, "framesize", 0, t_earsbufobj, a_framesize);
+CLASS_ATTR_STYLE_LABEL(c,"framesize",0,"text","Frame Size");
+CLASS_ATTR_BASIC(c, "framesize", 0);
+CLASS_ATTR_CATEGORY(c, "framesize", 0, "Analysis");
+// @description Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
+
+#define earsbufobj_class_add_hopsize_attr
+CLASS_ATTR_DOUBLE(c, "hopsize", 0, t_earsbufobj, a_hopsize);
+CLASS_ATTR_STYLE_LABEL(c,"hopsize",0,"text","Hop Size");
+CLASS_ATTR_BASIC(c, "hopsize", 0);
+CLASS_ATTR_CATEGORY(c, "hopsize", 0, "Analysis");
+// @description Sets the analysis hop size (the unit depends on the <m>antimeunit</m> attribute)
+// Floating point values are allowed.
+
+
+#define earsbufobj_class_add_overlap_attr
+CLASS_ATTR_DOUBLE(c, "overlap", 0, t_earsbufobj, a_overlap);
+CLASS_ATTR_STYLE_LABEL(c,"overlap",0,"text","Overlap");
+CLASS_ATTR_ACCESSORS(c, "overlap", NULL, earsbufobj_setattr_overlap);
+CLASS_ATTR_CATEGORY(c, "overlap", 0, "Analysis");
+// @description Sets the overlap factor between the analysis window size and the hop size.
+
+
+#define earsbufobj_class_add_numframes_attr
+CLASS_ATTR_ATOM(c, "numframes", 0, t_earsbufobj, a_numframes);
+CLASS_ATTR_STYLE_LABEL(c,"numframes",0,"text","Number of Analysis Frames");
+CLASS_ATTR_ACCESSORS(c, "numframes", NULL, earsbufobj_setattr_numframes);
+CLASS_ATTR_CATEGORY(c, "numframes", 0, "Analysis");
+// @description Sets the number of analysis frames. Defaults to "auto", as this number is a consequence of the
+// <m>framesize</m> and <m>hopsize</m> attributes. If this number is set to a positive integer value, the <m>hopsize</m>
+// is ignored and inferred from <m>numframes</m>.
+
+
+#define earsbufobj_class_add_wintype_attr
+CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
+CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+CLASS_ATTR_ENUM(c,"wintype", 0, "hamming hann hannnsgcq triangular square blackmanharris62 blackmanharris70 blackmanharris74 blackmanharris92");
+CLASS_ATTR_BASIC(c, "wintype", 0);
+CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+// @description Sets the window type.
+// Available windows are the ones allowed by the Essentia library:
+// "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
+
+
+#define earsbufobj_class_add_winnormalized_attr
+CLASS_ATTR_CHAR(c, "winnormalized", 0, t_earsbufobj, a_winnorm);
+CLASS_ATTR_STYLE_LABEL(c,"winnormalized",0,"onoff","Windows Are Normalized");
+CLASS_ATTR_CATEGORY(c, "winnormalized", 0, "Analysis");
+// @description Toggles the ability for windows to be normalized to have an area of 1 and then scaled by a factor of 2.
+
+#define earsbufobj_class_add_zeropadding_attr
+CLASS_ATTR_LONG(c, "zeropadding", 0, t_earsbufobj, a_zeropadding);
+CLASS_ATTR_STYLE_LABEL(c,"zeropadding",0,"text","Zero Padding Amount");
+CLASS_ATTR_CATEGORY(c, "zeropadding", 0, "Analysis");
+// @description Sets the number of samples for zero padding.
+
+#define earsbufobj_class_add_zerophase_attr
+CLASS_ATTR_LONG(c, "zerophase", 0, t_earsbufobj, a_zerophase);
+CLASS_ATTR_STYLE_LABEL(c,"zerophase",0,"onoff","Zero Phase Windowing");
+CLASS_ATTR_CATEGORY(c, "zerophase", 0, "Analysis");
+// @description Toggles zero-phase windowing.
+
+
+#define earsbufobj_class_add_winstartfromzero_attr
+CLASS_ATTR_CHAR(c, "winstartfromzero", 0, t_earsbufobj, a_winstartfromzero);
+CLASS_ATTR_STYLE_LABEL(c,"winstartfromzero",0,"onoff","First Window Starts At Zero");
+CLASS_ATTR_CATEGORY(c, "winstartfromzero", 0, "Analysis");
+// @description If on, the first window is centered at framesize/2; if off (default), the first window is centered at zero.
+

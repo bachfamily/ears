@@ -67,8 +67,27 @@ typedef struct _buf_specshow {
     double      n_maxvalue;
     long        n_maxnumbins;
     
-    double      n_display_start;
-    double      n_display_end;
+    // attributes
+    double      n_display_start_ms;
+    double      n_display_end_ms;
+    
+    // actual values
+    double      n_actual_display_start_ms;
+    double      n_actual_display_end_ms;
+
+    // specdata
+    double      n_bin_offset;
+    double      n_bin_step;
+    long        n_num_bins;
+    t_llll      *n_bins;
+    e_ears_frequnit n_bin_unit;
+    t_symbol    *n_type;
+    
+    // grids
+    double      n_grid_time_step_ms;
+    t_jrgba     n_grid_time_color;
+    t_atom      n_grid_freq_step;
+    t_jrgba     n_grid_freq_color;
 
     t_systhread_mutex    n_mutex;
 
@@ -117,7 +136,7 @@ void ext_main(void *r)
     c = class_new("ears.specshow~", (method)buf_specshow_new, (method)buf_specshow_free, sizeof(t_buf_specshow), 0L, A_GIMME, 0);
     
     c->c_flags |= CLASS_FLAG_NEWDICTIONARY;
-    jbox_initclass(c, JBOX_FIXWIDTH | JBOX_COLOR);
+    jbox_initclass(c, JBOX_FIXWIDTH | JBOX_COLOR | JBOX_FONTATTR);
     
     // @method symbol/llll @digest Display spectrogram
     // @description A symbol is considered as a buffer containing a spectrogram, i.e.
@@ -135,37 +154,71 @@ void ext_main(void *r)
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "mincolor", 0, "1. 1. 1. 1.0");
     CLASS_ATTR_STYLE_LABEL(c, "mincolor", 0, "rgba", "Lowest Color");
     CLASS_ATTR_BASIC(c, "mincolor", 0);
+    CLASS_ATTR_CATEGORY(c, "mincolor", 0, "Appearance");
     // @description Sets the color corresponding to the minimum value.
     
     CLASS_ATTR_RGBA(c, "maxcolor", 0, t_buf_specshow, n_maxcolor);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxcolor", 0, "0. 0. 0. 1.0");
     CLASS_ATTR_STYLE_LABEL(c, "maxcolor", 0, "rgba", "Highest Color");
     CLASS_ATTR_BASIC(c, "maxcolor", 0);
+    CLASS_ATTR_CATEGORY(c, "maxcolor", 0, "Appearance");
     // @description Sets the color corresponding to the maximum value.
     
     CLASS_ATTR_DOUBLE(c, "minvalue", 0, t_buf_specshow, n_minvalue);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "minvalue", 0, "0.");
     CLASS_ATTR_STYLE_LABEL(c, "minvalue", 0, "text", "Lowest Value");
     CLASS_ATTR_BASIC(c, "minvalue", 0);
+    CLASS_ATTR_CATEGORY(c, "minvalue", 0, "Appearance");
     // @description Sets the value corresponding to <m>mincolor</m>.
     
     CLASS_ATTR_DOUBLE(c, "maxvalue", 0, t_buf_specshow, n_maxvalue);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxvalue", 0, "1.");
     CLASS_ATTR_STYLE_LABEL(c, "maxvalue", 0, "text", "Highest Value");
     CLASS_ATTR_BASIC(c, "maxvalue", 0);
+    CLASS_ATTR_CATEGORY(c, "maxvalue", 0, "Appearance");
     // @description Sets the value corresponding to <m>maxcolor</m>.
     
     CLASS_ATTR_LONG(c, "maxnumbins", 0, t_buf_specshow, n_maxnumbins);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxnumbins", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "maxnumbins", 0, "text", "Maximum Number Of Bins Displayed");
+    CLASS_ATTR_CATEGORY(c, "maxnumbins", 0, "Appearance");
     // @description Sets the maximum number of bins displayed (leave 0 for all).
 
     CLASS_ATTR_LONG(c, "autoscale", 0, t_buf_specshow, n_autoscale);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscale", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "autoscale", 0, "onoff", "Automatically Rescale Range");
+    CLASS_ATTR_CATEGORY(c, "autoscale", 0, "Settings");
     // @description Toggles the ability to obtain <m>minvalue</m> and <m>maxvalue</m> automatically
     // from the minimum and maximum values in the input buffer.
 
+    
+    CLASS_ATTR_RGBA(c, "timegridcolor", 0, t_buf_specshow, n_grid_time_color);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timegridcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
+    CLASS_ATTR_STYLE_LABEL(c, "timegridcolor", 0, "rgba", "Time Grid Color");
+    CLASS_ATTR_CATEGORY(c, "timegridcolor", 0, "Grid");
+    // @description Sets the color of the time grid
+    
+    CLASS_ATTR_DOUBLE(c, "timegrid", 0, t_buf_specshow, n_grid_time_step_ms);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timegrid", 0, "1000.");
+    CLASS_ATTR_STYLE_LABEL(c, "timegrid", 0, "text", "Time Grid Step");
+    CLASS_ATTR_CATEGORY(c, "timegrid", 0, "Grid");
+    // @description Sets the time grid step in milliseconds; use 0 to turn grid off.
+
+    CLASS_ATTR_RGBA(c, "freqgridcolor", 0, t_buf_specshow, n_grid_freq_color);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqgridcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
+    CLASS_ATTR_STYLE_LABEL(c, "freqgridcolor", 0, "rgba", "Frequency Grid Color");
+    CLASS_ATTR_CATEGORY(c, "freqgridcolor", 0, "Grid");
+    // @description Sets the color of the vertical grid.
+    
+    CLASS_ATTR_ATOM(c, "freqgrid", 0, t_buf_specshow, n_grid_freq_step);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqgrid", 0, "auto");
+    CLASS_ATTR_STYLE_LABEL(c, "freqgrid", 0, "text", "Frequency Grid Step");
+    CLASS_ATTR_CATEGORY(c, "freqgrid", 0, "Grid");
+    // @description Sets the vertical grid step, in the unit obtained by the
+    // incoming spectral buffer. Use 0 to turn grid off. Use "auto"
+    // to infer from incoming data
+
+    
     CLASS_ATTR_DEFAULT(c,"patching_rect",0, "0. 0. 256. 128.");
     
     class_register(CLASS_BOX, c);
@@ -210,14 +263,16 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
     if (x) {
         x->n_surface = NULL;
         x->n_last_buffer = NULL;
-        x->n_display_start = 0;
-        x->n_display_end = -1;
+        x->n_display_start_ms = 0;
+        x->n_display_end_ms = -1;
         x->n_autoscale = 0;
         
         x->n_mincolor = get_grey(1.);
         x->n_maxcolor = get_grey(0.);
         x->n_minvalue = 0.;
         x->n_maxvalue = 0.1;
+        
+        x->n_bins = llll_get();
         
         boxflags = 0
         | JBOX_DRAWFIRSTIN
@@ -241,6 +296,7 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_obj.b_firstin = (t_object *)x;
         x->n_proxy2 = proxy_new(x, 2, &x->n_proxy_inletnum);
         x->n_proxy1 = proxy_new(x, 1, &x->n_proxy_inletnum);
+        jbox_set_fontsize((t_object *)x, 10);
         attr_dictionary_process(x,d);
         jbox_ready((t_jbox *)x);
     }
@@ -250,6 +306,7 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
 void buf_specshow_free(t_buf_specshow *x)
 {
     systhread_mutex_free_debug(x->n_mutex);
+    llll_free(x->n_bins);
     if (x->n_surface)
         jgraphics_surface_destroy(x->n_surface);
     jbox_free((t_jbox *)x);
@@ -298,12 +355,12 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
             }
         } else if (inlet == 1) { // start display
             if (parsed && parsed->l_head && is_hatom_number(&parsed->l_head->l_hatom)) {
-                x->n_display_start = hatom_getdouble(&parsed->l_head->l_hatom);
+                x->n_display_start_ms = hatom_getdouble(&parsed->l_head->l_hatom);
                 jbox_redraw((t_jbox *)x);
             }
         } else if (inlet == 2) { // end display
             if (parsed && parsed->l_head && is_hatom_number(&parsed->l_head->l_hatom)) {
-                x->n_display_end = hatom_getdouble(&parsed->l_head->l_hatom);
+                x->n_display_end_ms = hatom_getdouble(&parsed->l_head->l_hatom);
                 jbox_redraw((t_jbox *)x);
             }
         }
@@ -326,6 +383,25 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
     x->n_framespersecond = ears_buffer_get_sr((t_object *)x, buf);
     x->n_length_ms = ears_buffer_get_size_ms((t_object *)x, buf);
     
+    bool is_spectral = ears_buffer_is_spectral((t_object *)x, buf);
+    if (is_spectral) {
+        x->n_bin_offset = ears_spectralbuf_get_binoffset((t_object *)x, buf);
+        x->n_bin_step = ears_spectralbuf_get_binsize((t_object *)x, buf);
+        x->n_bin_unit = ears_spectralbuf_get_binunit((t_object *)x, buf);
+        if (x->n_bins)
+            llll_free(x->n_bins);
+        t_llll *bins = ears_spectralbuf_get_bins((t_object *)x, buf);
+        x->n_bins = bins ? llll_clone(bins) : llll_get();
+        x->n_type = ears_spectralbuf_get_spectype((t_object *)x, buf);
+    } else {
+        x->n_bin_offset = 0;
+        x->n_bin_step = 1;
+        x->n_bin_unit = EARS_FREQUNIT_UNKNOWN;
+        llll_clear(x->n_bins);
+    }
+    
+    
+    
     if (x->n_autoscale) {
         double amin, amax;
         if (ears_buffer_get_minmax((t_object *)x, buf, &amin, &amax) == EARS_ERR_NONE) {
@@ -340,6 +416,7 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
     if (x->n_maxnumbins > 0) {
         numbins = MIN(numbins, x->n_maxnumbins);
     }
+    x->n_num_bins = numbins;
     if (x->n_surface)
         jgraphics_surface_destroy(x->n_surface);
     x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, numframes, numbins);
@@ -361,6 +438,36 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
     systhread_mutex_unlock(x->n_mutex);
 }
 
+double onset_to_xpos(t_buf_specshow *x, t_rect *rect, double onset)
+{
+    return rect->width * (onset-x->n_actual_display_start_ms)/(x->n_actual_display_end_ms - x->n_actual_display_start_ms);
+}
+
+double freq_to_ypos(t_buf_specshow *x, t_rect *rect, double freq)
+{
+    return rect->height * (1 - (freq-x->n_bin_offset)/(x->n_num_bins *x->n_bin_step));
+}
+
+const char *get_frequnit_abbr(t_buf_specshow *x)
+{
+    switch (x->n_bin_unit) {
+        case EARS_FREQUNIT_HERTZ:
+            return "Hz";
+            break;
+        case EARS_FREQUNIT_CENTS:
+            return "cents";
+            break;
+        case EARS_FREQUNIT_BPM:
+            return "bpm";
+            break;
+        case EARS_FREQUNIT_MIDI:
+            return "MIDI";
+            break;
+        default:
+            return "";
+            break;
+    }
+}
 void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
 {
     t_rect src, rect;
@@ -378,21 +485,90 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
         t_jrgba white = get_grey(1.);
         paint_rect(g, &fullrect, &white, &white, 0, 0);
         return;
+    }
+
+    systhread_mutex_lock(x->n_mutex);
+    
+    double dstart = x->n_display_start_ms <= 0 ? 0 : x->n_display_start_ms;
+    double dend = x->n_display_end_ms <= 0 ? x->n_length_ms : x->n_display_end_ms;
+    x->n_actual_display_start_ms = dstart;
+    x->n_actual_display_end_ms = dend;
+    
+    src.y = 0;
+    src.height = jgraphics_image_surface_get_height(x->n_surface);
+    if (x->n_display_start_ms <= 0 && x->n_display_end_ms <= 0) {
+        src.x = 0;
+        src.width = jgraphics_image_surface_get_width(x->n_surface);
     } else {
-        src.y = 0;
-        src.height = jgraphics_image_surface_get_height(x->n_surface);
-        if (x->n_display_start <= 0 && x->n_display_end <= 0) {
-            src.x = 0;
-            src.width = jgraphics_image_surface_get_width(x->n_surface);
-        } else {
-            double dstart = x->n_display_start <= 0 ? 0 : x->n_display_start;
-            double dend = x->n_display_end <= 0 ? x->n_length_ms : x->n_display_end;
-            src.x = x->n_framespersecond * dstart * 0.001;
-            src.width = x->n_framespersecond * (dend - dstart) * 0.001;
+        src.x = x->n_framespersecond * dstart * 0.001;
+        src.width = x->n_framespersecond * (dend - dstart) * 0.001;
+    }
+    
+    jgraphics_image_surface_draw(g, x->n_surface, src, fullrect);
+    
+    
+    // paint grids
+    double length = x->n_length_ms;
+    double grid_time_step = x->n_grid_time_step_ms;
+    double grid_freq_step = 0;
+    if (atom_gettype(&x->n_grid_freq_step) == A_SYM) {
+        if (atom_getsym(&x->n_grid_freq_step) == _llllobj_sym_auto) {
+            if (x->n_type == gensym("stft")) {
+                grid_freq_step = 4000;
+            } else if (x->n_type == gensym("cqt")) {
+                grid_freq_step = 1200;
+            }
+        }
+    } else {
+        grid_freq_step = atom_getfloat(&x->n_grid_freq_step);
+    }
+    if (grid_time_step > 0 || grid_freq_step > 0) {
+        t_jfont *jf_text = jfont_create_debug(jbox_get_fontname((t_object *)x)->s_name, (t_jgraphics_font_slant)jbox_get_font_slant((t_object *)x),
+                                              (t_jgraphics_font_weight)jbox_get_font_weight((t_object *)x), jbox_get_fontsize((t_object *)x));
+        t_jrgba grid_time_color = x->n_grid_time_color;
+        t_jrgba grid_freq_color = x->n_grid_freq_color;
+        char text[1024];
+        double text_ends = -1;
+        double tw, th;
+        if (grid_time_step > 0) {
+            for (double o = 0; o < length; o += grid_time_step) {
+                if (o < dstart)
+                    continue;
+                if (o > dend)
+                    break;
+                double h = onset_to_xpos(x, &rect, o);
+                paint_line(g, grid_time_color, h, 0, h, rect.height, 1);
+                if (h > text_ends) {
+                    sprintf(text, " %dms", (int)o);
+                    jfont_text_measure(jf_text, text, &tw, &th);
+                    text_ends = h + tw;
+                    write_text_standard(g, jf_text, grid_time_color, text, h, 0, rect.width, rect.height);
+                }
+            }
         }
 
-        jgraphics_image_surface_draw(g, x->n_surface, src, fullrect);
+        if (grid_freq_step > 0) {
+            double numbins = x->n_num_bins;
+            double offset = x->n_bin_offset;
+            double step = x->n_bin_step;
+            double max = offset + step * numbins;
+            const char *unit = get_frequnit_abbr(x);
+            for (double b = offset; b < max; b += grid_freq_step) {
+                double v = freq_to_ypos(x, &rect, b);
+                paint_line(g, grid_freq_color, 0, v, rect.width, v, 1);
+                if (v > 2 * jbox_get_fontsize((t_object *)x)) {
+                    sprintf(text, " %d%s", (int)b, unit);
+                    jfont_text_measure(jf_text, text, &tw, &th);
+                    write_text_standard(g, jf_text, grid_freq_color, text, 0, v - th, rect.width, rect.height);
+                }
+            }
+        }
+        
+        jfont_destroy_debug(jf_text);
     }
+
+systhread_mutex_unlock(x->n_mutex);
+
 }
 
 

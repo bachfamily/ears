@@ -130,7 +130,7 @@
 									"maxvalue" : -3.14159,
 									"mincolor" : [ 0.0, 0.043137254901961, 0.996078431372549, 1.0 ],
 									"minvalue" : 3.14159,
-									"numinlets" : 1,
+									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 248.5, 309.0, 203.900342844654517, 130.25 ]
 								}
@@ -142,7 +142,7 @@
 									"id" : "obj-7",
 									"maxclass" : "ears.specshow~",
 									"maxvalue" : 0.03,
-									"numinlets" : 1,
+									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 15.0, 309.0, 227.02793296089385, 130.25 ]
 								}
@@ -157,8 +157,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 465.0, 192.0, 266.0, 65.0 ],
-									"text" : "The analysis window size will be inferred from the minfreq and binsperoctave attributes (windows size in samples will be rounded to the next power of two) ",
+									"patching_rect" : [ 465.0, 192.0, 282.0, 65.0 ],
+									"text" : "The analysis frame size (window size) will be inferred from the minfreq and binsperoctave attributes (windows size in samples will be rounded to the next power of two) ",
 									"textcolor" : [ 0.501961, 0.501961, 0.501961, 1.0 ]
 								}
 
@@ -190,7 +190,7 @@
 							}
 , 							{
 								"box" : 								{
-									"attr" : "minfreq",
+									"attr" : "minpitch",
 									"id" : "obj-15",
 									"maxclass" : "attrui",
 									"numinlets" : 1,

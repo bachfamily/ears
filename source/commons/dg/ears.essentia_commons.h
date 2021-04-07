@@ -69,6 +69,14 @@ typedef enum {
     EARS_FEATURE_DANCEABILITY,
     EARS_FEATURE_LOOPBPMESTIMATOR,
     EARS_FEATURE_ONSETDETECTION,
+    EARS_FEATURE_ONSETDETECTIONGLOBAL,
+    EARS_FEATURE_ONSETRATE,
+    EARS_FEATURE_PERCIVALBPMESTIMATOR,
+    EARS_FEATURE_RHYTHMDESCRIPTORS,
+    EARS_FEATURE_RHYTHMEXTRACTOR,
+    EARS_FEATURE_RHYTHMEXTRACTOR2013,
+    EARS_FEATURE_SINGLEBEATLOUDNESS,
+    EARS_FEATURE_SUPERFLUXEXTRACTOR,
     
     //.... to do
     
@@ -119,8 +127,11 @@ typedef enum {
     EARS_FEATURE_TUNINGFREQUENCY,
     
     // FINGERPRINTING
-    EARS_FEATURE_CHROMAPRINTER,
+//    EARS_FEATURE_CHROMAPRINTER,
     
+    // QUALITY
+    EARS_FEATURE_SNR,
+
     // DURATION/SILENCE
     EARS_FEATURE_DURATION,
     EARS_FEATURE_EFFECTIVEDURATION,
@@ -139,10 +150,13 @@ typedef enum {
     EARS_FEATURE_MULTIPITCHKLAPURI,
     EARS_FEATURE_MULTIPITCHMELODIA,
     EARS_FEATURE_PITCHSALIENCEFUNCTION,
+    EARS_FEATURE_PITCHMELODIA,
+    EARS_FEATURE_PREDOMINANTPITCHMELODIA,
     EARS_FEATURE_PITCHYIN,
     EARS_FEATURE_PITCHYINFFT,
     EARS_FEATURE_PITCHYINPROBABILISTIC,
-
+    EARS_FEATURE_PITCHYINPROBABILITIES,
+    EARS_FEATURE_VIBRATO
 } e_ears_feature;
 
 
@@ -157,6 +171,7 @@ typedef enum {
     EARS_ESSENTIA_SUMMARIZATION_LAST,
     EARS_ESSENTIA_SUMMARIZATION_MIDDLE,
     EARS_ESSENTIA_SUMMARIZATION_MEAN,
+    EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES,
     EARS_ESSENTIA_SUMMARIZATION_MODE,
 } e_ears_essentia_summarization;
 
@@ -172,11 +187,13 @@ typedef enum {
     EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO = 0,
     EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME,
     EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMANDPHASE,
     EARS_ESSENTIA_EXTRACTOR_INPUT_ENVELOPE,
     EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMCENTRALMOMENTS,
     EARS_ESSENTIA_EXTRACTOR_INPUT_ENVELOPECENTRALMOMENTS,
     EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS,
     EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKSANDFZERO,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH,
     EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS,
     EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE,
     EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH,
@@ -195,8 +212,21 @@ typedef enum {
     EARS_ESSENTIA_BUFFERINTERPMODE_LINEAR = 2,
 } e_ears_essentia_bufferinterpmode;
 
+
+typedef enum {
+    EARS_ESSENTIA_FRAMEMODE_GLOBAL = 0,             ///< Descriptor operates on whole buffer, but can be set to operate on individual frames
+    EARS_ESSENTIA_FRAMEMODE_FRAMEWISE,              ///< Descriptor operates on individual frames, and is able then to summarize them
+    EARS_ESSENTIA_FRAMEMODE_GLOBALONLY,             ///< Descriptor operates on whole buffer ONLY
+    EARS_ESSENTIA_FRAMEMODE_FRAMEWISEONLY,          ///< Descriptor operates on individual frames ONLY: no summarization possible
+    EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES,  ///< Descriptor operates on whole buffer but returns a vector of individual frames, but can be summarized
+    EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY,  ///< Descriptor operates on whole buffer but returns a vector of individual frames, and CANNOT be summarized
+    EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS,  ///< Descriptor operates on whole buffer but returns a vector of individual frames, and CANNOT be summarized nor converted into a buffer
+    EARS_ESSENTIA_FRAMEMODE_GLOBALNOBUFFERS,        ///< Descriptor operates on whole buffer, can be set to operate on individual frames, but cannot be used to get buffer output
+    EARS_ESSENTIA_FRAMEMODE_FRAMEWISENOBUFFERS,     ///< Descriptor operates on frames, can be set to be summarized but not to be converted into a buffer output
+} e_ears_essentia_framemode;
+
 #define EARS_ESSENTIA_EXTRACTOR_MAX_ARGS 10
-#define EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS 5
+#define EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS 15
 #define EARS_ESSENTIA_EXTRACTOR_MAX_INPUTS 3
 
 typedef struct _ears_essentia_extractor
@@ -208,17 +238,21 @@ typedef struct _ears_essentia_extractor
     const char  *essentia_input_label[EARS_ESSENTIA_EXTRACTOR_MAX_INPUTS];
     e_ears_essentia_extractor_input_type  input_type;
 
+    e_ears_essentia_framemode    framemode;
+    
     // Essentia output
     long        essentia_num_outputs;
     const char  *essentia_output_label[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     char        essentia_output_type[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // essentia type
-    
+
     // Actual extractor output
     long        num_outputs;
     const char  *output_desc[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // actual description used
     char        output_type[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // actual type used when outputting
     int         output_map[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
-    
+    e_ears_essentia_summarization         summarization[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    bool        prevent_flattening[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS][3];
+
     e_ears_essentia_temporalmode          temporalmode;
 
     e_ears_timeunit     essentia_output_timeunit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
@@ -226,10 +260,11 @@ typedef struct _ears_essentia_extractor
     e_ears_frequnit     essentia_output_frequnit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     e_ears_pitchunit     essentia_output_pitchunit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
 
-    e_ears_timeunit     output_timeunit;
-    e_ears_ampunit      output_ampunit;
-    e_ears_frequnit     output_frequnit;
-    e_ears_pitchunit     output_pitchunit;
+    e_ears_timeunit     local_timeunit;
+    e_ears_timeunit     local_antimeunit;
+    e_ears_ampunit      local_ampunit;
+    e_ears_frequnit     local_frequnit;
+    e_ears_pitchunit    local_pitchunit;
 
     bool                        has_spec_metadata;
     t_ears_spectralbuf_metadata specdata;
@@ -247,7 +282,7 @@ typedef struct _ears_essentia_extractors_library
     // fundamental processors
     Algorithm *alg_FrameCutter;
     Algorithm *alg_Windower;
-    Algorithm *alg_Spectrum;
+    Algorithm *alg_FFT;
     Algorithm *alg_Envelope;
     Algorithm *alg_Car2pol;
     Algorithm *alg_SpectrumCentralMoments;
@@ -257,7 +292,7 @@ typedef struct _ears_essentia_extractors_library
     Algorithm *alg_RMS;
     Algorithm *alg_SpectralPeaks;
     Algorithm *alg_HPCP;
-    Algorithm *alg_YinFFT;
+    Algorithm *alg_Pitch; // potentially could be chosen, currently it's YinFFT
 } t_ears_essentia_extractors_library;
 
 
@@ -270,6 +305,7 @@ typedef struct _ears_essentia_analysis_params
     long     duration_samps;
     
     const char  *windowType;
+    bool        windowNormalized;
     bool        startFromZero;
     bool        lastFrameToEndOfFile;
 
@@ -279,12 +315,12 @@ typedef struct _ears_essentia_analysis_params
     bool    envelope_rectify;
     
     // CQT
-    int     binsPerOctave;
-    Real    minFrequency;
-    int     numberBins;
-    Real    threshold;
-    int     minimumKernelSize;
-    Real    scale;
+    int     CQT_binsPerOctave;
+    Real    CQT_minFrequency;
+    int     CQT_numberBins;
+    Real    CQT_threshold;
+    int     CQT_minimumKernelSize;
+    Real    CQT_scale;
     
     // Onset detection
     const char *onsetDetectionMethod;
@@ -335,6 +371,11 @@ void *ears_essentia_quit(t_symbol *s, short argc, t_atom *argv);
 // convert params
 t_ears_essentia_analysis_params earsbufobj_get_essentia_analysis_params(t_earsbufobj *e_ob, t_buffer_obj *buf);
 
+long ears_essentia_get_window(Real *win, const char *type, long framecount, bool normalized, long zeropadding, bool zerophase);
+void ears_essentia_algorithm_get_window(Algorithm* alg_Windower, Real *win, const char *type, long framecount, bool normalized);
+t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type,
+                                             bool normalized, long zeropadding, bool zerophase);
+
 // Spectral processing
 t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit);
 
@@ -345,6 +386,9 @@ t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t
 t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *phases, bool interpolate, int maxPeaks, double minPeakDistance, t_symbol *orderBy, double threshold, e_ears_timeunit timeunit, e_ears_angleunit angleunit, t_ears_err *err);
 
 // Features
+long ears_essentia_feature_to_numouts(e_ears_feature feat);
+e_ears_essentia_framemode ears_essentia_feature_to_framemode(t_object *x, e_ears_feature feat);
+void ears_essentia_feature_to_default_framesizes_and_hopsize(t_object *x, e_ears_feature feat, double *framesize, double *hopsize, e_ears_timeunit *analysis_unit);
 void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *lib);
 t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params);
 t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer_obj *buf, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, long buffer_output_interpolation_mode);

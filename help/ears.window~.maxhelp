@@ -109,13 +109,13 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"id" : "obj-8",
-									"maxclass" : "newobj",
+									"id" : "obj-25",
+									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 362.0, 290.0, 88.0, 23.0 ],
-									"text" : "ears.window~"
+									"patching_rect" : [ 217.0, 208.0, 71.0, 23.0 ],
+									"text" : "wintype $1"
 								}
 
 							}
@@ -127,8 +127,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 209.0, 160.0, 75.0, 23.0 ],
-									"text" : "loadmess 5"
+									"patching_rect" : [ 216.0, 135.5, 75.0, 23.0 ],
+									"text" : "loadmess 1"
 								}
 
 							}
@@ -154,7 +154,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 412.0, 319.0, 87.0, 23.0 ],
+									"patching_rect" : [ 412.0, 311.556961059570312, 87.0, 23.0 ],
 									"text" : "earsBufAnton"
 								}
 
@@ -165,7 +165,7 @@
 									"fontsize" : 13.0,
 									"id" : "obj-17",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 412.0, 351.556961059570312, 175.0, 23.0 ],
@@ -215,7 +215,7 @@
 									"fontsize" : 13.0,
 									"id" : "obj-18",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 412.0, 160.0, 164.0, 23.0 ],
@@ -270,7 +270,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 267.5, 185.5, 74.0, 54.0 ],
+									"patching_rect" : [ 278.5, 161.0, 74.0, 54.0 ],
 									"text" : "Choose window type"
 								}
 
@@ -278,13 +278,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-10",
-									"items" : [ "rect", ",", "tri", ",", "sine", ",", "hann", ",", "hamming", ",", "blackman", ",", "nuttall", ",", "blackmannuttall", ",", "blackmanharris", ",", "gaussian" ],
+									"items" : [ "hamming", ",", "hann", ",", "hannnsgcq", ",", "triangular", ",", "square", ",", "blackmanharris62", ",", "blackmanharris70", ",", "blackmanharris74", ",", "blackmanharris92" ],
 									"maxclass" : "umenu",
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "int", "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 165.5, 201.0, 100.0, 23.0 ]
+									"patching_rect" : [ 176.5, 176.5, 100.0, 23.0 ]
 								}
 
 							}
@@ -308,11 +308,11 @@
 									"fontsize" : 13.0,
 									"id" : "obj-3",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 244.0, 208.0, 23.0 ],
-									"text" : "ears.window~ @wintype blackman"
+									"patching_rect" : [ 17.0, 244.0, 88.0, 23.0 ],
+									"text" : "ears.window~"
 								}
 
 							}
@@ -330,7 +330,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u884001235",
+									"buffername" : "u714000774",
 									"id" : "obj-9",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -461,7 +461,7 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-3", 1 ],
+									"destination" : [ "obj-25", 0 ],
 									"source" : [ "obj-10", 1 ]
 								}
 
@@ -512,6 +512,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-22", 0 ],
 									"source" : [ "obj-21", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"source" : [ "obj-25", 0 ]
 								}
 
 							}

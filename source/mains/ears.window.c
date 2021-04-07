@@ -44,13 +44,12 @@
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
-
+#include "ears.essentia_commons.h"
 
 
 typedef struct _buf_window {
     t_earsbufobj       e_ob;
-    
-    t_symbol           *window_type;
+
 } t_buf_window;
 
 
@@ -76,6 +75,7 @@ EARSBUFOBJ_ADD_IO_METHODS(window)
 
 int C74_EXPORT main(void)
 {
+    ears_essentia_init();
     common_symbols_init();
     llllobj_common_symbols_init();
     
@@ -108,13 +108,11 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
 
     
-    CLASS_ATTR_SYM(c, "wintype", 0, t_buf_window, window_type);
-    CLASS_ATTR_ENUM(c,"wintype", 0, "rect tri sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian");
-    CLASS_ATTR_BASIC(c, "wintype", 0);
-    // @description Sets the window type.
-    // Available windows are: "rect", "tri", "sine", "hann", "hamming", "blackman", "nuttall",
-    // "blackmannuttall", "blackmanharris", "gaussian"
-
+    earsbufobj_class_add_wintype_attr(c);
+    earsbufobj_class_add_winnormalized_attr(c);
+    earsbufobj_class_add_zerophase_attr(c);
+    earsbufobj_class_add_zeropadding_attr(c);
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -124,10 +122,7 @@ int C74_EXPORT main(void)
 void buf_window_assist(t_buf_window *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        if (a == 0)
-            sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
-        else
-            sprintf(s, "symbol/llll: Window Type"); // @in 1 @type symbol/llll @digest Window Type
+        sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
     } else {
         sprintf(s, "symbol/list: Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names
     }
@@ -147,10 +142,13 @@ t_buf_window *buf_window_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_window*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->window_type = gensym("hann");
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
+        x->e_ob.a_winnorm = 0; // by default windows are NOT normalized
+        x->e_ob.a_zeropadding = 0;
+        x->e_ob.a_zerophase = false; // no zerophase by default
+
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -160,7 +158,7 @@ t_buf_window *buf_window_new(t_symbol *s, short argc, t_atom *argv)
         
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4", "E", names);
+        earsbufobj_setup((t_earsbufobj *)x, "E", "E", names);
 
         llll_free(args);
         llll_free(names);
@@ -187,8 +185,8 @@ void buf_window_bang(t_buf_window *x)
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
-//        ears_buffer_clone((t_object *)x, in, out);
-        ears_buffer_apply_window((t_object *)x, in, out, x->window_type);
+//        ears_buffer_apply_window((t_object *)x, in, out, x->window_type);
+        ears_buffer_apply_window_essentia((t_object *)x, in, out, x->e_ob.a_wintype, x->e_ob.a_winnorm, x->e_ob.a_zeropadding, x->e_ob.a_zerophase);
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
@@ -212,12 +210,6 @@ void buf_window_anything(t_buf_window *x, t_symbol *msg, long ac, t_atom *av)
             earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
             
             buf_window_bang(x);
-            
-        } else if (inlet == 1) {
-            earsbufobj_mutex_lock((t_earsbufobj *)x);
-            if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM)
-                x->window_type = hatom_getsym(&parsed->l_head->l_hatom);
-            earsbufobj_mutex_unlock((t_earsbufobj *)x);
         }
     }
     llll_free(parsed);

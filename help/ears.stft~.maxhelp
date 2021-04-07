@@ -365,7 +365,7 @@
 							}
 , 							{
 								"box" : 								{
-									"attr" : "winsize",
+									"attr" : "framesize",
 									"id" : "obj-32",
 									"maxclass" : "attrui",
 									"numinlets" : 1,

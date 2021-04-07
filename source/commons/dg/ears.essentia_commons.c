@@ -35,7 +35,7 @@ t_ears_essentia_analysis_params earsbufobj_get_essentia_analysis_params(t_earsbu
         params.hopsize_samps = (params.duration_samps * 1.) / (atom_getlong(&e_ob->a_numframes) - 1);
         params.framesize_samps = round(params.hopsize_samps * e_ob->a_overlap);
     } else {
-        params.framesize_samps = earsbufobj_time_to_samps(e_ob, e_ob->a_winsize, buf, false, true);
+        params.framesize_samps = earsbufobj_time_to_samps(e_ob, e_ob->a_framesize, buf, false, true);
         params.hopsize_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)e_ob, e_ob->a_hopsize, buf, false, true);
     }
     params.framesize_samps = 2 * (params.framesize_samps / 2);     // ensure framesize is even
@@ -46,6 +46,7 @@ t_ears_essentia_analysis_params earsbufobj_get_essentia_analysis_params(t_earsbu
         object_warn((t_object *)e_ob, "Hop size is smaller than one sample. The number of output frames may differ from what was expected.");
     }
     params.windowType = e_ob->a_wintype->s_name;
+    params.windowNormalized = e_ob->a_winnorm;
     params.lastFrameToEndOfFile = e_ob->a_lastframetoendoffile;
     params.startFromZero = e_ob->a_winstartfromzero;
     return params;
@@ -58,6 +59,112 @@ std::vector<Real> llll_to_vector_real(t_llll *ll)
         res.push_back(hatom_getdouble(&el->l_hatom));
     return res;
 }
+
+
+long ears_essentia_get_window(Real *win, const char *type, long framecount, bool normalized, long zeropadding, bool zerophase)
+{
+    try {
+        // windowing algorithm:
+        essentia::standard::Algorithm* alg_Windower = AlgorithmFactory::create("Windowing",
+                                                                               "zeroPadding", 0,
+                                                                               "size", (int)framecount,
+                                                                               "type", type,
+                                                                               "normalized", normalized,
+                                                                               "zeroPadding", (int)zeropadding,
+                                                                               "zeroPhase", zerophase);
+        std::vector<Real> ones, win_vec;
+        for (long i = 0; i < framecount; i++)
+            ones.push_back(1.);
+        alg_Windower->input("frame").set(ones);
+        alg_Windower->output("frame").set(win_vec);
+        alg_Windower->compute();
+        
+        assert(framecount == win_vec.size());
+        
+        for (long i = 0; i < framecount; i++)
+            win[i] = win_vec[i];
+        return 0;
+    } catch (essentia::EssentiaException e) {
+        error(e.what());
+        return 1; // error
+    }
+}
+
+void ears_essentia_algorithm_get_window(Algorithm* alg_Windower, Real *win, const char *type, long framecount, bool normalized)
+{
+    std::vector<Real> ones, win_vec;
+    for (long i = 0; i < framecount; i++)
+        ones.push_back(1.);
+    alg_Windower->input("frame").set(ones);
+    alg_Windower->output("frame").set(win_vec);
+    alg_Windower->compute();
+    
+    assert(framecount == win_vec.size());
+    
+    for (long i = 0; i < framecount; i++)
+        win_vec[i] = win[i];
+}
+
+// also supports inplace operations
+t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type,
+                                             bool normalized, long zeropadding, bool zerophase)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    if (!window_type)
+        return EARS_ERR_GENERIC;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (source != dest) {
+        ears_buffer_copy_format(ob, source, dest);
+    }
+    
+    float *orig_sample = buffer_locksamples(source);
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        float *win = (float *)bach_newptr(framecount * sizeof(float));
+        if (ears_essentia_get_window(win, window_type->s_name, framecount, normalized, zeropadding, zerophase)) {
+            err = EARS_ERR_GENERIC;
+            object_error((t_object *)ob, "Unknown window type.");
+        }
+        
+        if (source == dest) { // inplace operation!
+            for (long i = 0; i < framecount; i++)
+                for (long c = 0; c < channelcount; c++)
+                    orig_sample[i*channelcount + c] *= win[i];
+            buffer_setdirty(source);
+        } else {
+            ears_buffer_set_size(ob, dest, framecount);
+            float *dest_sample = buffer_locksamples(dest);
+            if (!dest_sample) {
+                err = EARS_ERR_CANT_WRITE;
+                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            } else {
+                for (long i = 0; i < framecount; i++)
+                    for (long c = 0; c < channelcount; c++)
+                        dest_sample[i*channelcount + c] = orig_sample[i*channelcount + c] * win[i];
+            }
+            
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        }
+        
+        bach_freeptr(win);
+        buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
+
+
 
 
 t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit)
@@ -445,15 +552,15 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
 
 t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit)
 {
-    double Q = params->scale / (pow(2, (1/(double)params->binsPerOctave))-1);
-    int framesize_samps = essentia::nextPowerTwo((int)ceil(Q * sr / params->minFrequency));
+    double Q = params->CQT_scale / (pow(2, (1/(double)params->CQT_binsPerOctave))-1);
+    int framesize_samps = essentia::nextPowerTwo((int)ceil(Q * sr / params->CQT_minFrequency));
 
     // we approximate the hopsize to the nearest sample. Otherwise the overlap add gives troubles...
     long hopsize_samps = (long)params->hopsize_samps;
     
     t_ears_err err = EARS_ERR_NONE;
     long outframecount_ceil = ceil(1 + ((samples.size() * 1.) / hopsize_samps));
-    long numbins = params->numberBins;
+    long numbins = params->CQT_numberBins;
     
     double new_sr = sr/(hopsize_samps); // sr of the windowed signal
     ears_buffer_set_sr(ob, dest1, new_sr);
@@ -462,9 +569,9 @@ t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t
     ears_buffer_set_size_and_numchannels(ob, dest2, outframecount_ceil, numbins);
     
     t_ears_spectralbuf_metadata data;
-    t_llll *bins = ears_ezarithmser(ears_hz_to_cents(params->minFrequency, EARS_MIDDLE_A_TUNING), 1200./params->binsPerOctave, numbins);
-    ears_spectralbuf_metadata_fill(&data, sr, 1200./params->binsPerOctave,
-                                   ears_hz_to_cents(params->minFrequency, EARS_MIDDLE_A_TUNING),
+    t_llll *bins = ears_ezarithmser(ears_hz_to_cents(params->CQT_minFrequency, EARS_MIDDLE_A_TUNING), 1200./params->CQT_binsPerOctave, numbins);
+    ears_spectralbuf_metadata_fill(&data, sr, 1200./params->CQT_binsPerOctave,
+                                   ears_hz_to_cents(params->CQT_minFrequency, EARS_MIDDLE_A_TUNING),
                                    EARS_FREQUNIT_CENTS, gensym("cqt"),
                                    bins, false);
     ears_spectralbuf_metadata_set(ob, dest1, &data);
@@ -491,12 +598,12 @@ t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t
                                                                                                "type", params->windowType);
         
         cqt = essentia::standard::AlgorithmFactory::create("ConstantQ",
-                                                                                          "binsPerOctave", params->binsPerOctave,
-                                                                                          "minFrequency", params->minFrequency,
-                                                                                          "minimumKernelSize", params->minimumKernelSize,
-                                                                                          "numberBins", params->numberBins,
+                                                                                          "binsPerOctave", params->CQT_binsPerOctave,
+                                                                                          "minFrequency", params->CQT_minFrequency,
+                                                                                          "minimumKernelSize", params->CQT_minimumKernelSize,
+                                                                                          "numberBins", params->CQT_numberBins,
                                                                                           "sampleRate", sr,
-                                                                                          "threshold", params->threshold,
+                                                                                          "threshold", params->CQT_threshold,
                                                                                           "windowType", params->windowType
                                                                                           );
         
@@ -681,50 +788,82 @@ t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *ph
 }
 
 
-void earsbufobj_essentia_convert_timeunit(t_earsbufobj *e_ob, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_timeunit to)
+void convert_timeunit(t_ears_essentia_extractors_library *lib, long extractor_idx, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_timeunit to)
 {
     for (long i = 0; i < vec.size(); i++)
-        vec[i] = ears_convert_timeunit(vec[i], buf, (e_ears_timeunit)e_ob->l_timeunit, to);
+        vec[i] = ears_convert_timeunit(vec[i], buf, lib->extractors[extractor_idx].local_timeunit, to);
 }
 
-void earsbufobj_essentia_convert_timeunit(t_earsbufobj *e_ob, double &val, t_buffer_obj *buf, e_ears_timeunit to)
+void convert_timeunit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_timeunit to)
 {
-    val = ears_convert_timeunit(val, buf, (e_ears_timeunit)e_ob->l_timeunit, to);
+    val = ears_convert_timeunit(val, buf, lib->extractors[extractor_idx].local_timeunit, to);
 }
 
-void earsbufobj_essentia_convert_antimeunit(t_earsbufobj *e_ob, double &val, t_buffer_obj *buf, e_ears_timeunit to)
+
+double convert_timeunit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_timeunit u)
 {
-    val = ears_convert_timeunit(val, buf, (e_ears_timeunit)e_ob->l_antimeunit, to);
+    return ears_convert_timeunit(val, buf, u, lib->extractors[extractor_idx].local_timeunit);
+}
+
+void convert_antimeunit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_timeunit to)
+{
+    val = ears_convert_timeunit(val, buf, lib->extractors[extractor_idx].local_antimeunit, to);
+}
+
+double convert_antimeunit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_timeunit u)
+{
+    return ears_convert_timeunit(val, buf, u, lib->extractors[extractor_idx].local_antimeunit);
 }
 
 
-void earsbufobj_essentia_convert_frequnit(t_earsbufobj *e_ob, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_frequnit to)
+void convert_frequnit(t_ears_essentia_extractors_library *lib, long extractor_idx, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_frequnit to)
 {
     for (long i = 0; i < vec.size(); i++)
-        vec[i] = ears_convert_frequnit(vec[i], buf, (e_ears_frequnit)e_ob->l_frequnit, to);
+        vec[i] = ears_convert_frequnit(vec[i], buf, lib->extractors[extractor_idx].local_frequnit, to);
 }
 
-void earsbufobj_essentia_convert_frequnit(t_earsbufobj *e_ob, double &val, t_buffer_obj *buf, e_ears_frequnit to)
+void convert_frequnit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_frequnit to)
 {
-    val = ears_convert_frequnit(val, buf, (e_ears_frequnit)e_ob->l_frequnit, to);
+    val = ears_convert_frequnit(val, buf, lib->extractors[extractor_idx].local_frequnit, to);
 }
 
-void earsbufobj_essentia_convert_ampunit(t_earsbufobj *e_ob, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_ampunit to)
+double convert_frequnit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_frequnit u)
+{
+    return ears_convert_frequnit(val, buf, u, lib->extractors[extractor_idx].local_frequnit);
+}
+
+void convert_ampunit(t_ears_essentia_extractors_library *lib, long extractor_idx, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_ampunit to)
 {
     for (long i = 0; i < vec.size(); i++)
-        vec[i] = ears_convert_ampunit(vec[i], buf, (e_ears_ampunit)e_ob->l_ampunit, to);
+        vec[i] = ears_convert_ampunit(vec[i], buf, lib->extractors[extractor_idx].local_ampunit, to);
 }
 
-void earsbufobj_essentia_convert_ampunit(t_earsbufobj *e_ob, double &val, t_buffer_obj *buf, e_ears_ampunit to)
+void convert_ampunit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_ampunit to)
 {
-    val = ears_convert_ampunit(val, buf, (e_ears_ampunit)e_ob->l_ampunit, to);
+    val = ears_convert_ampunit(val, buf, lib->extractors[extractor_idx].local_ampunit, to);
 }
 
-
-void earsbufobj_essentia_convert_pitchunit(t_earsbufobj *e_ob, double &val, t_buffer_obj *buf, e_ears_pitchunit to)
+double convert_ampunit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_ampunit u)
 {
-    val = ears_convert_pitchunit(val, buf, (e_ears_pitchunit)e_ob->l_pitchunit, to);
+    return ears_convert_ampunit(val, buf, u, lib->extractors[extractor_idx].local_ampunit);
 }
+
+
+void convert_pitchunit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_pitchunit to)
+{
+    val = ears_convert_pitchunit(val, buf, lib->extractors[extractor_idx].local_pitchunit, to);
+}
+
+double convert_pitchunit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_pitchunit u)
+{
+    return ears_convert_pitchunit(val, buf, u, lib->extractors[extractor_idx].local_pitchunit);
+}
+
+#define eCaTI(x,u) convert_antimeunit_input(lib,i,x,NULL,u)
+#define eCAI(x,u) convert_ampunit_input(lib,i,x,NULL,u)
+#define eCTI(x,u) convert_timeunit_input(lib,i,x,NULL,u)
+#define eCPI(x,u) convert_pitchunit_input(lib,i,x,NULL,u)
+#define eCFI(x,u) convert_frequnit_input(lib,i,x,NULL,u)
 
 void set_input(t_ears_essentia_extractors_library *lib, long extractor_idx, e_ears_essentia_extractor_input_type type, const char *label)
 {
@@ -832,9 +971,10 @@ const char *get_threshold_desc(long i)
         case 8: return "threshold_8";
         case 9: return "threshold_9";
         case 10: return "threshold_10";
-        default: "threshold_0";
+        default: return "threshold_0";
     }
 }
+
 
 t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params)
 {
@@ -854,11 +994,12 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
         lib->alg_Windower = AlgorithmFactory::create("Windowing",
                                                      "zeroPadding", 0,
                                                      "size", params->framesize_samps,
-                                                     "type", params->windowType);
+                                                     "type", params->windowType,
+                                                     "normalized", (bool)params->windowNormalized);
         
         // fft magnitude algorithm:
-        lib->alg_Spectrum = AlgorithmFactory::create("Spectrum",
-                                                     "size", params->framesize_samps);
+        lib->alg_FFT = AlgorithmFactory::create("FFT",
+                                                "size", params->framesize_samps);
         
         // envelope algorithm:
         lib->alg_Envelope = AlgorithmFactory::create("Envelope",
@@ -878,7 +1019,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
 
         lib->alg_Loudness = AlgorithmFactory::create("Loudness");
         
-        lib->alg_EqualLoudness = ((sr == 8000 || sr == 32000 || sr == 44100 || sr == 48000) ? AlgorithmFactory::create("Loudness", "sampleRate", sr) : NULL);
+        lib->alg_EqualLoudness = ((sr == 8000 || sr == 32000 || sr == 44100 || sr == 48000) ? AlgorithmFactory::create("EqualLoudness", "sampleRate", sr) : NULL);
 
 
         lib->alg_RMS = AlgorithmFactory::create("RMS");
@@ -910,8 +1051,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                    "windowSize", params->HPCP_windowSize);
         
 
-        // Pitch YINFFT
-        lib->alg_YinFFT = AlgorithmFactory::create("PitchYinFFT",
+        // Pitch Algorithm
+        lib->alg_Pitch = AlgorithmFactory::create("PitchYinFFT",
                                                  "frameSize", params->framesize_samps,
                                                  "interpolate", true,
                                                  "maxFrequency", params->YIN_maxFrequency,
@@ -926,15 +1067,20 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
             lib->extractors[i].feature = (e_ears_feature)features[i];
             lib->extractors[i].temporalmode = (e_ears_essentia_temporalmode)temporalmodes[i];
             for (long o = 0; o < EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS; o++) {
+                lib->extractors[i].prevent_flattening[o][0] = false;
+                lib->extractors[i].prevent_flattening[o][1] = false;
+                lib->extractors[i].prevent_flattening[o][2] = false;
+                lib->extractors[i].summarization[o] = params->summarization;
                 lib->extractors[i].essentia_output_timeunit[o] = EARS_TIMEUNIT_UNKNOWN;
                 lib->extractors[i].essentia_output_ampunit[o] = EARS_AMPUNIT_UNKNOWN;
                 lib->extractors[i].essentia_output_frequnit[o] = EARS_FREQUNIT_UNKNOWN;
                 lib->extractors[i].essentia_output_pitchunit[o] = EARS_PITCHUNIT_UNKNOWN;
             }
-            lib->extractors[i].output_timeunit = (e_ears_timeunit)e_ob->l_timeunit;
-            lib->extractors[i].output_ampunit = (e_ears_ampunit)e_ob->l_ampunit;
-            lib->extractors[i].output_frequnit = (e_ears_frequnit)e_ob->l_frequnit;
-            lib->extractors[i].output_pitchunit = (e_ears_pitchunit)e_ob->l_pitchunit;
+            lib->extractors[i].local_timeunit = (e_ears_timeunit)e_ob->l_timeunit;
+            lib->extractors[i].local_antimeunit = (e_ears_timeunit)e_ob->l_antimeunit;
+            lib->extractors[i].local_ampunit = (e_ears_ampunit)e_ob->l_ampunit;
+            lib->extractors[i].local_frequnit = (e_ears_frequnit)e_ob->l_frequnit;
+            lib->extractors[i].local_pitchunit = (e_ears_pitchunit)e_ob->l_pitchunit;
             lib->extractors[i].has_spec_metadata = false;
             lib->extractors[i].specdata.original_audio_signal_sr = 0;
             lib->extractors[i].specdata.binsize = 0;
@@ -942,16 +1088,22 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
             lib->extractors[i].specdata.type = gensym("timeseries");
             lib->extractors[i].specdata.frequnit = EARS_FREQUNIT_UNKNOWN;
             lib->extractors[i].essentia_num_outputs = 1;
-
+            lib->extractors[i].framemode = ears_essentia_feature_to_framemode((t_object *)e_ob, (e_ears_feature)features[i]);
 
             
             if (args[i]) {
-                t_symbol *timeunit_sym = NULL, *ampunit_sym = NULL;
-                llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ss", gensym("timeunit"), &timeunit_sym, gensym("ampunit"), &ampunit_sym);
+                t_symbol *timeunit_sym = NULL, *ampunit_sym = NULL, *pitchunit_sym = NULL, *frequnit_sym = NULL, *antimeunit_sym = NULL;
+                llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ss", gensym("timeunit"), &timeunit_sym, gensym("ampunit"), &ampunit_sym, gensym("antimeunit"), &antimeunit_sym, gensym("pitchunit"), &pitchunit_sym, gensym("frequnit"), &frequnit_sym);
                 if (timeunit_sym)
-                    lib->extractors[i].output_timeunit = ears_timeunit_from_symbol(timeunit_sym);
+                    lib->extractors[i].local_timeunit = ears_timeunit_from_symbol(timeunit_sym);
                 if (ampunit_sym)
-                    lib->extractors[i].output_ampunit = ears_ampunit_from_symbol(ampunit_sym);
+                    lib->extractors[i].local_ampunit = ears_ampunit_from_symbol(ampunit_sym);
+                if (antimeunit_sym)
+                    lib->extractors[i].local_antimeunit = ears_timeunit_from_symbol(antimeunit_sym);
+                if (pitchunit_sym)
+                    lib->extractors[i].local_pitchunit = ears_pitchunit_from_symbol(pitchunit_sym);
+                if (frequnit_sym)
+                    lib->extractors[i].local_frequnit = ears_frequnit_from_symbol(frequnit_sym);
             }
             
             switch (features[i]) {
@@ -1063,15 +1215,18 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
 
                 case EARS_FEATURE_WELCH:
                 {
-                    double averagingFrames = 10;
+                    double fftSize = eCaTI(1024, EARS_TIMEUNIT_SAMPS);
+                    long averagingFrames = 10;
                     t_symbol *scaling = gensym("density");
-                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "is",
-                                    gensym("averagingFrames"), &averagingFrames,
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ids",
+                                    gensym("averagingframes"), &averagingFrames,
+                                    gensym("fftsize"), &fftSize,
                                     gensym("scaling"), &scaling);
+                    convert_antimeunit(lib, i, fftSize, NULL, EARS_TIMEUNIT_SAMPS);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Welch",
-                                                                            "averagingFrames", averagingFrames,
-                                                                            "fftSize", params->framesize_samps,
-                                                                            "frameSize", params->framesize_samps,
+                                                                            "averagingFrames", (int)averagingFrames,
+                                                                            "fftSize", (int)params->framesize_samps,
+                                                                            "frameSize", (int)params->framesize_samps,
                                                                             "windowType", params->windowType,
                                                                             "scaling", scaling->s_name);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "frame");
@@ -1109,12 +1264,12 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_ENERGYBAND:
                 {
-                    double startCutoffFrequency = 0, stopCutoffFrequency = 100;
+                    double startCutoffFrequency = eCFI(0, EARS_FREQUNIT_HERTZ), stopCutoffFrequency = eCFI(100, EARS_FREQUNIT_HERTZ);
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dd",
                                     gensym("startcutofffrequency"), &startCutoffFrequency,
                                     gensym("stopcutofffrequency"), &stopCutoffFrequency);
-                    earsbufobj_essentia_convert_frequnit(e_ob, startCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, stopCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, startCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, stopCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("EnergyBand",
                                                                             "sampleRate", sr,
                                                                             "startCutoffFrequency", startCutoffFrequency,
@@ -1127,12 +1282,12 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_ENERGYBANDRATIO:
                 {
-                    double startCutoffFrequency = 0, stopCutoffFrequency = 100;
+                    double startCutoffFrequency = eCFI(0, EARS_FREQUNIT_HERTZ), stopCutoffFrequency = eCFI(100, EARS_FREQUNIT_HERTZ);
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dd",
                                     gensym("startcutofffrequency"), &startCutoffFrequency,
                                     gensym("stopcutofffrequency"), &stopCutoffFrequency);
-                    earsbufobj_essentia_convert_frequnit(e_ob, startCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, stopCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, startCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, stopCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("EnergyBand",
                                                                             "sampleRate", sr,
                                                                             "startCutoffFrequency", startCutoffFrequency,
@@ -1147,7 +1302,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 case EARS_FEATURE_MFCC:
                 {
                     long numberBands = 40, numberCoefficients = 13, liftering = 0, dctType = 2;
-                    double lowFrequencyBound = 0, highFrequencyBound = 11000;
+                    double lowFrequencyBound = eCFI(0, EARS_FREQUNIT_HERTZ), highFrequencyBound = eCFI(11000, EARS_FREQUNIT_HERTZ);
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "iiiddi",
                                     gensym("numberbands"), &numberBands,
                                     gensym("numbercoefficients"), &numberCoefficients,
@@ -1156,8 +1311,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("highfrequencybound"), &highFrequencyBound,
                                     gensym("dcttype"), &dctType
                                     );
-                    earsbufobj_essentia_convert_frequnit(e_ob, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("MFCC",
                                                                             "sampleRate", sr,
                                                                             "numberBands", (int)numberBands,
@@ -1180,7 +1335,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 {
                     long dctType = 2, numberCoefficients = 13, liftering = 0, numberBands = 40;
                     t_symbol *logType = gensym("dbamp"), *normalize = gensym("unit_sum"), *type = gensym("power"), *weighting = gensym("warping");
-                    double lowFrequencyBound = 0.;
+                    double lowFrequencyBound = eCFI(0., EARS_FREQUNIT_HERTZ);
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "iiiissssd",
                                     gensym("dctType"), &dctType,
                                     gensym("numbercoefficients"), &numberCoefficients,
@@ -1192,7 +1347,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("weighting"), &weighting,
                                     gensym("lowFrequencyBound"), &lowFrequencyBound
                                     );
-                    earsbufobj_essentia_convert_frequnit(e_ob, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("BFCC",
                                                                             "sampleRate", sr,
                                                                             "numberCoefficients", (int)numberCoefficients,
@@ -1216,7 +1371,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 {
                     long dctType = 2, numberCoefficients = 13, liftering = 0, numberBands = 40;
                     t_symbol *logType = gensym("dbamp"), *type = gensym("power");
-                    double highFrequencyBound = 22050, lowFrequencyBound = 40., silenceThreshold = 0.0000000001;
+                    double highFrequencyBound = eCFI(22050, EARS_FREQUNIT_HERTZ), lowFrequencyBound = eCFI(40., EARS_FREQUNIT_HERTZ);
+                    double silenceThreshold = 0.0000000001;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "iiiisssddd",
                                     gensym("dctType"), &dctType,
                                     gensym("numbercoefficients"), &numberCoefficients,
@@ -1228,8 +1384,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("lowFrequencyBound"), &lowFrequencyBound,
                                     gensym("silenceThreshold"), &silenceThreshold
                                     );
-                    earsbufobj_essentia_convert_frequnit(e_ob, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("BFCC",
                                                                             "dctType", (int)dctType,
                                                                             "highFrequencyBound", highFrequencyBound,
@@ -1288,10 +1444,14 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     t_llll *frequencyBands_llll = NULL;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "l",
                                     gensym("frequencybands"), &frequencyBands_llll);
-                    if (!frequencyBands_llll)
+                    std::vector<Real> frequencyBands;
+                    if (!frequencyBands_llll) {
                         frequencyBands_llll = llll_from_text_buf("0 50 100 150 200 300 400 510 630 770 920 1080 1270 1480 1720 2000 2320 2700 3150 3700 4400 5300 6400 7700 9500 12000 15500 20500 27000");
-                    std::vector<Real> frequencyBands = llll_to_vector_real(frequencyBands_llll);
-                    earsbufobj_essentia_convert_frequnit(e_ob, frequencyBands, NULL, EARS_FREQUNIT_HERTZ);
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                    } else {
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                        convert_frequnit(lib, i, frequencyBands, NULL, EARS_FREQUNIT_HERTZ);
+                    }
                     lib->extractors[i].algorithm = AlgorithmFactory::create("FrequencyBands",
                                                                             "sampleRate", sr,
                                                                             "frequencyBands", frequencyBands);
@@ -1422,7 +1582,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_SPECTRALCONTRAST:
                 {
-                    double highFrequencyBound = 11000, lowFrequencyBound = 20, neighbourRatio = 0.4, staticDistribution = 0.15;
+                    double highFrequencyBound = eCFI(11000, EARS_FREQUNIT_HERTZ), lowFrequencyBound = eCFI(20, EARS_FREQUNIT_HERTZ);
+                    double neighbourRatio = 0.4, staticDistribution = 0.15;
                     long numberBands = 6;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dddid",
                                     gensym("highfrequencybound"), &highFrequencyBound,
@@ -1430,8 +1591,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("neighbourratio"), &neighbourRatio,
                                     gensym("numberbands"), &numberBands,
                                     gensym("staticdistribution"), &staticDistribution);
-                    earsbufobj_essentia_convert_frequnit(e_ob, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("SpectralCentroidTime",
                                                                             "sampleRate", sr,
                                                                             "frameSize", params->framesize_samps,
@@ -1472,10 +1633,14 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("normalize"), &normalize,
                                     gensym("type"), &type,
                                     gensym("weighting"), &weighting);
-                    if (!frequencyBands_llll)
+                    std::vector<Real> frequencyBands;
+                    if (!frequencyBands_llll) {
                         frequencyBands_llll = llll_from_text_buf("21.533203125 43.06640625 64.599609375 86.1328125 107.666015625 129.19921875 150.732421875 172.265625 193.798828125 215.33203125 236.865234375 258.3984375 279.931640625 301.46484375 322.998046875 344.53125 366.064453125 387.59765625 409.130859375 430.6640625 452.197265625 473.73046875 495.263671875 516.796875 538.330078125 559.86328125 581.396484375 602.9296875 624.462890625 645.99609375 667.529296875 689.0625 710.595703125 732.12890625 753.662109375 775.1953125 796.728515625 839.794921875 861.328125 882.861328125 904.39453125 925.927734375 968.994140625 990.52734375 1012.06054688 1055.12695312 1076.66015625 1098.19335938 1141.25976562 1184.32617188 1205.859375 1248.92578125 1270.45898438 1313.52539062 1356.59179688 1399.65820312 1442.72460938 1485.79101562 1528.85742188 1571.92382812 1614.99023438 1658.05664062 1701.12304688 1765.72265625 1808.7890625 1873.38867188 1916.45507812 1981.0546875 2024.12109375 2088.72070312 2153.3203125 2217.91992188 2282.51953125 2347.11914062 2411.71875 2497.8515625 2562.45117188 2627.05078125 2713.18359375 2799.31640625 2885.44921875 2950.04882812 3036.18164062 3143.84765625 3229.98046875 3316.11328125 3423.77929688 3509.91210938 3617.578125 3725.24414062 3832.91015625 3940.57617188 4069.77539062 4177.44140625 4306.640625 4435.83984375 4565.0390625 4694.23828125 4844.97070312 4974.16992188 5124.90234375 5275.63476562 5426.3671875 5577.09960938 5749.36523438 5921.63085938 6093.89648438 6266.16210938 6459.9609375 6653.75976562 6847.55859375 7041.35742188 7256.68945312 7450.48828125 7687.35351562 7902.68554688 8139.55078125 8376.41601562 8613.28125 8871.6796875 9130.078125 9388.4765625 9668.40820312 9948.33984375 10249.8046875 10551.2695312 10852.734375 11175.7324219 11498.7304688 11843.2617188 12187.7929688 12553.8574219 12919.921875 13285.9863281 13673.5839844 14082.7148438 14491.8457031 14922.5097656 15353.1738281 15805.3710938 16257.5683594");
-                    std::vector<Real> frequencyBands = llll_to_vector_real(frequencyBands_llll);
-                    earsbufobj_essentia_convert_frequnit(e_ob, frequencyBands, NULL, EARS_FREQUNIT_HERTZ);
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                    } else {
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                        convert_frequnit(lib, i, frequencyBands, NULL, EARS_FREQUNIT_HERTZ);
+                    }
                     lib->extractors[i].algorithm = AlgorithmFactory::create("TriangularBands",
                                                                             "sampleRate", sr,
                                                                             "inputSize", (int)spectrumsize,
@@ -1497,18 +1662,18 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 case EARS_FEATURE_TRIANGULARBARKBANDS:
                 {
                     long log = 1, numberBands = 24;
-                    double highFrequencyBound = 22050, lowFrequencyBound = 0;
+                    double highFrequencyBound = eCFI(22050, EARS_FREQUNIT_HERTZ), lowFrequencyBound = eCFI(0, EARS_FREQUNIT_HERTZ);
                     t_symbol *normalize = gensym("unit_sum"), *type = gensym("power"), *weighting = gensym("linear");
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddiisss",
-                                    gensym("highFrequencyBound"), &highFrequencyBound,
-                                    gensym("lowFrequencyBound"), &lowFrequencyBound,
-                                    gensym("numberBands"), &numberBands,
+                                    gensym("highfrequencybound"), &highFrequencyBound,
+                                    gensym("lowfrequencybound"), &lowFrequencyBound,
+                                    gensym("numberbands"), &numberBands,
                                     gensym("log"), &log,
                                     gensym("normalize"), &normalize,
                                     gensym("type"), &type,
                                     gensym("weighting"), &weighting);
-                    earsbufobj_essentia_convert_frequnit(e_ob, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("TriangularBands",
                                                                             "sampleRate", sr,
                                                                             "inputSize", (int)spectrumsize,
@@ -1534,34 +1699,36 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
 
                 case EARS_FEATURE_BEATTRACKERDEGARA:
                 {
-                    long maxTempo = 40, minTempo = 208;
+                    long minTempo = 40, maxTempo = 208;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ii",
-                                    gensym("maxTempo"), &maxTempo,
-                                    gensym("minTempo"), &minTempo);
+                                    gensym("maxtempo"), &maxTempo,
+                                    gensym("mintempo"), &minTempo);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("BeatTrackerDegara",
                                                                             "maxTempo", (int)maxTempo,
                                                                             "minTempo", (int)minTempo);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
                     set_essentia_outputs(lib, i, "v", "ticks");
                     set_custom_outputs(lib, i, "v", "estimated beat locations");
+                    lib->extractors[i].essentia_output_timeunit[0] = EARS_TIMEUNIT_SECONDS;
                 }
                     break;
 
                 case EARS_FEATURE_BEATTRACKERMULTIFEATURE:
                 {
-                    long maxTempo = 40, minTempo = 208;
+                    long minTempo = 40, maxTempo = 208;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ii",
-                                    gensym("maxTempo"), &maxTempo,
-                                    gensym("minTempo"), &minTempo);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("BeatTrackerDegara",
+                                    gensym("maxtempo"), &maxTempo,
+                                    gensym("mintempo"), &minTempo);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("BeatTrackerMultiFeature",
                                                                             "maxTempo", (int)maxTempo,
                                                                             "minTempo", (int)minTempo);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
-                    set_essentia_outputs(lib, i, "vv", "ticks", "confidence");
-                    set_custom_outputs(lib, i, "vv", "estimated beat locations", "confidence");
+                    set_essentia_outputs(lib, i, "vf", "ticks", "confidence");
+                    set_custom_outputs(lib, i, "vf", "estimated beat locations", "confidence");
+                    lib->extractors[i].essentia_output_timeunit[0] = EARS_TIMEUNIT_SECONDS;
                 }
                     break;
-                    
+
                 //TODO BpmHistogram
                     
                     
@@ -1569,50 +1736,195 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 case EARS_FEATURE_BEATSLOUDNESS:
                 {
                     t_llll *beats_llll = NULL, *frequencyBands_llll = NULL;
-                    double beatDuration = 50, beatWindowDuration = 100;
-                    t_symbol *normalize = gensym("unit_sum"), *type = gensym("power"), *weighting = gensym("linear");
-                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "lisss",
+                    double beatDuration = eCTI(50, EARS_TIMEUNIT_MS), beatWindowDuration = eCTI(100, EARS_TIMEUNIT_MS);
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "lldd",
                                     gensym("beats"), &beats_llll,
-                                    gensym("frequencyBands"), &frequencyBands_llll,
-                                    gensym("normalize"), &normalize,
-                                    gensym("type"), &type,
-                                    gensym("weighting"), &weighting);
-                    if (!beats_llll)
+                                    gensym("frequencybands"), &frequencyBands_llll,
+                                    gensym("beatduration"), beatDuration,
+                                    gensym("beatwindowduration"), beatWindowDuration);
+                    std::vector<Real> frequencyBands;
+                    std::vector<Real> beats;
+                    if (!beats_llll) {
                         beats_llll = llll_get();
-                    if (!frequencyBands_llll)
+                        beats = llll_to_vector_real(beats_llll);
+                    } else {
+                        beats = llll_to_vector_real(beats_llll);
+                        convert_timeunit(lib, i, beats, NULL, EARS_TIMEUNIT_SECONDS);
+                    }
+                    if (!frequencyBands_llll) {
                         frequencyBands_llll = llll_from_text_buf("20 150 400 3200 7000 22000");
-                    std::vector<Real> frequencyBands = llll_to_vector_real(frequencyBands_llll);
-                    std::vector<Real> beats = llll_to_vector_real(beats_llll);
-                    earsbufobj_essentia_convert_frequnit(e_ob, frequencyBands, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_timeunit(e_ob, beats, NULL, EARS_TIMEUNIT_SECONDS);
-                    earsbufobj_essentia_convert_timeunit(e_ob, beatDuration, NULL, EARS_TIMEUNIT_SECONDS);
-                    earsbufobj_essentia_convert_timeunit(e_ob, beatWindowDuration, NULL, EARS_TIMEUNIT_SECONDS);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("TriangularBands",
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                    } else {
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                        convert_frequnit(lib, i, frequencyBands, NULL, EARS_FREQUNIT_HERTZ);
+                    }
+                    convert_timeunit(lib, i, beatDuration, NULL, EARS_TIMEUNIT_SECONDS);
+                    convert_timeunit(lib, i, beatWindowDuration, NULL, EARS_TIMEUNIT_SECONDS);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("BeatsLoudness",
                                                                             "sampleRate", sr,
                                                                             "beatDuration", beatDuration,
                                                                             "beatWindowDuration", beatWindowDuration,
                                                                             "beats", beats,
                                                                             "frequencyBands", frequencyBands
                                                                             );
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
                     set_essentia_outputs(lib, i, "vw", "loudness", "loudnessBandRatio");
                     set_custom_outputs(lib, i, "vw", "beat loudness", "beat loudness band ratio");
                     llll_free(frequencyBands_llll);
                     llll_free(beats_llll);
                 }
                     break;
+
+                case EARS_FEATURE_SINGLEBEATLOUDNESS:
+                {
+                    t_llll *frequencyBands_llll = NULL;
+                    t_symbol *onsetStart = gensym("sumEnergy");
+                    double beatDuration = eCTI(50, EARS_TIMEUNIT_MS), beatWindowDuration = eCTI(100, EARS_TIMEUNIT_MS);
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "sldd",
+                                    gensym("onsetstart"), &onsetStart,
+                                    gensym("frequencybands"), &frequencyBands_llll,
+                                    gensym("beatduration"), beatDuration,
+                                    gensym("beatwindowduration"), beatWindowDuration);
+                    std::vector<Real> frequencyBands;
+                    if (!frequencyBands_llll) {
+                        frequencyBands_llll = llll_from_text_buf("20 150 400 3200 7000 22000");
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                    } else {
+                        frequencyBands = llll_to_vector_real(frequencyBands_llll);
+                        convert_frequnit(lib, i, frequencyBands, NULL, EARS_FREQUNIT_HERTZ);
+                    }
+                    convert_timeunit(lib, i, beatDuration, NULL, EARS_TIMEUNIT_SECONDS);
+                    convert_timeunit(lib, i, beatWindowDuration, NULL, EARS_TIMEUNIT_SECONDS);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("SingleBeatLoudness",
+                                                                            "sampleRate", sr,
+                                                                            "beatDuration", beatDuration,
+                                                                            "beatWindowDuration", beatWindowDuration,
+                                                                            "onsetStart", onsetStart->s_name,
+                                                                            "frequencyBands", frequencyBands
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "beat");
+                    set_essentia_outputs(lib, i, "fv", "loudness", "loudnessBandRatio");
+                    set_custom_outputs(lib, i, "fv", "beat loudness", "beat loudness band ratio");
+                    llll_free(frequencyBands_llll);
+                }
+                    break;
+
+                    /*
+                case EARS_FEATURE_BPMHISTOGRAM:
+                {
+                    double bpm = 0, minBpm = 30, maxBpm = 560, tempoChange = eCTI(5000, EARS_TIMEUNIT_MS);
+                    long constantTempo = 0, maxPeaks = 50, weightByMagnitude = 1;
+                    t_symbol *normalize = gensym("unit_sum"), *type = gensym("power"), *weighting = gensym("linear");
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddddiii",
+                                    gensym("bpm"), &bpm,
+                                    gensym("minBpm"), &minBpm,
+                                    gensym("maxBpm"), &maxBpm,
+                                    gensym("tempoChange"), &tempoChange,
+                                    gensym("constantTempo"), &constantTempo,
+                                    gensym("maxPeaks"), &maxPeaks,
+                                    gensym("weightByMagnitude"), &weightByMagnitude
+                                    );
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("BpmHistogram",
+                                                                            "bpm", params->bpm,
+                                                                            "constantTempo", constantTempo,
+                                                                            "frameRate", sr/params->framesize_samps,
+                                                                            "frameSize", beats,
+                                                                            "frequencyBands", frequencyBands
+                                                                            "overlap", params->framesize_samps/params->hopsize_samps,
+                                                                            "tempoChange", tempoChange,
+                                                                            "weightByMagnitude", weightByMagnitude,
+                                                                            "windowType", params->windowType,
+                                                                            "zeroPadding", params->zeroPadding,
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_NOVELTY, "novelty");
+                    set_essentia_outputs(lib, i, "fvvmvvvv", "bpm", "bpmCandidates", "bpmMagnitudes", "tempogram", "frameBpms", "ticks", "ticksMagnitude", "sinusoid");
+                    set_custom_outputs(lib, i, "fvvmvvvv", "BPM", "BPM candidates", "BPM magnitudes", "tempogram", "frame BPMs", "ticks", "ticks magnitude", "sinusoid");
+                }
+                    break;
+
+                    */
+                case EARS_FEATURE_RHYTHMEXTRACTOR:
+                {
+                    t_llll *tempoHints_llll = NULL;
+                    double lastBeatInterval = eCTI(1000, EARS_TIMEUNIT_MS), tolerance = 0.24, frameHop = eCaTI(1024, EARS_TIMEUNIT_SAMPS);
+                    long minTempo = 40, maxTempo = 208, useBands = 1, useOnset = 1;
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "diildii",
+                                    gensym("lastbeatinterval"), &lastBeatInterval,
+                                    gensym("mintempo"), &minTempo,
+                                    gensym("maxtempo"), &maxTempo,
+                                    gensym("tempohints"), &tempoHints_llll,
+                                    gensym("tolerance"), &tolerance,
+                                    gensym("usebands"), &useBands,
+                                    gensym("useonset"), &useOnset,
+                                    gensym("framehop"), &frameHop
+                                    );
+                    std::vector<Real> tempoHints;
+                    if (!tempoHints_llll) {
+                        tempoHints_llll = llll_get();
+                        tempoHints = llll_to_vector_real(tempoHints_llll);
+                    } else {
+                        tempoHints = llll_to_vector_real(tempoHints_llll);
+                        convert_timeunit(lib, i, tempoHints, NULL, EARS_TIMEUNIT_SECONDS);
+                    }
+                    convert_antimeunit(lib, i, frameHop, NULL, EARS_TIMEUNIT_SAMPS);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("RhythmExtractor",
+                                                                            "frameHop", (int)frameHop,
+                                                                            "frameSize", (int)params->framesize_samps,
+                                                                            "hopSize", (int)params->hopsize_samps,
+                                                                            "lastBeatInterval", lastBeatInterval,
+                                                                            "minTempo", (int)minTempo,
+                                                                            "maxTempo", (int)maxTempo,
+                                                                            "numberFrames", (int)params->framesize_samps,
+                                                                            "sampleRate", sr,
+                                                                            "tempoHints", tempoHints,
+                                                                            "tolerance", tolerance,
+                                                                            "useBands", (bool)useBands,
+                                                                            "useOnset", (bool)useOnset
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "fvvv", "bpm", "ticks", "estimates", "bpmIntervals");
+                    set_custom_outputs(lib, i, "fvvv", "BPM", "ticks", "estimates", "BPM intevals");
+                    lib->extractors[i].essentia_output_timeunit[1] = EARS_TIMEUNIT_SECONDS;
+                    lib->extractors[i].essentia_output_timeunit[3] = EARS_TIMEUNIT_SECONDS;
+                    llll_free(tempoHints_llll);
+                }
+                    break;
+               
+                case EARS_FEATURE_RHYTHMEXTRACTOR2013:
+                {
+                    long minTempo = 40, maxTempo = 208;
+                    t_symbol *method = gensym("multifeature");
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "sii",
+                                    gensym("method"), &method,
+                                    gensym("mintempo"), &minTempo,
+                                    gensym("maxtempo"), &maxTempo
+                                    );
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("RhythmExtractor2013",
+                                                                            "maxTempo", (int)maxTempo,
+                                                                            "minTempo", (int)minTempo,
+                                                                            "method", method->s_name
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "fvfvv", "bpm", "ticks", "confidence", "estimates", "bpmIntervals");
+                    set_custom_outputs(lib, i, "fvfvv", "BPM", "ticks", "confidence", "estimates", "BPM intevals");
+                    lib->extractors[i].essentia_output_timeunit[1] = EARS_TIMEUNIT_SECONDS;
+                    lib->extractors[i].essentia_output_timeunit[4] = EARS_TIMEUNIT_SECONDS;
+                    warn_if((t_object *)e_ob, sr != 44100, "The RhythmExtractor2013 algorithm requires the sample rate of the input signal to be 44100 Hz in order to work correctly.");
+                }
+                    break;
+                    
                     
                     // TODO: BpmRubato
                     
                 case EARS_FEATURE_DANCEABILITY:
                 {
-                    double maxTau = 8800, minTau = 310, tauMultiplier = 1.1;
+                    double maxTau = eCTI(8800, EARS_TIMEUNIT_MS), minTau = eCTI(310, EARS_TIMEUNIT_MS), tauMultiplier = 1.1;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddd",
                                     gensym("maxtau"), &maxTau,
                                     gensym("mintau"), &minTau,
                                     gensym("taumultiplier"), &tauMultiplier);
-                    earsbufobj_essentia_convert_timeunit(e_ob, maxTau, NULL, EARS_TIMEUNIT_MS);
-                    earsbufobj_essentia_convert_timeunit(e_ob, minTau, NULL, EARS_TIMEUNIT_MS);
+                    convert_timeunit(lib, i, maxTau, NULL, EARS_TIMEUNIT_MS);
+                    convert_timeunit(lib, i, minTau, NULL, EARS_TIMEUNIT_MS);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Danceability",
                                                                             "sampleRate", sr,
                                                                             "maxTau", maxTau,
@@ -1620,10 +1932,11 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "tauMultiplier", tauMultiplier
                                                                             );
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
-                    set_essentia_outputs(lib, i, "f", "danceability");
-                    set_custom_outputs(lib, i, "f", "danceability");
+                    set_essentia_outputs(lib, i, "fv", "danceability", "dfa");
+                    set_custom_outputs(lib, i, "fv", "danceability", "DFA exponent vector");
                 }
                     break;
+                    
                     
                     
                     // TODO: HarmonicBpm
@@ -1651,18 +1964,117 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     t_symbol *method = gensym("hfc");
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "s",
                                     gensym("method"), &method);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("LoopBpmEstimator",
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("OnsetDetection",
                                                                             "method", method->s_name,
                                                                             "sampleRate", sr
                                                                             );
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
+                    set_input2(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMANDPHASE, "spectrum", "phase");
                     set_essentia_outputs(lib, i, "f", "onsetDetection");
                     set_custom_outputs(lib, i, "f", "onset probability");
-                    // TODO: phase input
+                }
+                    break;
+
+                    
+                case EARS_FEATURE_ONSETDETECTIONGLOBAL:
+                {
+                    t_symbol *method = gensym("infogain");
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "s",
+                                    gensym("method"), &method);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("OnsetDetectionGlobal",
+                                                                            "frameSize", (int)params->framesize_samps,
+                                                                            "hopSize", (int)params->hopsize_samps,
+                                                                            "method", method->s_name,
+                                                                            "sampleRate", sr
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "v", "onsetDetections");
+                    set_custom_outputs(lib, i, "v", "values of the detection function");
+                }
+                    break;
+
+
+                case EARS_FEATURE_ONSETRATE:
+                {
+                    t_symbol *method = gensym("infogain");
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "s",
+                                    gensym("method"), &method);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("OnsetRate");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "vf", "onsets", "onsetRate");
+                    set_custom_outputs(lib, i, "vf", "detected onsets", "number of onsets per second");
+                    lib->extractors[i].essentia_output_timeunit[0] = EARS_TIMEUNIT_SECONDS;
+                    warn_if((t_object *)e_ob, sr != 44100, "The OnsetRate algorithm requires the sample rate of the input signal to be 44100 Hz in order to work correctly.");
+                }
+                    break;
+                    
+                    // TODO: ONSETS
+
+                case EARS_FEATURE_PERCIVALBPMESTIMATOR:
+                {
+                    double frameSizeOSS = eCaTI(2048, EARS_TIMEUNIT_SAMPS), hopSizeOSS = eCaTI(128, EARS_TIMEUNIT_SAMPS);
+                    long maxBPM = 210, minBPM = 50;
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "s",
+                                    gensym("maxBPM"), &maxBPM,
+                                    gensym("minBPM"), &minBPM,
+                                    gensym("frameSizeOSS"), &frameSizeOSS,
+                                    gensym("hopSizeOSS"), &hopSizeOSS
+                                    );
+                    convert_antimeunit(lib, i, frameSizeOSS, NULL, EARS_TIMEUNIT_SAMPS);
+                    convert_antimeunit(lib, i, hopSizeOSS, NULL, EARS_TIMEUNIT_SAMPS);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("PercivalBpmEstimator",
+                                                                            "frameSize", (int)params->framesize_samps,
+                                                                            "frameSizeOSS", (int)frameSizeOSS,
+                                                                            "hopSize", (int)params->hopsize_samps,
+                                                                            "hopSizeOSS", (int)hopSizeOSS,
+                                                                            "maxBPM", (int)maxBPM,
+                                                                            "minBPM", (int)minBPM,
+                                                                            "sampleRate", sr
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "f", "bpm");
+                    set_custom_outputs(lib, i, "f", "BPM");
                 }
                     break;
                     
                     // TODO: all the rest of rhythm section
+                    
+                    
+                    // TODO: NOvelty curves
+                    
+                    
+                case EARS_FEATURE_RHYTHMDESCRIPTORS:
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("RhythmDescriptors");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "vffvvffffffv", "beats_position", "confidence", "bpm", "bpm_estimates", "bpm_intervals", "first_peak_bpm", "first_peak_spread", "first_peak_weight", "second_peak_bpm", "second_peak_spread", "second_peak_weight", "histogram");
+                    set_custom_outputs(lib, i, "vffvvffffffv", "beat positions", "confidence", "BPM", "BPM estimates", "BPM intervals", "first peak BPM", "first peak spread", "first peak weight", "second peak BPM", "second peak spread", "second peak weight", "histogram");
+                    lib->extractors[i].essentia_output_timeunit[0] = EARS_TIMEUNIT_SECONDS;
+                    lib->extractors[i].essentia_output_timeunit[4] = EARS_TIMEUNIT_SECONDS;
+                    break;
+                    
+                    
+                case EARS_FEATURE_SUPERFLUXEXTRACTOR:
+                {
+                    double combine = eCTI(20, EARS_TIMEUNIT_MS), ratioThreshold = 16, threshold = 0.05;
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddd",
+                                    gensym("combine"), &combine,
+                                    gensym("ratioThreshold"), &ratioThreshold,
+                                    gensym("threshold"), threshold);
+                    convert_timeunit(lib, i, combine, NULL, EARS_TIMEUNIT_MS);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("SuperFluxExtractor",
+                                                                            "combine", combine,
+                                                                            "frameSize", (int)params->framesize_samps,
+                                                                            "hopSize", (int)params->hopsize_samps,
+                                                                            "ratioThreshold", ratioThreshold,
+                                                                            "sampleRate", sr,
+                                                                            "threshold", threshold);
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "v", "onsets");
+                    set_custom_outputs(lib, i, "v", "onset times");
+                    lib->extractors[i].essentia_output_timeunit[0] = EARS_TIMEUNIT_SECONDS;
+                }
+                    break;
+                    
+                    // TEmpo taps?
                     
                     
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1908,10 +2320,10 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 
                 case EARS_FEATURE_CHORDSDETECTION:
                 {
-                    double windowSize = 2000;
+                    double windowSize = eCTI(2000, EARS_TIMEUNIT_MS);
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "s",
                                     gensym("windowsize"), &windowSize);
-                    earsbufobj_essentia_convert_timeunit(e_ob, windowSize, NULL, EARS_TIMEUNIT_SECONDS);
+                    convert_timeunit(lib, i, windowSize, NULL, EARS_TIMEUNIT_SECONDS);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("ChordsDetection",
                                                                             "hopSize", (int)params->hopsize_samps,
                                                                             "sampleRate", sr,
@@ -1919,8 +2331,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH, "pcp");
                     set_essentia_outputs(lib, i, "bv", "chords", "strength");
                     set_custom_outputs(lib, i, "bv", "chords", "strength");
-                    // TODO ASSERT
-                    // The algorithm assumes that the sequence of the input HPCP frames has been computed with framesize = 2*hopsize
+                    warn_if((t_object *)e_ob, (int)params->framesize_samps != (int)2*params->hopsize_samps, "The Chords Detection algorithm needs the frame size to be twice the hop size.");
+                    lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MODE;
                 }
                     break;
 
@@ -1957,6 +2369,10 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_input2(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS, "frequencies", "magnitudes");
                     set_essentia_outputs(lib, i, "v", "hpcp");
                     set_custom_outputs(lib, i, "v", "hpcp");
+                    warn_if((t_object *)e_ob, params->HPCP_size <= 0 || params->HPCP_size % 12 != 0, "The 'size' parameter should be a positive multiple of 12.");
+                    t_llll *bins = ears_ezarithmser(0, 1200./params->HPCP_size, params->HPCP_size);
+                    set_spec_metadata(lib, i, 1200./params->HPCP_size, 0, gensym("hpcp"), EARS_FREQUNIT_CENTS, bins, true);
+                    llll_free(bins);
                 }
                     break;
                 
@@ -2036,6 +2452,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE, "pcp");
                     set_essentia_outputs(lib, i, "ccff", "key", "scale", "strength", "firstToSecondRelativeStrength");
                     set_custom_outputs(lib, i, "ccff", "key", "scale", "strength", "first-to-second relative strength");
+                    lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MODE;
+                    lib->extractors[i].summarization[1] = EARS_ESSENTIA_SUMMARIZATION_MODE;
                 }
                     break;
                     
@@ -2044,16 +2462,13 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 case EARS_FEATURE_KEYEXTRACTOR:
                 {
                     long averageDetuningCorrection = 1, hpcpSize = 12, maximumSpectralPeaks = 60;
-                    double frameSize = 4096, hopSize = 4096, maxFrequency = 3500, minFrequency = 25, pcpThreshold = 0.2, spectralPeaksThreshold = 0.0001;
+                    double maxFrequency = eCFI(3500, EARS_FREQUNIT_HERTZ), minFrequency = eCFI(25, EARS_FREQUNIT_HERTZ);
+                    double pcpThreshold = 0.2, spectralPeaksThreshold = 0.0001;
                     t_symbol *profileType = gensym("bgate"), *weightType = gensym("cosine"), *windowType = gensym("hann");
-                    earsbufobj_essentia_convert_frequnit(e_ob, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_antimeunit(e_ob, frameSize, NULL, EARS_TIMEUNIT_SAMPS);
-                    earsbufobj_essentia_convert_antimeunit(e_ob, hopSize, NULL, EARS_TIMEUNIT_SAMPS);
-                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "iddiiddddsss",
+                    convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "iiiddddsss",
                                     gensym("averagedetuningcorrection"), &averageDetuningCorrection,
-                                    gensym("framesize"), &frameSize,
-                                    gensym("hopsize"), &hopSize,
                                     gensym("hpcpsize"), &hpcpSize,
                                     gensym("maximumspectralpeaks"), &maximumSpectralPeaks,
                                     gensym("maxfrequency"), &maxFrequency,
@@ -2067,8 +2482,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     lib->extractors[i].algorithm = AlgorithmFactory::create("KeyExtractor",
                                                                             "sampleRate", sr,
                                                                             "averageDetuningCorrection", (bool)averageDetuningCorrection,
-                                                                            "frameSize", (int)frameSize,
-                                                                            "hopSize", (int)hopSize,
+                                                                            "frameSize", (int)params->framesize_samps,
+                                                                            "hopSize", (int)params->hopsize_samps,
                                                                             "hpcpSize", (int)hpcpSize,
                                                                             "maximumSpectralPeaks", (int)maximumSpectralPeaks,
                                                                             "maxFrequency", maxFrequency,
@@ -2082,6 +2497,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "audio");
                     set_essentia_outputs(lib, i, "ccf", "key", "scale", "strength");
                     set_custom_outputs(lib, i, "ccf", "key", "scale", "strength");
+                    lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MODE;
+                    lib->extractors[i].summarization[1] = EARS_ESSENTIA_SUMMARIZATION_MODE;
                 }
                     break;
                 
@@ -2100,9 +2517,9 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_PITCHSALIENCE:
                 {
-                    double highBoundary = 5000, lowBoundary = 100;
-                    earsbufobj_essentia_convert_frequnit(e_ob, highBoundary, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, lowBoundary, NULL, EARS_FREQUNIT_HERTZ);
+                    double highBoundary = eCFI(5000, EARS_FREQUNIT_HERTZ), lowBoundary = eCFI(100, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, highBoundary, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, lowBoundary, NULL, EARS_FREQUNIT_HERTZ);
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dd",
                                     gensym("highboundary"), &highBoundary,
                                     gensym("lowboundary"), &lowBoundary);
@@ -2120,21 +2537,21 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 case EARS_FEATURE_SPECTRUMCQ:
                 {
                     lib->extractors[i].algorithm = AlgorithmFactory::create("SpectrumCQ",
-                                                                            "binsPerOctave", params->binsPerOctave,
-                                                                            "minFrequency", params->minFrequency,
-                                                                            "minimumKernelSize", params->minimumKernelSize,
-                                                                            "numberBins", params->numberBins,
+                                                                            "binsPerOctave", params->CQT_binsPerOctave,
+                                                                            "minFrequency", params->CQT_minFrequency,
+                                                                            "minimumKernelSize", params->CQT_minimumKernelSize,
+                                                                            "numberBins", params->CQT_numberBins,
                                                                             "sampleRate", sr,
-                                                                            "scale", params->scale,
-                                                                            "threshold", params->threshold,
+                                                                            "scale", params->CQT_scale,
+                                                                            "threshold", params->CQT_threshold,
                                                                             "windowType", params->windowType,
                                                                             "zeroPhase", true
                                                                             );
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "spectrumCQ");
-                    set_essentia_outputs(lib, i, "f", "spectrumCQ");
-                    set_custom_outputs(lib, i, "f", "constant-q spectrum");
-                    t_llll *bins = ears_ezarithmser(ears_hz_to_cents(params->minFrequency, EARS_MIDDLE_A_TUNING), 1200./params->binsPerOctave, params->numberBins);
-                    set_spec_metadata(lib, i, 1200./params->binsPerOctave, ears_hz_to_cents(params->minFrequency, EARS_MIDDLE_A_TUNING), gensym("cqt"), EARS_FREQUNIT_CENTS, bins, true);
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "frame");
+                    set_essentia_outputs(lib, i, "v", "spectrumCQ");
+                    set_custom_outputs(lib, i, "v", "constant-q spectrum");
+                    t_llll *bins = ears_ezarithmser(ears_hz_to_cents(params->CQT_minFrequency, EARS_MIDDLE_A_TUNING), 1200./params->CQT_binsPerOctave, params->CQT_numberBins);
+                    set_spec_metadata(lib, i, 1200./params->CQT_binsPerOctave, ears_hz_to_cents(params->CQT_minFrequency, EARS_MIDDLE_A_TUNING), gensym("cqt"), EARS_FREQUNIT_CENTS, bins, true);
                     llll_free(bins);
                 }
                     break;
@@ -2174,28 +2591,59 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 
-
+/*
                 case EARS_FEATURE_CHROMAPRINTER:
                 {
                     double maxLength = 0;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "d",
                                     gensym("maxlength"), &maxLength);
-                    earsbufobj_essentia_convert_timeunit(e_ob, maxLength, NULL, EARS_TIMEUNIT_SECONDS);
+                    convert_timeunit(lib, i, maxLength, NULL, EARS_TIMEUNIT_SECONDS);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Chromaprinter",
                                                                             "maxLength", maxLength,
                                                                             "sampleRate", sr);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
                     set_essentia_outputs(lib, i, "c", "fingerprint");
                     set_custom_outputs(lib, i, "c", "fingerprint");
+                    lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MODE;
                 }
                     break;
                     
-
+*/
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///// ***************************** AUDIO PROBLEMS **************************************//
 ///////////////////////////////////////////////////////////////////////////////////////////
 
                     // TODO ALL
+                    
+                case EARS_FEATURE_SNR: // PROBLEMATIC, deprecated
+                {
+                    double MAAlpha = 0.95, MMSEAlpha = 0.98, NoiseAlpha = 0.9, noiseThreshold = eCAI(-40, EARS_AMPUNIT_DECIBEL);
+                    long useBroadbadNoiseCorrection = 1;
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddddi",
+                                    gensym("maalpha"), &MAAlpha,
+                                    gensym("mmsealpha"), &MMSEAlpha,
+                                    gensym("noisealpha"), &NoiseAlpha,
+                                    gensym("noisethreshold"), &noiseThreshold,
+                                    gensym("usebroadbadnoisecorrection"), &useBroadbadNoiseCorrection
+                                    );
+                    convert_ampunit(lib, i, noiseThreshold, NULL, EARS_AMPUNIT_DECIBEL);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("SNR",
+                                                                            "sampleRate", sr,
+                                                                            "frameSize", params->framesize_samps,
+                                                                            "MAAlpha", MAAlpha,
+                                                                            "MMSEAlpha", MMSEAlpha,
+                                                                            "NoiseAlpha", NoiseAlpha,
+                                                                            "noiseThreshold", noiseThreshold,
+                                                                            "useBroadbadNoiseCorrection", (bool)useBroadbadNoiseCorrection
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "frame");
+                    set_essentia_outputs(lib, i, "ffv", "instantSNR", "averagedSNR", "spectralSNR");
+                    set_custom_outputs(lib, i, "ffv", "instant signal-to-noise ratio", "moving average of signal-to-noise ratio", "instant signal-to-noise ratio for each bin");
+                    lib->extractors[i].essentia_output_ampunit[0] = EARS_AMPUNIT_DECIBEL;
+                    lib->extractors[i].essentia_output_ampunit[1] = EARS_AMPUNIT_DECIBEL;
+                    lib->extractors[i].essentia_output_ampunit[2] = EARS_AMPUNIT_DECIBEL;
+                }
+                    break;
                     
                     // Todo TruePeakDetector
 
@@ -2242,7 +2690,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                         thresholds = llll_to_vector_real(thresholds_llll);
                     } else {
                         thresholds = llll_to_vector_real(thresholds_llll);
-                        earsbufobj_essentia_convert_ampunit(e_ob, thresholds, NULL, EARS_AMPUNIT_DECIBEL);
+                        convert_ampunit(lib, i, thresholds, NULL, EARS_AMPUNIT_DECIBEL);
                     }
                     lib->extractors[i].algorithm = AlgorithmFactory::create("EffectiveDuration",
                                                                             "sampleRate", sr,
@@ -2284,14 +2732,14 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     break;
 
                     // Intensity has: quality = outdated
-                                                                            
+                    
                 case EARS_FEATURE_LARM:
                 {
-                    double attackTime = 10, releaseTime = 1500, power = 1.5;
+                    double attackTime = eCTI(10, EARS_TIMEUNIT_MS), releaseTime = eCTI(1500, EARS_TIMEUNIT_MS), power = 1.5;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddd",
                                     gensym("attackTime"), &attackTime, gensym("releaseTime"), &releaseTime, gensym("power"), &power);
-                    earsbufobj_essentia_convert_timeunit(e_ob, attackTime, NULL, EARS_TIMEUNIT_MS);
-                    earsbufobj_essentia_convert_timeunit(e_ob, releaseTime, NULL, EARS_TIMEUNIT_MS);
+                    convert_timeunit(lib, i, attackTime, NULL, EARS_TIMEUNIT_MS);
+                    convert_timeunit(lib, i, releaseTime, NULL, EARS_TIMEUNIT_MS);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Larm",
                                                                             "attackTime", attackTime,
                                                                             "releaseTime", releaseTime,
@@ -2352,7 +2800,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_custom_outputs(lib, i, "f", "distance to the suitable average replay level (31dbB) defined by SMPTE");
                     warn_if((t_object *)e_ob, params->verbose && lib->extractors[i].temporalmode != EARS_ESSENTIA_TEMPORALMODE_WHOLE &&
                             ears_convert_timeunit(params->framesize_samps, NULL, EARS_TIMEUNIT_SAMPS, EARS_TIMEUNIT_MS) < 50,
-                            "The ReplayGain module needs at least windows of 50ms; increase the 'winsize' attirbute.");
+                            "The ReplayGain module needs at least windows of 50ms; increase the 'framesize' attirbute.");
                     lib->extractors[i].essentia_output_ampunit[0] = EARS_AMPUNIT_DECIBEL;
                 }
                     break;
@@ -2365,34 +2813,30 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
 
                 case EARS_FEATURE_MULTIPITCHKLAPURI:
                     {
-                        double binResolution = 10, harmonicWeight = 0.8, frameSize = 2048, hopSize = 128;
-                        double magnitudeCompression = 1, magnitudeThreshold = 40, maxFrequency = 1760, minFrequency = 80;
+                        double binResolution = 10, harmonicWeight = 0.8;
+                        double magnitudeCompression = 1, magnitudeThreshold = 40, maxFrequency = eCFI(1760, EARS_FREQUNIT_HERTZ), minFrequency = eCFI(80, EARS_FREQUNIT_HERTZ);
                         long numberHarmonics = 10;
-                        double referenceFrequency = 55;
-                        llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddddddddid",
+                        double referenceFrequency = eCFI(55, EARS_FREQUNIT_HERTZ);
+                        llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddddddid",
                                         gensym("binresolution"), &binResolution,
                                         gensym("harmonicweight"), &harmonicWeight,
-                                        gensym("framesize"), &frameSize,
-                                        gensym("hopsize"), &hopSize,
                                         gensym("magnitudecompression"), &magnitudeCompression,
                                         gensym("magnitudethreshold"), &magnitudeThreshold,
                                         gensym("maxfrequency"), &maxFrequency,
                                         gensym("minfrequency"), &minFrequency,
                                         gensym("numberharmonics"), &numberHarmonics,
                                         gensym("referencefrequency"), &referenceFrequency);
-                        earsbufobj_essentia_convert_frequnit(e_ob, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                        earsbufobj_essentia_convert_frequnit(e_ob, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                        earsbufobj_essentia_convert_antimeunit(e_ob, frameSize, NULL, EARS_TIMEUNIT_SAMPS);
-                        earsbufobj_essentia_convert_antimeunit(e_ob, hopSize, NULL, EARS_TIMEUNIT_SAMPS);
-                        earsbufobj_essentia_convert_frequnit(e_ob, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                        convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                        convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                        convert_frequnit(lib, i, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
                         lib->extractors[i].algorithm = AlgorithmFactory::create("MultiPitchKlapuri",
                                                                                 "sampleRate", sr,
                                                                                 "binResolution", binResolution,
                                                                                 "harmonicWeight", harmonicWeight,
-                                                                                "frameSize", (int)frameSize,
-                                                                                "hopSize", (int)hopSize,
+                                                                                "frameSize", (int)params->framesize_samps,
+                                                                                "hopSize", (int)params->hopsize_samps,
                                                                                 "magnitudeCompression", magnitudeCompression,
-                                                                                "magnitudeThreshold", magnitudeThreshold,
+                                                                                "magnitudeThreshold", (int)magnitudeThreshold,
                                                                                 "maxFrequency", maxFrequency,
                                                                                 "minFrequency", minFrequency,
                                                                                 "numberHarmonics", (int)numberHarmonics,
@@ -2401,25 +2845,26 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                         set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
                         set_essentia_outputs(lib, i, "w", "pitch");
                         set_custom_outputs(lib, i, "w", "pitch");
-                        // TO DO: summarization
                         lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
+                        lib->extractors[i].prevent_flattening[0][1] = true;
+                        lib->extractors[i].prevent_flattening[1][1] = true;
+                        lib->extractors[i].prevent_flattening[0][2] = true;
+                        lib->extractors[i].prevent_flattening[1][2] = true;
                     }
                     break;
                     
                 case EARS_FEATURE_MULTIPITCHMELODIA:
                     {
-                        double binResolution = 10, harmonicWeight = 0.8, frameSize = 2048, hopSize = 128;
-                        double magnitudeCompression = 1, magnitudeThreshold = 40, maxFrequency = 20000, minFrequency = 40;
-                        double minDuration = 10, peakDistributionThreshold = 0.9, peakFrameThreshold = 0.9, pitchContinuity = 27.5625, timeContinuity = 100;
+                        double binResolution = 10, harmonicWeight = 0.8;
+                        double magnitudeCompression = 1, magnitudeThreshold = eCAI(40, EARS_AMPUNIT_DECIBEL), maxFrequency = eCFI(20000, EARS_FREQUNIT_HERTZ), minFrequency = eCFI(40, EARS_FREQUNIT_HERTZ);
+                        double minDuration = eCTI(10, EARS_TIMEUNIT_MS), peakDistributionThreshold = 0.9, peakFrameThreshold = 0.9, pitchContinuity = eCPI(27.5625, EARS_PITCHUNIT_CENTS), timeContinuity = eCTI(100, EARS_TIMEUNIT_MS);
                         long numberHarmonics = 20, filterIterations = 3, guessUnvoiced = 0;
-                        double referenceFrequency = 55;
-                        llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "diiddddddddiddddd",
+                        double referenceFrequency = eCFI(55, EARS_FREQUNIT_HERTZ);
+                        llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "diiddddddiddddd",
                                         gensym("binresolution"), &binResolution,
                                         gensym("filteriterations"), &filterIterations,
                                         gensym("guessunvoiced"), &guessUnvoiced,
                                         gensym("harmonicweight"), &harmonicWeight,
-                                        gensym("framesize"), &frameSize,
-                                        gensym("hopsize"), &hopSize,
                                         gensym("magnitudecompression"), &magnitudeCompression,
                                         gensym("magnitudethreshold"), &magnitudeThreshold,
                                         gensym("minduration"), &minDuration,
@@ -2431,24 +2876,23 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                         gensym("pitchcontinuity"), &pitchContinuity,
                                         gensym("referencefrequency"), &referenceFrequency,
                                         gensym("timecontinuity"), &timeContinuity);
-                        earsbufobj_essentia_convert_timeunit(e_ob, minDuration, NULL, EARS_TIMEUNIT_MS);
-                        earsbufobj_essentia_convert_timeunit(e_ob, timeContinuity, NULL, EARS_TIMEUNIT_MS);
-                        earsbufobj_essentia_convert_pitchunit(e_ob, pitchContinuity, NULL, EARS_PITCHUNIT_CENTS);
-                        earsbufobj_essentia_convert_frequnit(e_ob, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                        earsbufobj_essentia_convert_frequnit(e_ob, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                        earsbufobj_essentia_convert_antimeunit(e_ob, frameSize, NULL, EARS_TIMEUNIT_SAMPS);
-                        earsbufobj_essentia_convert_antimeunit(e_ob, hopSize, NULL, EARS_TIMEUNIT_SAMPS);
-                        earsbufobj_essentia_convert_frequnit(e_ob, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                        convert_timeunit(lib, i, minDuration, NULL, EARS_TIMEUNIT_MS);
+                        convert_timeunit(lib, i, timeContinuity, NULL, EARS_TIMEUNIT_MS);
+                        convert_pitchunit(lib, i, pitchContinuity, NULL, EARS_PITCHUNIT_CENTS);
+                        convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                        convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                        convert_frequnit(lib, i, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                        convert_ampunit(lib, i, magnitudeThreshold, NULL, EARS_AMPUNIT_DECIBEL);
                         lib->extractors[i].algorithm = AlgorithmFactory::create("MultiPitchMelodia",
                                                                                 "sampleRate", sr,
                                                                                 "binResolution", binResolution,
                                                                                 "filterIterations", (int)filterIterations,
                                                                                 "guessUnvoiced", (bool)guessUnvoiced,
                                                                                 "harmonicWeight", harmonicWeight,
-                                                                                "frameSize", (int)frameSize,
-                                                                                "hopSize", (int)hopSize,
+                                                                                "frameSize", (int)params->framesize_samps,
+                                                                                "hopSize", (int)params->hopsize_samps,
                                                                                 "magnitudeCompression", magnitudeCompression,
-                                                                                "magnitudeThreshold", magnitudeThreshold,
+                                                                                "magnitudeThreshold", (int)magnitudeThreshold,
                                                                                 "maxFrequency", maxFrequency,
                                                                                 "minFrequency", minFrequency,
                                                                                 "minDuration", (int)minDuration,
@@ -2463,8 +2907,11 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                         set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
                         set_essentia_outputs(lib, i, "w", "pitch");
                         set_custom_outputs(lib, i, "w", "pitch");
-                        // TO DO: summarization
                         lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
+                        lib->extractors[i].prevent_flattening[0][1] = true;
+                        lib->extractors[i].prevent_flattening[1][1] = true;
+                        lib->extractors[i].prevent_flattening[0][2] = true;
+                        lib->extractors[i].prevent_flattening[1][2] = true;
                     }
                     break;
                     
@@ -2476,7 +2923,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_PITCHSALIENCEFUNCTION:
                 {
-                    double binResolution = 10, harmonicWeight = 0.8, magnitudeCompression = 1., magnitudeThreshold = 40., referenceFrequency = 55;
+                    double binResolution = 10, harmonicWeight = 0.8, magnitudeCompression = 1., magnitudeThreshold = 40., referenceFrequency = eCFI(55, EARS_FREQUNIT_HERTZ);
                     long numberHarmonics = 20;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dddddi",
                                     gensym("binresolution"), &binResolution,
@@ -2485,7 +2932,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("magnitudethreshold"), &magnitudeThreshold,
                                     gensym("referencefrequency"), &referenceFrequency,
                                     gensym("numberharmonics"), &numberHarmonics);
-                    earsbufobj_essentia_convert_frequnit(e_ob, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("PitchSalienceFunction",
                                                                             "binResolution", binResolution,
                                                                             "harmonicWeight", harmonicWeight,
@@ -2500,18 +2947,142 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     break;
                     
                 
-                
+                case EARS_FEATURE_PITCHMELODIA:
+                {
+                    double binResolution = 10, harmonicWeight = 0.8;
+                    double magnitudeCompression = 1, magnitudeThreshold = eCAI(40, EARS_AMPUNIT_DECIBEL), maxFrequency = eCFI(20000, EARS_FREQUNIT_HERTZ), minFrequency = eCFI(40, EARS_FREQUNIT_HERTZ);
+                    double minDuration = eCTI(10, EARS_TIMEUNIT_MS), peakDistributionThreshold = 0.9, peakFrameThreshold = 0.9, pitchContinuity = eCPI(27.5625, EARS_PITCHUNIT_CENTS), timeContinuity = eCTI(100, EARS_TIMEUNIT_MS);
+                    long numberHarmonics = 20, filterIterations = 3, guessUnvoiced = 0;
+                    double referenceFrequency = eCFI(55, EARS_FREQUNIT_HERTZ);
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "diiddddddiddddd",
+                                    gensym("binresolution"), &binResolution,
+                                    gensym("filteriterations"), &filterIterations,
+                                    gensym("guessunvoiced"), &guessUnvoiced,
+                                    gensym("harmonicweight"), &harmonicWeight,
+                                    gensym("magnitudecompression"), &magnitudeCompression,
+                                    gensym("magnitudethreshold"), &magnitudeThreshold,
+                                    gensym("minduration"), &minDuration,
+                                    gensym("maxfrequency"), &maxFrequency,
+                                    gensym("minfrequency"), &minFrequency,
+                                    gensym("numberharmonics"), &numberHarmonics,
+                                    gensym("peakdistributionthreshold"), &peakDistributionThreshold,
+                                    gensym("peakframethreshold"), &peakFrameThreshold,
+                                    gensym("pitchcontinuity"), &pitchContinuity,
+                                    gensym("referencefrequency"), &referenceFrequency,
+                                    gensym("timecontinuity"), &timeContinuity);
+                    convert_timeunit(lib, i, minDuration, NULL, EARS_TIMEUNIT_MS);
+                    convert_timeunit(lib, i, timeContinuity, NULL, EARS_TIMEUNIT_MS);
+                    convert_pitchunit(lib, i, pitchContinuity, NULL, EARS_PITCHUNIT_CENTS);
+                    convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_ampunit(lib, i, magnitudeThreshold, NULL, EARS_AMPUNIT_DECIBEL);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("PitchMelodia",
+                                                                            "sampleRate", sr,
+                                                                            "binResolution", binResolution,
+                                                                            "filterIterations", (int)filterIterations,
+                                                                            "guessUnvoiced", (bool)guessUnvoiced,
+                                                                            "harmonicWeight", harmonicWeight,
+                                                                            "frameSize", (int)params->framesize_samps,
+                                                                            "hopSize", (int)params->hopsize_samps,
+                                                                            "magnitudeCompression", magnitudeCompression,
+                                                                            "magnitudeThreshold", (int)magnitudeThreshold,
+                                                                            "maxFrequency", maxFrequency,
+                                                                            "minFrequency", minFrequency,
+                                                                            "minDuration", (int)minDuration,
+                                                                            "numberHarmonics", (int)numberHarmonics,
+                                                                            "peakDistributionThreshold", peakDistributionThreshold
+                                                                            );
+                    lib->extractors[i].algorithm->configure("peakFrameThreshold", peakFrameThreshold,
+                                                            "pitchContinuity", pitchContinuity,
+                                                            "referenceFrequency", referenceFrequency,
+                                                            "timeContinuity", (int)timeContinuity);
+                    
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "vv", "pitch", "pitchConfidence");
+                    set_custom_outputs(lib, i, "vv", "pitch", "confidence");
+                    lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
+                    if (params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN)
+                        lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES;
+                }
+                    break;
+
+                case EARS_FEATURE_PREDOMINANTPITCHMELODIA:
+                {
+                    double binResolution = 10, harmonicWeight = 0.8;
+                    double magnitudeCompression = 1, magnitudeThreshold = eCAI(40, EARS_AMPUNIT_DECIBEL), maxFrequency = eCFI(20000, EARS_FREQUNIT_HERTZ), minFrequency = eCFI(40, EARS_FREQUNIT_HERTZ);
+                    double minDuration = eCTI(10, EARS_TIMEUNIT_MS), peakDistributionThreshold = 0.9, peakFrameThreshold = 0.9, pitchContinuity = eCPI(27.5625, EARS_PITCHUNIT_CENTS), timeContinuity = eCTI(100, EARS_TIMEUNIT_MS);
+                    long numberHarmonics = 20, filterIterations = 3, guessUnvoiced = 0, voiceVibrato = 0;
+                    double referenceFrequency = eCFI(55, EARS_FREQUNIT_HERTZ), voicingTolerance = 0.2;
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "diiddddddidddddid",
+                                    gensym("binresolution"), &binResolution,
+                                    gensym("filteriterations"), &filterIterations,
+                                    gensym("guessunvoiced"), &guessUnvoiced,
+                                    gensym("harmonicweight"), &harmonicWeight,
+                                    gensym("magnitudecompression"), &magnitudeCompression,
+                                    gensym("magnitudethreshold"), &magnitudeThreshold,
+                                    gensym("minduration"), &minDuration,
+                                    gensym("maxfrequency"), &maxFrequency,
+                                    gensym("minfrequency"), &minFrequency,
+                                    gensym("numberharmonics"), &numberHarmonics,
+                                    gensym("peakdistributionthreshold"), &peakDistributionThreshold,
+                                    gensym("peakframethreshold"), &peakFrameThreshold,
+                                    gensym("pitchcontinuity"), &pitchContinuity,
+                                    gensym("referencefrequency"), &referenceFrequency,
+                                    gensym("timecontinuity"), &timeContinuity,
+                                    gensym("voiceVibrato"), &voiceVibrato,
+                                    gensym("voicingTolerance"), &voicingTolerance);
+                    convert_timeunit(lib, i, minDuration, NULL, EARS_TIMEUNIT_MS);
+                    convert_timeunit(lib, i, timeContinuity, NULL, EARS_TIMEUNIT_MS);
+                    convert_pitchunit(lib, i, pitchContinuity, NULL, EARS_PITCHUNIT_CENTS);
+                    convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_ampunit(lib, i, magnitudeThreshold, NULL, EARS_AMPUNIT_DECIBEL);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("PredominantPitchMelodia",
+                                                                            "sampleRate", sr,
+                                                                            "binResolution", binResolution,
+                                                                            "filterIterations", (int)filterIterations,
+                                                                            "guessUnvoiced", (bool)guessUnvoiced,
+                                                                            "harmonicWeight", harmonicWeight,
+                                                                            "frameSize", (int)params->framesize_samps,
+                                                                            "hopSize", (int)params->hopsize_samps,
+                                                                            "magnitudeCompression", magnitudeCompression,
+                                                                            "magnitudeThreshold", (int)magnitudeThreshold,
+                                                                            "maxFrequency", maxFrequency,
+                                                                            "minFrequency", minFrequency,
+                                                                            "minDuration", (int)minDuration,
+                                                                            "numberHarmonics", (int)numberHarmonics,
+                                                                            "peakDistributionThreshold", peakDistributionThreshold
+                                                                            );
+                    lib->extractors[i].algorithm->configure("peakFrameThreshold", peakFrameThreshold,
+                                                            "pitchContinuity", pitchContinuity,
+                                                            "referenceFrequency", referenceFrequency,
+                                                            "timeContinuity", (int)timeContinuity,
+                                                            "voiceVibrato", (bool)voiceVibrato,
+                                                            "voicingTolerance", voicingTolerance);
+                    
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    set_essentia_outputs(lib, i, "vv", "pitch", "pitchConfidence");
+                    set_custom_outputs(lib, i, "vv", "pitch", "confidence");
+                    lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
+                    if (params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN)
+                        lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES;
+                }
+                    break;
+                    
+                    
                 case EARS_FEATURE_PITCHYIN:
                 {
-                    double maxFrequency = 22050, minFrequency = 20, tolerance = 0.15;
+                    double maxFrequency = eCFI(22050, EARS_FREQUNIT_HERTZ), minFrequency = eCFI(20, EARS_FREQUNIT_HERTZ), tolerance = 0.15;
                     long interpolate = 1;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dddi",
                                     gensym("maxFrequency"), &maxFrequency,
                                     gensym("minFrequency"), &minFrequency,
                                     gensym("tolerance"), &tolerance,
                                     gensym("interpolate"), &interpolate);
-                    earsbufobj_essentia_convert_frequnit(e_ob, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("PitchYin",
                                                                             "frameSize", params->framesize_samps,
                                                                             "sampleRate", sr,
@@ -2523,21 +3094,23 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_essentia_outputs(lib, i, "ff", "pitch", "pitchConfidence");
                     set_custom_outputs(lib, i, "ff", "pitch", "confidence");
                     lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
+                    if (params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN)
+                        lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES;
                 }
                     break;
 
                     
                 case EARS_FEATURE_PITCHYINFFT:
                 {
-                    double maxFrequency = 22050, minFrequency = 20, tolerance = 0.15;
+                    double maxFrequency = eCFI(22050, EARS_FREQUNIT_HERTZ), minFrequency = eCFI(20, EARS_FREQUNIT_HERTZ), tolerance = 0.15;
                     long interpolate = 1;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dddi",
                                     gensym("maxFrequency"), &maxFrequency,
                                     gensym("minFrequency"), &minFrequency,
                                     gensym("tolerance"), &tolerance,
                                     gensym("interpolate"), &interpolate);
-                    earsbufobj_essentia_convert_frequnit(e_ob, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                    earsbufobj_essentia_convert_frequnit(e_ob, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("PitchYinFFT",
                                                                             "frameSize", params->framesize_samps,
                                                                             "sampleRate", sr,
@@ -2550,6 +3123,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_custom_outputs(lib, i, "ff", "pitch", "confidence");
                     lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
                     // warn if window is not hann?
+                    if (params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN)
+                        lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES;
                 }
                     break;
                 
@@ -2557,13 +3132,14 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_PITCHYINPROBABILISTIC:
                 {
-                    double lowRMSThreshold = 0.1;
+                    double lowRMSThreshold = eCAI(0.1, EARS_AMPUNIT_LINEAR);
                     long preciseTime = 0;
                     t_symbol *outputUnvoiced = gensym("negative");
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dis",
                                     gensym("lowrmsthreshold"), &lowRMSThreshold,
                                     gensym("precisetime"), &preciseTime,
                                     gensym("outputunvoiced"), &outputUnvoiced);
+                    convert_ampunit(lib, i, lowRMSThreshold, NULL, EARS_AMPUNIT_LINEAR);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("PitchYinProbabilistic",
                                                                             "frameSize", params->framesize_samps,
                                                                             "hopSize", (int)params->hopsize_samps,
@@ -2576,9 +3152,69 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_custom_outputs(lib, i, "vv", "pitch", "voiced probabilities");
                     lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
                     // TO DO: set that this is batch but gives frames --- cannot be done frame-wise, but can be summarized
+                    if (params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN)
+                        lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES;
+                }
+                    break;
+                    
+                    
+                case EARS_FEATURE_PITCHYINPROBABILITIES:
+                {
+                    double lowAmp = eCAI(0.1, EARS_AMPUNIT_LINEAR);
+                    long preciseTime = 0;
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddi",
+                                    gensym("lowrmsthreshold"), &lowAmp,
+                                    gensym("lowamp"), &lowAmp,
+                                    gensym("precisetime"), &preciseTime);
+                    convert_ampunit(lib, i, lowAmp, NULL, EARS_AMPUNIT_LINEAR);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("PitchYinProbabilities",
+                                                                            "frameSize", params->framesize_samps,
+                                                                            "hopSize", (int)params->hopsize_samps,
+                                                                            "sampleRate", sr,
+                                                                            "lowAmp", lowAmp,
+                                                                            "preciseTime", (bool)preciseTime);
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "signal");
+                    set_essentia_outputs(lib, i, "vvf", "pitch", "probabilities", "RMS");
+                    set_custom_outputs(lib, i, "vvf", "pitch", "voiced probabilities", "RMS");
+                    lib->extractors[i].essentia_output_pitchunit[0] = EARS_PITCHUNIT_HERTZ;
+                    // TO DO: set that this is batch but gives frames --- cannot be done frame-wise, but can be summarized
+                    if (params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN)
+                        lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES;
                 }
                     break;
                 
+                    
+                case EARS_FEATURE_VIBRATO:
+                {
+                    double minExtend = eCPI(50, EARS_PITCHUNIT_CENTS), maxExtend = eCPI(250, EARS_PITCHUNIT_CENTS);
+                    double minFrequency = eCFI(4, EARS_FREQUNIT_HERTZ), maxFrequency = eCFI(8, EARS_FREQUNIT_HERTZ);
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "dddd",
+                                    gensym("minextend"), &minExtend,
+                                    gensym("maxextend"), &maxExtend,
+                                    gensym("minfrequency"), &minFrequency,
+                                    gensym("maxfrequency"), &maxFrequency);
+                    convert_pitchunit(lib, i, minExtend, NULL, EARS_PITCHUNIT_CENTS);
+                    convert_pitchunit(lib, i, maxExtend, NULL, EARS_PITCHUNIT_CENTS);
+                    convert_frequnit(lib, i, maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("Vibrato",
+                                                                            "sampleRate", sr/params->hopsize_samps,
+                                                                            "minExtend", minExtend,
+                                                                            "maxExtend", maxExtend,
+                                                                            "minFrequency", minFrequency,
+                                                                            "maxFrequency", maxFrequency);
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH, "signal");
+                    set_essentia_outputs(lib, i, "vv", "vibratoFrequency", "vibratoExtend");
+                    set_custom_outputs(lib, i, "vv", "vibrato frequency", "vibrato pitch extent");
+                    lib->extractors[i].essentia_output_frequnit[0] = EARS_FREQUNIT_HERTZ;
+                    lib->extractors[i].essentia_output_pitchunit[1] = EARS_PITCHUNIT_CENTS;
+                    if (params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN)
+                        lib->extractors[i].summarization[0] = EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES;
+                }
+                    break;
+
+                    
+                    
                 default:
                     lib->extractors[i].algorithm = NULL;
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "none");
@@ -2598,6 +3234,256 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
 }
 
 
+e_ears_essentia_framemode ears_essentia_feature_to_framemode(t_object *x, e_ears_feature feat)
+{
+    switch (feat) {
+        case EARS_FEATURE_ENVELOPE:
+        case EARS_FEATURE_LOGATTACKTIME:
+        case EARS_FEATURE_ENVMAXTIME:
+        case EARS_FEATURE_ENVMINTIME:
+        case EARS_FEATURE_STRONGDECAY:
+        case EARS_FEATURE_MIN:
+        case EARS_FEATURE_MAX:
+        case EARS_FEATURE_TIMEDOMAINSPECTRALCENTROID:
+        case EARS_FEATURE_BEATTRACKERDEGARA:
+        case EARS_FEATURE_BEATTRACKERMULTIFEATURE:
+        case EARS_FEATURE_TEMPORALCENTRALMOMENTS:
+        case EARS_FEATURE_TEMPORALRAWMOMENTS:
+        case EARS_FEATURE_TEMPORALCENTROID:
+        case EARS_FEATURE_TEMPORALCREST:
+        case EARS_FEATURE_TEMPORALDECREASE:
+        case EARS_FEATURE_TEMPORALDISTRIBUTIONSHAPE:
+        case EARS_FEATURE_TEMPORALSPREAD:
+        case EARS_FEATURE_TEMPORALSKEWNESS:
+        case EARS_FEATURE_TEMPORALKURTOSIS:
+        case EARS_FEATURE_TEMPORALFLATNESS:
+        case EARS_FEATURE_TEMPORALVARIANCE:
+        case EARS_FEATURE_KEYEXTRACTOR:
+        case EARS_FEATURE_DURATION:
+        case EARS_FEATURE_EFFECTIVEDURATION:
+        case EARS_FEATURE_ONSETRATE:
+        case EARS_FEATURE_PERCIVALBPMESTIMATOR:
+        case EARS_FEATURE_LOOPBPMESTIMATOR: // PROBLEMATIC
+        case EARS_FEATURE_RHYTHMDESCRIPTORS:
+        case EARS_FEATURE_SUPERFLUXEXTRACTOR:
+        case EARS_FEATURE_RHYTHMEXTRACTOR2013:
+        case EARS_FEATURE_RHYTHMEXTRACTOR:
+        case EARS_FEATURE_SINGLEBEATLOUDNESS:
+        case EARS_FEATURE_BEATSLOUDNESS:
+            return EARS_ESSENTIA_FRAMEMODE_GLOBALONLY;
+            break;
+            
+// TODO: WHAT TO DO WITH continuous descriptors such as these ???
+        case EARS_FEATURE_DERIVATIVE:
+            return EARS_ESSENTIA_FRAMEMODE_GLOBALONLY;
+            break;
+            
+        case EARS_FEATURE_POWERSPECTRUM:
+        case EARS_FEATURE_SPECTRUMCQ:
+            return EARS_ESSENTIA_FRAMEMODE_FRAMEWISE;
+            break;
+            
+        case EARS_FEATURE_ZEROCROSSINGRATE:
+        case EARS_FEATURE_DANCEABILITY:
+        case EARS_FEATURE_INSTANTPOWER:
+        case EARS_FEATURE_DYNAMICCOMPLEXITY:
+        case EARS_FEATURE_LARM:
+        case EARS_FEATURE_LEQ:
+        case EARS_FEATURE_REPLAYGAIN:
+            return EARS_ESSENTIA_FRAMEMODE_GLOBAL;
+            break;
+
+        case EARS_FEATURE_CHORDSDETECTION:
+        case EARS_FEATURE_PITCHYINPROBABILISTIC:
+        case EARS_FEATURE_ONSETDETECTIONGLOBAL:
+            return EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES;
+            break;
+
+        case EARS_FEATURE_MULTIPITCHKLAPURI:
+        case EARS_FEATURE_MULTIPITCHMELODIA:
+            return EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS;
+            break;
+
+        case EARS_FEATURE_PITCHMELODIA:
+        case EARS_FEATURE_PREDOMINANTPITCHMELODIA:
+        case EARS_FEATURE_VIBRATO:
+            return EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES;
+            break;
+
+            
+        case EARS_FEATURE_ONSETDETECTION:
+            return EARS_ESSENTIA_FRAMEMODE_FRAMEWISEONLY;
+            break;
+            
+//        case EARS_FEATURE_CHROMAPRINTER:
+//            return EARS_ESSENTIA_FRAMEMODE_GLOBALNOBUFFERS;
+//            break;
+
+        case EARS_FEATURE_HARMONICPEAKS:
+        case EARS_FEATURE_KEY:
+            return EARS_ESSENTIA_FRAMEMODE_FRAMEWISENOBUFFERS;
+            break;
+            
+        default:
+            return EARS_ESSENTIA_FRAMEMODE_FRAMEWISE;
+            break;
+    }
+}
+
+
+
+long ears_essentia_feature_to_numouts(e_ears_feature feat)
+{
+    switch (feat) {
+        case EARS_FEATURE_RHYTHMDESCRIPTORS:
+            return 12;
+            
+        case EARS_FEATURE_RHYTHMEXTRACTOR2013:
+            return 5;
+            break;
+            
+        case EARS_FEATURE_RHYTHMEXTRACTOR:
+            return 4;
+            break;
+            
+        case EARS_FEATURE_LOGATTACKTIME:
+        case EARS_FEATURE_TEMPORALDISTRIBUTIONSHAPE:
+        case EARS_FEATURE_SPECTRALDISTRIBUTIONSHAPE:
+        case EARS_FEATURE_PITCHYINPROBABILITIES:
+            return 3;
+            break;
+            
+        case EARS_FEATURE_MIN:
+        case EARS_FEATURE_MAX:
+        case EARS_FEATURE_MFCC:
+        case EARS_FEATURE_BFCC:
+        case EARS_FEATURE_GFCC:
+        case EARS_FEATURE_LPC:
+        case EARS_FEATURE_SPECTRALCONTRAST:
+        case EARS_FEATURE_BEATTRACKERMULTIFEATURE:
+        case EARS_FEATURE_BEATSLOUDNESS:
+        case EARS_FEATURE_PITCHMELODIA:
+        case EARS_FEATURE_PREDOMINANTPITCHMELODIA:
+        case EARS_FEATURE_PITCHYIN:
+        case EARS_FEATURE_PITCHYINFFT:
+        case EARS_FEATURE_PITCHYINPROBABILISTIC:
+        case EARS_FEATURE_VIBRATO:
+        case EARS_FEATURE_SINGLEBEATLOUDNESS:
+        case EARS_FEATURE_DANCEABILITY:
+            return 2;
+            break;
+            
+        default:
+            return 1;
+            break;
+    }
+}
+
+
+void ears_essentia_feature_to_default_framesizes_and_hopsize(t_object *x, e_ears_feature feat, double *framesize, double *hopsize, e_ears_timeunit *analysis_unit)
+{
+    *analysis_unit = EARS_TIMEUNIT_SAMPS;
+    
+    switch (feat) {
+
+        case EARS_FEATURE_PERCIVALBPMESTIMATOR:
+            *framesize = 1024;
+            *hopsize = 128;
+            
+        case EARS_FEATURE_ONSETDETECTIONGLOBAL:
+            *framesize = 2048;
+            *hopsize = 512;
+            break;
+
+        case EARS_FEATURE_SUPERFLUXEXTRACTOR:
+            *framesize = 2048;
+            *hopsize = 256;
+            break;
+
+        case EARS_FEATURE_RHYTHMEXTRACTOR:
+            *framesize = 1024;
+            *hopsize = 256;
+            break;
+            /*
+        case EARS_FEATURE_BPMHISTOGRAM:
+            *analysis_unit = EARS_TIMEUNIT_MS;
+            *framesize = 4000;
+            *hopsize = 250;
+            break;
+*/
+        case EARS_FEATURE_SPECTRUMCQ:
+            *framesize = 32768;
+            *hopsize = 2048;
+            break;
+
+        case EARS_FEATURE_WELCH:
+            *framesize = 512;
+            *hopsize = 128;
+            break;
+            
+        case EARS_FEATURE_PITCHYINPROBABILITIES:
+        case EARS_FEATURE_PITCHYINPROBABILISTIC:
+            *framesize = 2048;
+            *hopsize = 256;
+            break;
+            
+        case EARS_FEATURE_PITCHMELODIA:
+        case EARS_FEATURE_PREDOMINANTPITCHMELODIA:
+        case EARS_FEATURE_MULTIPITCHKLAPURI:
+        case EARS_FEATURE_MULTIPITCHMELODIA:
+        case EARS_FEATURE_VIBRATO:
+            *framesize = 2048;
+            *hopsize = 128;
+            break;
+
+        case EARS_FEATURE_REPLAYGAIN:
+            *analysis_unit = EARS_TIMEUNIT_MS;
+            *framesize = 1000;
+            *hopsize = 500;
+            break;
+
+        case EARS_FEATURE_DYNAMICCOMPLEXITY:
+            *analysis_unit = EARS_TIMEUNIT_MS;
+            *framesize = 200;
+            *hopsize = 100;
+            break;
+            
+        case EARS_FEATURE_SNR:
+            *framesize = 512;
+            *hopsize = 256;
+            break;
+
+        case EARS_FEATURE_TUNINGFREQUENCY:
+            *framesize = 4096;
+            *hopsize = 2048;
+            break;
+
+        case EARS_FEATURE_KEY:
+        case EARS_FEATURE_KEYEXTRACTOR:
+            *framesize = 4096;
+            *hopsize = 4096;
+            break;
+
+        case EARS_FEATURE_CHORDSDETECTION:
+        case EARS_FEATURE_HIGHRESOLUTIONFEATURES:
+        case EARS_FEATURE_HPCP:
+            *framesize = 4096;
+            *hopsize = 2048;
+            break;
+
+        case EARS_FEATURE_DANCEABILITY:
+            *analysis_unit = EARS_TIMEUNIT_MS;
+            *framesize = 2000;
+            *hopsize = 1000;
+            break;
+
+        default:
+            *framesize = 2048;
+            *hopsize = 1024;
+            break;
+    }
+}
+
 void ears_essentia_extractors_configure(t_object *x, long num_extractors, t_ears_essentia_extractor *extractors)
 {
 //    _centralMoments->configure("range", halfSampleRate);
@@ -2607,7 +3493,7 @@ void ears_essentia_extractors_configure(t_object *x, long num_extractors, t_ears
 void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *lib)
 {
     delete lib->alg_Car2pol;
-    delete lib->alg_Spectrum;
+    delete lib->alg_FFT;
     delete lib->alg_Envelope;
     delete lib->alg_Windower;
     delete lib->alg_FrameCutter;
@@ -2618,7 +3504,7 @@ void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *l
     delete lib->alg_RMS;
     delete lib->alg_SpectralPeaks;
     delete lib->alg_HPCP;
-    delete lib->alg_YinFFT;
+    delete lib->alg_Pitch;
     for (long i = 0; i < lib->num_extractors; i++) {
         for (long o = 0; o < EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS; o++) {
             if (lib->extractors[i].specdata.bins)
@@ -2648,18 +3534,27 @@ Real vector_average(std::vector<Real> v, e_ears_essentia_summarization summariza
             break;
 
         case EARS_ESSENTIA_SUMMARIZATION_MEAN:
+        case EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES:
         {
+            bool positive_only = (summarization == EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES);
             if (weight == EARS_ESSENTIA_SUMMARIZATIONWEIGHT_NONE) {
                 double sum = 0;
-                for (long i = 0; i < v.size(); i++)
-                    sum += v[i];
-                return sum/v.size();
+                long count = 0;
+                for (long i = 0; i < v.size(); i++) {
+                    if (!positive_only || v[i] > 0) {
+                        count ++;
+                        sum += v[i];
+                    }
+                }
+                return count > 0 ? sum/count : 0;
             } else {
                 Real *weights = (weight == EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS ? &rms_weights[0] : &loudness_weights[0]);
                 double sum = 0, tot_weights = 0;
                 for (long i = 0; i < v.size(); i++) {
-                    sum += v[i] * weights[i];
-                    tot_weights += weights[i];
+                    if (!positive_only || v[i] > 0) {
+                        sum += v[i] * weights[i];
+                        tot_weights += weights[i];
+                    }
                 }
                 return tot_weights == 0 ? 0 : sum/tot_weights;
             }
@@ -2693,6 +3588,37 @@ std::vector<Real> vector_interp_with_hopsize(std::vector<Real> v, Real hopsize)
     return res;
 }
 
+std::vector<Real> vector_wrapdeepest(Real v)
+{
+    std::vector<Real> out;
+    out.push_back(v);
+    return out;
+}
+std::vector<std::vector<Real>> vector_wrapdeepest(std::vector<Real> v)
+{
+    std::vector<std::vector<Real>> out;
+    for (long i = 0; i < v.size(); i++) {
+        std::vector<Real> wr1;
+        wr1.push_back(v[i]);
+        out.push_back(wr1);
+    }
+    return out;
+}
+
+std::vector<std::vector<std::vector<Real>>> vector_wrapdeepest(std::vector<std::vector<Real>> v)
+{
+    std::vector<std::vector<std::vector<Real>>> out;
+    for (long i = 0; i < v.size(); i++) {
+        std::vector<std::vector<Real>> wr1;
+        for (long j = 0; j < v[i].size(); j++) {
+            std::vector<Real> wr2;
+            wr2.push_back(v[i][j]);
+            wr1.push_back(wr2);
+        }
+        out.push_back(wr1);
+    }
+    return out;
+}
 
 // feature dimension = 1
 std::vector<std::vector<Real>> vector_of_vector_average(std::vector<std::vector<std::vector<Real>>> v, e_ears_essentia_summarization summarization, e_ears_essentia_summarizationweight summarizationweight, std::vector<Real> rms_weights, std::vector<Real> loudness_weights)
@@ -2713,16 +3639,25 @@ std::vector<std::vector<Real>> vector_of_vector_average(std::vector<std::vector<
                 break;
                 
             case EARS_ESSENTIA_SUMMARIZATION_MEAN:
+            case EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES:
+            {
+                bool positive_only = (summarization == EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES);
                 if (summarizationweight == EARS_ESSENTIA_SUMMARIZATIONWEIGHT_NONE) {
                     if (v.size() > 0 && v[0].size() > 0 && v[0][0].size() > 0) {
                         for (long f = 0; f < v[0].size(); f++) {
                             std::vector<Real> innermost;
                             for (long g = 0; g < v[0][f].size(); g++) {
-                                Real sum = 0;
-                                for (long j = 0; j < v.size(); j++) {
-                                    sum += v[j][f][g];
+                                double sum = 0;
+                                long tot_weight = 0;
+                                long v_size = v.size();
+                                for (long j = 0; j < v_size; j++) {
+                                    double thisv = v[j][f][g];
+                                    if (!positive_only || thisv > 0) {
+                                        sum += thisv;
+                                        tot_weight ++;
+                                    }
                                 }
-                                innermost.push_back(sum/v.size());
+                                innermost.push_back(tot_weight > 0 ? (Real)(sum/tot_weight) : 0.);
                             }
                             res.push_back(innermost);
                         }
@@ -2736,8 +3671,10 @@ std::vector<std::vector<Real>> vector_of_vector_average(std::vector<std::vector<
                                 Real sum = 0;
                                 double tot_weight = 0;
                                 for (long j = 0; j < v.size(); j++) {
-                                    sum += v[j][f][g] * weights[j];
-                                    tot_weight += weights[j];
+                                    if (!positive_only || v[j][f][g] > 0) {
+                                        sum += v[j][f][g] * weights[j];
+                                        tot_weight += weights[j];
+                                    }
                                 }
                                 innermost.push_back(tot_weight == 0 ? 0 : sum/tot_weight);
                             }
@@ -2745,6 +3682,7 @@ std::vector<std::vector<Real>> vector_of_vector_average(std::vector<std::vector<
                         }
                     }
                 }
+            }
                 break;
                 
             case EARS_ESSENTIA_SUMMARIZATION_MODE:
@@ -2794,115 +3732,6 @@ std::vector<std::vector<Real>> vector_of_vector_average(std::vector<std::vector<
     return res;
 }
 
-/*
-// channels then samples
-std::vector<Real> vector_of_vector_average(std::vector<std::vector<std::vector<Real>>> v, int feature_dim, e_ears_essentia_summarization summarization, std::vector<Real> loudness_weights)
-{
-    std::vector<std::vector<Real>> res;
-    if (feature_dim == 1) {
-        if (v.size() > 0) {
-            long num_features = v[0].size();
-            switch (summarization) {
-                case EARS_ESSENTIA_SUMMARIZATION_FIRST:
-                    res = v[0];
-                    break;
-
-                case EARS_ESSENTIA_SUMMARIZATION_LAST:
-                    res = v[v.size()-1];
-                    break;
-
-                case EARS_ESSENTIA_SUMMARIZATION_MIDDLE:
-                    res = v[v.size()/2];
-                    break;
-
-                case EARS_ESSENTIA_SUMMARIZATION_MEAN:
-                    if (v.size() > 0 && v[0].size() > 0 && v[0][0].size() > 0) {
-                        for (long f = 0; f < v[0].size(); f++) {
-                            std::vector<Real> innermost;
-                            for (long g = 0; g < v[0][f].size(); g++) {
-                                Real sum = 0;
-                                for (long j = 0; j < v.size(); j++) {
-                                    sum += v[j][f][g];
-                                }
-                                innermost.push_back(sum/v.size());
-                            }
-                            res.push_back(innermost);
-                        }
-                    }
-                    break;
-
-                case EARS_ESSENTIA_SUMMARIZATION_LOUDNESSWEIGHTEDMEAN:
-                    if (v.size() > 0 && v[0].size() > 0 && v[0][0].size() > 0) {
-                        for (long f = 0; f < v[0].size(); f++) {
-                            std::vector<Real> innermost;
-                            for (long g = 0; g < v[0][f].size(); g++) {
-                                Real sum = 0;
-                                double tot_weight = 0;
-                                for (long j = 0; j < v.size(); j++) {
-                                    sum += v[j][f][g] * loudness_weights[j];
-                                    tot_weight += loudness_weights[j];
-                                }
-                                innermost.push_back(tot_weight == 0 ? 0 : sum/tot_weight);
-                            }
-                            res.push_back(innermost);
-                        }
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    } else if (feature_dim == 0) {
-        if (v.size() > 0) {
-            long num_features = v.size();
-            switch (summarization) {
-                case EARS_ESSENTIA_SUMMARIZATION_FIRST:
-                    for (long f = 0; f < num_features; f++)
-                        res.push_back(v[f].size() > 0 ? v[f][0] : 0);
-                    break;
-                    
-                case EARS_ESSENTIA_SUMMARIZATION_LAST:
-                    for (long f = 0; f < num_features; f++)
-                        res.push_back(v[f].size() > 0 ? v[f][v[f].size()-1] : 0);
-                    break;
-                    
-                case EARS_ESSENTIA_SUMMARIZATION_MIDDLE:
-                    for (long f = 0; f < num_features; f++)
-                        res.push_back(v[f].size() > 0 ? v[f][v[f].size()/2] : 0);
-                    break;
-                
-                case EARS_ESSENTIA_SUMMARIZATION_MEAN:
-                    for (long f = 0; f < num_features; f++) {
-                        Real sum = 0;
-                        for (long j = 0; j < v[f].size(); j++) {
-                            sum += v[f][j];
-                        }
-                        res.push_back(sum/v[f].size());
-                    }
-                    break;
-                    
-                case EARS_ESSENTIA_SUMMARIZATION_LOUDNESSWEIGHTEDMEAN:
-                    for (long f = 0; f < num_features; f++) {
-                        Real sum = 0;
-                        double tot_weight = 0;
-                        for (long j = 0; j < v[f].size(); j++) {
-                            sum += v[f][j] * loudness_weights[j];
-                            tot_weight += loudness_weights[j];
-                        }
-                        res.push_back(tot_weight == 0 ? 0 : sum/tot_weight);
-                    }
-                    break;
-                    
-                default:
-                    break;
-
-            }
-        }
-    }
-    return res;
-}
-*/
 
 t_ears_err ears_essentia_fill_buffer_from_vector(t_object *x, t_buffer_obj *buf, std::vector<std::vector<std::vector<Real>>> values, double hop_size_samps, long dur_samps, long interp_mode, double audiosr, t_ears_spectralbuf_metadata *specmetadata)
 {
@@ -2951,6 +3780,8 @@ t_ears_err ears_essentia_fill_buffer_from_vector(t_object *x, t_buffer_obj *buf,
         if (ears_buffer_is_spectral(x, buf))
             ears_spectralbuf_metadata_remove(x, buf); // not spectral
         
+        ears_buffer_set_sr(x, buf, audiosr);
+
         ears_buffer_set_size_and_numchannels(x, buf, dur_samps, numchannels);
         float *sample = buffer_locksamples(buf);
         
@@ -3065,20 +3896,20 @@ double ears_essentia_handle_units(double value, t_buffer_obj *buf, t_ears_essent
     }
 
     if (extr->essentia_output_timeunit[output_num] != EARS_TIMEUNIT_UNKNOWN) {
-        if (extr->essentia_output_timeunit[output_num] != extr->output_timeunit) {
-            value = ears_convert_timeunit(value, buf, extr->essentia_output_timeunit[output_num], extr->output_timeunit);
+        if (extr->essentia_output_timeunit[output_num] != extr->local_timeunit) {
+            value = ears_convert_timeunit(value, buf, extr->essentia_output_timeunit[output_num], extr->local_timeunit);
         }
     } else if (extr->essentia_output_ampunit[output_num] != EARS_AMPUNIT_UNKNOWN) {
-        if (extr->essentia_output_ampunit[output_num] != extr->output_ampunit) {
-            value = ears_convert_ampunit(value, buf, extr->essentia_output_ampunit[output_num], extr->output_ampunit);
+        if (extr->essentia_output_ampunit[output_num] != extr->local_ampunit) {
+            value = ears_convert_ampunit(value, buf, extr->essentia_output_ampunit[output_num], extr->local_ampunit);
         }
     } else if (extr->essentia_output_frequnit[output_num] != EARS_FREQUNIT_UNKNOWN) {
-        if (extr->essentia_output_frequnit[output_num] != extr->output_frequnit) {
-            value = ears_convert_frequnit(value, buf, extr->essentia_output_frequnit[output_num], extr->output_frequnit);
+        if (extr->essentia_output_frequnit[output_num] != extr->local_frequnit) {
+            value = ears_convert_frequnit(value, buf, extr->essentia_output_frequnit[output_num], extr->local_frequnit);
         }
     } else if (extr->essentia_output_pitchunit[output_num] != EARS_PITCHUNIT_UNKNOWN) {
-        if (extr->essentia_output_pitchunit[output_num] != extr->output_pitchunit) {
-            value = ears_convert_pitchunit(value, buf, extr->essentia_output_pitchunit[output_num], extr->output_pitchunit);
+        if (extr->essentia_output_pitchunit[output_num] != extr->local_pitchunit) {
+            value = ears_convert_pitchunit(value, buf, extr->essentia_output_pitchunit[output_num], extr->local_pitchunit);
         }
     }
     
@@ -3093,28 +3924,28 @@ std::vector<Real> ears_essentia_handle_units(std::vector<Real> vec, t_buffer_obj
 {
     
     if (extr->essentia_output_timeunit[output_num] != EARS_TIMEUNIT_UNKNOWN) {
-        if (extr->essentia_output_timeunit[output_num] != extr->output_timeunit) {
+        if (extr->essentia_output_timeunit[output_num] != extr->local_timeunit) {
             std::vector<Real> outvec;
             for (long i = 0; i < vec.size(); i++)
                 outvec.push_back(ears_essentia_handle_units(vec[i], buf, extr, output_num));
             return outvec;
         }
     } else if (extr->essentia_output_ampunit[output_num] != EARS_AMPUNIT_UNKNOWN) {
-        if (extr->essentia_output_ampunit[output_num] != extr->output_ampunit) {
+        if (extr->essentia_output_ampunit[output_num] != extr->local_ampunit) {
             std::vector<Real> outvec;
             for (long i = 0; i < vec.size(); i++)
                 outvec.push_back(ears_essentia_handle_units(vec[i], buf, extr, output_num));
             return outvec;
         }
     } else if (extr->essentia_output_frequnit[output_num] != EARS_FREQUNIT_UNKNOWN) {
-        if (extr->essentia_output_frequnit[output_num] != extr->output_frequnit) {
+        if (extr->essentia_output_frequnit[output_num] != extr->local_frequnit) {
             std::vector<Real> outvec;
             for (long i = 0; i < vec.size(); i++)
                 outvec.push_back(ears_essentia_handle_units(vec[i], buf, extr, output_num));
             return outvec;
         }
     } else if (extr->essentia_output_pitchunit[output_num] != EARS_PITCHUNIT_UNKNOWN) {
-        if (extr->essentia_output_pitchunit[output_num] != extr->output_pitchunit) {
+        if (extr->essentia_output_pitchunit[output_num] != extr->local_pitchunit) {
             std::vector<Real> outvec;
             for (long i = 0; i < vec.size(); i++)
                 outvec.push_back(ears_essentia_handle_units(vec[i], buf, extr, output_num));
@@ -3127,7 +3958,7 @@ std::vector<Real> ears_essentia_handle_units(std::vector<Real> vec, t_buffer_obj
 std::vector<std::vector<Real>> ears_essentia_handle_units(std::vector<std::vector<Real>> vec, t_buffer_obj *buf, t_ears_essentia_extractor *extr, long output_num)
 {
     if (extr->essentia_output_timeunit[output_num] != EARS_TIMEUNIT_UNKNOWN) {
-        if (extr->essentia_output_timeunit[output_num] != extr->output_timeunit) {
+        if (extr->essentia_output_timeunit[output_num] != extr->local_timeunit) {
             std::vector<std::vector<Real>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<Real> inner;
@@ -3138,7 +3969,7 @@ std::vector<std::vector<Real>> ears_essentia_handle_units(std::vector<std::vecto
             return outvec;
         }
     } else if (extr->essentia_output_ampunit[output_num] != EARS_AMPUNIT_UNKNOWN) {
-        if (extr->essentia_output_ampunit[output_num] != extr->output_ampunit) {
+        if (extr->essentia_output_ampunit[output_num] != extr->local_ampunit) {
             std::vector<std::vector<Real>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<Real> inner;
@@ -3149,7 +3980,7 @@ std::vector<std::vector<Real>> ears_essentia_handle_units(std::vector<std::vecto
             return outvec;
         }
     } else if (extr->essentia_output_frequnit[output_num] != EARS_FREQUNIT_UNKNOWN) {
-        if (extr->essentia_output_frequnit[output_num] != extr->output_frequnit) {
+        if (extr->essentia_output_frequnit[output_num] != extr->local_frequnit) {
             std::vector<std::vector<Real>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<Real> inner;
@@ -3160,7 +3991,7 @@ std::vector<std::vector<Real>> ears_essentia_handle_units(std::vector<std::vecto
             return outvec;
         }
     } else if (extr->essentia_output_pitchunit[output_num] != EARS_PITCHUNIT_UNKNOWN) {
-        if (extr->essentia_output_pitchunit[output_num] != extr->output_pitchunit) {
+        if (extr->essentia_output_pitchunit[output_num] != extr->local_pitchunit) {
             std::vector<std::vector<Real>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<Real> inner;
@@ -3177,7 +4008,7 @@ std::vector<std::vector<Real>> ears_essentia_handle_units(std::vector<std::vecto
 std::vector<std::vector<std::vector<Real>>> ears_essentia_handle_units(std::vector<std::vector<std::vector<Real>>> vec, t_buffer_obj *buf, t_ears_essentia_extractor *extr, long output_num)
 {
     if (extr->essentia_output_timeunit[output_num] != EARS_TIMEUNIT_UNKNOWN) {
-        if (extr->essentia_output_timeunit[output_num] != extr->output_timeunit) {
+        if (extr->essentia_output_timeunit[output_num] != extr->local_timeunit) {
             std::vector<std::vector<std::vector<Real>>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<std::vector<Real>> inner;
@@ -3192,7 +4023,7 @@ std::vector<std::vector<std::vector<Real>>> ears_essentia_handle_units(std::vect
             return outvec;
         }
     } else if (extr->essentia_output_ampunit[output_num] != EARS_AMPUNIT_UNKNOWN) {
-        if (extr->essentia_output_ampunit[output_num] != extr->output_ampunit) {
+        if (extr->essentia_output_ampunit[output_num] != extr->local_ampunit) {
             std::vector<std::vector<std::vector<Real>>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<std::vector<Real>> inner;
@@ -3207,7 +4038,7 @@ std::vector<std::vector<std::vector<Real>>> ears_essentia_handle_units(std::vect
             return outvec;
         }
     } else if (extr->essentia_output_frequnit[output_num] != EARS_FREQUNIT_UNKNOWN) {
-        if (extr->essentia_output_frequnit[output_num] != extr->output_frequnit) {
+        if (extr->essentia_output_frequnit[output_num] != extr->local_frequnit) {
             std::vector<std::vector<std::vector<Real>>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<std::vector<Real>> inner;
@@ -3222,7 +4053,7 @@ std::vector<std::vector<std::vector<Real>>> ears_essentia_handle_units(std::vect
             return outvec;
         }
     } else if (extr->essentia_output_pitchunit[output_num] != EARS_PITCHUNIT_UNKNOWN) {
-        if (extr->essentia_output_pitchunit[output_num] != extr->output_pitchunit) {
+        if (extr->essentia_output_pitchunit[output_num] != extr->local_pitchunit) {
             std::vector<std::vector<std::vector<Real>>> outvec;
             for (long i = 0; i < vec.size(); i++) {
                 std::vector<std::vector<Real>> inner;
@@ -3277,6 +4108,42 @@ std::vector<std::vector<Real>> string_to_ascii_vector_wrapped(std::string s)
     return v;
 }
 
+void summarize_framewise_features(t_ears_essentia_extractors_library *lib, long extr_idx, long o, t_ears_essentia_analysis_params *params, t_buffer_obj *buf, std::vector<std::vector<std::vector<Real>>> &framewise_features, e_ears_essentia_summarizationweight summarizationweight, std::vector<Real> &rms_weights, std::vector<Real> &loudness_weights)
+{
+    std::vector<std::vector<Real>> avg = vector_of_vector_average(framewise_features, lib->extractors[extr_idx].summarization[o], summarizationweight, rms_weights, loudness_weights);
+    if (lib->extractors[extr_idx].output_type[o] == 'b' || lib->extractors[extr_idx].output_type[o] == 'c') {
+        llll_appendsym(lib->extractors[extr_idx].result[o], symbol_from_ascii_vector_wrapped(avg));
+    } else {
+        for (long f = 0; f < avg.size(); f++) {
+            t_llll *innermost = llll_get();
+            for (long g = 0; g < avg[f].size(); g++) {
+                double val = ears_essentia_handle_units(avg[f][g], buf, &lib->extractors[extr_idx], o);
+                if (lib->extractors[extr_idx].output_type[o] == 'i')
+                    llll_appendlong(innermost, val);
+                else
+                    llll_appenddouble(innermost, val);
+            }
+            llll_appendllll(lib->extractors[extr_idx].result[o], innermost);
+        }
+    }
+}
+
+void append_framewise_features(t_ears_essentia_extractors_library *lib, long extr_idx, long o, t_ears_essentia_analysis_params *params, t_buffer_obj *buf, std::vector<std::vector<Real>> &framewise_features)
+{
+    for (long f = 0; f < framewise_features.size(); f++) {
+        t_llll *inner = llll_get();
+        for (long g = 0; g < framewise_features[f].size(); g++) {
+            double val = ears_essentia_handle_units(framewise_features[f][g], buf, &lib->extractors[extr_idx], o);
+            if (lib->extractors[extr_idx].output_type[o] == 'i')
+                llll_appendlong(inner, val);
+            else
+                llll_appenddouble(inner, val);
+        }
+        llll_appendllll(lib->extractors[extr_idx].result[o], inner);
+    }
+}
+
+
 t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer_obj *buf, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, long buffer_output_interpolation_mode)
 {
     t_ears_err err = EARS_ERR_NONE;
@@ -3286,14 +4153,18 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
     std::vector<Real> dataeql;
     std::vector<Real> framedata;
     std::vector<Real> wframedata;
+    std::vector<std::complex<Real>> fftdata;
     std::vector<Real> specdata;
+    std::vector<Real> phasedata;
     std::vector<Real> envdata;
     std::vector<Real> envdata_cm;
     std::vector<Real> specdata_cm;
     std::vector<Real> peaksdatafreqs;
     std::vector<Real> peaksdatamags;
     std::vector<std::vector<Real>> hpcpdata;
+    std::vector<std::vector<Real>> pitchdata;
     std::vector<Real> hpcpdata_frame;
+    std::vector<Real> pitchdata_frame;
 
     Real frameloudness, framerms;
     Real fzerodata;
@@ -3304,11 +4175,12 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
         lib->alg_FrameCutter->output("frame").set(framedata);
         lib->alg_Windower->input("frame").set(framedata);
         lib->alg_Windower->output("frame").set(wframedata);
-        lib->alg_Spectrum->input("frame").set(wframedata);
-        lib->alg_Spectrum->output("spectrum").set(specdata);
-        
-        lib->alg_Envelope->input("signal").set(data);
-        lib->alg_Envelope->output("signal").set(envdata);
+        lib->alg_FFT->input("frame").set(wframedata);
+        lib->alg_FFT->output("fft").set(fftdata);
+
+        lib->alg_Car2pol->input("complex").set(fftdata);
+        lib->alg_Car2pol->output("magnitude").set(specdata);
+        lib->alg_Car2pol->output("phase").set(phasedata);
 
         lib->alg_EnvelopeCentralMoments->input("array").set(envdata);
         lib->alg_EnvelopeCentralMoments->output("centralMoments").set(envdata_cm);
@@ -3340,9 +4212,9 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
         lib->alg_HPCP->input("magnitudes").set(peaksdatamags);
         lib->alg_HPCP->output("hpcp").set(hpcpdata_frame);
 
-        lib->alg_YinFFT->input("spectrum").set(specdata);
-        lib->alg_YinFFT->output("pitch").set(fzerodata);
-        lib->alg_YinFFT->output("pitchConfidence").set(fzeroconfidencedata);
+        lib->alg_Pitch->input("spectrum").set(specdata);
+        lib->alg_Pitch->output("pitch").set(fzerodata);
+        lib->alg_Pitch->output("pitchConfidence").set(fzeroconfidencedata);
 
     } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  err = EARS_ERR_ESSENTIA;   }
     
@@ -3402,21 +4274,27 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                 }
             }
 
-            bool need_framewise_iteration = (temporalmode == EARS_ESSENTIA_TEMPORALMODE_TIMESERIES ||
-                                             (temporalmode == EARS_ESSENTIA_TEMPORALMODE_BUFFER && lib->extractors[i].essentia_output_type[0] != 's') ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMCENTRALMOMENTS ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKSANDFZERO ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE ||
-                                             inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH );
+            e_ears_essentia_framemode framemode = lib->extractors[i].framemode;
+            
+            bool need_framewise_iteration =
+                ((temporalmode == EARS_ESSENTIA_TEMPORALMODE_TIMESERIES && framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES
+                  && framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY && framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS) ||
+//                 (temporalmode == EARS_ESSENTIA_TEMPORALMODE_BUFFER && lib->extractors[i].essentia_output_type[0] != 's') ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMANDPHASE ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMCENTRALMOMENTS ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKSANDFZERO ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH ||
+                 inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH );
             
             // resetting algorithms
             lib->alg_FrameCutter->reset();
             lib->alg_Windower->reset();
-            lib->alg_Spectrum->reset();
+            lib->alg_FFT->reset();
             lib->alg_Car2pol->reset();
             lib->alg_Loudness->reset();
             lib->alg_EqualLoudness->reset();
@@ -3425,17 +4303,28 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
             lib->alg_SpectrumCentralMoments->reset();
             lib->alg_SpectralPeaks->reset();
             lib->alg_HPCP->reset();
-            lib->alg_YinFFT->reset();
+            lib->alg_Pitch->reset();
             lib->extractors[i].algorithm->reset();
             hpcpdata.clear();
-            
+            pitchdata.clear();
 
             if (need_framewise_iteration) {
                 //// FRAMEWISE ITERATION
                 std::vector<std::vector<std::vector<Real>>> frame_features[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
                 std::vector<Real> loudness_weights, rms_weights;
-                bool need_loudness = ((temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE && params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN && params->summarizationweight == EARS_ESSENTIA_SUMMARIZATIONWEIGHT_LOUDNESS) || (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS));
-                bool need_rms = ((temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE && params->summarization == EARS_ESSENTIA_SUMMARIZATION_MEAN && params->summarizationweight == EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS) || (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS));
+                bool need_loudness = false, need_rms = false;
+                for (long o = 0; o < lib->extractors[i].essentia_num_outputs; o++) {
+                    need_loudness |= ((temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE &&
+                                       (lib->extractors[i].summarization[o] == EARS_ESSENTIA_SUMMARIZATION_MEAN ||
+                                        lib->extractors[i].summarization[o] == EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES) &&
+                                       params->summarizationweight == EARS_ESSENTIA_SUMMARIZATIONWEIGHT_LOUDNESS) ||
+                                      (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS));
+                    need_rms |= ((temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE &&
+                                  (lib->extractors[i].summarization[o] == EARS_ESSENTIA_SUMMARIZATION_MEAN ||
+                                   lib->extractors[i].summarization[o] == EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES) &&
+                                  params->summarizationweight == EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS) ||
+                                 (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS));
+                }
 
                 lib->alg_FrameCutter->reset();
 
@@ -3446,23 +4335,32 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(hpcpdata);
                             lib->extractors[i].algorithm->compute();
                             goto finally_compute;
+                        } else if (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH) {
+                            lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(pitchdata);
+                            lib->extractors[i].algorithm->compute();
+                            goto finally_compute;
                         }
                         break;
                     }
                     
+                    lib->alg_Windower->compute();
+                    
                     switch (inputtype) {
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME:
-                            lib->alg_Windower->compute();
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(wframedata);
                             break;
                             
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM:
+                        case EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMANDPHASE:
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMCENTRALMOMENTS:
-                            lib->alg_Windower->compute();
-                            lib->alg_Spectrum->compute();
+                            lib->alg_FFT->compute();
+                            lib->alg_Car2pol->compute();
                             if (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMCENTRALMOMENTS) {
                                 lib->alg_SpectrumCentralMoments->compute();
                                 lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(specdata_cm);
+                            } else if (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUMANDPHASE) {
+                                lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(specdata);
+                                lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[1]).set(phasedata);
                             } else {
                                 lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(specdata);
                             }
@@ -3480,50 +4378,57 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                             break;
 
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS:
-                            lib->alg_Windower->compute();
-                            lib->alg_Spectrum->compute();
+                            lib->alg_FFT->compute();
+                            lib->alg_Car2pol->compute();
                             lib->alg_SpectralPeaks->compute();
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(peaksdatafreqs);
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[1]).set(peaksdatamags);
                             break;
  
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKSANDFZERO:
-                            lib->alg_Windower->compute();
-                            lib->alg_Spectrum->compute();
+                            lib->alg_FFT->compute();
+                            lib->alg_Car2pol->compute();
                             lib->alg_SpectralPeaks->compute();
-                            lib->alg_YinFFT->compute();
+                            lib->alg_Pitch->compute();
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(peaksdatafreqs);
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[1]).set(peaksdatamags);
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[2]).set(fzerodata);
                             break;
 
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE:
-                            lib->alg_Windower->compute();
-                            lib->alg_Spectrum->compute();
+                            lib->alg_FFT->compute();
+                            lib->alg_Car2pol->compute();
                             lib->alg_SpectralPeaks->compute();
                             lib->alg_HPCP->compute();
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(hpcpdata_frame);
                             break;
 
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH:
-                            lib->alg_Windower->compute();
-                            lib->alg_Spectrum->compute();
+                            lib->alg_FFT->compute();
                             lib->alg_SpectralPeaks->compute();
                             lib->alg_HPCP->compute();
                             hpcpdata.push_back(hpcpdata_frame);
                             break;
-                            
+
+                        case EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH:
+                            lib->alg_FFT->compute();
+                            lib->alg_Car2pol->compute();
+                            lib->alg_Pitch->compute();
+                            pitchdata.push_back(pitchdata_frame);
+                            break;
+
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS:
+                            lib->alg_Loudness->compute();
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(frameloudness);
                             break;
                             
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO:
                         default:
-                            lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(framedata);
+                            lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(wframedata);
                             break;
                     }
                     
-                    if (need_loudness) {
+                    if (need_loudness && inputtype != EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS) {
                         lib->alg_Loudness->compute();
                         loudness_weights.push_back(frameloudness);
                     }
@@ -3533,7 +4438,9 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                         rms_weights.push_back(framerms);
                     }
                     
-                    if (inputtype != EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH) {
+                    if (inputtype != EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH &&
+                        inputtype != EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH) {
+                        
                         lib->extractors[i].algorithm->compute();
                         
                     finally_compute:
@@ -3592,7 +4499,8 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                             }
                         }
                         
-                        if (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH) {
+                        if (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH ||
+                            inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH) {
                             break;
                         }
                     }
@@ -3626,27 +4534,9 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                             ears_essentia_fill_buffer_from_vector(ob, lib->extractors[i].result_buf[o], ears_essentia_handle_units(frame_features[o], buf, &lib->extractors[i], o), params->hopsize_samps, params->duration_samps, buffer_output_interpolation_mode, sr, specmetadata);
                             break;
                             
-                        case EARS_ESSENTIA_TEMPORALMODE_WHOLE:
+                        case EARS_ESSENTIA_TEMPORALMODE_WHOLE: // summarization needed
                         {
-                            e_ears_essentia_summarization summ = params->summarization;
-                            if (summ == EARS_ESSENTIA_SUMMARIZATION_MEAN && (lib->extractors[i].output_type[o] == 'b' || lib->extractors[i].output_type[o] == 'c'))
-                                summ = EARS_ESSENTIA_SUMMARIZATION_MODE; // for symbols, MEAN -> MODE
-                            std::vector<std::vector<Real>> avg = vector_of_vector_average(frame_features[o], summ, params->summarizationweight, rms_weights, loudness_weights);
-                            if (lib->extractors[i].output_type[o] == 'b' || lib->extractors[i].output_type[o] == 'c') {
-                                llll_appendsym(lib->extractors[i].result[o], symbol_from_ascii_vector_wrapped(avg));
-                            } else {
-                                for (long f = 0; f < avg.size(); f++) {
-                                    t_llll *innermost = llll_get();
-                                    for (long g = 0; g < avg[f].size(); g++) {
-                                        double val = ears_essentia_handle_units(avg[f][g], buf, &lib->extractors[i], o);
-                                        if (lib->extractors[i].output_type[o] == 'i')
-                                            llll_appendlong(innermost, val);
-                                        else
-                                            llll_appenddouble(innermost, val);
-                                    }
-                                    llll_appendllll(lib->extractors[i].result[o], innermost);
-                                }
-                            }
+                            summarize_framewise_features(lib, i, o, params, buf, frame_features[o], params->summarizationweight, rms_weights, loudness_weights);
                         }
                         default:
                             break;
@@ -3655,6 +4545,7 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                 
                 
             } else {
+                
                 ////// GLOBAL COMPUTATION
                 std::vector<std::vector<Real>> features[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
                 
@@ -3683,22 +4574,14 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                         continue;
                     switch (lib->extractors[i].essentia_output_type[o]) {
                         case 'f':
-                        {
-                            std::vector<Real> temp;
-                            temp.push_back(res_real[o]);
-                            features[o].push_back(temp);
-                        }
+                            features[o] = vector_wrapdeepest(vector_wrapdeepest(res_real[o]));
                             break;
                         case 'i':
-                        {
-                            std::vector<Real> temp;
-                            temp.push_back(res_int[o]);
-                            features[o].push_back(temp);
-                        }
+                            features[o] = vector_wrapdeepest(vector_wrapdeepest(res_int[o]));
                             break;
                         case 'v':
                         case 's':
-                            features[o].push_back(res_vector[o]);
+                            features[o] = vector_wrapdeepest(res_vector[o]);
                             break;
                         case 'w':
                             features[o] = res_vector_vector[o];
@@ -3707,28 +4590,78 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                             break;
                     }
                     
-                    switch (temporalmode) {
-                        case EARS_ESSENTIA_TEMPORALMODE_WHOLE:
-                            for (long f = 0; f < features[o].size(); f++) {
-                                t_llll *inner = llll_get();
-                                for (long g = 0; g < features[o][f].size(); g++) {
-                                    double val = ears_essentia_handle_units(features[o][f][g], buf, &lib->extractors[i], o);
-                                    if (lib->extractors[i].output_type[o] == 'i')
-                                        llll_appendlong(inner, val);
-                                    else
-                                        llll_appenddouble(inner, val);
-                                }
-                                llll_appendllll(lib->extractors[i].result[o], inner);
+                    
+                    if (lib->extractors[i].framemode == EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES || lib->extractors[i].framemode == EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY || lib->extractors[i].framemode == EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS) {
+                        
+                        // Check number of frames: they may be > due to sample approximations
+                        if (atom_gettype(&e_ob->a_numframes) != A_SYM) {
+                            long numframes = atom_getlong(&e_ob->a_numframes);
+                            if (features[o].size() > numframes) {
+                                object_warn((t_object *)e_ob, "Due to hopsize rounding errors, the number of frames differs from the requested one.");
+                                object_warn((t_object *)e_ob, "%ld final frame%s will be dropped to match the request; consider using integer hopsize to avoid this problem.", features[o].size() - numframes, features[o].size() - numframes == 1 ? "" : "s");
                             }
-                            break;
-                            
-                        case EARS_ESSENTIA_TEMPORALMODE_BUFFER:
-                            ears_essentia_fill_buffer_from_samples(ob, lib->extractors[i].result_buf[o],
-                                                                   ears_essentia_handle_units(features[o], buf, &lib->extractors[i], o));
-                            break;
-                            
-                        default:
-                            break;
+                            while (features[o].size() > numframes)
+                                features[o].pop_back();
+                        }
+                        
+                        // We need to summarize anyway
+                        switch (temporalmode) {
+                            case EARS_ESSENTIA_TEMPORALMODE_TIMESERIES:
+                                append_framewise_features(lib, i, o, params, buf, features[o]);
+/*                                for (long f = 0; f < features[o].size(); f++) {
+                                    t_llll *inner = llll_get();
+                                    for (long g = 0; g < features[o][f].size(); g++) {
+                                        double val = ears_essentia_handle_units(features[o][f][g], buf, &lib->extractors[i], o);
+                                        if (lib->extractors[i].output_type[o] == 'i')
+                                            llll_appendlong(inner, val);
+                                        else
+                                            llll_appenddouble(inner, val);
+                                    }
+                                    llll_appendllll(lib->extractors[i].result[o], inner);
+                                } */
+                                break;
+                            case EARS_ESSENTIA_TEMPORALMODE_WHOLE:
+                            {
+                                std::vector<Real> dummy;
+                                std::vector<std::vector<std::vector<Real>>> deeper = vector_wrapdeepest(features[o]);
+                                summarize_framewise_features(lib, i, o, params, buf, deeper, EARS_ESSENTIA_SUMMARIZATIONWEIGHT_NONE, dummy, dummy);
+                            }
+                                break;
+                                
+                            case EARS_ESSENTIA_TEMPORALMODE_BUFFER:
+                                ears_essentia_fill_buffer_from_vector(ob, lib->extractors[i].result_buf[o], ears_essentia_handle_units(vector_wrapdeepest(features[o]), buf, &lib->extractors[i], o), params->hopsize_samps, params->duration_samps, buffer_output_interpolation_mode, sr, specmetadata);
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                        
+
+                    } else {
+                        switch (temporalmode) {
+                            case EARS_ESSENTIA_TEMPORALMODE_WHOLE:
+                                append_framewise_features(lib, i, o, params, buf, features[o]);
+/*                                for (long f = 0; f < features[o].size(); f++) {
+                                    t_llll *inner = llll_get();
+                                    for (long g = 0; g < features[o][f].size(); g++) {
+                                        double val = ears_essentia_handle_units(features[o][f][g], buf, &lib->extractors[i], o);
+                                        if (lib->extractors[i].output_type[o] == 'i')
+                                            llll_appendlong(inner, val);
+                                        else
+                                            llll_appenddouble(inner, val);
+                                    }
+                                    llll_appendllll(lib->extractors[i].result[o], inner);
+                                }*/
+                                break;
+                                
+                            case EARS_ESSENTIA_TEMPORALMODE_BUFFER:
+                                ears_essentia_fill_buffer_from_samples(ob, lib->extractors[i].result_buf[o],
+                                                                       ears_essentia_handle_units(features[o], buf, &lib->extractors[i], o));
+                                break;
+                                
+                            default:
+                                break;
+                        }
                     }
                 }
                 
@@ -3739,16 +4672,30 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
             long shape[3];
             for (long o = 0; o < lib->extractors[i].essentia_num_outputs; o++) {
                 shape[0] = lib->extractors[i].result[o]->l_size;
-                shape[1] = lib->extractors[i].result[o]->l_head && hatom_gettype(&lib->extractors[i].result[o]->l_head->l_hatom) == H_LLLL ? hatom_getllll(&lib->extractors[i].result[o]->l_head->l_hatom)->l_size : 0;
-                shape[2] = shape[1] > 0 && hatom_getllll(&lib->extractors[i].result[o]->l_head->l_hatom)->l_head && hatom_gettype(&hatom_getllll(&lib->extractors[i].result[o]->l_head->l_hatom)->l_head->l_hatom) == H_LLLL ? hatom_getllll(&hatom_getllll(&lib->extractors[i].result[o]->l_head->l_hatom)->l_head->l_hatom)->l_size : 0;
-                
-                if (shape[2] == 1)
+                shape[1] = 0;
+                for (t_llllelem *el = lib->extractors[i].result[o]->l_head; el; el = el->l_next) {
+                    if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                        shape[1] = MAX(shape[1], hatom_getllll(&el->l_hatom)->l_size);
+                    }
+                }
+                shape[2] = 0;
+                for (t_llllelem *el = lib->extractors[i].result[o]->l_head; el; el = el->l_next) {
+                    if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                        for (t_llllelem *el2 = hatom_getllll(&el->l_hatom)->l_head; el2; el2 = el2->l_next) {
+                            if (hatom_gettype(&el2->l_hatom) == H_LLLL) {
+                                shape[2] = MAX(shape[2], hatom_getllll(&el2->l_hatom)->l_size);
+                            }
+                        }
+                    }
+                }
+
+                if (!lib->extractors[i].prevent_flattening[o][2] && shape[2] == 1)
                     llll_flat(lib->extractors[i].result[o], 2, 2);
-                if (shape[1] == 1)
+                if (!lib->extractors[i].prevent_flattening[o][1] && shape[1] == 1)
                     llll_flat(lib->extractors[i].result[o], 1, 1);
-                if (lib->extractors[i].temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE && shape[0] == 1) // otherwise shape[0] are the frames
+                if (!lib->extractors[i].prevent_flattening[o][0] &&
+                    lib->extractors[i].temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE && shape[0] == 1) // otherwise shape[0] are the frames
                     llll_flat(lib->extractors[i].result[o], 1, 1);
-//                    llll_splatter(lib->extractors[i].result[o]->l_head, LLLL_FREETHING_DONT);
             }
             
         } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  err =  EARS_ERR_ESSENTIA;   }
@@ -3756,3 +4703,4 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
     
     return err;
 }
+

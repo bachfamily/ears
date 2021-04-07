@@ -80,6 +80,7 @@ typedef struct _buf_features {
     double             a_envreleasetime;
 
     long                buffer_output_interpolation_mode;
+    
 } t_buf_features;
 
 
@@ -163,13 +164,13 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     
-    earsbufobj_class_add_winsize_attr(c);
+    earsbufobj_class_add_framesize_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
     earsbufobj_class_add_wintype_attr(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
-
+    earsbufobj_class_add_winnormalized_attr(c);
 
     CLASS_ATTR_DOUBLE(c, "envattack", 0, t_buf_features, a_envattacktime);
     CLASS_ATTR_STYLE_LABEL(c,"envattack",0,"text","Envelope Attack Time");
@@ -391,6 +392,39 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             return "Onset detection function";
             break;
 
+        case EARS_FEATURE_ONSETDETECTIONGLOBAL:
+            return "Onset detection global";
+            break;
+
+        case EARS_FEATURE_ONSETRATE:
+            return "Onset rate";
+            break;
+
+        case EARS_FEATURE_PERCIVALBPMESTIMATOR:
+            return "Percival BPM estimator";
+            break;
+
+        case EARS_FEATURE_RHYTHMDESCRIPTORS:
+            return "Rhythm descriptors";
+            break;
+
+        case EARS_FEATURE_RHYTHMEXTRACTOR:
+            return "Rhythm extractor";
+            break;
+
+        case EARS_FEATURE_RHYTHMEXTRACTOR2013:
+            return "Rhythm extractor 2013";
+            break;
+            
+        case EARS_FEATURE_SINGLEBEATLOUDNESS:
+            return "Single beat loudness";
+            break;
+
+        case EARS_FEATURE_SUPERFLUXEXTRACTOR:
+            return "SuperFlux extractor";
+            break;
+
+            
             
         case EARS_FEATURE_SPECTRALCENTRALMOMENTS:
             return "Spectral central moments";
@@ -564,8 +598,14 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             break;
 
 // FINGERPRINTING
-        case EARS_FEATURE_CHROMAPRINTER:
-            return "Chromaprinter";
+//        case EARS_FEATURE_CHROMAPRINTER:
+//            return "Chromaprinter";
+//            break;
+
+            
+// AUDIO QUALITY
+        case EARS_FEATURE_SNR:
+            return "Signal-to-noise ratio";
             break;
 
 // DURATION/SILENCE
@@ -620,6 +660,14 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             return "Pitch salience function";
             break;
 
+        case EARS_FEATURE_PITCHMELODIA:
+            return "Pitch Melodia";
+            break;
+
+        case EARS_FEATURE_PREDOMINANTPITCHMELODIA:
+            return "Predominant Pitch Melodia";
+            break;
+
         case EARS_FEATURE_PITCHYIN:
             return "Pitch Yin";
             break;
@@ -632,6 +680,15 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             return "Pitch Yin probabilistic";
             break;
 
+        case EARS_FEATURE_PITCHYINPROBABILITIES:
+            return "Pitch Yin probabilities";
+            break;
+        
+        case EARS_FEATURE_VIBRATO:
+            return "Vibrato";
+            break;
+
+            
         default:
             return "Unknown feature";
             break;
@@ -662,55 +719,24 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
 
     *temporalmode = tm;
 
-    if (s == gensym("spectrum")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("spectrum"))
         return EARS_FEATURE_SPECTRUM;
-    }
-
-    if (s == gensym("powerspectrum")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("powerspectrum"))
         return EARS_FEATURE_POWERSPECTRUM;
-    }
-
-    
-    if (s == gensym("envelope")) {
-        if (tm == EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("envelope"))
         return EARS_FEATURE_ENVELOPE;
-    }
-    if (s == gensym("logattacktime")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("logattacktime"))
         return EARS_FEATURE_LOGATTACKTIME;
-    }
-
-    if (s == gensym("envmaxtime")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("envmaxtime"))
         return EARS_FEATURE_ENVMAXTIME;
-    }
-    if (s == gensym("envmintime")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("envmintime"))
         return EARS_FEATURE_ENVMINTIME;
-    }
-    if (s == gensym("strongdecay")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("strongdecay"))
         return EARS_FEATURE_STRONGDECAY;
-    }
-    if (s == gensym("temporalcentroid")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalcentroid"))
         return EARS_FEATURE_TEMPORALCENTROID;
-    }
-    if (s == gensym("duration")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("duration"))
         return EARS_FEATURE_DURATION;
-    }
 
     
     // Standard
@@ -719,19 +745,12 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
             *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_DERIVATIVE;
     }
-    if (s == gensym("min")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("min"))
         return EARS_FEATURE_MIN;
-    }
-    if (s == gensym("max")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("max"))
         return EARS_FEATURE_MAX;
-    }
-    if (s == gensym("welch")) {
+    if (s == gensym("welch"))
         return EARS_FEATURE_WELCH;
-    }
     
 
     if (s == gensym("flatness") || s == gensym("spectralflatness"))
@@ -780,185 +799,115 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
         return EARS_FEATURE_TRIANGULARBARKBANDS;
 
     
-    if (s == gensym("beattrackerdegara")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("beattrackerdegara"))
         return EARS_FEATURE_BEATTRACKERDEGARA;
-    }
-    if (s == gensym("beattrackermultifeature")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("beattrackermultifeature"))
         return EARS_FEATURE_BEATTRACKERMULTIFEATURE;
-    }
-    if (s == gensym("beatsloudness")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("beatsloudness"))
         return EARS_FEATURE_BEATSLOUDNESS;
-    }
-
     if (s == gensym("danceability"))
         return EARS_FEATURE_DANCEABILITY;
-
     if (s == gensym("loopbpmestimator"))
         return EARS_FEATURE_LOOPBPMESTIMATOR;
-    
     if (s == gensym("onsetdetection"))
         return EARS_FEATURE_ONSETDETECTION;
-
+    if (s == gensym("onsetdetectionglobal"))
+        return EARS_FEATURE_ONSETDETECTIONGLOBAL;
+    if (s == gensym("onsetrate"))
+        return EARS_FEATURE_ONSETRATE;
+    if (s == gensym("percivalbpmestimator"))
+        return EARS_FEATURE_PERCIVALBPMESTIMATOR;
+    if (s == gensym("rhythmdescriptors"))
+        return EARS_FEATURE_RHYTHMDESCRIPTORS;
+    if (s == gensym("rhythmextractor"))
+        return EARS_FEATURE_RHYTHMEXTRACTOR;
+    if (s == gensym("rhythmextractor2013"))
+        return EARS_FEATURE_RHYTHMEXTRACTOR2013;
+    if (s == gensym("singlebeatloudness"))
+        return EARS_FEATURE_SINGLEBEATLOUDNESS;
+    if (s == gensym("superfluxextractor"))
+        return EARS_FEATURE_SUPERFLUXEXTRACTOR;
+    
     
     
     // Statistics
     
     if (s == gensym("spectralcentralmoments"))
         return EARS_FEATURE_SPECTRALCENTRALMOMENTS;
-
-    if (s == gensym("temporalcentralmoments")){
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalcentralmoments"))
         return EARS_FEATURE_TEMPORALCENTRALMOMENTS;
-    }
-
     if (s == gensym("spectralrawmoments"))
         return EARS_FEATURE_SPECTRALRAWMOMENTS;
-    
-    if (s == gensym("temporalrawmoments")){
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalrawmoments"))
         return EARS_FEATURE_TEMPORALRAWMOMENTS;
-    }
-    
-    if (s == gensym("temporalcentroid")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalcentroid"))
         return EARS_FEATURE_TEMPORALCENTROID;
-    }
-
     if (s == gensym("spectralcentroid"))
         return EARS_FEATURE_SPECTRALCENTROID;
-
-    if (s == gensym("temporalcrest")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalcrest"))
         return EARS_FEATURE_TEMPORALCREST;
-    }
-    
     if (s == gensym("spectralcrest"))
         return EARS_FEATURE_SPECTRALCREST;
-
-    if (s == gensym("temporaldecrease")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporaldecrease"))
         return EARS_FEATURE_TEMPORALDECREASE;
-    }
-    
     if (s == gensym("spectraldecrease"))
         return EARS_FEATURE_SPECTRALDECREASE;
-
-    if (s == gensym("temporaldistributionshape")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporaldistributionshape"))
         return EARS_FEATURE_TEMPORALDISTRIBUTIONSHAPE;
-    }
-    
     if (s == gensym("spectraldistributionshape"))
         return EARS_FEATURE_SPECTRALDISTRIBUTIONSHAPE;
-    
-    if (s == gensym("temporalspread")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalspread"))
         return EARS_FEATURE_TEMPORALSPREAD;
-    }
-    
     if (s == gensym("spectralspread"))
         return EARS_FEATURE_SPECTRALSPREAD;
-
-    if (s == gensym("temporalskewness")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalskewness"))
         return EARS_FEATURE_TEMPORALSKEWNESS;
-    }
-    
     if (s == gensym("spectralskewness"))
         return EARS_FEATURE_SPECTRALSKEWNESS;
-    
-    if (s == gensym("temporalkurtosis")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalkurtosis"))
         return EARS_FEATURE_TEMPORALKURTOSIS;
-    }
-    
     if (s == gensym("spectralkurtosis"))
         return EARS_FEATURE_SPECTRALKURTOSIS;
-
     if (s == gensym("spectralenergy"))
         return EARS_FEATURE_SPECTRALENERGY;
-
     if (s == gensym("spectralentropy"))
         return EARS_FEATURE_SPECTRALENTROPY;
-
-    if (s == gensym("temporalflatness")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("temporalflatness"))
         return EARS_FEATURE_TEMPORALFLATNESS;
-    }
-
     if (s == gensym("spectralflatness"))
         return EARS_FEATURE_SPECTRALFLATNESS;
-    
     if (s == gensym("spectralgeometricmean"))
         return EARS_FEATURE_SPECTRALGEOMETRICMEAN;
-
-    
-    if (s == gensym("instantpower"))
-        return EARS_FEATURE_INSTANTPOWER;
-    
     if (s == gensym("spectralmean"))
         return EARS_FEATURE_SPECTRALMEAN;
-    
     if (s == gensym("spectralmedian"))
         return EARS_FEATURE_SPECTRALMEDIAN;
-    
     if (s == gensym("spectralrms"))
         return EARS_FEATURE_SPECTRALRMS;
-    
     if (s == gensym("temporalvariance"))
         return EARS_FEATURE_TEMPORALVARIANCE;
-    
     if (s == gensym("spectralvariance"))
         return EARS_FEATURE_SPECTRALVARIANCE;
-    
     if (s == gensym("instantpower"))
         return EARS_FEATURE_INSTANTPOWER;
 
-    if (s == gensym("chordsdetection")) {
-        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            *err = EARS_ERR_INVALID_MODE;
-        return EARS_FEATURE_CHORDSDETECTION;
-    }
     
+    if (s == gensym("chordsdetection"))
+        return EARS_FEATURE_CHORDSDETECTION;
     if (s == gensym("dissonance"))
         return EARS_FEATURE_DISSONANCE;
     if (s == gensym("hpcp"))
         return EARS_FEATURE_HPCP;
-    if (s == gensym("harmonicpeaks")) {
-        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("harmonicpeaks"))
         return EARS_FEATURE_HARMONICPEAKS;
-    }
     if (s == gensym("highresolutionfeatures"))
         return EARS_FEATURE_HIGHRESOLUTIONFEATURES;
     if (s == gensym("inharmonicity"))
         return EARS_FEATURE_INHARMONICITY;
-    if (s == gensym("key")) {
-        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("key"))
         return EARS_FEATURE_KEY;
-    }
-    if (s == gensym("keyextractor")) {
-        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("keyextractor"))
         return EARS_FEATURE_KEYEXTRACTOR;
-    }
     if (s == gensym("oddtoevenharmonicenergyratio"))
         return EARS_FEATURE_ODDTOEVENHARMONICENERGYRATIO;
     if (s == gensym("pitchsalience"))
@@ -971,23 +920,19 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
         return EARS_FEATURE_TUNINGFREQUENCY;
     
     // FINGERPRINTING
-    if (s == gensym("chromaprinter")) {
-        if (tm == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            *err = EARS_ERR_INVALID_MODE;
-        return EARS_FEATURE_CHROMAPRINTER;
-    }
+//    if (s == gensym("chromaprinter"))
+//        return EARS_FEATURE_CHROMAPRINTER;
+
+    // AUDIO QUALITY
+    if (s == gensym("snr"))
+        return EARS_FEATURE_SNR;
+
     
     // DURATION/SILENCE
-    if (s == gensym("duration")){
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("duration"))
         return EARS_FEATURE_DURATION;
-    }
-    if (s == gensym("effectiveduration")){
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-            *err = EARS_ERR_INVALID_MODE;
+    if (s == gensym("effectiveduration"))
         return EARS_FEATURE_EFFECTIVEDURATION;
-    }
     if (s == gensym("silencerate"))
         return EARS_FEATURE_SILENCERATE;
     
@@ -1012,41 +957,22 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
         return EARS_FEATURE_MULTIPITCHMELODIA;
     if (s == gensym("pitchsaliencefunction"))
         return EARS_FEATURE_PITCHSALIENCEFUNCTION;
+    if (s == gensym("pitchmelodia"))
+        return EARS_FEATURE_PITCHMELODIA;
+    if (s == gensym("predominantpitchmelodia"))
+        return EARS_FEATURE_PREDOMINANTPITCHMELODIA;
     if (s == gensym("pitchyin"))
         return EARS_FEATURE_PITCHYIN;
     if (s == gensym("pitchyinfft"))
         return EARS_FEATURE_PITCHYINFFT;
     if (s == gensym("pitchyinprobabilistic"))
         return EARS_FEATURE_PITCHYINPROBABILISTIC;
-
+    if (s == gensym("pitchyinprobabilities"))
+        return EARS_FEATURE_PITCHYINPROBABILITIES;
+    if (s == gensym("vibrato"))
+        return EARS_FEATURE_VIBRATO;
+    
     return EARS_FEATURE_UNKNOWN;
-}
-
-long ears_features_feature_to_numouts(e_ears_feature feat)
-{
-    switch (feat) {
-        case EARS_FEATURE_LOGATTACKTIME:
-        case EARS_FEATURE_TEMPORALDISTRIBUTIONSHAPE:
-        case EARS_FEATURE_SPECTRALDISTRIBUTIONSHAPE:
-            return 3;
-            break;
-
-        case EARS_FEATURE_MIN:
-        case EARS_FEATURE_MAX:
-        case EARS_FEATURE_MFCC:
-        case EARS_FEATURE_BFCC:
-        case EARS_FEATURE_GFCC:
-        case EARS_FEATURE_LPC:
-        case EARS_FEATURE_SPECTRALCONTRAST:
-        case EARS_FEATURE_BEATTRACKERMULTIFEATURE:
-        case EARS_FEATURE_BEATSLOUDNESS:
-            return 2;
-            break;
-
-        default:
-            return 1;
-            break;
-    }
 }
 
 void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
@@ -1069,13 +995,13 @@ void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
                 if (map >= 0)
                     feat_out_desc = x->extractors_lib.extractors[featidx].output_desc[map];
                 if (x->extractors_lib.extractors[featidx].essentia_output_pitchunit[map] != EARS_PITCHUNIT_UNKNOWN) {
-                    unit = ears_pitchunit_to_abbrev(x->extractors_lib.extractors[featidx].output_pitchunit);
+                    unit = ears_pitchunit_to_abbrev(x->extractors_lib.extractors[featidx].local_pitchunit);
                 } else if (x->extractors_lib.extractors[featidx].essentia_output_frequnit[map] != EARS_FREQUNIT_UNKNOWN) {
-                    unit = ears_frequnit_to_abbrev(x->extractors_lib.extractors[featidx].output_frequnit);
+                    unit = ears_frequnit_to_abbrev(x->extractors_lib.extractors[featidx].local_frequnit);
                 } else if (x->extractors_lib.extractors[featidx].essentia_output_ampunit[map] != EARS_AMPUNIT_UNKNOWN) {
-                    unit = ears_ampunit_to_abbrev(x->extractors_lib.extractors[featidx].output_ampunit);
+                    unit = ears_ampunit_to_abbrev(x->extractors_lib.extractors[featidx].local_ampunit);
                 } else if (x->extractors_lib.extractors[featidx].essentia_output_timeunit[map] != EARS_TIMEUNIT_UNKNOWN) {
-                    unit = ears_timeunit_to_abbrev(x->extractors_lib.extractors[featidx].output_timeunit);
+                    unit = ears_timeunit_to_abbrev(x->extractors_lib.extractors[featidx].local_timeunit);
                 }
             }
 
@@ -1099,6 +1025,55 @@ void buf_features_inletinfo(t_buf_features *x, void *b, long a, char *t)
         *t = 1;
 }
 
+e_ears_errorcodes check_temporal_mode(t_buf_features *x, e_ears_feature feat, e_ears_essentia_temporalmode temporalmode)
+{
+    e_ears_errorcodes temporalmode_err = EARS_ERR_NONE;
+    e_ears_essentia_framemode framemode = ears_essentia_feature_to_framemode((t_object *)x, feat);
+    switch (framemode) {
+        case EARS_ESSENTIA_FRAMEMODE_GLOBALONLY:
+            if (temporalmode != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+                temporalmode_err = EARS_ERR_INVALID_MODE;
+            break;
+        case EARS_ESSENTIA_FRAMEMODE_FRAMEWISEONLY:
+        case EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY:
+            if (temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+                temporalmode_err = EARS_ERR_INVALID_MODE;
+            break;
+        case EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS:
+            if (temporalmode != EARS_ESSENTIA_TEMPORALMODE_TIMESERIES)
+                temporalmode_err = EARS_ERR_INVALID_MODE;
+            break;
+        case EARS_ESSENTIA_FRAMEMODE_GLOBALNOBUFFERS:
+        case EARS_ESSENTIA_FRAMEMODE_FRAMEWISENOBUFFERS:
+            if (temporalmode == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+                temporalmode_err = EARS_ERR_INVALID_MODE;
+            break;
+        default:
+            break;
+    }
+    return temporalmode_err;
+}
+
+const char *ears_temporalmode_to_desc(e_ears_essentia_temporalmode temporalmode)
+{
+    switch (temporalmode) {
+        case EARS_ESSENTIA_TEMPORALMODE_WHOLE:
+            return "global";
+            break;
+            
+        case EARS_ESSENTIA_TEMPORALMODE_TIMESERIES:
+            return "timeseries";
+            break;
+            
+        case EARS_ESSENTIA_TEMPORALMODE_BUFFER:
+            return "buffer";
+            break;
+            
+        default:
+            return "unknown";
+            break;
+    }
+}
 
 t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
 {
@@ -1129,10 +1104,11 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
     long tot_num_outlets = 0;
     for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
         e_ears_feature feat = EARS_FEATURE_UNKNOWN;
-        if (hatom_gettype(&el->l_hatom) == H_SYM) {
+        if (hatom_gettype(&el->l_hatom) == H_SYM)
             feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
-        }
-        x->features_numoutputs[i] = ears_features_feature_to_numouts(feat);
+        else if (hatom_gettype(&el->l_hatom) == H_LLLL && hatom_getllll(&el->l_hatom)->l_head)
+            feat = ears_features_feature_from_symbol(hatom_getsym(&hatom_getllll(&el->l_hatom)->l_head->l_hatom), &temporalmode, &temporalmode_err);
+        x->features_numoutputs[i] = ears_essentia_feature_to_numouts(feat);
         tot_num_outlets += x->features_numoutputs[i];
     }
 
@@ -1145,10 +1121,11 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
     long o_offset = 0;
     for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
         e_ears_feature feat = EARS_FEATURE_UNKNOWN;
-        if (hatom_gettype(&el->l_hatom) == H_SYM) {
+        if (hatom_gettype(&el->l_hatom) == H_SYM)
             feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
-        }
-        long this_num_outputs = ears_features_feature_to_numouts(feat);
+        else if (hatom_gettype(&el->l_hatom) == H_LLLL && hatom_getllll(&el->l_hatom)->l_head)
+            feat = ears_features_feature_from_symbol(hatom_getsym(&hatom_getllll(&el->l_hatom)->l_head->l_hatom), &temporalmode, &temporalmode_err);
+        long this_num_outputs = ears_essentia_feature_to_numouts(feat);
         for (long o = 0; o < this_num_outputs; o++) {
             x->outlet_featureidx[o_offset+o] = i;
             x->outlet_featureoutputidx[o_offset+o] = o;
@@ -1165,11 +1142,13 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
         if (hatom_gettype(&el->l_hatom) == H_SYM) {
             e_ears_feature feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &x->temporalmodes[i], &temporalmode_err);
             x->features[i] = feat;
+            if (temporalmode_err == EARS_ERR_NONE)
+                temporalmode_err = check_temporal_mode(x, feat, (e_ears_essentia_temporalmode)x->temporalmodes[i]);
             if (feat == EARS_FEATURE_UNKNOWN) {
                 object_error((t_object *)x, "Unknown feature at index %d", i+1);
                 err = EARS_ERR_GENERIC;
             } else if (temporalmode_err == EARS_ERR_INVALID_MODE) {
-                object_error((t_object *)x, "Unsupported temporal mode for feature '%s'", ears_features_feature_to_description(feat));
+                object_error((t_object *)x, "Unsupported temporal mode '%s' for feature '%s'", ears_temporalmode_to_desc((e_ears_essentia_temporalmode)x->temporalmodes[i]), ears_features_feature_to_description(feat));
                 err = EARS_ERR_GENERIC;
             }
         } else if (hatom_gettype(&el->l_hatom) == H_LLLL) {
@@ -1177,11 +1156,15 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
             if (subll && subll->l_head && hatom_gettype(&subll->l_head->l_hatom) == H_SYM) {
                 e_ears_feature feat = ears_features_feature_from_symbol(hatom_getsym(&subll->l_head->l_hatom), &x->temporalmodes[i], &temporalmode_err);
                 x->features[i] = feat;
+
+                if (temporalmode_err == EARS_ERR_NONE)
+                    temporalmode_err = check_temporal_mode(x, feat, (e_ears_essentia_temporalmode)x->temporalmodes[i]);
+                
                 if (feat == EARS_FEATURE_UNKNOWN) {
                     object_error((t_object *)x, "Unknown feature at index %d", i+1);
                     err = EARS_ERR_GENERIC;
                 } else if (temporalmode_err == EARS_ERR_INVALID_MODE) {
-                    object_error((t_object *)x, "Unsupported temporal mode for feature '%s'", ears_features_feature_to_description(feat));
+                    object_error((t_object *)x, "Unsupported temporal mode '%s' for feature '%s'", ears_temporalmode_to_desc((e_ears_essentia_temporalmode)x->temporalmodes[i]), ears_features_feature_to_description(feat));
                     err = EARS_ERR_GENERIC;
                 }
                 llll_free(x->algorithm_args[i]);
@@ -1257,7 +1240,46 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
         long numoutlets = x->num_outlets;
         
         x->e_ob.l_envtimeunit = EARS_TIMEUNIT_MS; // this is used for the envelope analysis
+
+        // choosing default for analysis parameters
+        double framesize = 2048;
+        double hopsize = 1024;
+        e_ears_timeunit antimeunit = EARS_TIMEUNIT_SAMPS;
         
+        bool warn_for_feature_default = false;
+        for (long i = 0; i < x->num_features; i++) {
+            double this_framesize, this_hopsize;
+            e_ears_timeunit this_antimeunit;
+            ears_essentia_feature_to_default_framesizes_and_hopsize((t_object *)x, (e_ears_feature)x->features[i], &this_framesize, &this_hopsize, &this_antimeunit);
+            if (i == 0) {
+                framesize = this_framesize; hopsize = this_hopsize; antimeunit = this_antimeunit;
+            } else if (this_framesize != framesize || this_hopsize != hopsize || this_antimeunit != antimeunit) {
+                warn_for_feature_default = true;
+                framesize = 2048;
+                hopsize = 1024;
+                antimeunit = EARS_TIMEUNIT_SAMPS;
+                break;
+            }
+        }
+        
+        x->e_ob.a_framesize = framesize;
+        x->e_ob.a_hopsize = hopsize;
+        x->e_ob.l_antimeunit = antimeunit;
+
+        for (long c = true_ac; c < argc; c++) {
+            t_symbol *thissym = atom_getsym(argv+c);
+            if (thissym == gensym("@numframes") || thissym == gensym("@framesize")) {
+                warn_for_feature_default = false; // users have set the frame size manually, no need to warn
+                break;
+            }
+        }
+        
+        if (warn_for_feature_default) {
+            object_warn((t_object *)x, "Different features have different defaults for analysis parameters.");
+            object_warn((t_object *)x, "A global default of 2048/1024 samples is used, consider using separate ears.features~ objects if results are not satisfactory.");
+        }
+
+        // processing attributes
         attr_args_process(x, argc-true_ac, argv+true_ac);
         
         if (numoutlets >= LLLL_MAX_OUTLETS) {
@@ -1326,6 +1348,7 @@ t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *
     params.hopsize_samps = 1024;
     params.duration_samps = 44100;
     params.windowType = "hann";
+    params.windowNormalized = 1;
     params.startFromZero = 0;
     params.lastFrameToEndOfFile = 0;
 
@@ -1333,12 +1356,12 @@ t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *
     params.envelope_release_time_samps = 4410;
     params.envelope_rectify = 1;
     // CQT
-    params.binsPerOctave = 12;
-    params.minFrequency = ears_cents_to_hz(earsbufobj_pitch_to_cents((t_earsbufobj *)x, 2400), EARS_MIDDLE_A_TUNING);
-    params.numberBins = 84;
-    params.threshold = 0.01;
-    params.minimumKernelSize = 4;
-    params.scale = 1;
+    params.CQT_binsPerOctave = 12;
+    params.CQT_minFrequency = ears_cents_to_hz(2400, EARS_MIDDLE_A_TUNING);
+    params.CQT_numberBins = 84;
+    params.CQT_threshold = 0.01;
+    params.CQT_minimumKernelSize = 4;
+    params.CQT_scale = 1;
     
     params.onsetDetectionMethod = "";
     
@@ -1387,6 +1410,14 @@ t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buf
     params.summarizationweight = (e_ears_essentia_summarizationweight) x->summarizationweight;
 
     // TO DO: Expose these
+    params.CQT_binsPerOctave = 12;
+    params.CQT_minFrequency = ears_cents_to_hz(2400, EARS_MIDDLE_A_TUNING);
+    params.CQT_numberBins = 84;
+    params.CQT_threshold = 0.01;
+    params.CQT_minimumKernelSize = 4;
+    params.CQT_scale = 1;
+
+    
     params.HPCP_bandPreset = true;
     params.HPCP_bandSplitFrequency = 500;
     params.HPCP_harmonics = 0;

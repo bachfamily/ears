@@ -516,13 +516,16 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_resamplingpolicy = EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR;
     e_ob->l_resamplingfilterwidth = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH;
     
-    e_ob->a_winsize = 2048;
+    e_ob->a_framesize = 2048;
     e_ob->a_hopsize = 1024;
     e_ob->a_lastframetoendoffile = 0;
     e_ob->a_winstartfromzero = 0;
     atom_setsym(&e_ob->a_numframes, _llllobj_sym_auto);
     e_ob->a_overlap = 2.;
     e_ob->a_wintype = gensym("hann");
+    e_ob->a_winnorm = 1;
+    e_ob->a_zeropadding = 0;
+    e_ob->a_zerophase = true;
 
     
     e_ob->l_slopemapping = k_SLOPE_MAPPING_BACH;
@@ -1545,13 +1548,13 @@ void earsbufobj_class_add_naming_attr(t_class *c)
 }
 
 
-void earsbufobj_class_add_winsize_attr(t_class *c)
+void earsbufobj_class_add_framesize_attr(t_class *c)
 {
-    CLASS_ATTR_DOUBLE(c, "winsize", 0, t_earsbufobj, a_winsize);
-    CLASS_ATTR_STYLE_LABEL(c,"winsize",0,"text","Windows Size");
-    CLASS_ATTR_BASIC(c, "winsize", 0);
-    CLASS_ATTR_CATEGORY(c, "winsize", 0, "Analysis");
-    // @description Sets the analysis frame size (the unit depends on the <m>antimeunit</m> attribute)
+    CLASS_ATTR_DOUBLE(c, "framesize", 0, t_earsbufobj, a_framesize);
+    CLASS_ATTR_STYLE_LABEL(c,"framesize",0,"text","Frame Size");
+    CLASS_ATTR_BASIC(c, "framesize", 0);
+    CLASS_ATTR_CATEGORY(c, "framesize", 0, "Analysis");
+    // @description Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
 }
     
 void earsbufobj_class_add_hopsize_attr(t_class *c)
@@ -1571,7 +1574,7 @@ t_max_err earsbufobj_setattr_overlap(t_earsbufobj *e_ob, void *attr, long argc, 
         if (is_atom_number(argv)) {
             double olap = atom_getfloat(argv);
             e_ob->a_overlap = olap;
-            object_attr_setfloat(e_ob, gensym("hopsize"), e_ob->a_winsize / olap);
+            object_attr_setfloat(e_ob, gensym("hopsize"), e_ob->a_framesize / olap);
         }
     }
     return MAX_ERR_NONE;
@@ -1593,11 +1596,11 @@ t_max_err earsbufobj_setattr_numframes(t_earsbufobj *e_ob, void *attr, long argc
         if (atom_gettype(argv) == A_LONG) {
             atom_setlong(&e_ob->a_numframes, atom_getlong(argv));
             object_attr_setdisabled((t_object *)e_ob, gensym("hopsize"), true);
-            object_attr_setdisabled((t_object *)e_ob, gensym("winsize"), true);
+            object_attr_setdisabled((t_object *)e_ob, gensym("framesize"), true);
         } else if (atom_gettype(argv) == A_SYM) {
             atom_setsym(&e_ob->a_numframes, _llllobj_sym_auto);
             object_attr_setdisabled((t_object *)e_ob, gensym("hopsize"), false);
-            object_attr_setdisabled((t_object *)e_ob, gensym("winsize"), false);
+            object_attr_setdisabled((t_object *)e_ob, gensym("framesize"), false);
         }
     }
     return MAX_ERR_NONE;
@@ -1609,7 +1612,7 @@ void earsbufobj_class_add_numframes_attr(t_class *c)
     CLASS_ATTR_ACCESSORS(c, "numframes", NULL, earsbufobj_setattr_numframes);
     CLASS_ATTR_CATEGORY(c, "numframes", 0, "Analysis");
     // @description Sets the number of analysis frames. Defaults to "auto", as this number is a consequence of the
-    // <m>winsize</m> and <m>hopsize</m> attributes. If this number is set to a positive integer value, the <m>hopsize</m>
+    // <m>framesize</m> and <m>hopsize</m> attributes. If this number is set to a positive integer value, the <m>hopsize</m>
     // is ignored and inferred from <m>numframes</m>.
 }
 
@@ -1625,12 +1628,37 @@ void earsbufobj_class_add_wintype_attr(t_class *c)
     // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
 }
 
+void earsbufobj_class_add_winnormalized_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "winnormalized", 0, t_earsbufobj, a_winnorm);
+    CLASS_ATTR_STYLE_LABEL(c,"winnormalized",0,"onoff","Windows Are Normalized");
+    CLASS_ATTR_CATEGORY(c, "winnormalized", 0, "Analysis");
+    // @description Toggles the ability for windows to be normalized to have an area of 1 and then scaled by a factor of 2.
+}
+
+void earsbufobj_class_add_zeropadding_attr(t_class *c)
+{
+    CLASS_ATTR_LONG(c, "zeropadding", 0, t_earsbufobj, a_zeropadding);
+    CLASS_ATTR_STYLE_LABEL(c,"zeropadding",0,"text","Zero Padding Amount");
+    CLASS_ATTR_CATEGORY(c, "zeropadding", 0, "Analysis");
+    // @description Sets the number of samples for zero padding.
+}
+
+void earsbufobj_class_add_zerophase_attr(t_class *c)
+{
+    CLASS_ATTR_LONG(c, "zerophase", 0, t_earsbufobj, a_zerophase);
+    CLASS_ATTR_STYLE_LABEL(c,"zerophase",0,"onoff","Zero Phase Windowing");
+    CLASS_ATTR_CATEGORY(c, "zerophase", 0, "Analysis");
+    // @description Toggles zero-phase windowing.
+}
+
+
 void earsbufobj_class_add_winstartfromzero_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "winstartfromzero", 0, t_earsbufobj, a_winstartfromzero);
     CLASS_ATTR_STYLE_LABEL(c,"winstartfromzero",0,"onoff","First Window Starts At Zero");
     CLASS_ATTR_CATEGORY(c, "winstartfromzero", 0, "Analysis");
-    // @description If on, the first window is centered at winsize/2; if off (default), the first window is centered at zero.
+    // @description If on, the first window is centered at framesize/2; if off (default), the first window is centered at zero.
 }
 
 
