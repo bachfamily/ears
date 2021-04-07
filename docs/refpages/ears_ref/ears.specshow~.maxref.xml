@@ -59,11 +59,46 @@
 				from the minimum and maximum values in the input buffer.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Settings" />
 				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatically Rescale Range" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="freqgrid" get="1" set="1" type="atom" size="1">
+			<digest>
+				Frequency Grid Step
+			</digest>
+			<description>
+				Sets the vertical grid step, in the unit obtained by the
+				incoming spectral buffer. Use 0 to turn grid off. Use "auto"
+				to infer from incoming data
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
+				<attribute name="default" get="1" set="1" type="atom" size="1" value="auto" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frequency Grid Step" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="freqgridcolor" get="1" set="1" type="rgba" size="1">
+			<digest>
+				Frequency Grid Color
+			</digest>
+			<description>
+				Sets the color of the vertical grid.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
+				<attribute name="default" get="1" set="1" type="rgba" size="1" value="0.678 0.756862745098039 0.764705882352941 0.7" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frequency Grid Color" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />
 			</attributelist>
 		</attribute>
 		<attribute name="maxcolor" get="1" set="1" type="rgba" size="1">
@@ -74,6 +109,7 @@
 				Sets the color corresponding to the maximum value.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
 				<attribute name="default" get="1" set="1" type="rgba" size="1" value="0. 0. 0. 1.0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Highest Color" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
@@ -89,6 +125,7 @@
 				Sets the maximum number of bins displayed (leave 0 for all).
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
 				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Number Of Bins Displayed" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
@@ -104,6 +141,7 @@
 				Sets the value corresponding to <m>maxcolor</m>.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
 				<attribute name="default" get="1" set="1" type="float" size="1" value="1." />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Highest Value" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
@@ -119,6 +157,7 @@
 				Sets the color corresponding to the minimum value.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
 				<attribute name="default" get="1" set="1" type="rgba" size="1" value="1. 1. 1. 1.0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Lowest Color" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
@@ -134,6 +173,7 @@
 				Sets the value corresponding to <m>mincolor</m>.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
 				<attribute name="default" get="1" set="1" type="float" size="1" value="0." />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Lowest Value" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
@@ -149,7 +189,40 @@
 			</description>
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="" size="1" value="0. 0. 256. 128." />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="timegrid" get="1" set="1" type="float" size="1">
+			<digest>
+				Time Grid Step
+			</digest>
+			<description>
+				Sets the time grid step in milliseconds; use 0 to turn grid off.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
+				<attribute name="default" get="1" set="1" type="float" size="1" value="1000." />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Grid Step" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="timegridcolor" get="1" set="1" type="rgba" size="1">
+			<digest>
+				Time Grid Color
+			</digest>
+			<description>
+				Sets the color of the time grid
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
+				<attribute name="default" get="1" set="1" type="rgba" size="1" value="0.678 0.756862745098039 0.764705882352941 0.7" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Grid Color" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />
 			</attributelist>
 		</attribute>
 	</attributelist>

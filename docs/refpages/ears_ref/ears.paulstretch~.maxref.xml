@@ -283,6 +283,20 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="framesize" get="1" set="1" type="float" size="1">
+			<digest>
+				Frame Size
+			</digest>
+			<description>
+				Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frame Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -316,6 +330,19 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="slopemapping" get="1" set="1" type="int" size="1">
+			<digest>
+				Slope Mapping
+			</digest>
+			<description>
+				Sets the function to be used for slope mapping: either bach (default) or Max.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slope Mapping" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="spectral" get="1" set="1" type="int" size="1">

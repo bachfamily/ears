@@ -506,7 +506,7 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     
     jgraphics_image_surface_draw(g, x->n_surface, src, fullrect);
     
-    
+     
     // paint grids
     double length = x->n_length_ms;
     double grid_time_step = x->n_grid_time_step_ms;

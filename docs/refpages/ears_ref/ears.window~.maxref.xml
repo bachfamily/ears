@@ -28,13 +28,6 @@
 			<description>
 			</description>
 		</inlet>
-		<inlet id="1" type="INLET_TYPE">
-			<digest>
-				Window Type
-			</digest>
-			<description>
-			</description>
-		</inlet>
 	</inletlist>
 
 	<!--OUTLETS-->
@@ -284,18 +277,62 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="winnormalized" get="1" set="1" type="int" size="1">
+			<digest>
+				Windows Are Normalized
+			</digest>
+			<description>
+				Toggles the ability for windows to be normalized to have an area of 1 and then scaled by a factor of 2.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Windows Are Normalized" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="wintype" get="1" set="1" type="symbol" size="1">
 			<digest>
-				
+				Window Type
 			</digest>
 			<description>
 				Sets the window type.
-				Available windows are: "rect", "tri", "sine", "hann", "hamming", "blackman", "nuttall",
-				"blackmannuttall", "blackmanharris", "gaussian"
+				Available windows are the ones allowed by the Essentia library:
+				"hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="zeropadding" get="1" set="1" type="int" size="1">
+			<digest>
+				Zero Padding Amount
+			</digest>
+			<description>
+				Sets the number of samples for zero padding.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Zero Padding Amount" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="zerophase" get="1" set="1" type="int" size="1">
+			<digest>
+				Zero Phase Windowing
+			</digest>
+			<description>
+				Toggles zero-phase windowing.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Zero Phase Windowing" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 	</attributelist>
@@ -309,11 +346,6 @@
 		<entry name ="Inlet 1 (symbol/list/llll)">
 			<description>
 				Incoming buffer names.
-			</description>
-		</entry>
-		<entry name ="Inlet 2 (symbol/llll)">
-			<description>
-				Window Type.
 			</description>
 		</entry>
 	</misc>
