@@ -84,7 +84,7 @@ typedef std::unordered_set<t_object*> objectSet;
 
 typedef struct _earsmap
 {
-    t_pxobject x_obj;
+    t_object x_obj;
     
     t_symbol* inbuf[EARSMAP_MAX_INPUT_BUFFERS];
     
@@ -210,8 +210,8 @@ int C74_EXPORT main()
     
     class_addmethod(earsmap_class, (method)earsmap_earsintildecreated, "ears.in~_created", A_CANT, 0);
     class_addmethod(earsmap_class, (method)earsmap_earsouttildecreated, "ears.out~_created", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsintildedeleted, "ears.in~_deleted~", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsouttildedeleted, "ears.out~_deleted~", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsintildedeleted, "ears.in~_deleted", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsouttildedeleted, "ears.out~_deleted", A_CANT, 0);
 
     class_addmethod(earsmap_class, (method)earsmap_earsincreated, "ears.in_created", A_CANT, 0);
     class_addmethod(earsmap_class, (method)earsmap_earsoutcreated, "ears.out_created", A_CANT, 0);
@@ -231,7 +231,7 @@ int C74_EXPORT main()
     
     CLASS_ATTR_ATOM_VARSIZE(earsmap_class, "args", 0, t_earsmap, client_argv, client_argc, 256);
     
-    class_dspinit(earsmap_class);
+    //class_dspinit(earsmap_class);
     
     class_register(CLASS_BOX, earsmap_class);
     
@@ -305,14 +305,14 @@ void earsmap_earsintildedeleted(t_earsmap *x, t_object *in)
 
 void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *out)
 {
-    x->earsInTildeObjects->insert(out);
+    x->earsOutTildeObjects->insert(out);
     if (bufIndex > x->nBufOutlets)
         x->nBufOutlets = bufIndex;
 }
 
 void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out)
 {
-    x->earsInTildeObjects->erase(out);
+    x->earsOutTildeObjects->erase(out);
 }
 
 void earsmap_earsincreated(t_earsmap *x, t_atom_long index, void *outlet) {
@@ -354,7 +354,7 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     if (argc && atom_gettype(argv) == A_SYM)
         patchname = atom_getsym(argv);
     
-    dsp_setup((t_pxobject *) x, 0); // necessary?
+    //dsp_setup((t_pxobject *) x, 0); // necessary?
     
     x->theInOutlets = new earsInOutlets;
     x->theOuts = new earsOuts;
@@ -555,8 +555,8 @@ void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom* av)
         return;
     }
     
-    if (ac != 1) {
-        object_error((t_object*) x, "wrong buffer name!");
+    if (ac != 0) {
+        object_error((t_object*) x, "bad buffer name");
         return;
     }
     
@@ -646,7 +646,7 @@ void earsmap_bang(t_earsmap *x)
         object_method(i, gensym("end"));
     }
     
-    
+    outlet_anything(x->m_outlets[0], gensym("outbuf"), 0, NULL);
 
 
     object_free(setclock);

@@ -82,7 +82,7 @@ void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
         x->chan = 1;
 
     if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.intilde_created"), x->bufIndex, x);
+        object_method(x->earsMapParent, gensym("ears.in~_created"), x->bufIndex, x);
     
     outlet_new((t_object *) x, "signal");
     
@@ -92,7 +92,7 @@ void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
 void ears_intilde_free(t_ears_intilde *x)
 {
     if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.intilde_deleted"), x->bufIndex, x);
+        object_method(x->earsMapParent, gensym("ears.in~_deleted"), x);
     dsp_free((t_pxobject *) x);
 }
 
@@ -108,7 +108,7 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
     
     unsigned short bufIndex = x->bufIndex;
     t_atom_long chan = x->chan;
-    bufferData *buf = x->bufs ? x->bufs + bufIndex : nullptr;
+    bufferData *buf = x->bufs ? x->bufs + bufIndex - 1 : nullptr;
     int s;
     t_atom_long bufchans = buf ? buf->chans : 0;
 

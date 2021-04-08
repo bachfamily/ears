@@ -23,6 +23,8 @@ typedef struct _ears_outtilde
 
 
 void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av);
+void ears_outtilde_free(t_ears_outtilde *x);
+
 void ears_outtilde_assist(t_ears_outtilde *x, void *b, long m, long a, char *s);
 
 void ears_outtilde_bang(t_ears_outtilde *x);
@@ -40,8 +42,8 @@ void ears_outtilde_perform64(t_ears_outtilde *x, t_dspchain *dsp64, double **ins
 int C74_EXPORT main()
 {
     ears_outtilde_class = class_new("ears.out~",
-                                   (method)ears_outtilde_new,
-                                   NULL,
+                                   (method) ears_outtilde_new,
+                                   (method) ears_outtilde_free,
                                    sizeof(t_ears_outtilde),
                                    NULL,
                                    A_GIMME,
@@ -79,7 +81,7 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
         x->chan = 1;
     
     if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.outtilde_created"), x->chan, x);
+        object_method(x->earsMapParent, gensym("ears.out~_created"), x->chan, x);
     
     dsp_setup((t_pxobject *) x, 1);
 
@@ -89,7 +91,7 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
 void ears_outtilde_free(t_ears_outtilde *x)
 {
     if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.outtilde_deleted"), x->chan, x);
+        object_method(x->earsMapParent, gensym("ears.out~_deleted"), x);
     dsp_free((t_pxobject*) x);
 }
 
