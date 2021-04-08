@@ -5,18 +5,14 @@
 //  Created by andreaagostini on 03/04/2021.
 //
 
-const int EARSMAP_MAX_INPUT_BUFFERS = 16;
-const int EARSMAP_MAX_OUTPUT_BUFFERS = EARSMAP_MAX_INPUT_BUFFERS;
-const int EARSMAP_MAX_VS = 4096;
-const int EARSMAP_MAX_DATA_INLETS = 16;
-const int EARSMAP_MAX_DATA_OUTLETS = EARSMAP_MAX_DATA_INLETS;
+
 
 
 #include <stdio.h>
 
 #include <ext.h>
 #include <ext_obex.h>
-#include <z_dsp.h>
+#include <z_dsp.h> // ???
 #include <ext_wind.h>
 #include <ext_buffer.h>
 #include <jpatcher_api.h>
@@ -25,6 +21,9 @@ const int EARSMAP_MAX_DATA_OUTLETS = EARSMAP_MAX_DATA_INLETS;
 #include <map>
 #include <vector>
 
+#include "ears.map.h"
+
+
 
 // Fixes a compiler error with object_method_direct when building the code as cpp
 // Shouldn't be necessary with recent version of the Max SDK, but it won't hurt either
@@ -32,180 +31,64 @@ const int EARSMAP_MAX_DATA_OUTLETS = EARSMAP_MAX_DATA_INLETS;
 
 t_class *earsmap_class;
 
-/*
- things to communicate with:
- - ears.in~:
-    keeps a reference to an audio buffer where it will look for samples.
-    ears.map~ keeps a sparse matrix of audio buffers
- 
- 
- */
-
-class earsInAudioOutlet
-{
-public:
-    t_object *obj;
-    t_atom_long index;
-    
-    earsInAudioOutlet(t_object *o, t_atom_long i) : obj(o), index(i) { }
-};
-
-
-
-typedef std::vector<earsInAudioOutlet> clientList;
-
-
-class audioPacket
-{
-public:
-    t_sample audio[EARSMAP_MAX_VS]; // this is taken by ears.in~ objects which will read from here audio to be output
-    t_atom_long buffer;
-    t_atom_long channel;
-    clientList clients;
-    
-    audioPacket(t_atom_long buf, t_atom_long chan, t_object *c, t_atom_long idx) : buffer(buf), channel(chan) {
-        setClient(c, idx);
-    }
-    
-    void setClient(t_object *c, t_atom_long idx) {
-        if (c) {
-            clients.push_back(earsInAudioOutlet(c, idx));
-        }
-    }
-    
-    void initializeClients() {
-        for (auto c : clients) {
-            t_object *o = c.obj;
-            t_atom_long i = c.index;
-            object_method(o, gensym("initialize"), i, audio);
-        }
-    }
-    
-};
-
-
-class channelMap
-{
-public:
-    std::map<t_atom_long, audioPacket*> theMap;
-    t_atom_long buffer;
-    
-    channelMap(t_atom_long buf) : buffer(buf) { }
-
-    ~channelMap() {
-        for (auto i: theMap) {
-            delete i.second;
-        }
-    }
-    
-    void insert(t_atom_long chan_from, t_atom_long chan_to, t_object *c, t_atom_long index) {
-        for (t_atom_long chan = chan_from; chan <= chan_to; c++) {
-            if (theMap.find(chan) == theMap.end()) {
-                theMap[chan] = new audioPacket(buffer, chan, c, index);
-            } else if (c) {
-                theMap[chan]->setClient(c, index);
-            }
-        }
-    }
-    
-    void initializeClients() {
-        for (auto i : theMap) {
-            i.second->initializeClients();
-        }
-    }
-    
-    void removeClient(t_atom_long chan, t_object *c) {
-        audioPacket *ap = theMap[chan];
-        for (auto i = ap->clients.begin(); i != ap->clients.end(); i++) {
-            if ((*i).obj == c) {
-                ap->clients.erase(i);
-            }
-        }
-        if (ap->clients.size() == 0) {
-            delete ap;
-            theMap.erase(chan);
-        }
-    }
-};
-
-
-class bufferMap
-{
-public:
-    std::map<t_atom_long, channelMap*> theMap;
-    
-    virtual ~bufferMap() {
-        for (auto i: theMap)
-            delete i.second;
-    }
-    
-    void insert(t_atom_long buf, t_atom_long chan_from, t_atom_long chan_to, t_object *c, t_atom_long index) {
-        
-        if (theMap.find(buf) == theMap.end()) {
-            theMap[buf] = new channelMap(buf);
-            //.insert(std::pair<t_atom_long, channelMap>(buf, channelMap(buf)));
-        }
-        theMap[buf]->insert(chan_from, chan_to, c, index);
-    }
-    
-    // can be much optimized for the cases where there is superposition between old and new
-    void replace(t_atom_long old_buf,
-                 t_atom_long old_chan_from, t_atom_long old_chan_to,
-                 t_atom_long new_buf,
-                 t_atom_long new_chan_from, t_atom_long new_chan_to,
-                 t_object *c, t_atom_long index) {
-        channelMap *chMap = theMap[old_buf];
-        for (t_atom_long ch = old_chan_from; ch <= old_chan_to; ch++) {
-            chMap->removeClient(ch, c);
-        }
-        chMap->insert(new_chan_from, new_chan_to, c, index);
-    }
-    
-    void initializeClients() {
-        for (auto i : theMap) {
-            i.second->initializeClients();
-        }
-    }
-    
-};
-
-
-//typedef std::map<t_atom_long, audioPacket> channelMap;
-//typedef std::map<t_atom_long, channelMap> bufferMap;
-
-
 template <typename T>
 class earsmapMultiMap
 {
 public:
+    earsmapMultiMap() : maxIdx(0) { }
+    
     std::map<t_atom_long, std::unordered_set<T>> theMap;
+    
+    int maxIdx;
     
     void insert(t_atom_long idx, T what) {
         if (theMap.find(idx) == theMap.end()) {
             theMap.insert(std::pair<t_atom_long, std::unordered_set<T>>(idx, std::unordered_set<T>()));
         }
         theMap[idx].insert(what);
+        if (maxIdx < idx)
+            maxIdx = idx;
+    }
+    
+    void remove(t_atom_long idx, T what) {
+        theMap[idx].erase(what);
+        if (theMap[idx].size() == 0) {
+            theMap.erase(idx);
+        }
+    }
+    
+    void clear() {
+        theMap.clear();
     }
 };
 
 typedef earsmapMultiMap<void*> earsInOutlets;
 
-class earsOuts : earsmapMultiMap<t_object *>
+class earsOuts : public earsmapMultiMap<t_object *>
 {
 public:
+    using earsmapMultiMap::earsmapMultiMap;
     
+    void setOutlets(long nOutlets, void** outlets) {
+        for (auto i: theMap) {
+            t_atom_long index = i.first;
+            auto oSet = i.second;
+            void *out = index <= nOutlets ? outlets[index] : nullptr;
+            for (t_object* o: oSet)
+                object_method(o, gensym("setoutlet"), index, out);
+        }
+    }
 };
+
+typedef std::unordered_set<t_object*> objectSet;
 
 typedef struct _earsmap
 {
     t_pxobject x_obj;
     
-    t_patcher *parent_patch;
+    t_symbol* inbuf[EARSMAP_MAX_INPUT_BUFFERS];
     
-    bufferMap *inBufMap; // for the ears.in~ objects
-    bufferMap *outBufMap; // for the ears.out~ objects
-
-    //outletSet *client_outlet[EARSMAP_MAX_DATA_OUTLETS]; // the outlets of the ears.in objects
+    t_patcher *parent_patch;
 
     t_bool running;
     
@@ -220,16 +103,18 @@ typedef struct _earsmap
     
     t_atom_long nBufInlets;
     t_atom_long nBufOutlets;
-    t_atom_long nDataInlets;
-    t_atom_long nDataOutlets;
+
     
     earsInOutlets *theInOutlets;
-    
+    earsOuts *theOuts;
+
     t_patcher *client_patch;
     long client_argc;
     t_atom client_argv[256];
     
-    t_symbol *outbufname; // ignored for now
+    objectSet* earsInTildeObjects;
+    objectSet* earsOutTildeObjects;
+    objectSet* earsMapinfoObjects;
     
 } t_earsmap;
 
@@ -247,7 +132,9 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *s, long argc, t_atom *argv);
 
 void earsmap_bang(t_earsmap *x);
 void earsmap_stop(t_earsmap *x);
-
+void earsmap_int(t_earsmap *x, t_atom_long n);
+void earsmap_float(t_earsmap *x, t_atom_float f);
+void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long argc, t_atom *argv);
 
 void earsmap_addclient(t_earsmap *x, t_object *client);
 void earsmap_removeclient(t_earsmap *x, t_object *client);
@@ -256,9 +143,7 @@ void earsmap_removeclient(t_earsmap *x, t_object *client);
 void earsmap_registerclientoutlet(t_earsmap *x, t_atom_long inlet_num, void* inobj);
 void* earsmap_passoutlet(t_earsmap *x, t_atom_long outlet_num);
 
-void earsmap_int(t_earsmap *x, t_atom_long n);
-void earsmap_float(t_earsmap *x, t_atom_float f);
-void earsmap_anything(t_earsmap *x, t_symbol *s, long argc, t_atom *argv);
+
 
 
 void earsmap_dsp64(t_earsmap *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
@@ -271,6 +156,22 @@ void earsmap_wclose(t_earsmap *x);
 void earsmap_pupdate(t_earsmap *x, void *b, t_patcher *p);
 void *earsmap_subpatcher(t_earsmap *x, long index, void *arg);
 void earsmap_parentpatcher(t_earsmap *x, t_patcher **parent);
+
+void earsmap_earsintildecreated(t_earsmap *x, t_atom_long index, t_object *in);
+void earsmap_earsintildedeleted(t_earsmap *x, t_object *in);
+void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long index, t_object *out);
+void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out);
+
+void earsmap_earsincreated(t_earsmap *x, t_atom_long index, void *outlet);
+void earsmap_earsoutcreated(t_earsmap *x, t_atom_long index, t_object *obj);
+void earsmap_earsindeleted(t_earsmap *x, t_atom_long index, void *outlet);
+void earsmap_earsoutdeleted(t_earsmap *x, t_atom_long index, t_object *obj);
+
+void earsmap_earsmapinfocreated(t_earsmap *x, t_object *obj);
+void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj);
+
+
+
 
 t_max_err earsmap_set_vs(t_earsmap *x, t_object *attr, long argc, t_atom *argv);
 t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_atom **argv);
@@ -293,7 +194,10 @@ int C74_EXPORT main()
     class_addmethod(earsmap_class, (method)earsmap_subpatcher, "subpatcher", A_CANT, 0);
     class_addmethod(earsmap_class, (method)earsmap_parentpatcher, "parentpatcher", A_CANT, 0);
     
-    //class_addmethod(earsmap_class, (method)earsmap_bang, "bang", 0);
+    
+    class_addmethod(earsmap_class, (method)earsmap_anything, "anything", A_GIMME, 0);
+
+    class_addmethod(earsmap_class, (method)earsmap_bang, "bang", 0);
     
     //class_addmethod(earsmap_class, (method)earsmap_stop, "stop", A_CANT, 0);
     //class_addmethod(earsmap_class, (method)earsmap_int, "int", A_LONG, 0);
@@ -304,13 +208,19 @@ int C74_EXPORT main()
     //class_addmethod(earsmap_class, (method)earsmap_clear, "clear", 0);
     class_addmethod(earsmap_class, (method)earsmap_loadpatch, "loadpatch", A_DEFER, 0);
     
-    //class_addmethod(earsmap_class, (method) earsmap_addclient, "addclient", A_CANT, 0);
-    //class_addmethod(earsmap_class, (method) earsmap_addclient, "removeclient", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsintildecreated, "ears.in~_created", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsouttildecreated, "ears.out~_created", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsintildedeleted, "ears.in~_deleted~", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsouttildedeleted, "ears.out~_deleted~", A_CANT, 0);
+
+    class_addmethod(earsmap_class, (method)earsmap_earsincreated, "ears.in_created", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsoutcreated, "ears.out_created", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsindeleted, "ears.in_deleted", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsoutdeleted, "ears.out_deleted", A_CANT, 0);
     
-    //class_addmethod(earsmap_class, (method) earsmap_registerclientoutlet, "registerclientoutlet", A_CANT, 0);
-    //class_addmethod(earsmap_class, (method) earsmap_passoutlet, "passoutlet", A_CANT, 0);
-    
-    
+    class_addmethod(earsmap_class, (method)earsmap_earsmapinfocreated, "ears.mapinfo~_created", A_CANT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_earsmapinfodeleted, "ears.mapinfo~_deleted", A_CANT, 0);
+
     CLASS_ATTR_OBJ(earsmap_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsmap, x_obj);
     CLASS_ATTR_ACCESSORS(earsmap_class, "ownsdspchain", (method) earsmap_get_ownsdspchain, NULL);
     CLASS_ATTR_INVISIBLE(earsmap_class, "ownsdspchain", 0);
@@ -374,44 +284,69 @@ t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_a
     The maximum ears.in number is kept, and the list of addresses of all the outlets associated with each index is kept.
  - When ears.out is created, it calls the "ears.out_created" method here communicating its own address and number;
     The maximum ears.out number is kept, and the list of addresses of all the objects associated with each index is kept.
- - When ears.in~ is created, it calls the "ears.in~_created" method here once per declared outlet, communicating its own buffer number, channel number, outlet index and address. All these are stored in the corresponding bufferMap.
- - When ears.out~ is created, it calls the "ears.out~_created" method here once per declared inlet, communicating its own buffer number, channel number, outlet index and address. All these are stored in the corresponding bufferMap.
  - Inlets and outlets are created.
- - The "getoutlet" method of all the ears.out objects is called, and the corresponding outlets and outlet numbers are passed to them.
+ - The "setoutlet" method of all the ears.out objects is called, and the corresponding outlets and outlet numbers are passed to them.
  - The initialize member functions of both bufferMaps are called, so as to pass to the ears.in~ and ears.out~ objects the audio buffers they'll use
  
  */
 
-void earsmap_earsInTildeCreated(t_earsmap *x, t_atom_long buf,
-                                t_atom_long chan_from, t_atom_long chan_to,
-                                t_object *client, t_atom_long idx) {
-    if (buf > x->nBufInlets)
-        x->nBufInlets = buf;
-    x->inBufMap->insert(buf, chan_from, chan_to, client, idx);
+
+void earsmap_earsintildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *in)
+{
+    x->earsInTildeObjects->insert(in);
+    if (bufIndex > x->nBufInlets)
+        x->nBufInlets = bufIndex;
 }
 
-void earsmap_earsOutTildeCreated(t_earsmap *x, t_atom_long buf,
-                                 t_atom_long chan_from, t_atom_long chan_to,
-                                 t_object *client, t_atom_long idx) {
-    if (buf > x->nBufOutlets)
-        x->nBufOutlets = buf;
-    x->outBufMap->insert(buf, chan_from, chan_to, client, idx);
+void earsmap_earsintildedeleted(t_earsmap *x, t_object *in)
+{
+    x->earsInTildeObjects->erase(in);
 }
 
-void earsmap_earsInCreated(t_earsmap *x, t_atom_long idx, void* outlet) {
-    if (idx > x->nDataInlets)
-        x->nDataInlets = idx;
-    x->theInOutlets->insert(idx, outlet);
+void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *out)
+{
+    x->earsInTildeObjects->insert(out);
+    if (bufIndex > x->nBufOutlets)
+        x->nBufOutlets = bufIndex;
 }
 
+void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out)
+{
+    x->earsInTildeObjects->erase(out);
+}
 
+void earsmap_earsincreated(t_earsmap *x, t_atom_long index, void *outlet) {
+    x->theInOutlets->insert(index, outlet);
+}
 
+void earsmap_earsoutcreated(t_earsmap *x, t_atom_long index, t_object *obj) {
+    x->theOuts->insert(index, obj);
+}
+
+void earsmap_earsindeleted(t_earsmap *x, t_atom_long index, void *outlet) {
+    x->theInOutlets->remove(index, outlet);
+}
+
+void earsmap_earsoutdeleted(t_earsmap *x, t_atom_long index, t_object *obj) {
+    x->theOuts->remove(index, obj);
+}
+
+void earsmap_earsmapinfocreated(t_earsmap *x, t_object *obj)
+{
+    x->earsMapinfoObjects->insert(obj);
+}
+
+void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj)
+{
+    x->earsMapinfoObjects->erase(obj);
+}
+
+void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj);
 
 void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
 {
     t_earsmap *x = (t_earsmap *) object_alloc(earsmap_class);
     t_symbol *patchname = nullptr;
-    
     
     long true_ac = attr_args_offset(argc, argv);
     attr_args_process(x, argc - true_ac, argv + true_ac);
@@ -419,13 +354,14 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     if (argc && atom_gettype(argv) == A_SYM)
         patchname = atom_getsym(argv);
     
-    dsp_setup((t_pxobject *) x, 0);
+    dsp_setup((t_pxobject *) x, 0); // necessary?
     
-    //x->this_objs = new clientSet;
-    for (int i = 0; i < EARSMAP_MAX_DATA_INLETS; i++) {
-        x->client_outlet[i] = new outletSet;
-    }
-    
+    x->theInOutlets = new earsInOutlets;
+    x->theOuts = new earsOuts;
+    x->earsInTildeObjects = new objectSet;
+    x->earsOutTildeObjects = new objectSet;
+    x->earsMapinfoObjects = new objectSet;
+
     // Get parent patcher
     
     x->parent_patch = (t_patcher *)gensym("#P")->s_thing;
@@ -434,23 +370,19 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     
     if (patchname)
         earsmap_loadpatch(x, patchname, 0, NULL);
-    //x->slots->load(0, patch_name_entered, ac, av, x->last_vec_size, x->last_samp_rate);
     
-    /*
-    // first inlet is given (we'll get the buffer name from there)
-    
-    for (t_atom_long i = x->num_in_objs; i > 0; i--) {
+    // first inlet is always given (we'll get the buffer name from there)
+    for (t_atom_long i = x->nBufInlets + x->theInOutlets->maxIdx - 1; i > 0; i--) {
         x->m_proxy[i] = proxy_new((t_object *) x, i, &x->m_in);
     }
     
-    for (t_atom_long i = x->num_out_objs; i > 0; i--) {
+    // there might as well be no outlets
+    for (t_atom_long i = x->nBufOutlets + x->theOuts->maxIdx; i > 0; i--) {
         x->m_outlets[i] = outlet_new((t_object *) x, NULL);
     }
-    */
-    x->m_outlets[0] = outlet_new((t_object *) x, NULL); // main outlet, returning the buffer
-    
+
     if (x->nrt_vs == 0)
-        x->nrt_vs = 512;
+        x->nrt_vs = 128;
     
     x->clock_name = symbol_unique();
     x->running = true;
@@ -460,13 +392,17 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
 void earsmap_free(t_earsmap *x)
 {
     earsmap_wclose(x);
-    if (x->inBufMap) delete x->inBufMap;
-    if (x->outBufMap) delete x->outBufMap;
+    delete x->theInOutlets;
+    delete x->theOuts;
+    delete x->earsInTildeObjects;
+    delete x->earsOutTildeObjects;
+    delete x->earsMapinfoObjects;
+    
     object_free(x->client_patch);
 }
 
 
-int setSubAssoc(t_patcher *p, t_object *x)
+int earsmap_setSubAssoc(t_patcher *p, t_object *x)
 {
     t_object *assoc;
     
@@ -479,6 +415,14 @@ int setSubAssoc(t_patcher *p, t_object *x)
 
 void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
 {
+    
+    x->theInOutlets->clear();
+    x->theOuts->clear();
+    x->earsInTildeObjects->clear();
+    x->earsOutTildeObjects->clear();
+    x->earsMapinfoObjects->clear();
+
+    
     if (ac == 0) {
         ac = x->client_argc;
         av = x->client_argv;
@@ -492,7 +436,6 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
     validTypes[1] = FOUR_CHAR_CODE('TEXT');
     validTypes[2] = FOUR_CHAR_CODE('JSON');
     
-    // freePatch()
     
     char name[2048];
     strncpy_zero(name, patchname->s_name, 2048);
@@ -505,7 +448,7 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
         return;
     }
     
-    t_symbol *ps_earsmap = gensym("_x_x_ears.map~_x_x_");
+    t_symbol *ps_earsmap = gensym(EARSMAP_SPECIALSYM);
     t_symbol *ps_inhibit_subpatcher_vis = gensym("inhibit_subpatcher_vis");
     t_symbol *ps_PAT = gensym("#P");
     
@@ -555,7 +498,7 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
     
     // this apparently associates the patcher to the objects it contains
     // what is the difference wrt the "iterate" method?
-    object_method(x->client_patch, gensym("traverse"), setSubAssoc, x, &result);
+    object_method(x->client_patch, gensym("traverse"), earsmap_setSubAssoc, x, &result);
     
     loadbang_resume();
     dsp_setloadupdate(savedLoadUpdate);
@@ -602,6 +545,120 @@ void earsmap_parentpatcher(t_earsmap *x, t_patcher **parent)
 {
     *parent = x->parent_patch;
 }
+
+void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom* av)
+{
+    long inlet = proxy_getinlet((t_object *) x);
+    
+    if (inlet >= x->nBufInlets) {
+        // send to ears.in
+        return;
+    }
+    
+    if (ac != 1) {
+        object_error((t_object*) x, "wrong buffer name!");
+        return;
+    }
+    
+    x->inbuf[inlet] = s;
+    
+    if (inlet == 0)
+        earsmap_bang(x);
+}
+
+
+void earsmap_bang(t_earsmap *x)
+{
+    
+    if (!x->client_patch)
+        return;
+    
+    long inlet = proxy_getinlet((t_object *) x);
+    
+    if (inlet > 0) {
+        earsmap_anything(x, _sym_bang, 0, NULL);
+        return;
+    }
+    
+    bufferData bufs[EARSMAP_MAX_INPUT_BUFFERS];
+    double sr;
+    int i;
+    for (i = 0; i < x->nBufInlets; i++) {
+        bufs[i].set((t_object*) x, x->inbuf[i]);
+    }
+    
+    if (i > 0) {
+        sr = buffer_getsamplerate(bufs[0].obj); // assuming that the sample rate is the same for all buffers
+    } else {
+        sr = 44100.; // to be refined
+    }
+    
+    const t_atom_long vs = x->nrt_vs;
+    
+    
+    t_atom scarg;
+    atom_setsym(&scarg, x->clock_name);
+    
+    t_object *setclock = (t_object *) newinstance(gensym("setclock"), 1, &scarg);
+    //t_object *prnt = (t_object *) newinstance(gensym("print"), 0, NULL);
+    
+    x->stopped = false;
+    
+    for (t_object* o : *x->earsMapinfoObjects) {
+        object_method_direct_cpp(void, (t_object*, double, double, t_symbol*), o, gensym("start"), 0, 0, x->clock_name);
+    }
+    
+    t_dspchain* chain = dspchain_compile(x->client_patch, vs, sr);
+    
+    if (chain) {
+
+        audioChanMap chanMap;
+        
+        for (t_object* o : *x->earsInTildeObjects) {
+            object_method(o, gensym("setbuffers"), bufs);
+        }
+        
+        for (t_object* o : *x->earsOutTildeObjects) {
+            object_method(o, gensym("setchanmap"), &chanMap);
+        }
+        
+        t_atom_long duration = 44100;
+        
+        for (t_atom_long s = 0; s < duration && !x->stopped; s += vs) {
+            dspchain_tick(chain);
+        }
+        
+        object_free((t_object *) chain);
+        
+        
+        bufferData outBuf((t_object *) x, gensym("outbuf"));
+        
+        // how do I retrieve / create the buffers???
+
+        for (int c = 1; c <= outBuf.chans; c++) {
+            audioChannel *ch = chanMap.retrieveChannel(1, c);
+            if (ch)
+                ch->copyToBuffer(&outBuf, 44100);
+        }
+    }
+    
+    for (const auto &i : *x->earsMapinfoObjects) {
+        object_method(i, gensym("end"));
+    }
+    
+    
+
+
+    object_free(setclock);
+}
+
+
+
+
+
+
+
+
 
 
 

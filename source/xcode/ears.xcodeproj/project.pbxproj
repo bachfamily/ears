@@ -547,6 +547,7 @@
 		91664CCA261890F400EDAF35 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		91664CCB261890F400EDAF35 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91664CD22618910100EDAF35 /* ears.out.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91664C652618902700EDAF35 /* ears.out.cpp */; };
+		91664CE7261DFF1900EDAF35 /* ears.map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91664CE6261DFF1900EDAF35 /* ears.map.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1554,6 +1555,8 @@
 		91664CBF261890E500EDAF35 /* ears.out~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.out~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.out~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91664CD0261890F400EDAF35 /* ears.out.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.out.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
 		91664CD1261890F500EDAF35 /* ears.in copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.in copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.in copy-Info.plist"; sourceTree = "<absolute>"; };
+		91664CE5261B16CA00EDAF35 /* ears.map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ears.map.h; path = ../commons/aa/ears.map.h; sourceTree = "<group>"; };
+		91664CE6261DFF1900EDAF35 /* ears.map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.map.cpp; path = ../commons/aa/ears.map.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2427,6 +2430,8 @@
 				1EBE31DC22EDE97D0090BBFE /* ears.spectral.h */,
 				1EC43EA224F7BF42006658C4 /* ears.windows.c */,
 				1EC43EA324F7BF43006658C4 /* ears.windows.h */,
+				91664CE5261B16CA00EDAF35 /* ears.map.h */,
+				91664CE6261DFF1900EDAF35 /* ears.map.cpp */,
 			);
 			name = commons;
 			sourceTree = SOURCE_ROOT;
@@ -5532,6 +5537,7 @@
 				1E32F23E2388A2F3000B0DEC /* ears.rubberband_commons.c in Sources */,
 				1E32F23D2388A2F3000B0DEC /* ears.freeverb_commons.c in Sources */,
 				1EBE3E481D3680D1009B7392 /* ears.commons.c in Sources */,
+				91664CE7261DFF1900EDAF35 /* ears.map.cpp in Sources */,
 				1E5D94B61D39B2D800BFB88E /* ears.utils.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -9216,6 +9222,16 @@
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(BACHSOURCE)/commons/**\"",
+					"\"/usr/local/include\"",
+					"\"$(SRCROOT)/../lib\"",
+					"\"$(SRCROOT)/../lib/rubberband-master/**\"",
+					"\"$(SRCROOT)/../commons/aa\"",
+				);
 				INFOPLIST_FILE = "ears.trim~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -9246,6 +9262,16 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				HEADER_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(BACHSOURCE)/commons/**\"",
+					"\"/usr/local/include\"",
+					"\"$(SRCROOT)/../lib\"",
+					"\"$(SRCROOT)/../lib/rubberband-master/**\"",
+					"\"$(SRCROOT)/../commons/aa\"",
+				);
 				INFOPLIST_FILE = "ears.trim~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
