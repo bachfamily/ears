@@ -41,8 +41,8 @@ public:
         ref = buffer_ref_new((t_object *) x, name);
         obj = buffer_ref_getobject(ref);
         samps = buffer_locksamples(obj);
-        chans = buffer_getchannelcount(obj);
-        frames = buffer_getframecount(obj);
+        chans = ears_buffer_get_numchannels(x, obj);
+        frames = ears_buffer_get_size_samps(x, obj);
     }
     
     virtual ~bufferData() {
