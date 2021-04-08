@@ -7495,7 +7495,7 @@
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)/lib/",
 					/usr/local/lib/,
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
+					"$(SRCROOT)/../../../bach/source/lib/",
 				);
 				OTHER_CFLAGS = (
 					"-DU_HAVE_GCC_ATOMICS=0",
@@ -7534,7 +7534,7 @@
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)/lib/",
 					/usr/local/lib/,
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
+					"$(SRCROOT)/../../../bach/source/lib/",
 				);
 				OTHER_CFLAGS = (
 					"-DU_HAVE_GCC_ATOMICS=0",
@@ -8097,7 +8097,7 @@
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)/lib/",
 					/usr/local/lib/,
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
+					"$(SRCROOT)/../../../bach/source/lib/",
 				);
 				OTHER_CFLAGS = (
 					"-DU_HAVE_GCC_ATOMICS=0",
@@ -8136,7 +8136,7 @@
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)/lib/",
 					/usr/local/lib/,
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
+					"$(SRCROOT)/../../../bach/source/lib/",
 				);
 				OTHER_CFLAGS = (
 					"-DU_HAVE_GCC_ATOMICS=0",
