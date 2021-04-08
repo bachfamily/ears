@@ -44,7 +44,7 @@ int C74_EXPORT main()
                                    NULL,
                                    sizeof(t_ears_outtilde),
                                    NULL,
-                                   A_LONG,
+                                   A_GIMME,
                                    0);
     
     class_addmethod(ears_outtilde_class, (method)ears_outtilde_dsp64, "dsp64", A_CANT, 0);
