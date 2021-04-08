@@ -191,10 +191,10 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
         }
         
         if (source == dest) { // inplace operation!
-            ears_buffer_set_size(ob, source, outframecount);
+            ears_buffer_set_size_samps(ob, source, outframecount);
         } else {
             ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size(ob, dest, outframecount);
+            ears_buffer_set_size_samps(ob, dest, outframecount);
         }
         
         float *dest_sample = buffer_locksamples(dest);

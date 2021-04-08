@@ -21,7 +21,7 @@
 	Display spectrograms
  
 	@description
-	Display a spectrogram obtained via STFT or CQT transform.
+	Display a spectrogram, typically obtained via a frequency transform (STFT, CQT, tempogram...)
  
 	@discussion
  
@@ -29,7 +29,7 @@
 	ears display
  
 	@keywords
-	buffer, specshow, spectrogram, display, stft, cqt
+	buffer, specshow, spectrogram, display, stft, cqt, tempogram
  
 	@seealso
 	waveform~
@@ -160,7 +160,7 @@ void ext_main(void *r)
     // attributes
     
     CLASS_ATTR_SYM(c, "buffername", 0, t_buf_specshow, n_buffername);
-    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "buffername", 0, "");
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "buffername", 0, "volatile");
     CLASS_ATTR_STYLE_LABEL(c, "buffername", 0, "text", "buffer~ Object Name");
     CLASS_ATTR_ACCESSORS(c, "buffername", NULL, buf_specshow_setattr_buffername);
     CLASS_ATTR_BASIC(c, "buffername", 0);
@@ -278,7 +278,22 @@ t_max_err buf_specshow_notify(t_buf_specshow *x, t_symbol *s, t_symbol *msg, voi
         jbox_redraw((t_jbox *)x);
     }
     
-    return buffer_ref_notify(x->n_buffer_reference, s, msg, sender, data);
+    t_symbol *buffer_name = (t_symbol *)object_method((t_object *)sender, gensym("getname"));
+    if (msg == gensym("globalsymbol_unbinding") && buffer_name && buffer_name == x->n_buffername) {
+        systhread_mutex_lock(x->n_mutex);
+        object_free(x->n_buffer_reference);
+        if (x->n_surface)
+            jgraphics_surface_destroy(x->n_surface);
+        x->n_surface = NULL;
+        x->n_buffer_reference = NULL;
+        x->n_last_buffer = NULL;
+        x->n_buffername = _llllobj_sym_empty_symbol;
+        systhread_mutex_unlock(x->n_mutex);
+        jbox_redraw((t_jbox *)x);
+        return MAX_ERR_NONE;
+    } else {
+        return buffer_ref_notify(x->n_buffer_reference, s, msg, sender, data);
+    }
 }
 
 void buf_specshow_set(t_buf_specshow *x, t_symbol *s)
@@ -306,7 +321,16 @@ t_max_err buf_specshow_setattr_buffername(t_buf_specshow *x, void *attr, long ar
 {
     if (argc && argv) {
         if (atom_gettype(argv) == A_SYM) {
-            buf_specshow_set(x, atom_getsym(argv));
+            if (atom_getsym(argv) == gensym("volatile") ) {
+                systhread_mutex_lock(x->n_mutex);
+                object_free(x->n_buffer_reference);
+                x->n_buffer_reference = NULL;
+                x->n_last_buffer = NULL;
+                x->n_buffername = gensym("volatile");
+                systhread_mutex_unlock(x->n_mutex);
+                jbox_redraw((t_jbox *)x);
+            } else
+                buf_specshow_set(x, atom_getsym(argv));
         }
     }
     return MAX_ERR_NONE;
@@ -407,7 +431,17 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
     if (parsed && parsed->l_head) {
         if (inlet == 0) {
             if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
-                buf_specshow_set(x, hatom_getsym(&parsed->l_head->l_hatom));
+                t_symbol *s = hatom_getsym(&parsed->l_head->l_hatom);
+                if (x->n_buffername == gensym("volatile")) {
+                    if (ears_buffer_symbol_is_buffer(s)) {
+                        t_buffer_obj *obj = ears_buffer_getobject(s);
+                        x->n_last_buffer = obj;
+                        x->n_must_recreate_surface = true;
+                        jbox_redraw((t_jbox *)x);
+                    }
+                } else {
+                    buf_specshow_set(x, s);
+                }
             }
         } else if (inlet == 1) { // start display
             if (parsed && parsed->l_head && is_hatom_number(&parsed->l_head->l_hatom)) {
@@ -623,8 +657,8 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
         
         jfont_destroy_debug(jf_text);
     }
-
-systhread_mutex_unlock(x->n_mutex);
-
+    
+    systhread_mutex_unlock(x->n_mutex);
+    
 }
 

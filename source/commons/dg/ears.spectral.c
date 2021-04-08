@@ -194,10 +194,10 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
         t_atom_long outframecount = ((long)(ceil(framecount/displace_pos)-1))* half_framesize_samps + framesize_samps;
         
         if (source == dest) { // inplace operation!
-            ears_buffer_set_size(ob, source, outframecount);
+            ears_buffer_set_size_samps(ob, source, outframecount);
         } else {
             ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size(ob, dest, outframecount);
+            ears_buffer_set_size_samps(ob, dest, outframecount);
         }
         
         // create window function
@@ -339,10 +339,10 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
         ears_envelope_iterator_reset(&eei);
         
         if (source == dest) { // inplace operation!
-            ears_buffer_set_size(ob, source, outframecount);
+            ears_buffer_set_size_samps(ob, source, outframecount);
         } else {
             ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size(ob, dest, outframecount);
+            ears_buffer_set_size_samps(ob, dest, outframecount);
         }
         
         // create window function

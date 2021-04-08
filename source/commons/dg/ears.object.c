@@ -1,4 +1,4 @@
-#include "ears.commons.h"
+#include "ears.object.h"
 
 #define EARS_ALLOCATIONVERBOSE false
 
@@ -1548,19 +1548,47 @@ void earsbufobj_class_add_naming_attr(t_class *c)
 }
 
 
+t_max_err earsbufobj_setattr_framesize(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (is_atom_number(argv)) {
+            double f = atom_getfloat(argv);
+            e_ob->a_framesize = f;
+            e_ob->a_overlap = e_ob->a_framesize / e_ob->a_hopsize;
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
+
 void earsbufobj_class_add_framesize_attr(t_class *c)
 {
     CLASS_ATTR_DOUBLE(c, "framesize", 0, t_earsbufobj, a_framesize);
     CLASS_ATTR_STYLE_LABEL(c,"framesize",0,"text","Frame Size");
+    CLASS_ATTR_ACCESSORS(c, "framesize", NULL, earsbufobj_setattr_framesize);
     CLASS_ATTR_BASIC(c, "framesize", 0);
     CLASS_ATTR_CATEGORY(c, "framesize", 0, "Analysis");
     // @description Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
 }
-    
+
+
+t_max_err earsbufobj_setattr_hopsize(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (is_atom_number(argv)) {
+            double hop = atom_getfloat(argv);
+            e_ob->a_hopsize = hop;
+            e_ob->a_overlap = e_ob->a_framesize / e_ob->a_hopsize;
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
 void earsbufobj_class_add_hopsize_attr(t_class *c)
 {
     CLASS_ATTR_DOUBLE(c, "hopsize", 0, t_earsbufobj, a_hopsize);
     CLASS_ATTR_STYLE_LABEL(c,"hopsize",0,"text","Hop Size");
+    CLASS_ATTR_ACCESSORS(c, "hopsize", NULL, earsbufobj_setattr_hopsize);
     CLASS_ATTR_BASIC(c, "hopsize", 0);
     CLASS_ATTR_CATEGORY(c, "hopsize", 0, "Analysis");
     // @description Sets the analysis hop size (the unit depends on the <m>antimeunit</m> attribute)
@@ -1719,7 +1747,7 @@ t_symbol *earsbufobj_get_outlet_buffer_name(t_earsbufobj *e_ob, long store_idx, 
 }
 
 
-long earsbufobj_outlet_to_bufoutlet(t_earsbufobj *e_ob, long outlet)
+long earsbufobj_outlet_to_bufstore(t_earsbufobj *e_ob, long outlet)
 {
     long curr_num_buf_outlets = 0;
     for (long i = 0; i < outlet; i++) {
@@ -1929,7 +1957,7 @@ void earsbufobj_outlet_bang(t_earsbufobj *e_ob, long outnum)
 void earsbufobj_outlet_buffer(t_earsbufobj *e_ob, long outnum)
 {
     if (outnum >= 0 && outnum < e_ob->l_ob.l_numouts) {
-        long store = earsbufobj_outlet_to_bufoutlet(e_ob, outnum);
+        long store = earsbufobj_outlet_to_bufstore(e_ob, outnum);
         if (e_ob->l_outstore[store].num_stored_bufs > 0) {
             t_atom *a = (t_atom *)bach_newptr(e_ob->l_outstore[store].num_stored_bufs * sizeof(t_atom));
             long j, c = 0;
@@ -2341,6 +2369,16 @@ double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from
 }
 
 
+// TO DO: can be optimized
+void ears_convert_ampunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to)
+{
+    if (from == to)
+        return;
+    
+    for (long i = 0; i < vec.size(); i++)
+        vec[i] = ears_convert_ampunit(vec[i], buf, from, to);
+}
+
 
 
 
@@ -2369,7 +2407,48 @@ double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit fr
     }
 }
 
+// TO DO: can be optimized
+void ears_convert_frequnit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to)
+{
+    if (from == to)
+        return;
+    
+    for (long i = 0; i < vec.size(); i++)
+        vec[i] = ears_convert_frequnit(vec[i], buf, from, to);
+}
 
+
+double ears_convert_angleunit(double value, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to)
+{
+    t_earsbufobj e_ob;
+    e_ob.l_angleunit = from;
+    switch (to) {
+        case EARS_ANGLEUNIT_DEGREES:
+            return earsbufobj_angle_to_degrees(&e_ob, value);
+            break;
+
+        case EARS_ANGLEUNIT_TURNS:
+            return earsbufobj_angle_to_radians(&e_ob, value)/TWOPI;
+            break;
+
+        default:
+        case EARS_ANGLEUNIT_RADIANS:
+            return earsbufobj_angle_to_radians(&e_ob, value);
+            break;
+    }
+}
+
+
+
+// TO DO: can be optimized
+void ears_convert_angleunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to)
+{
+    if (from == to)
+        return;
+    
+    for (long i= 0; i < vec.size(); i++)
+        vec[i] = ears_convert_angleunit(vec[i], buf, from, to);
+}
 
 
 
@@ -2400,6 +2479,15 @@ double ears_convert_pitchunit(double value, t_buffer_obj *buf, e_ears_pitchunit 
 }
 
 
+// TO DO: can be optimized
+void ears_convert_pitchunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to)
+{
+    if (from == to)
+        return;
+    
+    for (long i= 0; i < vec.size(); i++)
+        vec[i] = ears_convert_pitchunit(vec[i], buf, from, to);
+}
 
 double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to)
 {
@@ -2436,6 +2524,17 @@ double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit fr
             break;
     }
 }
+
+// TO DO: can be optimized
+void ears_convert_timeunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to)
+{
+    if (from == to)
+        return;
+    
+    for (long i= 0; i < vec.size(); i++)
+        vec[i] = ears_convert_timeunit(vec[i], buf, from, to);
+}
+
 
 
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf)
@@ -2537,24 +2636,42 @@ double earsbufobj_amplitude_to_db(t_earsbufobj *e_ob, double value)
     }
 }
 
-double earsbufobj_input_to_radians(t_earsbufobj *e_ob, double value)
+double earsbufobj_angle_to_degrees(t_earsbufobj *e_ob, double value)
+{
+    switch (e_ob->l_ampunit) {
+        case EARS_ANGLEUNIT_DEGREES:
+            return value;
+            break;
+
+        case EARS_ANGLEUNIT_TURNS:
+            return ears_rad_to_deg(value * TWOPI);
+            break;
+
+        case EARS_ANGLEUNIT_RADIANS:
+        default:
+            return ears_rad_to_deg(value);
+            break;
+    }
+}
+
+
+double earsbufobj_angle_to_radians(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_ampunit) {
         case EARS_ANGLEUNIT_DEGREES:
             return ears_deg_to_rad(value);
             break;
-
+            
         case EARS_ANGLEUNIT_TURNS:
             return value * TWOPI;
             break;
-
+            
         case EARS_ANGLEUNIT_RADIANS:
         default:
             return value;
             break;
     }
 }
-
 
 
 // llllelem can be either a number or a t_pts

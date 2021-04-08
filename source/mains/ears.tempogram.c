@@ -259,7 +259,7 @@ void buf_tempogram_bang(t_buf_tempogram *x)
             
             for (long c = 0; c < num_channels; c++) {
                 t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, c);
-                std::vector<float> data = ears_buffer_get_sample_vector((t_object *)x, in, c);
+                std::vector<float> data = ears_buffer_get_sample_vector_channel((t_object *)x, in, c);
                 
                 t_ears_essentia_analysis_params params = buf_tempogram_get_params(x, in);
 

@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 334.0, 79.0, 836.0, 566.0 ],
+		"rect" : [ 100.0, 79.0, 836.0, 566.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -90,6 +90,33 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"attr" : "maxvalue",
+									"id" : "obj-6",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 213.0, 180.0, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
+									"fontface" : 0,
+									"fontname" : "Arial",
+									"fontsize" : 10.0,
+									"id" : "obj-2",
+									"maxclass" : "ears.specshow~",
+									"maxvalue" : 0.01,
+									"numinlets" : 3,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 214.0, 810.0, 320.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-8",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -109,24 +136,6 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 10.0, 149.0, 109.0, 23.0 ],
 									"text" : "ears.expr~ $f1**2"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "u230001008",
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
-									"fontface" : 0,
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
-									"id" : "obj-7",
-									"maxclass" : "ears.specshow~",
-									"maxcolor" : [ 0.996078431372549, 0.996078431372549, 0.996078431372549, 1.0 ],
-									"maxvalue" : 0.01,
-									"mincolor" : [ 0.0, 0.0, 0.0, 1.0 ],
-									"numinlets" : 3,
-									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 208.75, 812.0, 324.0 ]
 								}
 
 							}
@@ -211,7 +220,15 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-7", 0 ],
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 222.5, 205.0, 19.5, 205.0 ],
+									"source" : [ "obj-6", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
 									"source" : [ "obj-8", 0 ]
 								}
 
@@ -271,7 +288,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 334.0, 105.0, 836.0, 540.0 ],
+						"rect" : [ 100.0, 105.0, 836.0, 540.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -391,7 +408,6 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "",
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -410,7 +426,6 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "",
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",

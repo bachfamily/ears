@@ -10,7 +10,7 @@
 #define _EARS_BUF_OBJECT_H_
 
 #include "ears.commons.h"
-
+#include <vector>
 
 
 #define EARSBUFOBJ_ADD_DEFERRED_METHODS(NAME) \
@@ -273,7 +273,7 @@ t_symbol *earsbufobj_get_inlet_buffer_name(t_earsbufobj *e_ob, long store_idx, l
 t_buffer_ref *earsbufobj_get_outlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_object *earsbufobj_get_outlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_symbol *earsbufobj_get_outlet_buffer_name(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
-long earsbufobj_outlet_to_bufoutlet(t_earsbufobj *e_ob, long outlet);
+long earsbufobj_outlet_to_bufstore(t_earsbufobj *e_ob, long outlet);
 
 void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *buffername);
 void earsbufobj_store_empty_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx);
@@ -326,6 +326,14 @@ double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit fr
 double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to);
 double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to);
 double ears_convert_pitchunit(double value, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to);
+double ears_convert_angleunit(double value, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to);
+// vector-of-floats in-place versions
+void ears_convert_timeunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to);
+void ears_convert_ampunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to);
+void ears_convert_frequnit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to);
+void ears_convert_pitchunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to);
+void ears_convert_angleunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to);
+
 
 
 long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf);
@@ -333,7 +341,8 @@ void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf,
 
 double earsbufobj_amplitude_to_linear(t_earsbufobj *e_ob, double value);
 double earsbufobj_amplitude_to_db(t_earsbufobj *e_ob, double value);
-double earsbufobj_input_to_radians(t_earsbufobj *e_ob, double value);
+double earsbufobj_angle_to_radians(t_earsbufobj *e_ob, double value);
+double earsbufobj_angle_to_degrees(t_earsbufobj *e_ob, double value);
 t_llll *earsbufobj_llllelem_to_linear(t_earsbufobj *e_ob, t_llllelem *elem);
 t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);

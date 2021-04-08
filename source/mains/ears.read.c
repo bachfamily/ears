@@ -191,7 +191,7 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "4", "Ea", names);
+        earsbufobj_setup((t_earsbufobj *)x, "4", "aE", names);
 
         llll_free(args);
         llll_free(names);

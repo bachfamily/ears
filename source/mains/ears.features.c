@@ -1234,6 +1234,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         if (buf_features_set_features(x, args) != EARS_ERR_NONE) {
             llll_free(args);
+            object_free_debug(x); // unlike freeobject(), this works even if the argument is NULL
             return NULL;
         }
 
@@ -1453,7 +1454,7 @@ void buf_features_bang(t_buf_features *x)
     
     for (long i = 0; i < x->num_features; i++) {
         if (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, earsbufobj_outlet_to_bufoutlet((t_earsbufobj *)x, i), num_buffers, true);
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, earsbufobj_outlet_to_bufstore((t_earsbufobj *)x, i), num_buffers, true);
     }
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
@@ -1472,7 +1473,7 @@ void buf_features_bang(t_buf_features *x)
         for (long i = 0; i < x->num_features; i++) {
             if (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER) {
                 for (long t = 0; t < x->features_numoutputs[i]; t++) {
-                    res_buf[o] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, earsbufobj_outlet_to_bufoutlet((t_earsbufobj *)x, o), count);
+                    res_buf[o] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, earsbufobj_outlet_to_bufstore((t_earsbufobj *)x, o), count);
                     o++;
                 }
             } else {

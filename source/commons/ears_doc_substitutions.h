@@ -220,6 +220,7 @@ CLASS_ATTR_ENUMINDEX(c,"slopemapping", 0, "bach Max");
 CLASS_ATTR_DOUBLE(c, "framesize", 0, t_earsbufobj, a_framesize);
 CLASS_ATTR_STYLE_LABEL(c,"framesize",0,"text","Frame Size");
 CLASS_ATTR_BASIC(c, "framesize", 0);
+CLASS_ATTR_ACCESSORS(c, "framesize", NULL, earsbufobj_setattr_framesize);
 CLASS_ATTR_CATEGORY(c, "framesize", 0, "Analysis");
 // @description Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
 
@@ -227,6 +228,7 @@ CLASS_ATTR_CATEGORY(c, "framesize", 0, "Analysis");
 CLASS_ATTR_DOUBLE(c, "hopsize", 0, t_earsbufobj, a_hopsize);
 CLASS_ATTR_STYLE_LABEL(c,"hopsize",0,"text","Hop Size");
 CLASS_ATTR_BASIC(c, "hopsize", 0);
+CLASS_ATTR_ACCESSORS(c, "hopsize", NULL, earsbufobj_setattr_hopsize);
 CLASS_ATTR_CATEGORY(c, "hopsize", 0, "Analysis");
 // @description Sets the analysis hop size (the unit depends on the <m>antimeunit</m> attribute)
 // Floating point values are allowed.

@@ -259,8 +259,8 @@ void buf_hoadecode_bang(t_buf_hoadecode *x)
     t_atom_float  ls_az[EARS_HOA_MAX_LOUDSPEAKERS];
     t_atom_float  ls_el[EARS_HOA_MAX_LOUDSPEAKERS];
     for (long i = 0; i < x->num_loudspeakers; i++) {
-        ls_az[i] = earsbufobj_input_to_radians((t_earsbufobj *)x, x->loudspeakers_azimuth[i]);
-        ls_el[i] = earsbufobj_input_to_radians((t_earsbufobj *)x, x->loudspeakers_elevation[i]);
+        ls_az[i] = earsbufobj_angle_to_radians((t_earsbufobj *)x, x->loudspeakers_azimuth[i]);
+        ls_el[i] = earsbufobj_angle_to_radians((t_earsbufobj *)x, x->loudspeakers_elevation[i]);
     }
 
     // HoaLibrary decoding has a weird quirk on the decoding convention for the angles, which makes it important to reverse the azimuth location

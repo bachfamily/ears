@@ -267,6 +267,7 @@ t_atom_long ears_buffer_channel_to_double_array(t_object *ob, t_buffer_obj *buf,
 // Basic operations
 t_ears_err ears_buffer_setempty(t_object *ob, t_buffer_obj *buf, long num_channels);
 t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0);
+t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0);
 t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **source, t_buffer_obj *dest,
                             e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
 t_ears_err ears_buffer_pack_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest,
@@ -298,7 +299,8 @@ t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *
 
 
 // Convert buffer to float vectors
-std::vector<float> ears_buffer_get_sample_vector(t_object *ob, t_buffer_obj *buf, long channelnum);
+std::vector<std::vector<float>> ears_buffer_get_sample_vector(t_object *ob, t_buffer_obj *buf);
+std::vector<float> ears_buffer_get_sample_vector_channel(t_object *ob, t_buffer_obj *buf, long channelnum);
 std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj *buf);
 
 // Filtering
@@ -337,7 +339,7 @@ t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
 
 
 // SET properties
-t_ears_err ears_buffer_set_size(t_object *ob, t_buffer_obj *buf, long num_frames);
+t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames);
 t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr);
 
 t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels);

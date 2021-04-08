@@ -142,7 +142,7 @@ t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source,
                     orig_sample[i*channelcount + c] *= win[i];
             buffer_setdirty(source);
         } else {
-            ears_buffer_set_size(ob, dest, framecount);
+            ears_buffer_set_size_samps(ob, dest, framecount);
             float *dest_sample = buffer_locksamples(dest);
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -487,7 +487,7 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
                     
                     for (int n = 0; n < params->numGriffinLimIterations; n++) {
                         // reconstruction spectrogram
-                        std::vector<Real> samples = ears_buffer_get_sample_vector(ob, tempout, 0);
+                        std::vector<Real> samples = ears_buffer_get_sample_vector_channel(ob, tempout, 0);
                         ears_vector_stft(ob, samples, audio_sr, amps, phases, polar, fullspectrum, params, angleunit);
 
                         // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead

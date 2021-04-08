@@ -30,10 +30,10 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
         buffer_unlocksamples(source);
         
         if (source == dest) {
-            ears_buffer_set_size(ob, dest, framecount + framepad);
+            ears_buffer_set_size_samps(ob, dest, framecount + framepad);
         } else {
             ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size(ob, dest, framecount + framepad);
+            ears_buffer_set_size_samps(ob, dest, framecount + framepad);
         }
         
         float *dest_sample = buffer_locksamples(dest);
@@ -67,7 +67,7 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
             buffer_unlocksamples(dest);
             if (end_sample > 0)
                 ears_buffer_crop_inplace(ob, dest, 0, end_sample);
-//                ears_buffer_set_size(ob, dest, end_sample);
+//                ears_buffer_set_size_samps(ob, dest, end_sample);
             buffer_setdirty(dest);
         }
         
@@ -121,10 +121,10 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
         buffer_unlocksamples(source);
         
         if (source == dest) {
-            ears_buffer_set_size(ob, dest, framecount + framepad);
+            ears_buffer_set_size_samps(ob, dest, framecount + framepad);
         } else {
             ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size(ob, dest, framecount + framepad);
+            ears_buffer_set_size_samps(ob, dest, framecount + framepad);
         }
         
         float *dest_sample = buffer_locksamples(dest);
@@ -158,7 +158,7 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
             buffer_unlocksamples(dest);
             if (end_sample > 0)
                 ears_buffer_crop_inplace(ob, dest, 0, end_sample);
-            //                ears_buffer_set_size(ob, dest, end_sample);
+            //                ears_buffer_set_size_samps(ob, dest, end_sample);
             buffer_setdirty(dest);
         }
         
