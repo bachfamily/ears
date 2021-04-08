@@ -11184,7 +11184,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
+					"$(SRCROOT)/../../../bach/source/lib/",
 				);
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
@@ -11228,7 +11228,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/lib\"",
+					"$(SRCROOT)/../../../bach/source/lib/",
 				);
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
