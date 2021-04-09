@@ -108,7 +108,9 @@ public:
         
         do {
             for ( ; s < n && currPosition < currSize; s++, currPosition++) {
-                (*currVec)[s] += samps[s];
+                double foo = (*currVec)[currPosition];
+                (*currVec)[currPosition] += samps[s];
+                foo = (*currVec)[currPosition];
             }
             
             if (currPosition == currSize) {

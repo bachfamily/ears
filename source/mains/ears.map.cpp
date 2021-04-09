@@ -434,7 +434,7 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     for (i = 0; i < x->nBufInlets; i++) {
         outtypes[i + x->theOuts->maxIdx] = 'E';
     }
-    intypes[i + x->theOuts->maxIdx] = 0;
+    outtypes[i + x->theOuts->maxIdx] = 0;
 
     
     
@@ -745,14 +745,14 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
             
             for (int i = 0; i < x->nBufOutlets; i++) {
                 long num_chans = 2; // TODO change
-                outBuf[i].set((t_object *) x, earsbufobj_get_outlet_buffer_name((t_earsbufobj *)x, i, iterBuf));
             
                 t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, i, iterBuf);
                 ears_buffer_set_sr((t_object *)x, buf, sr);
                 ears_buffer_set_size_and_numchannels((t_object *)x, buf, duration, num_chans);
                 
+                outBuf[i].set((t_object *) x, earsbufobj_get_outlet_buffer_name((t_earsbufobj *)x, i, iterBuf));
                 for (int c = 1; c <= outBuf[i].chans; c++) {
-                    audioChannel *ch = chanMap.retrieveChannel(i, c);
+                    audioChannel *ch = chanMap.retrieveChannel(i + 1, c);
                     if (ch)
                         ch->copyToBuffer(outBuf + i, duration);
                 }

@@ -120,7 +120,7 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
     }
     
     t_atom_long pos = x->position;
-    float *tab = buf->samps + chan - 1;
+    float *tab = buf->samps + (pos * bufchans) + chan - 1;
     t_atom_long frames = buf->frames;
     
     for (s = 0; s < vec_size && pos < frames; s++, pos++) {
