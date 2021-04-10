@@ -7865,7 +7865,6 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
-					"\"$(SRCROOT)/../lib/essentia/\"/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7904,7 +7903,6 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
-					"\"$(SRCROOT)/../lib/essentia/\"/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8914,6 +8912,7 @@
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
+					/usr/local/include/taglib/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8927,6 +8926,9 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
+					"-lz",
+					/usr/local/lib/libtag.a,
+					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
@@ -8951,6 +8953,7 @@
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
+					/usr/local/include/taglib/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -8964,6 +8967,9 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
+					"-lz",
+					/usr/local/lib/libtag.a,
+					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
@@ -11340,6 +11346,7 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
+					/usr/local/include/taglib/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -11353,6 +11360,9 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
+					"-lz",
+					/usr/local/lib/libtag.a,
+					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
@@ -11376,6 +11386,7 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"/Users/danieleghisi/Documents/Max 7/Packages/bach/source/commons\"/**",
 					/usr/local/include/,
+					/usr/local/include/taglib/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -11389,6 +11400,9 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
+					"-lz",
+					/usr/local/lib/libtag.a,
+					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";

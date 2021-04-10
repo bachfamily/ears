@@ -47,6 +47,17 @@
 #include "ears.mp3.h"
 #include "ears.wavpack.h"
 
+#include <tlist.h>
+#include <fileref.h>
+#include <tfile.h>
+#include <tag.h>
+#include <tpropertymap.h>
+#include <mpegfile.h>
+
+#include <id3v2tag.h>
+#include <id3v1tag.h>
+#include <apetag.h>
+#include <xiphcomment.h>
 
 typedef struct _buf_read {
     t_earsbufobj       e_ob;
@@ -69,6 +80,8 @@ void            buf_read_append(t_buf_read *x, t_symbol *msg, long ac, t_atom *a
 void            buf_read_append_deferred(t_buf_read *x, t_symbol *msg, long ac, t_atom *av);
 void            buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_atom *av);
 long            buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *view);
+
+t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename);
 
 void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s);
 void buf_read_inletinfo(t_buf_read *x, void *b, long a, char *t);
@@ -191,7 +204,7 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "4", "aE", names);
+        earsbufobj_setup((t_earsbufobj *)x, "4", "4aE", names);
 
         llll_free(args);
         llll_free(names);
@@ -236,6 +249,7 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
         long num_stored_buffers = earsbufobj_get_num_outlet_stored_buffers((t_earsbufobj *)x, 0, append);
         long offset = append ? num_stored_buffers : 0;
         t_llllelem *elem;
+        t_llll *tags = llll_get();
         
         earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
         
@@ -286,6 +300,8 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                 }
 #endif
                 
+                // WHAT?
+                llll_appendllll(tags, buf_read_tags(x, filepath));
             } else {
                 // empty buffer will do.
                 char *txtbuf = NULL;
@@ -298,6 +314,8 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
             
         }
         if (count > 0) {
+            earsbufobj_outlet_llll((t_earsbufobj *)x, 2, tags);
+            
             long numsyms = x->filenames->l_size;
             t_symbol **syms = (t_symbol **)bach_newptr(numsyms * sizeof(t_symbol *));
             t_llllelem *el; long i;
@@ -308,7 +326,8 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
             
             earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
         }
-        
+        llll_free(tags);
+
     } else if (files) {
         // null llll
         if (!append) {
@@ -365,3 +384,98 @@ void buf_read_anything(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 
     llll_free(parsed);
 }
+
+
+t_llll *buf_read_ID3V1_tags(t_buf_read *x, t_symbol *filename)
+{
+    t_llll *tags_ll = llll_get();
+    llll_appendsym(tags_ll, gensym("ID3V1"));
+    TagLib::MPEG::File f(filename->s_name);
+    
+    if(f.ID3v1Tag()) {
+        TagLib::ID3v1::Tag *tags = f.ID3v1Tag();
+        
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("title"), gensym(tags->title().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("artist"), gensym(tags->artist().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("comment"), gensym(tags->comment().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("genre"), gensym(tags->genre().toCString())));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("year"), tags->year()));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("track"), tags->track()));
+    }
+    
+    return tags_ll;
+}
+
+
+t_llll *buf_read_ID3V2_tags(t_buf_read *x, t_symbol *filename)
+{
+    t_llll *tags_ll = llll_get();
+    llll_appendsym(tags_ll, gensym("ID3V2"));
+    TagLib::MPEG::File f(filename->s_name);
+    
+    if(f.ID3v2Tag()) {
+        TagLib::ID3v2::Tag *tags = f.ID3v2Tag();
+        TagLib::ID3v2::FrameList fl = tags->frameList();
+        
+        TagLib::ID3v2::FrameList::ConstIterator it;
+        for(it=fl.begin(); it!=fl.end(); ++it)
+        {
+            TagLib::ID3v2::Frame *fr = (*it);
+            t_llll *this_tags_ll = llll_get();
+            llll_appendsym(this_tags_ll, gensym(fr->frameID().data()));
+            llll_appendsym(this_tags_ll, gensym(fr->toString().toCString()));
+            llll_appendllll(tags_ll, this_tags_ll);
+        }
+
+    }
+    
+    return tags_ll;
+}
+
+
+
+t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename)
+{
+    t_llll *out = llll_get();
+    
+    llll_appendllll(out, buf_read_ID3V1_tags(x, filename));
+    llll_appendllll(out, buf_read_ID3V2_tags(x, filename));
+    
+    return out;
+    /*
+    TagLib::FileRef f(filename->s_name);
+    
+    if(!f.isNull() && f.tag()) {
+        
+        TagLib::Tag *tag = f.tag();
+        
+        cout << "-- TAG (basic) --" << endl;
+        cout << "title   - \"" << tag->title()   << "\"" << endl;
+        cout << "artist  - \"" << tag->artist()  << "\"" << endl;
+        cout << "album   - \"" << tag->album()   << "\"" << endl;
+        cout << "year    - \"" << tag->year()    << "\"" << endl;
+        cout << "comment - \"" << tag->comment() << "\"" << endl;
+        cout << "track   - \"" << tag->track()   << "\"" << endl;
+        cout << "genre   - \"" << tag->genre()   << "\"" << endl;
+        
+        TagLib::PropertyMap tags = f.file()->properties();
+        
+        unsigned int longest = 0;
+        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
+            if (i->first.size() > longest) {
+                longest = i->first.size();
+            }
+        }
+        
+        cout << "-- TAG (properties) --" << endl;
+        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
+            for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j) {
+                cout << left << std::setw(longest) << i->first << " - " << '"' << *j << '"' << endl;
+            }
+        }
+        
+    } */
+}
+
+
+

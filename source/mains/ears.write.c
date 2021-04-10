@@ -46,6 +46,13 @@
 #include "ears.object.h"
 
 
+#include <tlist.h>
+#include <fileref.h>
+#include <tfile.h>
+#include <tag.h>
+#include <tpropertymap.h>
+
+
 typedef struct _buf_write {
     t_earsbufobj       e_ob;
     
