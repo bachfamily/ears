@@ -297,6 +297,158 @@ void buf_write_fill_encode_settings(t_buf_write *x, t_ears_encoding_settings *se
     settings->use_correction_file = x->use_correction_file;
 }
 
+
+
+void checkForRejectedProperties(t_buf_write *x, const TagLib::PropertyMap &tags)
+{
+    return ;
+    if(tags.size() > 0) {
+        unsigned int longest = 0;
+        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
+            if(i->first.size() > longest) {
+                longest = i->first.size();
+            }
+        }
+        //        cout << "-- rejected TAGs (properties) --" << endl;
+        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
+            for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j) {
+                object_warn((t_object *)x, "Rejected property: %s", i->first.to8Bit().c_str());
+                //                cout << left << std::setw(longest) << i->first << " - " << '"' << *j << '"' << endl;
+            }
+        }
+    }
+}
+
+void buf_write_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags)
+{
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    TagLib::FileRef f(filename->s_name);
+    
+    if(!f.isNull() && f.tag()) {
+        for (t_llllelem *tag_el = tags->l_head; tag_el; tag_el = tag_el->l_next) {
+            if (hatom_gettype(&tag_el->l_hatom) != H_LLLL) {
+                object_error((t_object *)x, "A wrongly formatted tag has been dropped");
+                continue;
+            }
+            t_llll *tag_ll = hatom_getllll(&tag_el->l_hatom);
+            if (tag_ll->l_size < 1 || hatom_gettype(&tag_ll->l_head->l_hatom) != H_SYM) {
+                object_error((t_object *)x, "A wrongly formatted tag has been dropped");
+                continue;
+            }
+            
+            t_symbol *s = hatom_getsym(&tag_ll->l_head->l_hatom);
+            char mode = 'R';
+            if (!s) {
+                object_error((t_object *)x, "A wrongly formatted tag has been dropped");
+                continue;
+            }
+            
+            if (s == gensym("+")) {
+                mode = 'I';
+                if (!tag_ll->l_head->l_next) {
+                    object_error((t_object *)x, "A wrongly formatted tag has been dropped");
+                    continue;
+                }
+                s = hatom_getsym(&tag_ll->l_head->l_next->l_hatom);
+                if (!s) {
+                    object_error((t_object *)x, "A wrongly formatted tag has been dropped");
+                    continue;
+                }
+            } else if  (s == gensym("-")) {
+                mode = 'D';
+                if (!tag_ll->l_head->l_next) {
+                    object_error((t_object *)x, "A wrongly formatted tag has been dropped");
+                    continue;
+                }
+                s = hatom_getsym(&tag_ll->l_head->l_next->l_hatom);
+                if (!s) {
+                    object_error((t_object *)x, "A wrongly formatted tag has been dropped");
+                    continue;
+                }
+            }
+            
+            
+            char field = mode;
+            TagLib::String value = s->s_name;
+            
+            char *txtbuf = NULL;
+            if (tag_ll->l_size > 1)
+                hatom_to_text_buf(&tag_ll->l_head->l_next->l_hatom, &txtbuf);
+            
+            if (strcmp(s->s_name, "title") == 0)
+                field = 't';
+            else if (strcmp(s->s_name, "artist") == 0)
+                field = 'a';
+            else if (strcmp(s->s_name, "album") == 0)
+                field = 'A';
+            else if (strcmp(s->s_name, "comment") == 0)
+                field = 'c';
+            else if (strcmp(s->s_name, "genre") == 0)
+                field = 'g';
+            else if (strcmp(s->s_name, "year") == 0)
+                field = 'y';
+            else if (strcmp(s->s_name, "track") == 0)
+                field = 'T';
+            
+            TagLib::Tag *t = f.tag();
+            
+            switch (field) {
+                case 't':
+                    t->setTitle(txtbuf ? txtbuf : "");
+                    break;
+                case 'a':
+                    t->setArtist(txtbuf ? txtbuf : "");
+                    break;
+                case 'A':
+                    t->setAlbum(txtbuf ? txtbuf : "");
+                    break;
+                case 'c':
+                    t->setComment(txtbuf ? txtbuf : "");
+                    break;
+                case 'g':
+                    t->setGenre(txtbuf ? txtbuf : "");
+                    break;
+                case 'y':
+                    t->setYear(txtbuf ? atoi(txtbuf) : 0);
+                    break;
+                case 'T':
+                    t->setTrack(txtbuf ? atoi(txtbuf) : 0);
+                    break;
+                case 'R':
+                case 'I':
+                    if (txtbuf) {
+                        TagLib::PropertyMap map = f.file()->properties ();
+                        if(field == 'R') {
+                            map.replace(value, TagLib::String(txtbuf));
+                        }
+                        else {
+                            map.insert(value, TagLib::String(txtbuf));
+                        }
+                        checkForRejectedProperties(x, f.file()->setProperties(map));
+                    } else {
+                        object_warn((t_object *)x, "Tag requested to be inserted or replaced, but no content given.");
+                    }
+                    break;
+                case 'D': {
+                    TagLib::PropertyMap map = f.file()->properties();
+                    map.erase(value);
+                    checkForRejectedProperties(x, f.file()->setProperties(map));
+                    break;
+                }
+                default:
+                    break;
+            }
+            
+            bach_freeptr(txtbuf);
+            
+        }
+        
+        f.file()->save();
+    }
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+}
+
+
 void buf_write_bang(t_buf_write *x)
 {
     long num_buffers = earsbufobj_get_num_inlet_stored_buffers((t_earsbufobj *)x, 0, false);
