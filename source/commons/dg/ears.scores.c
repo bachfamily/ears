@@ -774,7 +774,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                             object_warn((t_object *)e_ob, "Cannot retrieve buffer.");
                     } else {
                         double end = use_durations ? start + note_duration_ms : -1;
-                        ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, EARS_DEFAULT_SR, 0);
+                        ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, sys_getsr(), 0);
                     }
                     if (buf) {
                         fade_in_ms = earsbufobj_time_to_ms(e_ob, fade_in_amount, buf);

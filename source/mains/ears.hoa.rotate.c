@@ -307,9 +307,10 @@ void buf_hoarotate_anything(t_buf_hoarotate *x, t_symbol *msg, long ac, t_atom *
             }
         } else {
             if (inlet == 0) {
-                
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
+                long num_bufs = llll_get_num_symbols_root(parsed);
+
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_bufs, true);
                 
                 earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
                 

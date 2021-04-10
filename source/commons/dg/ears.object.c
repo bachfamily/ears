@@ -356,23 +356,38 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
     }
 }
 
-void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx)
+long llll_get_num_symbols_root(t_llll *ll)
 {
     long count = 0;
-    for (t_llllelem *elem = buffers->l_head; elem; elem = elem->l_next, count++) {
+    for (t_llllelem *elem = ll->l_head; elem; elem = elem->l_next) {
+        if (hatom_gettype(&elem->l_hatom) == H_SYM) {
+            count++;
+        }
+    }
+    return count;
+}
+
+long earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx)
+{
+    long count = 0;
+    for (t_llllelem *elem = buffers->l_head; elem; elem = elem->l_next) {
         if (hatom_gettype(&elem->l_hatom) == H_SYM) {
             // storing input buffer
             earsbufobj_store_buffer(e_ob, EARSBUFOBJ_IN, store_idx, count, hatom_getsym(&elem->l_hatom));
-            
+            count++;
         } else {
+            object_warn((t_object *)e_ob, "Non-symbolic entry found; ignored.");
+            /*
             // empty buffer will do.
             char *txtbuf = NULL;
             hatom_to_text_buf(&elem->l_hatom, &txtbuf);
             object_warn((t_object *)e_ob, "No buffer %s found; empty buffer created.", txtbuf);
             earsbufobj_store_empty_buffer(e_ob, EARSBUFOBJ_IN, store_idx, count);
             bach_freeptr(txtbuf);
+             */
         }
     }
+    return count;
 }
 
 long substitute_polybuffers(t_llll *ll)
@@ -887,14 +902,17 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                 if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
                     res = MAX_ERR_GENERIC;
                 
-                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
+                if (!ears_is_freeing && (msg == gensym("globalsymbol_unbinding") || msg == gensym("globalsymbol_binding"))) {
+                    // maybe removing some buffer?
+                    // updating objects for references
+                    // TODO: is it necessary to do that here? Shouldn't we just do it in the earsbufobj_get_inlet_buffer_obj() function?
                     if (data == earsbufobj_get_outlet_buffer_obj(e_ob, i, j)) {
                         t_buffer_obj *new_obj = buffer_ref_getobject(ref);
                         if (!new_obj) {
                             earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, i, j, true);
                             e_ob->l_outstore[i].stored_buf[j].l_buf = NULL;
-                            e_ob->l_outstore[i].stored_buf[j].l_name = NULL;
-                            e_ob->l_outstore[i].stored_buf[j].l_ref = NULL;
+//                            e_ob->l_outstore[i].stored_buf[j].l_name = NULL;
+//                            e_ob->l_outstore[i].stored_buf[j].l_ref = NULL;
                         } else {
                             e_ob->l_outstore[i].stored_buf[j].l_buf = new_obj;
                         }
@@ -910,14 +928,17 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                 if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
                     res = MAX_ERR_GENERIC;
                 
-                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
-                    if (data == earsbufobj_get_inlet_buffer_obj(e_ob, i, j)) {
+                if (!ears_is_freeing && (msg == gensym("globalsymbol_unbinding") || msg == gensym("globalsymbol_binding"))) {
+                    // removing or adding some buffer?
+                    // updating objects for references
+                    // TODO: is it necessary to do that here? Shouldn't we just do it in the earsbufobj_get_inlet_buffer_obj() function?
+                    if (data == earsbufobj_get_inlet_buffer_obj(e_ob, i, j, false)) {
                         t_buffer_obj *new_obj = buffer_ref_getobject(ref);
                         if (!new_obj) {
                             earsbufobj_buffer_release(e_ob, EARSBUFOBJ_IN, i, j, true);
                             e_ob->l_instore[i].stored_buf[j].l_buf = NULL;
-                            e_ob->l_instore[i].stored_buf[j].l_name = NULL;
-                            e_ob->l_instore[i].stored_buf[j].l_ref = NULL;
+//                            e_ob->l_instore[i].stored_buf[j].l_name = NULL;
+//                            e_ob->l_instore[i].stored_buf[j].l_ref = NULL;
                         } else {
                             e_ob->l_instore[i].stored_buf[j].l_buf = new_obj;
                         }
@@ -1705,11 +1726,22 @@ t_buffer_ref *earsbufobj_get_inlet_buffer_ref(t_earsbufobj *e_ob, long store_idx
 }
 
 
-t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx)
+t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx, bool update_buffer_obj)
 {
-    if (store_idx >= 0 && store_idx < e_ob->l_numbufins && buffer_idx >= 0 && buffer_idx < e_ob->l_instore[store_idx].num_stored_bufs)
-        return e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_buf;
-    
+    if (!update_buffer_obj || e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS) {
+        if (store_idx >= 0 && store_idx < e_ob->l_numbufins && buffer_idx >= 0 && buffer_idx < e_ob->l_instore[store_idx].num_stored_bufs)
+            return e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_buf;
+    } else {
+        if (store_idx >= 0 && store_idx < e_ob->l_numbufins && buffer_idx >= 0 && buffer_idx < e_ob->l_instore[store_idx].num_stored_bufs) {
+            t_symbol *s = e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_name;
+            t_object *ob = ears_buffer_getobject(s);
+            if (ob != e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_buf) {
+                // update object
+                e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_buf = ob;
+            }
+            return ob;
+        }
+    }
     return NULL;
 }
 
@@ -2074,9 +2106,13 @@ void earsbufobj_store_empty_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type,
     switch (type) {
         case EARSBUFOBJ_IN:
             if (store_idx >= 0 && store_idx < e_ob->l_numbufins && buffer_idx >= 0 && buffer_idx < e_ob->l_instore[store_idx].num_stored_bufs) {
-                t_buffer_obj *obj = earsbufobj_get_inlet_buffer_obj(e_ob, store_idx, buffer_idx);
-                ears_buffer_set_size_and_numchannels((t_object *)e_ob, obj, 0, 1);
-                ears_buffer_set_sr((t_object *)e_ob, obj, EARS_DEFAULT_SR);
+                if (e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS) {
+                    t_buffer_obj *obj = earsbufobj_get_inlet_buffer_obj(e_ob, store_idx, buffer_idx);
+                    ears_buffer_set_size_and_numchannels((t_object *)e_ob, obj, 0, 1);
+                    ears_buffer_set_sr((t_object *)e_ob, obj, sys_getsr());
+                } else {
+                    
+                }
             }
             break;
             
@@ -2084,7 +2120,7 @@ void earsbufobj_store_empty_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type,
             if (store_idx >= 0 && store_idx < e_ob->l_numbufouts && buffer_idx >= 0 && buffer_idx < e_ob->l_outstore[store_idx].num_stored_bufs) {
                 t_buffer_obj *obj = earsbufobj_get_outlet_buffer_obj(e_ob, store_idx, buffer_idx);
                 ears_buffer_set_size_and_numchannels((t_object *)e_ob, obj, 0, 1);
-                ears_buffer_set_sr((t_object *)e_ob, obj, EARS_DEFAULT_SR);
+                ears_buffer_set_sr((t_object *)e_ob, obj, sys_getsr());
             }
             break;
     }

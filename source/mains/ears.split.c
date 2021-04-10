@@ -486,6 +486,8 @@ void buf_split_anything(t_buf_split *x, t_symbol *msg, long ac, t_atom *av)
                 earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, hatom_getsym(&parsed->l_head->l_hatom));
                 
                 buf_split_bang(x);
+            } else {
+                object_error((t_object *)x, EARS_ERROR_BUF_NOT_A_BUFFER);
             }
             
         } else if (inlet == 1) {

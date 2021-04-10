@@ -451,9 +451,9 @@ void buf_info_anything(t_buf_info *x, t_symbol *msg, long ac, t_atom *av)
     
     if (parsed && parsed->l_head) {
         if (inlet == 0) {
-//            earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-            
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
+            long num_bufs = llll_get_num_symbols_root(parsed);
+
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
             
             earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
             

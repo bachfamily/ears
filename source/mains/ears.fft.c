@@ -230,14 +230,16 @@ void buf_fft_anything(t_buf_fft *x, t_symbol *msg, long ac, t_atom *av)
 //                earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
             
             if (inlet == 0) {
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, parsed->l_size, true);
+                long num_bufs = llll_get_num_symbols_root(parsed);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_bufs, true);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, num_bufs, true);
                 earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
                 
                 buf_fft_bang(x);
             } else {
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 1, parsed->l_size, true);
+                long num_bufs = llll_get_num_symbols_root(parsed);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 1, num_bufs, true);
                 earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 1);
             }
         }

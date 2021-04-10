@@ -90,6 +90,21 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-6",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 331.0, 401.0, 21.0 ],
+									"presentation_linecount" : 2,
+									"text" : "If you need simple windowing, ears.window~ may be more practical",
+									"textcolor" : [ 0.5, 0.5, 0.5, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-10",
 									"maxclass" : "message",
 									"numinlets" : 2,
@@ -102,7 +117,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u860000423",
+									"buffername" : "u110000826",
 									"id" : "obj-11",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -212,7 +227,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u287000430",
+									"buffername" : "u072000833",
 									"id" : "obj-31",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -398,7 +413,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 105.0, 742.0, 471.0 ],
+						"rect" : [ 0.0, 26.0, 742.0, 471.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -983,7 +998,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u393000440",
+									"buffername" : "u971000864",
 									"id" : "obj-21",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1400,7 +1415,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 742.0, 471.0 ],
+						"rect" : [ 100.0, 105.0, 742.0, 471.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1525,7 +1540,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u682007645",
+									"buffername" : "u132000935",
 									"id" : "obj-12",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1665,7 +1680,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u174007491",
+									"buffername" : "u132000899",
 									"id" : "obj-31",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1752,7 +1767,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 123.0, 198.0, 23.0 ],
+									"patching_rect" : [ 17.0, 123.0, 196.0, 23.0 ],
 									"text" : "earsBufDrumLoop earsBufAnton"
 								}
 

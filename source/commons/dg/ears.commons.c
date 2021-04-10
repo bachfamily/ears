@@ -1338,7 +1338,7 @@ t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long sour
 t_ears_err ears_buffer_setempty(t_object *ob, t_buffer_obj *buf, long num_channels)
 {
     ears_buffer_set_size_and_numchannels(ob, buf, 0, num_channels);
-    ears_buffer_set_sr(ob, buf, EARS_DEFAULT_SR);
+    ears_buffer_set_sr(ob, buf, sys_getsr());
     return EARS_ERR_NONE;
 }
 

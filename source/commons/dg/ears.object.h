@@ -81,6 +81,7 @@ earsbufobj_add_common_methods(c); \
 
 #define EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH (11)  /// < Should we increase this?
 
+
 typedef enum _earsbufobj_in_out
 {
     EARSBUFOBJ_IN = 0,
@@ -256,7 +257,8 @@ bool earsbufobj_is_buf_autoassigned(t_earsbufobj *e_ob, e_earsbufobj_in_out inou
 bool earsbufobj_is_buf_autoassigned_or_copied(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx);
 void earsbufobj_free(t_earsbufobj *e_ob);
 void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long new_size, char also_create_unique_buffers);
-void earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx);
+long llll_get_num_symbols_root(t_llll *ll);
+long earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx);
 t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av);
 
 t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv);
@@ -267,7 +269,7 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
 e_slope_mapping earsbufobj_get_slope_mapping(t_earsbufobj *e_ob);
 
 t_buffer_ref *earsbufobj_get_inlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
-t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
+t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx, bool update_buffer_obj = true);
 t_symbol *earsbufobj_get_inlet_buffer_name(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 
 t_buffer_ref *earsbufobj_get_outlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);

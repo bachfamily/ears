@@ -18,10 +18,11 @@
 #define EARS_ERROR_BUF_NO_BUFFER_NAMED "There is no buffer named '%s'"
 #define EARS_ERROR_BUF_NO_FILE_NAMED "Can't find file '%s'"
 #define EARS_WARNING_BUF_CANT_SEEK "Can't seek"
+#define EARS_ERROR_BUF_NOT_A_BUFFER "Input is not a buffer"
 
 #define EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK 10
 #define EARS_MAX_NUM_CHANNELS 2048 // max num channels per buffer
-#define EARS_DEFAULT_SR 44100
+#define EARS_DEFAULT_SR (sys_getsr())
 
 #define EARS_FROMFILE_NATIVE_MP3_HANDLING
 

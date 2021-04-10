@@ -194,9 +194,9 @@ void buf_reg_anything(t_buf_reg *x, t_symbol *msg, long ac, t_atom *av)
     if (!parsed) return;
     
     if (parsed && parsed->l_head) {
-        // TO DO 
-        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
-        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, parsed->l_size, true);
+        long num_bufs = llll_get_num_symbols_root(parsed);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_bufs, true);
         
         earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
         

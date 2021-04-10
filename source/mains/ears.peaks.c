@@ -245,12 +245,14 @@ void buf_peaks_anything(t_buf_peaks *x, t_symbol *msg, long ac, t_atom *av)
         if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
             
             if (inlet == 0) {
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, parsed->l_size, true);
+                long num_bufs = llll_get_num_symbols_root(parsed);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
                 earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
                 
                 buf_peaks_bang(x);
             } else {
-                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 1, parsed->l_size, true);
+                long num_bufs = llll_get_num_symbols_root(parsed);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 1, num_bufs, true);
                 earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 1);
             }
         }
