@@ -99,6 +99,7 @@ typedef struct _earsmap
     long vs;
     double sr;
 
+    t_atom dummydur[2]; // just in case
     long durationpolicy;
     double tail;
     
@@ -174,10 +175,13 @@ void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj);
 
 void earsmap_autoclock(t_earsmap *x, t_patcher *p);
 
-
+t_max_err earsmap_set_duration(t_earsmap *x, t_object *attr, long argc, t_atom *argv);
+t_max_err earsmap_get_duration(t_earsmap *x, t_object *attr, long *argc, t_atom **argv);
 
 t_max_err earsmap_set_vs(t_earsmap *x, t_object *attr, long argc, t_atom *argv);
 t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_atom **argv);
+
+
 
 
 typedef enum {
@@ -253,14 +257,25 @@ int C74_EXPORT main()
     CLASS_ATTR_FILTER_MIN(earsmap_class, "sr", 0);
     CLASS_ATTR_LABEL(earsmap_class, "sr", 0, "Default Sample Rate");
 
+    /*
     CLASS_ATTR_LONG(earsmap_class, "durationpolicy", 0, t_earsmap, durationpolicy);
     CLASS_ATTR_STYLE_LABEL(earsmap_class, "durationpolicy", 0, "enumindex", "Duration Policy");
     CLASS_ATTR_FILTER_CLIP(earsmap_class, "durationpolicy", 0, 2);
     CLASS_ATTR_ENUMINDEX(earsmap_class, "durationpolicy", 0, "Shortest Longest Fixed");
+     */
+    
+    
+    CLASS_ATTR_ATOM_ARRAY(earsmap_class, "duration", 0, t_earsmap, dummydur, 2);
+    CLASS_ATTR_ACCESSORS(earsmap_class, "duration", (method) earsmap_get_duration, (method) earsmap_set_duration);
 
-    CLASS_ATTR_DOUBLE(earsmap_class, "tail", 0, t_earsmap, tail);
-    CLASS_ATTR_LABEL(earsmap_class, "tail", 0, "Tail or Fixed Duration");
-    CLASS_ATTR_FILTER_MIN(earsmap_class, "tail", 0);
+    //CLASS_ATTR_LONG(earsmap_class, "durationpolicy", 0, t_earsmap, durationpolicy);
+    //CLASS_ATTR_STYLE_LABEL(earsmap_class, "durationpolicy", 0, "enumindex", "Duration Policy");
+    //CLASS_ATTR_FILTER_CLIP(earsmap_class, "durationpolicy", 0, 2);
+    //CLASS_ATTR_ENUMINDEX(earsmap_class, "durationpolicy", 0, "Shortest Longest Fixed");
+
+    //CLASS_ATTR_DOUBLE(earsmap_class, "tail", 0, t_earsmap, tail);
+    //CLASS_ATTR_LABEL(earsmap_class, "tail", 0, "Tail or Fixed Duration");
+    //CLASS_ATTR_FILTER_MIN(earsmap_class, "tail", 0);
     
     CLASS_ATTR_LONG(earsmap_class, "scalarmode", 0, t_earsmap, scalarmode);
     CLASS_ATTR_STYLE_LABEL(earsmap_class, "scalarmode", 0, "onoff", "Scalar Mode");
@@ -280,11 +295,11 @@ int C74_EXPORT main()
 t_max_err earsmap_set_vs(t_earsmap *x, t_object *attr, long argc, t_atom *argv)
 {
     if (argc != 1) {
-        object_error((t_object *) x, "Wrong number of arguments");
+        object_error((t_object *) x, "vs: wrong number of arguments");
         return MAX_ERR_GENERIC;
     }
     if (atom_gettype(argv) != A_LONG) {
-        object_error((t_object *) x, "Wrong argument type");
+        object_error((t_object *) x, "vs: wrong argument type");
         return MAX_ERR_GENERIC;
     }
     long new_vs = atom_getlong(argv);
@@ -308,6 +323,97 @@ t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_a
     atom_setlong(*argv,1);
     return MAX_ERR_NONE;
 }
+
+
+t_max_err earsmap_set_duration(t_earsmap *x, t_object *attr, long argc, t_atom *argv)
+{
+    t_llll *ll = llll_parse(argc, argv);
+    
+    if (!ll) {
+        object_error((t_object *) x, "duration: bad llll");
+        return MAX_ERR_GENERIC;
+    }
+    
+    if (ll->l_size == 0 || ll->l_size > 2 || ll->l_depth > 1) {
+        object_error((t_object *) x, "duration: wrong llll format");
+        return MAX_ERR_GENERIC;
+    }
+    
+    t_hatom *a = &ll->l_head->l_hatom;
+    
+    switch (hatom_gettype(a)) {
+        case H_LONG: {
+            long v = atom_getlong(argv);
+            CLIP_ASSIGN(v, 0, 2);
+            x->durationpolicy = v;
+            break;
+        }
+        case H_SYM: {
+            t_symbol *s = atom_getsym(argv);
+            if (s == gensym("shortest") || s == gensym("s"))
+                x->durationpolicy = eDURPOLICY_SHORTEST;
+            else if (s == gensym("longest") || s == gensym("l"))
+                x->durationpolicy = eDURPOLICY_LONGEST;
+            else if (s == gensym("fixed") || s == gensym("f") || s == gensym("maximum") || s == gensym("max") || s == gensym("m")) {
+                x->durationpolicy = eDURPOLICY_FIXED;
+                if (x->tail <= 0 && ll->l_size == 1) {
+                    object_warn((t_object *) x, "Setting maximum duration to 60000");
+                    x->tail = 60000;
+                }
+            }
+            else
+                object_error((t_object *) x, "duration: unknown duration policy %s", s->s_name);
+            break;
+        }
+        default: {
+            object_error((t_object *) x, "duration: wrong type for argument 1");
+            return MAX_ERR_GENERIC;
+        }
+    }
+    
+    if (ll->l_size == 1)
+        return MAX_ERR_NONE;
+    
+    a = &ll->l_tail->l_hatom;
+    
+    if (!hatom_is_number(a)) {
+        object_error((t_object *) x, "duration: wrong type for argument 2");
+        if (x->durationpolicy == eDURPOLICY_FIXED) {
+            object_warn((t_object *) x, "Setting maximum duration to 60000");
+            x->tail = 60000;
+        }
+        return MAX_ERR_GENERIC;
+    }
+    
+    x->tail = hatom_getdouble(a);
+
+    return MAX_ERR_NONE;
+}
+
+
+
+t_max_err earsmap_get_duration(t_earsmap *x, t_object *attr, long *argc, t_atom **argv)
+{
+    char alloc;
+    atom_alloc_array(2, argc, argv, &alloc);
+    
+    switch(x->durationpolicy) {
+        case eDURPOLICY_LONGEST:
+            atom_setsym(*argv, gensym("shortest"));
+            break;
+        case eDURPOLICY_FIXED:
+            atom_setsym(*argv, gensym("fixed"));
+            break;
+        default:
+            atom_setsym(*argv, gensym("shortest"));
+            break;
+    }
+    
+    atom_setfloat((*argv) + 1, x->tail);
+
+    return MAX_ERR_NONE;
+}
+
 
 
 // args:
@@ -733,6 +839,9 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
             case eDURPOLICY_LONGEST: duration += maxDur; break;
             default: break;
         }
+        
+        if (duration <= 0)
+            duration = LONG_MAX;
         
         //t_object *prnt = (t_object *) newinstance(gensym("print"), 0, NULL);
         
