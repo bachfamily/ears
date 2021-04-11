@@ -17,6 +17,37 @@ Dependencies
 
 • bach (https://github.com/bachfamily/bach)
 
+• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libessentia.a
+The packaged version of Essentia has been modified to 
+1) prevent the collision with functions named "error" (in debugger.h). The naming has been modified to "essentia_error". 
+2) allow non-integer hopSize for the frameCutter algorithm
+To build the library, you should use the lightweighted configuration, without dependencies. Enter the library folder and then:
+
+    ./waf configure --build-static --fft='KISS' --lightweight=""
+
+Notice we are using the KissFFT library because it is already a dependency of bach (see below). Then :
+
+    ./waf
+    ./waf install
+
+• For the [ears.write~] and [ears.read~] module: the TagLib (https://taglib.org/, released under LGPL)
+A version of the library is included in the repository. On a Mac, simply enter the folder, then 
+
+    cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 \
+      -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" \
+      -DBUILD_SHARED_LIBS=OFF 
+    make
+    make install
+
+• For the [ears.write~] and [ears.read~] module: the LibAIFF library (http://aifftools.sourceforge.net/libaiff/, released under MIT License, compatible with GPLv3)
+A version of the library is included in the repository. On a Mac, simply enter the folder, then 
+
+    ./configure
+    make
+    make install 
+
+
 • the mpg123 library 1.23.4 (released under LGPLv2.1). 
 If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmpg123.a 
 
@@ -32,16 +63,7 @@ If you need to compile the Xcode project, the static library must be located at 
 
 • for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 
-• for the [ears.essentia~] module: the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libessentia.a
-The packaged version of Essentia has been modified to 
-1) prevent the collision with functions named "error" (in debugger.h). The naming has been modified to "essentia_error". 
-2) allow non-integer hopSize for the frameCutter algorithm
-To build the library, you should use the lightweighted configuration, without dependencies. Enter the library folder and then:
-./waf configure --build-static --fft='KISS' --lightweight=""
-Notice we are using the KissFFT library because it is already a dependency of bach (see below). Then :
-./waf
-and finally:
-./waf install
+
 
 In turns, bach depends on
 - A modified version of Simon Tatham's listsort (https://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.c), released under the terms of the MIT License.
