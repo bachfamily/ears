@@ -18,7 +18,7 @@
  - int: on/off
  - float: sampling rate
  - int: vector size
- - list: durations (ms)
+ - list: durations of all the buffers (ms)
  - symbol: clock name
  */
 
@@ -58,7 +58,9 @@ void ears_mapinfo_free(t_ears_mapinfo *x);
 void ears_mapinfo_stop(t_ears_mapinfo *x);
 void ears_mapinfo_assist(t_ears_mapinfo *x, void *b, long m, long a, char *s);
 
-void ears_mapinfo_start(t_ears_mapinfo *x, double in_dur, double out_dur, t_symbol *clock_name);
+void ears_mapinfo_prepare(t_ears_mapinfo *x, t_atom *clock_name);
+void ears_mapinfo_start(t_ears_mapinfo *x, long bufs, t_atom *bufDurs);
+
 void ears_mapinfo_end(t_ears_mapinfo *x);
 
 void ears_mapinfo_dsp64(t_ears_mapinfo *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
@@ -78,6 +80,7 @@ int C74_EXPORT main()
     class_addmethod(this_class, (method)ears_mapinfo_assist, "assist", A_CANT, 0);
     //class_addmethod(this_class, (method)ears_mapinfo_loadbang, "loadbang", A_CANT, 0);
     
+    class_addmethod(this_class, (method)ears_mapinfo_prepare, "prepare", A_CANT, 0);
     class_addmethod(this_class, (method)ears_mapinfo_start, "start", A_CANT, 0);
     class_addmethod(this_class, (method)ears_mapinfo_end, "end", A_CANT, 0);
     
@@ -131,28 +134,27 @@ void ears_mapinfo_end(t_ears_mapinfo *x)
     outlet_int(x->onoff_out, 0);
 }
 
-void ears_mapinfo_start(t_ears_mapinfo *x, double in_dur, double out_dur, t_symbol *clock_name)
+void ears_mapinfo_prepare(t_ears_mapinfo *x, t_atom *clock_name)
 {
-    t_atom s;
-    t_atom l[2];
-    
-    atom_setsym(&s, clock_name);
-    outlet_anything(x->clock_out, gensym("clock"), 1, &s);
-    
-    atom_setfloat(l, in_dur);
-    atom_setfloat(l+1, out_dur);
-    outlet_list(x->dur_out, NULL, 2, l);
+    outlet_anything(x->clock_out, gensym("clock"), 1, clock_name);
+}
+
+void ears_mapinfo_start(t_ears_mapinfo *x, long bufs, t_atom *bufDurs)
+{
+    outlet_list(x->dur_out, NULL, bufs, bufDurs);
 }
 
 void ears_mapinfo_dsp64(t_ears_mapinfo *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
-    outlet_int(x->vs_out, maxvectorsize);
-    outlet_float(x->sr_out, samplerate);
-    outlet_int(x->onoff_out, 1);
-    
-    x->invsr = 1000. / samplerate;
-    x->position = 0;
-    object_method(dsp64, gensym("dsp_add64"), x, ears_mapinfo_perform64, 0, NULL);
+    if (x->earsMapParent) {
+        outlet_int(x->vs_out, maxvectorsize);
+        outlet_float(x->sr_out, samplerate);
+        outlet_int(x->onoff_out, 1);
+        
+        x->invsr = 1000. / samplerate;
+        x->position = 0;
+        object_method(dsp64, gensym("dsp_add64"), x, ears_mapinfo_perform64, 0, NULL);
+    }
 }
 
 void ears_mapinfo_perform64(t_ears_mapinfo *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)

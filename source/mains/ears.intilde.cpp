@@ -138,7 +138,8 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
 void ears_intilde_dsp64(t_ears_intilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
     x->position = 0;
-    object_method(dsp64, gensym("dsp_add64"), x, ears_intilde_perform64, 0, NULL);
+    if (x->earsMapParent)
+        object_method(dsp64, gensym("dsp_add64"), x, ears_intilde_perform64, 0, NULL);
 }
 
 void ears_intilde_setbuffers(t_ears_intilde *x, bufferData* bufs)

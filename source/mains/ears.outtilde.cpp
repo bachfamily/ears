@@ -81,7 +81,7 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
         x->chan = 1;
     
     if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out~_created"), x->chan, x);
+        object_method(x->earsMapParent, gensym("ears.out~_created"), x->bufIndex, x->chan, x);
     
     dsp_setup((t_pxobject *) x, 1);
 
@@ -112,7 +112,8 @@ void ears_outtilde_perform64(t_ears_outtilde *x, t_dspchain *dsp64, double **ins
 
 void ears_outtilde_dsp64(t_ears_outtilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
-    object_method(dsp64, gensym("dsp_add64"), x, ears_outtilde_perform64, 0, NULL);
+    if (x->earsMapParent)
+        object_method(dsp64, gensym("dsp_add64"), x, ears_outtilde_perform64, 0, NULL);
 }
 
 void ears_outtilde_setchanmap(t_ears_outtilde *x, audioChanMap* map)

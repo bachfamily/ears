@@ -30,6 +30,7 @@ public:
     float* samps;
     t_atom_long chans;
     t_atom_long frames;
+    double sr;
     
     bufferData() : obj(nullptr) { }
     
@@ -43,6 +44,7 @@ public:
         samps = buffer_locksamples(obj);
         chans = ears_buffer_get_numchannels(x, obj);
         frames = ears_buffer_get_size_samps(x, obj);
+        sr = ears_buffer_get_sr(x, obj);
     }
     
     virtual ~bufferData() {
@@ -170,6 +172,9 @@ typedef std::pair<unsigned short, t_atom_long> bufAndChan;
 class audioChanMap {
 public:
     std::map<bufAndChan, audioChannel*> theMap; // TODO: change to unordered_map
+    std::vector<int> chansPerBuf;
+    
+    audioChanMap() : chansPerBuf(EARSMAP_MAX_OUTPUT_BUFFERS, 0) { }
     
     virtual ~audioChanMap() {
         for (auto i: theMap)
@@ -188,6 +193,8 @@ public:
         if (!ac) {
             ac = new audioChannel(buf, chan);
             theMap[bufAndChan(buf, chan)] = ac;
+            if (chan > chansPerBuf[buf - 1])
+                chansPerBuf[buf - 1] = chan;
         }
         return ac;
     }
