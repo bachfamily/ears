@@ -320,6 +320,10 @@ t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf);
 t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_buffer_get_sampleformat(t_object *ob, t_buffer_obj *buf);
 
+// MPG123 init
+void ears_mpg123_init();
+
+
 // THESE FUNCTIONS ARE ESSENTIALLY ILLEGAL!
 // they use some unused fields in the Max buffer structure...
 // we use them to store the original sample rate for spectrograms

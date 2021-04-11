@@ -124,6 +124,10 @@ static t_class *playmp3_class = NULL;
 
 void ext_main(void *r)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+    ears_mpg123_init();
+#endif
+
 	// object initialization, note the use of dsp_free for the freemethod, which is required
 	// unless you need to free allocated memory, in which case you should call dsp_free from
 	// your custom free function.
@@ -142,9 +146,6 @@ void ext_main(void *r)
     class_addmethod(c, (method)playmp3_stop,        "stop",     A_GIMME, 0);
     class_addmethod(c, (method)playmp3_pause,       "pause",    0);
     class_addmethod(c, (method)playmp3_resume,      "resume",   0);
-
-    if (mpg123_init() != MPG123_OK)
-        error("Error while loading mpg123 library.");
     
     CLASS_ATTR_LONG(c, "loop",	0,	t_playmp3, loop);
     CLASS_ATTR_STYLE_LABEL(c, "loop", 0, "onoff", "Loop");

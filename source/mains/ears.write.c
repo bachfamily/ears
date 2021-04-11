@@ -45,18 +45,17 @@
 #include "bach_math_utilities.h"
 #include "ears.object.h"
 
+#define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
+#include <libaiff/libaiff.h>
 
-#include <tlist.h>
-#include <fileref.h>
-#include <tfile.h>
-#include <tag.h>
-#include <tpropertymap.h>
-
+#include "ears.libtag_commons.h"
 
 typedef struct _buf_write {
     t_earsbufobj       e_ob;
     
     t_llll             *filenames;
+    t_llll             *tags;
+    t_llll             *markers;
     
     t_symbol           *sampleformat;
     
@@ -81,6 +80,8 @@ void            buf_write_append_deferred(t_buf_write *x, t_symbol *msg, long ac
 void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s);
 void buf_write_inletinfo(t_buf_write *x, void *b, long a, char *t);
 
+void buf_write_markers(t_buf_write *x, t_symbol *filename, t_llll *markers);
+void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags);
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
@@ -127,6 +128,7 @@ t_max_err buf_write_setattr_format(t_buf_write *x, void *attr, long argc, t_atom
 
 int C74_EXPORT main(void)
 {
+    ears_mpg123_init();
     common_symbols_init();
     llllobj_common_symbols_init();
     
@@ -200,10 +202,25 @@ int C74_EXPORT main(void)
 void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        if (a == 0)
-            sprintf(s, "symbol/list/llll: Buffer names"); // @in 0 @type symbol/list/llll @digest Buffer names
-        else
-            sprintf(s, "symbol/list/llll: Soundfile names"); // @in 1 @type symbol/list/llll @digest Soundfile names
+        switch (a) {
+            case 0:
+                sprintf(s, "symbol/list/llll: Buffer names"); // @in 0 @type symbol/list/llll @digest Buffer names
+                break;
+
+            case 1:
+                sprintf(s, "symbol/list/llll: Soundfile names"); // @in 1 @type symbol/list/llll @digest Soundfile names
+                break;
+
+            case 2:
+                sprintf(s, "llll: Metadata Tags"); // @in 2 @type llll @digest Metadata tags
+                break;
+                
+            case 3:
+            default:
+                sprintf(s, "llll: Markers"); // @in 3 @type llll @digest Markers
+                break;
+                
+        }
     } else {
         if (a == 0)
             sprintf(s, "llll: Names of Soundfiles"); // @out 0 @type llll @digest Names of soundfiles
@@ -241,11 +258,14 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
         else
             x->filenames = llll_make();
 
+        x->tags = llll_make();
+        x->markers = llll_make();
+
         earsbufobj_init((t_earsbufobj *)x, 0);
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4", "aa", NULL);
+        earsbufobj_setup((t_earsbufobj *)x, "E444", "aa", NULL);
 
         llll_free(args);
     }
@@ -255,10 +275,9 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
 
 void buf_write_free(t_buf_write *x)
 {
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
-    //    mpg123_exit(); // can't call this here, should call it on Max quit... TO DO!
-#endif
     llll_free(x->filenames);
+    llll_free(x->markers);
+    llll_free(x->tags);
     earsbufobj_free((t_earsbufobj *)x);
 }
 
@@ -306,27 +325,591 @@ void buf_write_fill_encode_settings(t_buf_write *x, t_ears_encoding_settings *se
 
 
 
-void checkForRejectedProperties(t_buf_write *x, const TagLib::PropertyMap &tags)
+void buf_write_bang(t_buf_write *x)
 {
-    return ;
-    if(tags.size() > 0) {
-        unsigned int longest = 0;
-        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
-            if(i->first.size() > longest) {
-                longest = i->first.size();
+    long num_buffers = earsbufobj_get_num_inlet_stored_buffers((t_earsbufobj *)x, 0, false);
+    
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    if (!x->filenames->l_head) {
+        object_error((t_object *)x, "No filenames inserted. Please input the soundfile names via the right inlet.");
+        earsbufobj_mutex_unlock((t_earsbufobj *)x);
+        return;
+    }
+
+    if (x->filenames->l_depth > 1) {
+        object_warn((t_object *)x, "Filenames llll is not flat; will be flattened.");
+        llll_flatten(x->filenames, 0, 0);
+    }
+
+    t_llll *names = llll_clone(x->filenames);
+    // converting all names to symbols
+    for (t_llllelem *el = names->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) != H_SYM)
+            hatom_setsym(&el->l_hatom, hatom_to_symbol(&el->l_hatom));
+    }
+    
+    if (names->l_size < num_buffers) {
+        // less names than buffers inserted: will add an incrementing index
+        long count = 1;
+        t_symbol *lastname = hatom_getsym(&names->l_tail->l_hatom);
+        hatom_setsym(&names->l_tail->l_hatom, increment_symbol(lastname, count++));
+        while (names->l_size < num_buffers)
+            llll_appendsym(names, increment_symbol(lastname, count++));
+    }
+    
+    t_ears_encoding_settings settings;
+    buf_write_fill_encode_settings(x, &settings);
+    
+    t_llllelem *el, *tag_el, *mk_el; long i;
+    t_llll *fullpaths = llll_get();
+    for (i = 0, el = names->l_head, tag_el = x->tags ? x->tags->l_head : NULL, mk_el = x->markers ? x->markers->l_head : NULL;
+         i < num_buffers && el;
+         i++, el = el->l_next, tag_el = tag_el ? tag_el->l_next : NULL, mk_el = mk_el ? mk_el->l_next : NULL) {
+        t_object *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, i);
+        if (buf) {
+            t_symbol *filename = hatom_getsym(&el->l_hatom);
+            t_symbol *sampleformat = ears_buffer_get_sampleformat((t_object *)x, buf);
+            t_symbol *orig_format = NULL;
+            if (sampleformat != x->sampleformat) {
+                orig_format = sampleformat;
+                ears_buffer_set_sampleformat((t_object *)x, buf, x->sampleformat);
+                settings.format = sampleformat;
             }
+            
+            ears_buffer_write(buf, filename, (t_object *)x, &settings);
+            
+            if (mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL)
+                buf_write_markers(x, filename, hatom_getllll(&mk_el->l_hatom));
+
+            if (tag_el && hatom_gettype(&tag_el->l_hatom) == H_LLLL)
+                buf_write_tags(x, filename, hatom_getllll(&tag_el->l_hatom));
+
+            llll_appendsym(fullpaths, get_conformed_resolved_path(filename));
+            
+            if (orig_format)
+                ears_buffer_set_sampleformat((t_object *)x, buf, orig_format);
+        } else {
+            object_error((t_object *)x, EARS_ERROR_BUF_NO_BUFFER);
         }
-        //        cout << "-- rejected TAGs (properties) --" << endl;
-        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
-            for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j) {
-                object_warn((t_object *)x, "Rejected property: %s", i->first.to8Bit().c_str());
-                //                cout << left << std::setw(longest) << i->first << " - " << '"' << *j << '"' << endl;
+    }
+    
+    t_symbol **names_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
+    t_symbol **fullpath_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
+    t_llllelem *fullpath_el;
+    for (i = 0, el = names->l_head, fullpath_el = fullpaths->l_head; el; el = el->l_next, fullpath_el = fullpath_el ? fullpath_el->l_next : NULL, i++) {
+        names_sym[i] = hatom_getsym(&el->l_hatom);
+        fullpath_sym[i] = fullpath_el ? hatom_getsym(&fullpath_el->l_hatom) : names_sym[i];
+    }
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
+    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 1, num_buffers, fullpath_sym);
+    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 0, num_buffers, names_sym);
+
+    earsbufobj_outlet_llll((t_earsbufobj *)x, 0, names);
+    llll_free(names);
+    llll_free(fullpaths);
+    bach_freeptr(names_sym);
+    bach_freeptr(fullpath_sym);
+}
+
+
+void buf_write_anything(t_buf_write *x, t_symbol *msg, long ac, t_atom *av)
+{
+    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
+
+    t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
+    if (parsed && parsed->l_head) {
+        if (inlet == 0) {
+            long num_bufs = llll_get_num_symbols_root(parsed);
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
+            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
+            
+            buf_write_bang(x);
+            
+        } else if (inlet == 1) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            llll_free(x->filenames);
+            x->filenames = llll_clone(parsed);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+            
+        } else if (inlet == 2) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            llll_free(x->tags);
+            x->tags = llll_clone(parsed);
+            if (x->tags->l_depth == 2)
+                llll_wrap_once(&x->tags);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
+        } else if (inlet == 3) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            llll_free(x->markers);
+            x->markers = llll_clone(parsed);
+            if (x->markers->l_depth == 2)
+                llll_wrap_once(&x->markers);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
+        }
+    }
+    llll_free(parsed);
+}
+
+
+
+
+double onset_to_fsamps(t_buf_write *x, double onset, long file_numsamps, double sr)
+{
+    switch (x->e_ob.l_timeunit) {
+        case EARS_TIMEUNIT_MS:
+            return ears_ms_to_samps(onset, sr);
+            break;
+        case EARS_TIMEUNIT_SECONDS:
+            return ears_ms_to_samps(onset/1000., sr);
+            break;
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return onset * file_numsamps;
+            break;
+        case EARS_TIMEUNIT_SAMPS:
+        default:
+            return onset;
+            break;
+    }
+}
+
+
+void buf_write_tags_ID3v1(t_buf_write *x, TagLib::ID3v1::Tag *tags, t_llll *ll)
+{
+    if (tags && ll) {
+        for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                t_llll *el_ll = hatom_getllll(&el->l_hatom);
+                if (el_ll && el_ll->l_size >= 2) {
+                    t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
+                    if (s) {
+                        if (strcasecmp(s->s_name, "title") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setTitle(val->s_name);
+                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setAlbum(val->s_name);
+                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                            if (hatom_gettype(&el_ll->l_head->l_next->l_hatom) == H_LONG) {
+                                tags->setGenreNumber(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                            } else {
+                                t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                                if (val)
+                                    tags->setGenre(val->s_name);
+                            }
+                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setArtist(val->s_name);
+                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setComment(val->s_name);
+                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                            tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                            tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-void buf_write_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags)
+
+void buf_write_tags_XIPHCOMMENT(t_buf_write *x, TagLib::Ogg::XiphComment *tags, t_llll *ll)
+{
+    if (tags && ll) {
+        for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                t_llll *el_ll = hatom_getllll(&el->l_hatom);
+                if (el_ll && el_ll->l_size >= 2) {
+                    t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
+                    if (s) {
+                        if (strcasecmp(s->s_name, "title") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setTitle(val->s_name);
+                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setAlbum(val->s_name);
+                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setGenre(val->s_name);
+                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setArtist(val->s_name);
+                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setComment(val->s_name);
+                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                            tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                            tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void buf_write_tags_APE(t_buf_write *x, TagLib::APE::Tag *tags, t_llll *ll)
+{
+    if (tags && ll) {
+        for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                t_llll *el_ll = hatom_getllll(&el->l_hatom);
+                if (el_ll && el_ll->l_size >= 2) {
+                    t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
+                    if (s) {
+                        if (strcasecmp(s->s_name, "title") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setTitle(val->s_name);
+                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setAlbum(val->s_name);
+                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setGenre(val->s_name);
+                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setArtist(val->s_name);
+                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setComment(val->s_name);
+                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                            tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                            tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else {
+                            char *txtbuf = NULL;
+                            hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &txtbuf);
+                            TagLib::APE::Item item = TagLib::APE::Item(s->s_name, txtbuf);
+                            tags->setItem(s->s_name, item);
+                            bach_freeptr(txtbuf);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+void buf_write_tags_INFO(t_buf_write *x, TagLib::RIFF::Info::Tag *tags, t_llll *ll)
+{
+    if (tags && ll) {
+        for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                t_llll *el_ll = hatom_getllll(&el->l_hatom);
+                if (el_ll && el_ll->l_size >= 2) {
+                    t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
+                    if (s) {
+                        if (strcasecmp(s->s_name, "title") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setTitle(val->s_name);
+                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setAlbum(val->s_name);
+                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setGenre(val->s_name);
+                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setArtist(val->s_name);
+                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setComment(val->s_name);
+                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                            tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                            tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else {
+                            char *txtbuf = NULL;
+                            hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &txtbuf);
+                            tags->setFieldText(s->s_name, txtbuf);
+                            bach_freeptr(txtbuf);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
+{
+    if (tags && ll) {
+        for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                t_llll *el_ll = hatom_getllll(&el->l_hatom);
+                if (el_ll && el_ll->l_size >= 2) {
+                    t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
+                    if (s && strlen(s->s_name) > 0) {
+                        if (strcasecmp(s->s_name, "title") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setTitle(val->s_name);
+                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setAlbum(val->s_name);
+                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setGenre(val->s_name);
+                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setArtist(val->s_name);
+                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                            t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
+                            if (val)
+                                tags->setComment(val->s_name);
+                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                            tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                            tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
+                        } else {
+                            long l = strlen(s->s_name);
+                            char *s_frameid = bach_newptr((l + 1) * sizeof(char));
+                            for (long i = 0; i < l; i++)
+                                s_frameid[i] = toupper(s->s_name[i]);
+                            s_frameid[l] = 0;
+                            
+
+                            TagLib::ByteVector frameID = keyToFrameID(s_frameid);
+                            if (frameID.isEmpty() && l == 4)
+                                frameID = TagLib::ByteVector(s_frameid, 4);
+                            
+                            if (!frameID.isEmpty()) {
+                                if (strcmp(s_frameid, "APIC") == 0) {
+                                    object_warn((t_object *)x, "APIC frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "CHAP") == 0) {
+                                    object_warn((t_object *)x, "CHAP frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "CTOC") == 0) {
+                                    object_warn((t_object *)x, "CTOC frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "ETCO") == 0) {
+                                    object_warn((t_object *)x, "ETCO frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "ETCO") == 0) {
+                                    object_warn((t_object *)x, "ETCO frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "GEOB") == 0) {
+                                    object_warn((t_object *)x, "GEOB frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "OWNE") == 0) {
+                                    TagLib::ID3v2::OwnershipFrame fr;
+                                    char *price = NULL, *date = NULL, *seller = NULL;
+                                    if (el_ll->l_size > 1)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &price);
+                                    if (el_ll->l_size > 2)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &date);
+                                    if (el_ll->l_size > 3)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_next->l_hatom, &seller);
+                                    if (price) fr.setPricePaid(price);
+                                    if (date) fr.setDatePurchased(date);
+                                    if (seller) fr.setSeller(seller);
+                                    tags->addFrame(&fr);
+                                    if (price) bach_freeptr(price);
+                                    if (date) bach_freeptr(date);
+                                    if (seller) bach_freeptr(seller);
+                                } else if (strcmp(s_frameid, "PCST") == 0) {
+                                    object_warn((t_object *)x, "PCST frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "POPM") == 0) {
+                                    TagLib::ID3v2::PopularimeterFrame fr;
+                                    char *email = NULL;
+                                    long rating = 0, counter = 0;
+                                    if (el_ll->l_size > 1)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &email);
+                                    if (el_ll->l_size > 2)
+                                        rating = hatom_getlong(&el_ll->l_head->l_next->l_next->l_hatom);
+                                    if (el_ll->l_size > 3)
+                                        counter = hatom_getlong(&el_ll->l_head->l_next->l_next->l_next->l_hatom);
+                                    if (email) fr.setEmail(email);
+                                    if (el_ll->l_size > 2) fr.setRating(rating);
+                                    if (el_ll->l_size > 3) fr.setCounter(counter);
+                                    tags->addFrame(&fr);
+                                    if (email) bach_freeptr(email);
+                                } else if (strcmp(s_frameid, "PRIV") == 0) {
+                                    TagLib::ID3v2::PrivateFrame fr;
+                                    char *owner = NULL, *data = NULL;
+                                    if (el_ll->l_size > 1)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &owner);
+                                    if (el_ll->l_size > 2)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &data);
+                                    if (owner) fr.setOwner(owner);
+                                    if (data) fr.setData(data);
+                                    tags->addFrame(&fr);
+                                    if (owner) bach_freeptr(owner);
+                                    if (data) bach_freeptr(data);
+                                } else if (strcmp(s_frameid, "RVA2") == 0) {
+                                    object_warn((t_object *)x, "RVA2 frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "SYLT") == 0) {
+                                    object_warn((t_object *)x, "SYLT frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "CTOC") == 0) {
+                                    object_warn((t_object *)x, "CTOC frames are unsupported at writing time.");
+                                } else if (strcmp(s_frameid, "UFID") == 0) {
+                                    char *owner = NULL, *identif = NULL;
+                                    if (el_ll->l_size > 1)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &owner);
+                                    if (el_ll->l_size > 2)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &identif);
+                                    TagLib::ID3v2::UniqueFileIdentifierFrame fr(owner, TagLib::ByteVector(identif));
+                                    tags->addFrame(&fr);
+                                    if (owner) bach_freeptr(owner);
+                                    if (identif) bach_freeptr(identif);
+                                } else if (strcmp(s_frameid, "TXXX") == 0) {
+                                    char *description = NULL;
+                                    char **values = (char **)bach_newptrclear(MAX(1, el_ll->l_size) * sizeof(char *));
+                                    long count = 0;
+                                    TagLib::StringList sl;
+                                    
+                                    if (el_ll->l_size > 1)
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &description);
+                                    if (el_ll->l_size > 2) {
+                                        for (t_llllelem *tmp = el_ll->l_head->l_next->l_next; tmp; tmp = tmp->l_next) {
+                                            hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &values[count]);
+                                            sl.append(values[count]);
+                                            count++;
+                                        }
+                                    }
+
+                                    TagLib::ID3v2::UserTextIdentificationFrame fr(description, sl, TagLib::String::UTF8);
+                                    tags->addFrame(&fr);
+                                    if (description) bach_freeptr(description);
+                                    for (long i = 0; i < count; i++)
+                                        bach_freeptr(values[i]);
+                                    bach_freeptr(values);
+                                } else {
+                                    TagLib::StringList sl;
+                                    for (t_llllelem *frel = el_ll->l_head->l_next; frel; frel = frel->l_next) {
+                                        char *txtbuf = NULL;
+                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &txtbuf);
+                                        sl.append(txtbuf);
+                                        bach_freeptr(txtbuf);
+                                    }
+                                    TagLib::ID3v2::Frame *fr = TagLib::ID3v2::Frame::createTextualFrame(frameIDToKey(frameID), sl);
+                                    tags->addFrame(fr);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+t_llll *llll_key_root(t_llll *ll, t_symbol *s)
+{
+    for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL){
+            t_llll *tmp = hatom_getllll(&el->l_hatom);
+            if (tmp && tmp->l_head && hatom_gettype(&tmp->l_head->l_hatom) == H_SYM && hatom_getsym(&tmp->l_head->l_hatom) == s)
+                return tmp;
+        }
+    }
+    return NULL;
+}
+
+void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags_ll)
+{
+    TagLib::FileRef f(filename->s_name);
+    TagLib::File *file = f.file();
+    
+    t_llll *tags_APE = llll_key_root(tags_ll, gensym("APE"));
+    t_llll *tags_ID3v1 = llll_key_root(tags_ll, gensym("ID3v1"));
+    t_llll *tags_ID3v2 = llll_key_root(tags_ll, gensym("ID3v2"));
+    t_llll *tags_INFO = llll_key_root(tags_ll, gensym("INFO"));
+    t_llll *tags_XIPHCOMMENT = llll_key_root(tags_ll, gensym("XIPHCOMMENT"));
+
+    TagLib::MPEG::File *MPEGfile = dynamic_cast<TagLib::MPEG::File *>(file);
+    if (MPEGfile) {
+        buf_write_tags_APE(x, MPEGfile->APETag(), tags_APE);
+        buf_write_tags_ID3v1(x, MPEGfile->ID3v1Tag(), tags_ID3v1);
+        buf_write_tags_ID3v2(x, MPEGfile->ID3v2Tag(), tags_ID3v2);
+    }
+    
+    TagLib::WavPack::File *WAVPACKfile = dynamic_cast<TagLib::WavPack::File *>(file);
+    if (WAVPACKfile) {
+        buf_write_tags_APE(x, WAVPACKfile->APETag(), tags_APE);
+        buf_write_tags_ID3v1(x, WAVPACKfile->ID3v1Tag(), tags_ID3v1);
+    }
+    
+    TagLib::RIFF::File *RIFFfile = dynamic_cast<TagLib::RIFF::File *>(file);
+    if (RIFFfile) {
+        TagLib::RIFF::AIFF::File *RIFFAIFFfile = dynamic_cast<TagLib::RIFF::AIFF::File *>(file);
+        if (RIFFAIFFfile) {
+            buf_write_tags_ID3v2(x, RIFFAIFFfile->tag(), tags_ID3v2);
+        }
+        
+        TagLib::RIFF::WAV::File *RIFFWAVfile = dynamic_cast<TagLib::RIFF::WAV::File *>(file);
+        if (RIFFWAVfile) {
+            buf_write_tags_INFO(x, RIFFWAVfile->InfoTag(), tags_INFO);
+            buf_write_tags_ID3v2(x, RIFFWAVfile->tag(), tags_ID3v2);
+        }
+    }
+    
+    TagLib::Ogg::File *OGGfile = dynamic_cast<TagLib::Ogg::File *>(file);
+    if (OGGfile) {
+        TagLib::Ogg::FLAC::File *OGGFLACfile = dynamic_cast<TagLib::Ogg::FLAC::File *>(file);
+        if (OGGFLACfile) {
+            buf_write_tags_XIPHCOMMENT(x, OGGFLACfile->tag(), tags_XIPHCOMMENT);
+        }
+        
+        TagLib::Ogg::Opus::File *OGGOPUSfile = dynamic_cast<TagLib::Ogg::Opus::File *>(file);
+        if (OGGOPUSfile) {
+            buf_write_tags_XIPHCOMMENT(x, OGGOPUSfile->tag(), tags_XIPHCOMMENT);
+        }
+        
+        TagLib::Ogg::Speex::File *OGGSPEEXfile = dynamic_cast<TagLib::Ogg::Speex::File *>(file);
+        if (OGGSPEEXfile) {
+            buf_write_tags_XIPHCOMMENT(x, OGGSPEEXfile->tag(), tags_XIPHCOMMENT);
+        }
+        
+        TagLib::Ogg::Vorbis::File *OGGVORBISfile = dynamic_cast<TagLib::Ogg::Vorbis::File *>(file);
+        if (OGGVORBISfile) {
+            buf_write_tags_XIPHCOMMENT(x, OGGVORBISfile->tag(), tags_XIPHCOMMENT);
+        }
+    }
+    
+    TagLib::FLAC::File *FLACfile = dynamic_cast<TagLib::FLAC::File *>(file);
+    if (FLACfile) {
+        buf_write_tags_ID3v1(x, FLACfile->ID3v1Tag(), tags_ID3v1);
+        buf_write_tags_ID3v2(x, FLACfile->ID3v2Tag(), tags_ID3v2);
+    }
+    
+    TagLib::APE::File *APEfile = dynamic_cast<TagLib::APE::File *>(file);
+    if (APEfile) {
+        buf_write_tags_APE(x, APEfile->APETag(), tags_APE);
+        buf_write_tags_ID3v1(x, APEfile->ID3v1Tag(), tags_ID3v1);
+    }
+    
+    f.save();
+}
+
+
+/*
+void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags)
 {
     earsbufobj_mutex_lock((t_earsbufobj *)x);
     TagLib::FileRef f(filename->s_name);
@@ -454,103 +1037,83 @@ void buf_write_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags)
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 }
+ */
 
 
-void buf_write_bang(t_buf_write *x)
+void buf_write_markers_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers)
 {
-    long num_buffers = earsbufobj_get_num_inlet_stored_buffers((t_earsbufobj *)x, 0, false);
-    
-    if (!x->filenames->l_head) {
-        object_error((t_object *)x, "No filenames inserted. Please input the soundfile names via the right inlet.");
+    if (!markers || markers->l_size == 0)
         return;
-    }
 
-    if (x->filenames->l_depth > 1) {
-        object_warn((t_object *)x, "Filenames llll is not flat; will be flattened.");
-        llll_flatten(x->filenames, 0, 0);
-    }
-
-    t_llll *names = llll_clone(x->filenames);
-    // converting all names to symbols
-    for (t_llllelem *el = names->l_head; el; el = el->l_next) {
-        if (hatom_gettype(&el->l_hatom) != H_SYM)
-            hatom_setsym(&el->l_hatom, hatom_to_symbol(&el->l_hatom));
-    }
-    
-    if (names->l_size < num_buffers) {
-        // less names than buffers inserted: will add an incrementing index
-        long count = 1;
-        t_symbol *lastname = hatom_getsym(&names->l_tail->l_hatom);
-        hatom_setsym(&names->l_tail->l_hatom, increment_symbol(lastname, count++));
-        while (names->l_size < num_buffers)
-            llll_appendsym(names, increment_symbol(lastname, count++));
-    }
-    
-    t_ears_encoding_settings settings;
-    buf_write_fill_encode_settings(x, &settings);
-    
-    t_llllelem *el; long i;
-    t_llll *fullpaths = llll_get();
-    for (i = 0, el = names->l_head; i < num_buffers && el; i++, el = el->l_next) {
-        t_object *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, i);
-        if (buf) {
-            t_symbol *filename = hatom_getsym(&el->l_hatom);
-            t_symbol *sampleformat = ears_buffer_get_sampleformat((t_object *)x, buf);
-            t_symbol *orig_format = NULL;
-            if (sampleformat != x->sampleformat) {
-                orig_format = sampleformat;
-                ears_buffer_set_sampleformat((t_object *)x, buf, x->sampleformat);
-                settings.format = sampleformat;
-            }
-            
-            ears_buffer_write(buf, filename, (t_object *)x, &settings);
-            llll_appendsym(fullpaths, get_conformed_resolved_path(filename));
-            
-            if (orig_format)
-                ears_buffer_set_sampleformat((t_object *)x, buf, orig_format);
-        } else {
-            object_error((t_object *)x, EARS_ERROR_BUF_NO_BUFFER);
+    AIFF_Ref ref = AIFF_OpenFile(filename->s_name, F_RDONLY);
+    uint64_t nSamples;
+    int channels;
+    double samplingRate;
+    int bitsPerSample;
+    int segmentSize;
+    int32_t *samples = NULL;
+    if (AIFF_GetAudioFormat(ref,&nSamples,&channels,
+                            &samplingRate,&bitsPerSample,
+                            &segmentSize) < 1 ) {
+        object_error((t_object *)x, "Error writing markers.");
+        AIFF_CloseFile(ref);
+        return;
+    } else {
+        samples = (int32_t *)bach_newptr(channels * nSamples * sizeof(int32_t));
+        int numReadSamples = AIFF_ReadSamples32Bit(ref, samples, channels * nSamples);
+        if (numReadSamples != channels * nSamples) {
+            object_warn((t_object *)x, "The output file may be corrupted. Try removing markers.");
         }
     }
-    
-    t_symbol **names_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
-    t_symbol **fullpath_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
-    t_llllelem *fullpath_el;
-    for (i = 0, el = names->l_head, fullpath_el = fullpaths->l_head; el; el = el->l_next, fullpath_el = fullpath_el ? fullpath_el->l_next : NULL, i++) {
-        names_sym[i] = hatom_getsym(&el->l_hatom);
-        fullpath_sym[i] = fullpath_el ? hatom_getsym(&fullpath_el->l_hatom) : names_sym[i];
+    AIFF_CloseFile(ref);
+
+    ref = AIFF_OpenFile(filename->s_name, F_WRONLY);
+    if (ref) {
+        // gotta re-write the samples
+        AIFF_SetAudioFormat(ref, channels, samplingRate, bitsPerSample);
+        if (AIFF_StartWritingSamples(ref) < 1) {
+            object_error((t_object *)x, "Error writing file");
+        } else {
+            if (AIFF_WriteSamples32Bit(ref, samples, channels * nSamples) < 1) {
+                object_warn((t_object *)x, "The output file may be corrupted. Try removing markers.");
+            }
+            AIFF_EndWritingSamples(ref);
+        }
+        
+        
+        AIFF_StartWritingMarkers(ref);
+        
+        for (t_llllelem *mk = markers->l_head; mk; mk = mk->l_next) {
+            t_llll *mk_ll = hatom_getllll(&mk->l_hatom);
+            if (mk_ll && mk_ll->l_head) {
+                char *txtbuf = NULL;
+                uint64_t onset_samps = round(onset_to_fsamps(x, hatom_getdouble(&mk_ll->l_head->l_hatom), nSamples, samplingRate));
+                if (mk_ll->l_head->l_next)
+                    hatom_to_text_buf(&mk_ll->l_head->l_next->l_hatom, &txtbuf);
+                
+                AIFF_WriteMarker(ref, onset_samps, txtbuf);
+                
+                if (txtbuf)
+                    bach_freeptr(txtbuf);
+            }
+        }
+        
+        AIFF_EndWritingMarkers(ref);
+        
+        AIFF_CloseFile(ref);
     }
-
-    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 1, num_buffers, fullpath_sym);
-    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 0, num_buffers, names_sym);
-
-    earsbufobj_outlet_llll((t_earsbufobj *)x, 0, names);
-    llll_free(names);
-    llll_free(fullpaths);
-    bach_freeptr(names_sym);
-    bach_freeptr(fullpath_sym);
+    if (samples)
+        bach_freeptr(samples);
 }
 
-
-void buf_write_anything(t_buf_write *x, t_symbol *msg, long ac, t_atom *av)
+void buf_write_markers(t_buf_write *x, t_symbol *filename, t_llll *markers)
 {
-    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
+    if (!markers || markers->l_size == 0)
+        return;
 
-    t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
-    if (parsed && parsed->l_head) {
-        if (inlet == 0) {
-            long num_bufs = llll_get_num_symbols_root(parsed);
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
-            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
-            
-            buf_write_bang(x);
-            
-        } else if (inlet == 1) {
-            earsbufobj_mutex_lock((t_earsbufobj *)x);
-            llll_free(x->filenames);
-            x->filenames = llll_clone(parsed);
-            earsbufobj_mutex_unlock((t_earsbufobj *)x);
-        }
+    if (ears_symbol_ends_with(filename, ".aif", true) || ears_symbol_ends_with(filename, ".aiff", true)) {
+        buf_write_markers_AIFF(x, filename, markers);
+    } else if (ears_symbol_ends_with(filename, ".wav", true) || ears_symbol_ends_with(filename, ".wave", true)){
+    } else {
     }
-    llll_free(parsed);
 }

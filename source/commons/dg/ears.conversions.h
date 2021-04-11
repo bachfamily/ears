@@ -21,7 +21,6 @@ typedef enum _ears_timeunit
 
     // these are only relevant for Essentia, never exposed
     EARS_TIMEUNIT_SECONDS,
-    EARS_TIMEUNIT_LOGSECONDS, //< not implemented, only kept for essentia
 
     // these below are supported in the API but unused in the objects and will not be used in ears
     // they may be removed later on

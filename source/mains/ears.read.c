@@ -47,17 +47,11 @@
 #include "ears.mp3.h"
 #include "ears.wavpack.h"
 
-#include <tlist.h>
-#include <fileref.h>
-#include <tfile.h>
-#include <tag.h>
-#include <tpropertymap.h>
-#include <mpegfile.h>
+#include "ears.libtag_commons.h"
 
-#include <id3v2tag.h>
-#include <id3v1tag.h>
-#include <apetag.h>
-#include <xiphcomment.h>
+#define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
+#include <libaiff/libaiff.h>
+
 
 typedef struct _buf_read {
     t_earsbufobj       e_ob;
@@ -65,6 +59,8 @@ typedef struct _buf_read {
     char                native_mp3_handling;
     
     t_llll              *filenames;
+    
+    char                human_readable_id3v2_frame_ids;
     
     char                mustclear;
 } t_buf_read;
@@ -82,6 +78,7 @@ void            buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_
 long            buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *view);
 
 t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename);
+t_llll *buf_read_markers(t_buf_read *x, t_symbol *filename);
 
 void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s);
 void buf_read_inletinfo(t_buf_read *x, void *b, long a, char *t);
@@ -142,10 +139,14 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
-    CLASS_ATTR_LONG(c, "nativemp3",	0,	t_buf_read, native_mp3_handling);
+    CLASS_ATTR_CHAR(c, "nativemp3",	0,	t_buf_read, native_mp3_handling);
     CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
     // @description Toggles native MP3 handling.
 
+    CLASS_ATTR_CHAR(c, "hrid3v2",    0,    t_buf_read, human_readable_id3v2_frame_ids);
+    CLASS_ATTR_BASIC(c, "hrid3v2", 0);
+    CLASS_ATTR_STYLE_LABEL(c, "hrid3v2", 0, "onoff", "Human-Readable ID3v2 Frame IDs");
+    // @description Toggles the ability to output human-readable ID3v2
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -169,10 +170,23 @@ void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s)
     if (m == ASSIST_INLET) {
         sprintf(s, "symbol/list/llll: Filenames"); // @in 0 @type symbol/list/llll @digest Filename
     } else {
-        if (a == 0)
-            sprintf(s, "symbol/list: Buffer Names"); // @out 0 @type symbol/list @digest Buffer names
-        else
-            sprintf(s, "symbol/list: Soundfile Names"); // @out 1 @type symbol/list @digest Soundfile names
+        char *type = NULL;
+        llllobj_get_llll_outlet_type_as_string((t_object *) x, LLLL_OBJ_VANILLA, a, &type);
+        switch (a) {
+            case 0:
+                sprintf(s, "symbol/list: Buffer Names"); // @out 0 @type symbol/list @digest Buffer names
+                break;
+            case 1:
+                sprintf(s, "symbol/list: Soundfile Names"); // @out 1 @type symbol/list @digest Soundfile names
+                break;
+            case 2:
+                sprintf(s, "llll (%s): Metadata Tags", type); // @out 2 @type llll @digest Metadata tags
+                break;
+            case 3:
+            default:
+                sprintf(s, "llll (%s): Markers", type); // @out 3 @type llll @digest Markers
+                break;
+        }
     }
 }
 
@@ -204,7 +218,7 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "4", "4aE", names);
+        earsbufobj_setup((t_earsbufobj *)x, "4", "44aE", names);
 
         llll_free(args);
         llll_free(names);
@@ -250,7 +264,8 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
         long offset = append ? num_stored_buffers : 0;
         t_llllelem *elem;
         t_llll *tags = llll_get();
-        
+        t_llll *markers = llll_get();
+
         earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
         
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, files->l_size + offset, true);
@@ -300,8 +315,9 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                 }
 #endif
                 
-                // WHAT?
                 llll_appendllll(tags, buf_read_tags(x, filepath));
+                llll_appendllll(markers, buf_read_markers(x, filepath));
+
             } else {
                 // empty buffer will do.
                 char *txtbuf = NULL;
@@ -314,6 +330,7 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
             
         }
         if (count > 0) {
+            earsbufobj_outlet_llll((t_earsbufobj *)x, 3, markers);
             earsbufobj_outlet_llll((t_earsbufobj *)x, 2, tags);
             
             long numsyms = x->filenames->l_size;
@@ -326,7 +343,9 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
             
             earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
         }
+        
         llll_free(tags);
+        llll_free(markers);
 
     } else if (files) {
         // null llll
@@ -386,35 +405,86 @@ void buf_read_anything(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 }
 
 
-t_llll *buf_read_ID3V1_tags(t_buf_read *x, t_symbol *filename)
+t_llll *buf_get_tags_INFO(t_buf_read *x, TagLib::RIFF::Info::Tag *tags)
 {
     t_llll *tags_ll = llll_get();
-    llll_appendsym(tags_ll, gensym("ID3V1"));
-    TagLib::MPEG::File f(filename->s_name);
+    llll_appendsym(tags_ll, gensym("INFO"));
+    if (tags) {
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("TITLE"), gensym(tags->title().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("ARTIST"), gensym(tags->artist().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("COMMENT"), gensym(tags->comment().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("GENRE"), gensym(tags->genre().toCString())));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("YEAR"), tags->year()));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("TRACK"), tags->track()));
+    }
     
-    if(f.ID3v1Tag()) {
-        TagLib::ID3v1::Tag *tags = f.ID3v1Tag();
-        
-        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("title"), gensym(tags->title().toCString())));
-        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("artist"), gensym(tags->artist().toCString())));
-        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("comment"), gensym(tags->comment().toCString())));
-        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("genre"), gensym(tags->genre().toCString())));
-        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("year"), tags->year()));
-        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("track"), tags->track()));
+    return tags_ll;
+}
+
+t_llll *buf_get_tags_XIPHCOMMENT(t_buf_read *x, TagLib::Ogg::XiphComment::Tag *tags)
+{
+    t_llll *tags_ll = llll_get();
+    llll_appendsym(tags_ll, gensym("XIPHCOMMENT"));
+    if (tags) {
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("TITLE"), gensym(tags->title().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("ARTIST"), gensym(tags->artist().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("COMMENT"), gensym(tags->comment().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("GENRE"), gensym(tags->genre().toCString())));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("YEAR"), tags->year()));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("TRACK"), tags->track()));
     }
     
     return tags_ll;
 }
 
 
-t_llll *buf_read_ID3V2_tags(t_buf_read *x, t_symbol *filename)
+t_llll *buf_get_tags_APE(t_buf_read *x, TagLib::APE::Tag *tags)
 {
     t_llll *tags_ll = llll_get();
-    llll_appendsym(tags_ll, gensym("ID3V2"));
-    TagLib::MPEG::File f(filename->s_name);
+    llll_appendsym(tags_ll, gensym("APE"));
+    if (tags) {
+        TagLib::APE::ItemListMap map = tags->itemListMap();
+        
+        for(auto it=map.begin(); it!=map.end(); ++it)
+        {
+            TagLib::String key = it->first;
+            TagLib::APE::Item fr = it->second;
+            t_llll *this_tags_ll = llll_get();
+            llll_appendsym(this_tags_ll, gensym(key.toCString()));
+            llll_appendsym(this_tags_ll, gensym(fr.key().toCString()));
+            llll_appendsym(this_tags_ll, gensym(fr.toString().toCString()));
+            llll_appendllll(tags_ll, this_tags_ll);
+        }
+        
+    }
     
-    if(f.ID3v2Tag()) {
-        TagLib::ID3v2::Tag *tags = f.ID3v2Tag();
+    return tags_ll;
+}
+
+
+t_llll *buf_get_tags_ID3v1(t_buf_read *x, TagLib::ID3v1::Tag *tags)
+{
+    t_llll *tags_ll = llll_get();
+    llll_appendsym(tags_ll, gensym("ID3v1"));
+    
+    if (tags) {
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("TITLE"), gensym(tags->title().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("ARTIST"), gensym(tags->artist().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("COMMENT"), gensym(tags->comment().toCString())));
+        llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("GENRE"), gensym(tags->genre().toCString())));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("YEAR"), tags->year()));
+        llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("TRACK"), tags->track()));
+    }
+    
+    return tags_ll;
+}
+
+
+t_llll *buf_get_tags_ID3v2(t_buf_read *x, TagLib::ID3v2::Tag *tags)
+{
+    t_llll *tags_ll = llll_get();
+    llll_appendsym(tags_ll, gensym("ID3v2"));
+    if(tags) {
         TagLib::ID3v2::FrameList fl = tags->frameList();
         
         TagLib::ID3v2::FrameList::ConstIterator it;
@@ -422,8 +492,63 @@ t_llll *buf_read_ID3V2_tags(t_buf_read *x, t_symbol *filename)
         {
             TagLib::ID3v2::Frame *fr = (*it);
             t_llll *this_tags_ll = llll_get();
-            llll_appendsym(this_tags_ll, gensym(fr->frameID().data()));
-            llll_appendsym(this_tags_ll, gensym(fr->toString().toCString()));
+            if (x->human_readable_id3v2_frame_ids) {
+                TagLib::String key = frameIDToKey(fr->frameID());
+                if (key.isEmpty())
+                    llll_appendsym(this_tags_ll, gensym(fr->frameID().data()));
+                else
+                    llll_appendsym(this_tags_ll, gensym(key.toCString()));
+            } else {
+                llll_appendsym(this_tags_ll, gensym(fr->frameID().data()));
+            }
+            
+            // We handle some frames differently
+            if (strcmp(fr->frameID().data(), "OWNE") == 0) {
+                TagLib::ID3v2::OwnershipFrame *ufr = dynamic_cast<TagLib::ID3v2::OwnershipFrame *>(fr);
+                if (ufr) {
+                    llll_appendsym(this_tags_ll, gensym(ufr->pricePaid().toCString()));
+                    llll_appendsym(this_tags_ll, gensym(ufr->datePurchased().toCString()));
+                    llll_appendsym(this_tags_ll, gensym(ufr->seller().toCString()));
+                }
+            } else if (strcmp(fr->frameID().data(), "POPM") == 0) {
+                TagLib::ID3v2::PopularimeterFrame *ufr = dynamic_cast<TagLib::ID3v2::PopularimeterFrame *>(fr);
+                if (ufr) {
+                    llll_appendsym(this_tags_ll, gensym(ufr->email().toCString()));
+                    llll_appendlong(this_tags_ll, ufr->rating());
+                    llll_appendlong(this_tags_ll, ufr->counter());
+                }
+            } else if (strcmp(fr->frameID().data(), "PRIV") == 0) {
+                TagLib::ID3v2::PrivateFrame *ufr = dynamic_cast<TagLib::ID3v2::PrivateFrame *>(fr);
+                if (ufr) {
+                    llll_appendsym(this_tags_ll, gensym(ufr->owner().toCString()));
+                    llll_appendsym(this_tags_ll, gensym(ufr->data().data()));
+                }
+            } else if (strcmp(fr->frameID().data(), "UFID") == 0) {
+                TagLib::ID3v2::UniqueFileIdentifierFrame *ufr = dynamic_cast<TagLib::ID3v2::UniqueFileIdentifierFrame *>(fr);
+                if (ufr) {
+                    llll_appendsym(this_tags_ll, gensym(ufr->owner().toCString()));
+                    llll_appendsym(this_tags_ll, gensym(ufr->identifier().data()));
+                }
+            } else if (strcmp(fr->frameID().data(), "TXXX") == 0) {
+                // user text identification frame
+                // We parsed this separately because the .toString() TagLib method puts the description inside brackets,
+                // which may be not what one wants,
+                // and flattens the list of items onto a single one
+                TagLib::ID3v2::UserTextIdentificationFrame *ufr = dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame *>(fr);
+                if (ufr) {
+                    llll_appendsym(this_tags_ll, gensym(ufr->description().toCString()));
+                    TagLib::StringList l = ufr->fieldList();
+                    long count = 0;
+                    for(TagLib::StringList::Iterator it = l.begin(); it != l.end(); ++it) {
+                        if (count > 0) {
+                            llll_appendsym(this_tags_ll, gensym((*it).toCString()));
+                        }
+                        count++;
+                    }
+                }
+            } else {
+                llll_appendsym(this_tags_ll, gensym(fr->toString().toCString()));
+            }
             llll_appendllll(tags_ll, this_tags_ll);
         }
 
@@ -438,43 +563,152 @@ t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename)
 {
     t_llll *out = llll_get();
     
-    llll_appendllll(out, buf_read_ID3V1_tags(x, filename));
-    llll_appendllll(out, buf_read_ID3V2_tags(x, filename));
+    TagLib::FileRef f(filename->s_name);
+    TagLib::File *file = f.file();
+    
+    TagLib::MPEG::File *MPEGfile = dynamic_cast<TagLib::MPEG::File *>(file);
+    if (MPEGfile) {
+        llll_appendllll(out, buf_get_tags_APE(x, MPEGfile->APETag()));
+        llll_appendllll(out, buf_get_tags_ID3v1(x, MPEGfile->ID3v1Tag()));
+        llll_appendllll(out, buf_get_tags_ID3v2(x, MPEGfile->ID3v2Tag()));
+    }
+
+    TagLib::WavPack::File *WAVPACKfile = dynamic_cast<TagLib::WavPack::File *>(file);
+    if (WAVPACKfile) {
+        llll_appendllll(out, buf_get_tags_APE(x, WAVPACKfile->APETag()));
+        llll_appendllll(out, buf_get_tags_ID3v1(x, WAVPACKfile->ID3v1Tag()));
+    }
+
+    TagLib::RIFF::File *RIFFfile = dynamic_cast<TagLib::RIFF::File *>(file);
+    if (RIFFfile) {
+        TagLib::RIFF::AIFF::File *RIFFAIFFfile = dynamic_cast<TagLib::RIFF::AIFF::File *>(file);
+        if (RIFFAIFFfile) {
+            llll_appendllll(out, buf_get_tags_ID3v2(x, RIFFAIFFfile->tag()));
+        }
+
+        TagLib::RIFF::WAV::File *RIFFWAVfile = dynamic_cast<TagLib::RIFF::WAV::File *>(file);
+        if (RIFFWAVfile) {
+            llll_appendllll(out, buf_get_tags_INFO(x, RIFFWAVfile->InfoTag()));
+            llll_appendllll(out, buf_get_tags_ID3v2(x, RIFFWAVfile->ID3v2Tag()));
+        }
+    }
+    
+    TagLib::Ogg::File *OGGfile = dynamic_cast<TagLib::Ogg::File *>(file);
+    if (OGGfile) {
+        TagLib::Ogg::FLAC::File *OGGFLACfile = dynamic_cast<TagLib::Ogg::FLAC::File *>(file);
+        if (OGGFLACfile) {
+            llll_appendllll(out, buf_get_tags_XIPHCOMMENT(x, OGGFLACfile->tag()));
+        }
+
+        TagLib::Ogg::Opus::File *OGGOPUSfile = dynamic_cast<TagLib::Ogg::Opus::File *>(file);
+        if (OGGOPUSfile) {
+            llll_appendllll(out, buf_get_tags_XIPHCOMMENT(x, OGGOPUSfile->tag()));
+        }
+
+        TagLib::Ogg::Speex::File *OGGSPEEXfile = dynamic_cast<TagLib::Ogg::Speex::File *>(file);
+        if (OGGSPEEXfile) {
+            llll_appendllll(out, buf_get_tags_XIPHCOMMENT(x, OGGSPEEXfile->tag()));
+        }
+
+        TagLib::Ogg::Vorbis::File *OGGVORBISfile = dynamic_cast<TagLib::Ogg::Vorbis::File *>(file);
+        if (OGGVORBISfile) {
+            llll_appendllll(out, buf_get_tags_XIPHCOMMENT(x, OGGVORBISfile->tag()));
+        }
+    }
+    
+    TagLib::FLAC::File *FLACfile = dynamic_cast<TagLib::FLAC::File *>(file);
+    if (FLACfile) {
+        llll_appendllll(out, buf_get_tags_ID3v1(x, FLACfile->ID3v1Tag()));
+        llll_appendllll(out, buf_get_tags_ID3v2(x, FLACfile->ID3v2Tag()));
+    }
+
+    TagLib::APE::File *APEfile = dynamic_cast<TagLib::APE::File *>(file);
+    if (APEfile) {
+        llll_appendllll(out, buf_get_tags_APE(x, APEfile->APETag()));
+        llll_appendllll(out, buf_get_tags_ID3v1(x, APEfile->ID3v1Tag()));
+    }
     
     return out;
-    /*
-    TagLib::FileRef f(filename->s_name);
+}
+
+
+
+t_llll *buf_read_markers_AIFF(t_buf_read *x, t_symbol *filename)
+{
+    t_llll *out = llll_get();
     
-    if(!f.isNull() && f.tag()) {
+    AIFF_Ref ref = AIFF_OpenFile(filename->s_name, F_RDONLY) ;
+    if (ref)
+    {
+        // getting sampling rate
+        uint64_t nSamples ;
+        int channels ;
+        double samplingRate ;
+        int bitsPerSample ;
+        int segmentSize ;
         
-        TagLib::Tag *tag = f.tag();
-        
-        cout << "-- TAG (basic) --" << endl;
-        cout << "title   - \"" << tag->title()   << "\"" << endl;
-        cout << "artist  - \"" << tag->artist()  << "\"" << endl;
-        cout << "album   - \"" << tag->album()   << "\"" << endl;
-        cout << "year    - \"" << tag->year()    << "\"" << endl;
-        cout << "comment - \"" << tag->comment() << "\"" << endl;
-        cout << "track   - \"" << tag->track()   << "\"" << endl;
-        cout << "genre   - \"" << tag->genre()   << "\"" << endl;
-        
-        TagLib::PropertyMap tags = f.file()->properties();
-        
-        unsigned int longest = 0;
-        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
-            if (i->first.size() > longest) {
-                longest = i->first.size();
+        if (AIFF_GetAudioFormat(ref,&nSamples,&channels,
+                                &samplingRate,&bitsPerSample,
+                                &segmentSize) < 1 ) {
+            object_error((t_object *)x, "Error reading markers.");
+        } else {
+            
+            while (true) {
+                int id;
+                uint64_t position;
+                char* name = NULL;
+                if (AIFF_ReadMarker(ref, &id, &position, &name) < 1)
+                    break ;
+                
+                t_llll *this_marker_ll = llll_get();
+                switch (x->e_ob.l_timeunit) {
+                    case EARS_TIMEUNIT_SAMPS:
+                        llll_appendlong(this_marker_ll, position);
+                        break;
+
+                    case EARS_TIMEUNIT_MS:
+                        llll_appenddouble(this_marker_ll, ears_samps_to_ms(position, samplingRate));
+                        break;
+
+                    case EARS_TIMEUNIT_DURATION_RATIO:
+                        llll_appenddouble(this_marker_ll, ((double)position)/nSamples);
+                        break;
+                        
+                    case EARS_TIMEUNIT_SECONDS:
+                        llll_appenddouble(this_marker_ll, ears_samps_to_ms(position, samplingRate)/1000.);
+                        break;
+
+                    default:
+                        break;
+                }
+                if (name)
+                    llll_appendsym(this_marker_ll, gensym(name));
+
+                llll_appendllll(out, this_marker_ll);
+                
+                if (name)
+                    free(name);
             }
         }
-        
-        cout << "-- TAG (properties) --" << endl;
-        for(TagLib::PropertyMap::ConstIterator i = tags.begin(); i != tags.end(); ++i) {
-            for(TagLib::StringList::ConstIterator j = i->second.begin(); j != i->second.end(); ++j) {
-                cout << left << std::setw(longest) << i->first << " - " << '"' << *j << '"' << endl;
-            }
-        }
-        
-    } */
+        AIFF_CloseFile(ref);
+    }
+    
+    return out;
+}
+
+t_llll *buf_read_markers(t_buf_read *x, t_symbol *filename)
+{
+    t_llll *out = NULL;
+    
+    if (ears_symbol_ends_with(filename, ".aif", true) || ears_symbol_ends_with(filename, ".aiff", true)) {
+        out = buf_read_markers_AIFF(x, filename);
+    } else if (ears_symbol_ends_with(filename, ".wav", true) || ears_symbol_ends_with(filename, ".wave", true)){
+        out = llll_get();
+    } else {
+        out = llll_get();
+    }
+    
+    return out;
 }
 
 

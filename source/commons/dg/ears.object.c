@@ -1206,11 +1206,8 @@ void earsbufobj_add_common_methods(t_class *c)
     class_addmethod(c, (method)earsbufobj_writegeneral, "writewv", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_open, "open", 0);
 
-
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
-    // TO DO: make this better, only make this ONCE when ears starts, via an extension
-    if (mpg123_init() != MPG123_OK)
-        error("Error while loading mpg123 library.");
+    ears_mpg123_init();
 #endif
 }
 
@@ -2262,10 +2259,6 @@ double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buff
             return (value * 1000. / size_ms);
             break;
 
-        case EARS_TIMEUNIT_LOGSECONDS:
-            return (pow(10, value) * 1000. / size_ms);
-            break;
-
         case EARS_TIMEUNIT_MS:
         default:
             return value / size_ms;
@@ -2298,10 +2291,6 @@ double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf
             return value*1000.;
             break;
 
-        case EARS_TIMEUNIT_LOGSECONDS:
-            return pow(10, value)*1000.;
-            break;
-
         case EARS_TIMEUNIT_MS:
         default:
             return value;
@@ -2332,10 +2321,6 @@ double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj 
 
         case EARS_TIMEUNIT_SECONDS:
             res = ears_ms_to_fsamps(value*1000., buffer_getsamplerate(buf));
-            break;
-
-        case EARS_TIMEUNIT_LOGSECONDS:
-            res = ears_ms_to_fsamps(pow(10, value)*1000., buffer_getsamplerate(buf));
             break;
 
         case EARS_TIMEUNIT_MS:
@@ -2373,10 +2358,6 @@ double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_ob
 
         case EARS_TIMEUNIT_SECONDS:
             return earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis)/1000.;
-            break;
-
-        case EARS_TIMEUNIT_LOGSECONDS:
-            return log10(earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis)/1000.);
             break;
 
         case EARS_TIMEUNIT_MS:
@@ -2550,10 +2531,6 @@ double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit fr
             return earsbufobj_time_to_ms(&e_ob, value, buf, false)/1000.;
             break;
             
-        case EARS_TIMEUNIT_LOGSECONDS:
-            return log10(earsbufobj_time_to_ms(&e_ob, value, buf, false)/1000.);
-            break;
-            
         case EARS_TIMEUNIT_MS:
         default:
             return earsbufobj_time_to_ms(&e_ob, value, buf, false);
@@ -2596,10 +2573,6 @@ long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf)
             return ears_ms_to_samps(atom_getfloat(v)*1000., buffer_getsamplerate(buf));
             break;
 
-        case EARS_TIMEUNIT_LOGSECONDS:
-            return ears_ms_to_samps(pow(10, atom_getfloat(v))*1000., buffer_getsamplerate(buf));
-            break;
-
         case EARS_TIMEUNIT_MS:
         default:
             return ears_ms_to_samps(atom_getfloat(v), buffer_getsamplerate(buf));
@@ -2628,10 +2601,6 @@ void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf,
 
         case EARS_TIMEUNIT_SECONDS:
             atom_setfloat(a, ears_samps_to_ms(samps, buffer_getsamplerate(buf))/1000.);
-            break;
-
-        case EARS_TIMEUNIT_LOGSECONDS:
-            atom_setfloat(a, log10(ears_samps_to_ms(samps, buffer_getsamplerate(buf))/1000.));
             break;
 
         case EARS_TIMEUNIT_MS:
@@ -2782,13 +2751,6 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
-                }
-                    break;
-                case EARS_TIMEUNIT_LOGSECONDS:
-                {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
-                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
-                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(pow(10, hatom_getdouble(&sub_ll->l_head->l_hatom))*1000., sr));
                 }
                     break;
                 case EARS_TIMEUNIT_DURATION_RATIO:
@@ -3115,13 +3077,6 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
-                }
-                    break;
-                case EARS_TIMEUNIT_LOGSECONDS:
-                {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
-                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
-                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(pow(10, hatom_getdouble(&sub_ll->l_head->l_hatom))*1000., sr));
                 }
                     break;
                 case EARS_TIMEUNIT_DURATION_RATIO:

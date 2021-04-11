@@ -1,6 +1,25 @@
 #include "ears.mp3.h"
 
 
+bool mpg123_has_been_initialized = false;
+
+void *ears_mpg123_quit(t_symbol *s, short argc, t_atom *argv)
+{
+    mpg123_exit();
+    return NULL;
+}
+
+void ears_mpg123_init()
+{
+    if (!mpg123_has_been_initialized) {
+        if (mpg123_init() != MPG123_OK)
+            error("Error while loading mpg123 library.");
+        quittask_install((method)ears_mpg123_quit, NULL);
+        mpg123_has_been_initialized = true;
+    }
+}
+
+
 long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start_sample, double end_sample, t_buffer_obj *buf)
 {
     long ears_err = EARS_ERR_NONE;
