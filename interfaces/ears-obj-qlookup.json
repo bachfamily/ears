@@ -49,7 +49,8 @@
       "spectrogram",
       "display",
       "stft",
-      "cqt"
+      "cqt",
+      "tempogram"
     ],
     "seealso": [
       "waveform~"
@@ -74,26 +75,6 @@
       "ears.sftf~",
       "ears.cqt~",
       "bach.trans"
-    ]
-  },
-  "ears.readtags": {
-    "digest": "Get metadata tags",
-    "module": "ears",
-    "category": [
-      "ears metadata"
-    ],
-    "keywords": [
-      "id3",
-      "tag",
-      "id3v2",
-      "id3tool",
-      "metadata",
-      "mp3",
-      "read",
-      "open"
-    ],
-    "seealso": [
-      "ears.writetags"
     ]
   },
   "ears.join~": {
@@ -135,6 +116,22 @@
       "ears.readtags"
     ]
   },
+  "ears.model.sine.synthesis~": {
+    "digest": "Sinusoidal synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "synthesis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.sine.analysis~"
+    ]
+  },
   "ears.crop~": {
     "digest": "Crop a buffer",
     "module": "ears",
@@ -172,6 +169,22 @@
       "clip"
     ]
   },
+  "ears.model.spr.analysis~": {
+    "digest": "Sinusoidal-plus-residual analysis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "analysis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.spr.synthesis~"
+    ]
+  },
   "ears.rubberband~": {
     "digest": "Rubber Band pitch and time processing",
     "module": "ears",
@@ -192,6 +205,23 @@
     "seealso": [
       "ears.paulstretch~",
       "ears.resample~"
+    ]
+  },
+  "ears.model~": {
+    "digest": "Apply analysis/synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "synthesis",
+      "analysis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.features~"
     ]
   },
   "ears.read~": {
@@ -464,6 +494,22 @@
       "ears.biquad~",
       "ears.onepole~",
       "ears.paulstretch~"
+    ]
+  },
+  "ears.model.spr.synthesis~": {
+    "digest": "Sinusoidal synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "synthesis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.spr.analysis~"
     ]
   },
   "ears.repeat~": {
@@ -803,26 +849,6 @@
       "ears.gain~"
     ]
   },
-  "ears.writetags": {
-    "digest": "Set metadata tags",
-    "module": "ears",
-    "category": [
-      "ears metadata"
-    ],
-    "keywords": [
-      "id3",
-      "tag",
-      "id3v2",
-      "id3tool",
-      "metadata",
-      "mp3",
-      "set",
-      "write"
-    ],
-    "seealso": [
-      "ears.readtags"
-    ]
-  },
   "ears.offset~": {
     "digest": "Temporally offset a buffer",
     "module": "ears",
@@ -984,6 +1010,22 @@
       "ears.envelope~"
     ]
   },
+  "ears.model.sine.analysis~": {
+    "digest": "Sinusoidal analysis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "analysis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.sine.synthesis~"
+    ]
+  },
   "ears.split~": {
     "digest": "Split a buffer into multiple buffers",
     "module": "ears",
@@ -1019,6 +1061,26 @@
       "ears.hoa.encode~",
       "ears.hoa.decode~",
       "ears.hoa.mirror~"
+    ]
+  },
+  "ears.tempogram~": {
+    "digest": "Compute tempograms",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "tempogram",
+      "spectrogram",
+      "tempo",
+      "rhythm",
+      "transform",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.spectrogram~",
+      "ears.features~"
     ]
   }
 }

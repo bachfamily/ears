@@ -777,33 +777,11 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                                     tags->addFrame(&fr);
                                     if (owner) bach_freeptr(owner);
                                     if (identif) bach_freeptr(identif);
-                                } else if (strcmp(s_frameid, "TXXX") == 0) {
-                                    char *description = NULL;
-                                    char **values = (char **)bach_newptrclear(MAX(1, el_ll->l_size) * sizeof(char *));
-                                    long count = 0;
-                                    TagLib::StringList sl;
-                                    
-                                    if (el_ll->l_size > 1)
-                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &description);
-                                    if (el_ll->l_size > 2) {
-                                        for (t_llllelem *tmp = el_ll->l_head->l_next->l_next; tmp; tmp = tmp->l_next) {
-                                            hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &values[count]);
-                                            sl.append(values[count]);
-                                            count++;
-                                        }
-                                    }
-
-                                    TagLib::ID3v2::UserTextIdentificationFrame fr(description, sl, TagLib::String::UTF8);
-                                    tags->addFrame(&fr);
-                                    if (description) bach_freeptr(description);
-                                    for (long i = 0; i < count; i++)
-                                        bach_freeptr(values[i]);
-                                    bach_freeptr(values);
                                 } else {
                                     TagLib::StringList sl;
                                     for (t_llllelem *frel = el_ll->l_head->l_next; frel; frel = frel->l_next) {
                                         char *txtbuf = NULL;
-                                        hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &txtbuf);
+                                        hatom_to_text_buf(&frel->l_hatom, &txtbuf);
                                         sl.append(txtbuf);
                                         bach_freeptr(txtbuf);
                                     }

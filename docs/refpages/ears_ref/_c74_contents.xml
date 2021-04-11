@@ -4,12 +4,14 @@
 <refpage name='ears.lace~.maxref.xml'/>
 <refpage name='ears.specshow~.maxref.xml'/>
 <refpage name='ears.trans~.maxref.xml'/>
-<refpage name='ears.readtags.maxref.xml'/>
 <refpage name='ears.join~.maxref.xml'/>
 <refpage name='ears.playmp3~.maxref.xml'/>
+<refpage name='ears.model.sine.synthesis~.maxref.xml'/>
 <refpage name='ears.crop~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
+<refpage name='ears.model.spr.analysis~.maxref.xml'/>
 <refpage name='ears.rubberband~.maxref.xml'/>
+<refpage name='ears.model~.maxref.xml'/>
 <refpage name='ears.read~.maxref.xml'/>
 <refpage name='ears.slice~.maxref.xml'/>
 <refpage name='ears.format~.maxref.xml'/>
@@ -25,6 +27,7 @@
 <refpage name='ears.info~.maxref.xml'/>
 <refpage name='ears.channel~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>
+<refpage name='ears.model.spr.synthesis~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.roll.sinusoids~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
@@ -43,7 +46,6 @@
 <refpage name='ears.peaks~.maxref.xml'/>
 <refpage name='ears.trim~.maxref.xml'/>
 <refpage name='ears.normalize~.maxref.xml'/>
-<refpage name='ears.writetags.maxref.xml'/>
 <refpage name='ears.offset~.maxref.xml'/>
 <refpage name='ears.istft~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
@@ -53,6 +55,8 @@
 <refpage name='ears.mix~.maxref.xml'/>
 <refpage name='ears.window~.maxref.xml'/>
 <refpage name='ears.gain~.maxref.xml'/>
+<refpage name='ears.model.sine.analysis~.maxref.xml'/>
 <refpage name='ears.split~.maxref.xml'/>
 <refpage name='ears.hoa.rotate~.maxref.xml'/>
+<refpage name='ears.tempogram~.maxref.xml'/>
 </root>

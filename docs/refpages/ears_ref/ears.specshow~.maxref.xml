@@ -10,7 +10,7 @@
 	</digest>
 
 	<description>
-		Display a spectrogram obtained via STFT or CQT transform.
+		Display a spectrogram, typically obtained via a frequency transform (STFT, CQT, tempogram...)
 	</description>
 
 	<!--METADATA-->
@@ -67,6 +67,22 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
+		<attribute name="buffername" get="1" set="1" type="symbol" size="1">
+			<digest>
+				buffer~ Object Name
+			</digest>
+			<description>
+				Sets the name of the buffer to which the object is attached.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="default" get="1" set="1" type="symbol" size="1" value="volatile" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="buffer~ Object Name" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="freqgrid" get="1" set="1" type="atom" size="1">
 			<digest>
 				Frequency Grid Step
@@ -96,6 +112,22 @@
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
 				<attribute name="default" get="1" set="1" type="rgba" size="1" value="0.678 0.756862745098039 0.764705882352941 0.7" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frequency Grid Color" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />
+			</attributelist>
+		</attribute>
+		<attribute name="freqlabelcolor" get="1" set="1" type="rgba" size="1">
+			<digest>
+				Frequency Grid Label Color
+			</digest>
+			<description>
+				Sets the color of the vertical grid labels.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
+				<attribute name="default" get="1" set="1" type="rgba" size="1" value="0.678 0.756862745098039 0.764705882352941 0.7" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frequency Grid Label Color" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />
@@ -220,6 +252,22 @@
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
 				<attribute name="default" get="1" set="1" type="rgba" size="1" value="0.678 0.756862745098039 0.764705882352941 0.7" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Grid Color" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />
+			</attributelist>
+		</attribute>
+		<attribute name="timelabelcolor" get="1" set="1" type="rgba" size="1">
+			<digest>
+				Time Grid Label Color
+			</digest>
+			<description>
+				Sets the color of the time grid labels.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Grid" />
+				<attribute name="default" get="1" set="1" type="rgba" size="1" value="0.678 0.756862745098039 0.764705882352941 0.7" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Grid Label Color" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />

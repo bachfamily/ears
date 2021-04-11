@@ -46,6 +46,20 @@
 			<description>
 			</description>
 		</outlet>
+		<outlet id="2" type="INLET_TYPE">
+			<digest>
+				Metadata tags
+			</digest>
+			<description>
+			</description>
+		</outlet>
+		<outlet id="3" type="INLET_TYPE">
+			<digest>
+				Markers
+			</digest>
+			<description>
+			</description>
+		</outlet>
 	</outletlist>
 
 	<!--ARGUMENTS-->
@@ -270,6 +284,19 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="hrid3v2" get="1" set="1" type="int" size="1">
+			<digest>
+				Human-Readable ID3v2 Frame IDs
+			</digest>
+			<description>
+				Toggles the ability to output human-readable ID3v2
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Human-Readable ID3v2 Frame IDs" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -357,6 +384,16 @@
 		<entry name ="Outlet 2 (symbol/list)">
 			<description>
 				Soundfile names.
+			</description>
+		</entry>
+		<entry name ="Outlet 3 (llll)">
+			<description>
+				Metadata tags.
+			</description>
+		</entry>
+		<entry name ="Outlet 4 (llll)">
+			<description>
+				Markers.
 			</description>
 		</entry>
 	</misc>
