@@ -259,8 +259,8 @@ t_ears_err ears_spectralbuf_metadata_set(t_object *ob, t_buffer_obj *buf, t_ears
         t_ears_spectralbuf_metadata *storeddata = (t_ears_spectralbuf_metadata *)sysmem_newptrclear(sizeof(t_ears_spectralbuf_metadata));
         storeddata->original_audio_signal_sr = data->original_audio_signal_sr;
         storeddata->binsize = data->binsize;
-        storeddata->offset = data->offset;
-        storeddata->frequnit = data->frequnit;
+        storeddata->binoffset = data->binoffset;
+        storeddata->binunit = data->binunit;
         storeddata->type = data->type;
         llll_free(storeddata->bins);
         storeddata->bins = llll_clone(data->bins);
@@ -305,7 +305,7 @@ double ears_spectralbuf_get_binsize(t_object *ob, t_buffer_obj *buf)
 double ears_spectralbuf_get_binoffset(t_object *ob, t_buffer_obj *buf)
 {
     t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, buf);
-    return data ? data->offset : 0;
+    return data ? data->binoffset : 0;
 }
 
 
@@ -318,7 +318,7 @@ t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf)
 e_ears_frequnit ears_spectralbuf_get_binunit(t_object *ob, t_buffer_obj *buf)
 {
     t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, buf);
-    return data ? data->frequnit : EARS_FREQUNIT_UNKNOWN;
+    return data ? data->binunit : EARS_FREQUNIT_UNKNOWN;
 }
 
 t_llll* ears_spectralbuf_get_bins(t_object *ob, t_buffer_obj *buf)
@@ -4357,13 +4357,23 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
 }
 
 
+t_ears_spectralbuf_metadata spectralbuf_metadata_get_empty(){
+    t_ears_spectralbuf_metadata data;
+    data.original_audio_signal_sr = 0;
+    data.binsize = 0;
+    data.binoffset = 0;
+    data.bins = NULL;
+    data.binunit = EARS_FREQUNIT_UNKNOWN;
+    data.type = _llllobj_sym_none;
+    return data;
+}
 
-void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double offset, e_ears_frequnit frequnit, t_symbol *type, t_llll *bins, bool also_free_bins)
+void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double binoffset, e_ears_frequnit binunit, t_symbol *type, t_llll *bins, bool also_free_bins)
 {
     data->original_audio_signal_sr = original_audio_signal_sr;
     data->binsize = binsize;
-    data->offset = offset;
-    data->frequnit = frequnit;
+    data->binoffset = binoffset;
+    data->binunit = binunit;
     data->type = type;
     if (also_free_bins)
         llll_free(data->bins);

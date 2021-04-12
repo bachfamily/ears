@@ -52,9 +52,9 @@ static bool ears_is_freeing = false;
 typedef struct _ears_spectralbuf_metadata {
     double              original_audio_signal_sr;
     double              binsize;    // size of a bin, in whatever unit is pertinent (e.g. Hz), use 0 for "irregular"
-    double              offset;     // offset of the first bin,in whatever unit is pertinent (e.g. Hz)
+    double              binoffset;     // offset of the first bin,in whatever unit is pertinent (e.g. Hz)
     t_llll              *bins;      // Detailed position of each bin, in the frequnit
-    e_ears_frequnit     frequnit;   // Bin unit
+    e_ears_frequnit     binunit;    // Bin unit
     t_symbol            *type;      // spectrogram type
 } t_ears_spectralbuf_metadata;
 
@@ -201,6 +201,8 @@ typedef struct _ears_envelope_iterator
     e_slope_mapping slopemapping;
 } t_ears_envelope_iterator;
 
+
+t_ears_spectralbuf_metadata spectralbuf_metadata_get_empty();
 
 
 
@@ -395,7 +397,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
 
 
 // convenience
-void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double offset, e_ears_frequnit frequnit, t_symbol *type, t_llll* bins, bool also_free_bins = false);
+void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double binoffset, e_ears_frequnit binunit, t_symbol *type, t_llll* bins, bool also_free_bins = false);
 
 
 t_llll *ears_ezarithmser(double from, double step, long numitems);

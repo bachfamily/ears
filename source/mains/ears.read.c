@@ -60,7 +60,7 @@ typedef struct _buf_read {
     
     t_llll              *filenames;
     
-    char                human_readable_id3v2_frame_ids;
+    char                human_readable_frame_ids;
     
     char                mustclear;
 } t_buf_read;
@@ -78,7 +78,7 @@ void            buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_
 long            buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *view);
 
 t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename);
-t_llll *buf_read_markers(t_buf_read *x, t_symbol *filename);
+t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data, bool *has_data, double *sr);
 
 void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s);
 void buf_read_inletinfo(t_buf_read *x, void *b, long a, char *t);
@@ -143,10 +143,10 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
     // @description Toggles native MP3 handling.
 
-    CLASS_ATTR_CHAR(c, "hrid3v2",    0,    t_buf_read, human_readable_id3v2_frame_ids);
-    CLASS_ATTR_BASIC(c, "hrid3v2", 0);
-    CLASS_ATTR_STYLE_LABEL(c, "hrid3v2", 0, "onoff", "Human-Readable ID3v2 Frame IDs");
-    // @description Toggles the ability to output human-readable ID3v2
+    CLASS_ATTR_CHAR(c, "hr",    0,    t_buf_read, human_readable_frame_ids);
+    CLASS_ATTR_BASIC(c, "hr", 0);
+    CLASS_ATTR_STYLE_LABEL(c, "hr", 0, "onoff", "Human-Readable IDs");
+    // @description Toggles the ability to output human-readable Frames and Tag IDs instead of four-letter codes
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -315,9 +315,25 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                 }
 #endif
                 
+                // cleaning spectral data
+                ears_spectralbuf_metadata_remove((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset));
+                
+                // READING TAGS
                 llll_appendllll(tags, buf_read_tags(x, filepath));
-                llll_appendllll(markers, buf_read_markers(x, filepath));
+                
+                // READING SPECTRAL METADATA AND MARKERS
+                t_ears_spectralbuf_metadata data = spectralbuf_metadata_get_empty();
+                bool has_data = false;
+                double sr = DBL_MIN;
+                llll_appendllll(markers, buf_read_markers_and_spectralannotation(x, filepath, &data, &has_data, &sr));
 
+                if (has_data){
+                    t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset);
+                    ears_spectralbuf_metadata_set((t_object *)x, buf, &data);
+                    if (sr != DBL_MIN)
+                        ears_buffer_set_sr((t_object *)x, buf, sr);
+                    llll_free(data.bins);
+                }
             } else {
                 // empty buffer will do.
                 char *txtbuf = NULL;
@@ -410,12 +426,44 @@ t_llll *buf_get_tags_INFO(t_buf_read *x, TagLib::RIFF::Info::Tag *tags)
     t_llll *tags_ll = llll_get();
     llll_appendsym(tags_ll, gensym("INFO"));
     if (tags) {
+        TagLib::RIFF::Info::FieldListMap map = tags->fieldListMap();
+        for(auto it=map.begin(); it!=map.end(); ++it)
+        {
+            TagLib::ByteVector key = it->first;
+            TagLib::String fr = it->second;
+            t_llll *this_tags_ll = llll_get();
+            if (strcasecmp(key.data(), "ICRD") == 0) {
+                llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("YEAR") : gensym(key.data()));
+                llll_appendlong(this_tags_ll, tags->year());
+            } else if (strcasecmp(key.data(), "IPRT") == 0) {
+                llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("TRACK") : gensym(key.data()));
+                llll_appendlong(this_tags_ll, tags->track());
+            } else if (strcasecmp(key.data(), "IPRD") == 0) {
+                llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("ALBUM") : gensym(key.data()));
+                llll_appendsym(this_tags_ll, gensym(fr.toCString()));
+            } else if (strcasecmp(key.data(), "INAM") == 0) {
+                llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("TITLE") : gensym(key.data()));
+                llll_appendsym(this_tags_ll, gensym(fr.toCString()));
+            } else if (strcasecmp(key.data(), "IART") == 0) {
+                llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("ARTIST") : gensym(key.data()));
+                llll_appendsym(this_tags_ll, gensym(fr.toCString()));
+            } else if (strcasecmp(key.data(), "IGNR") == 0) {
+                llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("GENRE") : gensym(key.data()));
+                llll_appendsym(this_tags_ll, gensym(fr.toCString()));
+            } else {
+                llll_appendsym(this_tags_ll, gensym(key.data()));
+                llll_appendsym(this_tags_ll, gensym(fr.toCString()));
+            }
+            llll_appendllll(tags_ll, this_tags_ll);
+        }
+        /*
         llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("TITLE"), gensym(tags->title().toCString())));
         llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("ARTIST"), gensym(tags->artist().toCString())));
         llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("COMMENT"), gensym(tags->comment().toCString())));
         llll_appendllll(tags_ll, symbol_and_symbol_to_llll(gensym("GENRE"), gensym(tags->genre().toCString())));
         llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("YEAR"), tags->year()));
         llll_appendllll(tags_ll, symbol_and_long_to_llll(gensym("TRACK"), tags->track()));
+         */
     }
     
     return tags_ll;
@@ -492,7 +540,7 @@ t_llll *buf_get_tags_ID3v2(t_buf_read *x, TagLib::ID3v2::Tag *tags)
         {
             TagLib::ID3v2::Frame *fr = (*it);
             t_llll *this_tags_ll = llll_get();
-            if (x->human_readable_id3v2_frame_ids) {
+            if (x->human_readable_frame_ids) {
                 TagLib::String key = frameIDToKey(fr->frameID());
                 if (key.isEmpty())
                     llll_appendsym(this_tags_ll, gensym(fr->frameID().data()));
@@ -631,9 +679,48 @@ t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename)
     return out;
 }
 
+std::vector<std::string> string_split(const char *str, char c = ' ')
+{
+    std::vector<std::string> result;
+    
+    do
+    {
+        const char *begin = str;
+        
+        while(*str != c && *str)
+            str++;
+        
+        result.push_back(std::string(begin, str));
+    } while (0 != *str++);
+    
+    return result;
+}
 
+void parse_annotation(const char *annotation, bool *has_data, double *sr, t_ears_spectralbuf_metadata *data)
+{
+    std::vector<std::string> params = string_split(annotation, ';');
+    for (long i = 0; i < params.size(); i++) {
+        if (params[i].rfind("earsspectral", 0) == 0)
+            *has_data = std::stoi(params[i].substr(strlen("earsspectral")+1));
+        else if (params[i].rfind("sr", 0) == 0)
+            *sr = std::stod(params[i].substr(strlen("sr")+1));
+        else if (params[i].rfind("audiosr", 0) == 0)
+            data->original_audio_signal_sr = std::stod(params[i].substr(strlen("audiosr")+1));
+        else if (params[i].rfind("spectype", 0) == 0)
+            data->type = gensym(params[i].substr(strlen("spectype")+1).c_str());
+        else if (params[i].rfind("binsize", 0) == 0)
+            data->binsize = std::stod(params[i].substr(strlen("binsize")+1));
+        else if (params[i].rfind("binoffset", 0) == 0)
+            data->binoffset = std::stod(params[i].substr(strlen("binoffset")+1));
+        else if (params[i].rfind("binunit", 0) == 0)
+            data->binunit = ears_frequnit_from_symbol(gensym(params[i].substr(strlen("binunit")+1).c_str()));
+        else if (params[i].rfind("bins", 0) == 0) {
+            data->bins = llll_from_text_buf(params[i].substr(strlen("bins")+1).c_str());
+        }
+    }
+}
 
-t_llll *buf_read_markers_AIFF(t_buf_read *x, t_symbol *filename)
+t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data, bool *has_data, double *sr)
 {
     t_llll *out = llll_get();
     
@@ -656,6 +743,14 @@ t_llll *buf_read_markers_AIFF(t_buf_read *x, t_symbol *filename)
             while (true) {
                 int id;
                 uint64_t position;
+                
+                char *annotation = NULL;
+                annotation = AIFF_GetAttribute(ref, AIFF_ANNO);
+                if (annotation) {
+                    parse_annotation(annotation, has_data, sr, data);
+                    free(annotation);
+                }
+                
                 char* name = NULL;
                 if (AIFF_ReadMarker(ref, &id, &position, &name) < 1)
                     break ;
@@ -696,20 +791,68 @@ t_llll *buf_read_markers_AIFF(t_buf_read *x, t_symbol *filename)
     return out;
 }
 
-t_llll *buf_read_markers(t_buf_read *x, t_symbol *filename)
+t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data, bool *has_data, double *sr)
 {
     t_llll *out = NULL;
+    *has_data = false;
     
     if (ears_symbol_ends_with(filename, ".aif", true) || ears_symbol_ends_with(filename, ".aiff", true)) {
-        out = buf_read_markers_AIFF(x, filename);
+        // spectral information is embedded in the ANNOTATION
+        out = buf_read_markers_and_spectralannotation_AIFF(x, filename, data, has_data, sr);
     } else if (ears_symbol_ends_with(filename, ".wav", true) || ears_symbol_ends_with(filename, ".wave", true)){
+        // Spectral information is embedded in the INFO tag
+        if (data) {
+            TagLib::FileRef f(filename->s_name);
+            TagLib::File *file = f.file();
+            if (file) {
+                TagLib::RIFF::File *RIFFfile = dynamic_cast<TagLib::RIFF::File *>(file);
+                if (RIFFfile) {
+                    TagLib::RIFF::WAV::File *RIFFWAVfile = dynamic_cast<TagLib::RIFF::WAV::File *>(file);
+                    if (RIFFWAVfile) {
+                        TagLib::String s = RIFFWAVfile->InfoTag()->fieldText(TagLib::ByteVector("EARS"));
+                        if (strlen(s.toCString()) > 0) {
+                            parse_annotation(s.toCString(), has_data, sr, data);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // TODO
+        // MARKERS: should be handled by retrieving the Cue Chunks + associated List Chunks for the tags
         out = llll_get();
+    } else if (ears_symbol_ends_with(filename, ".wv", true)){
+        
+        // Spectral information is in the APE tag
+        if (data) {
+            TagLib::FileRef f(filename->s_name);
+            TagLib::File *file = f.file();
+            if (file) {
+                TagLib::WavPack::File *WVfile = dynamic_cast<TagLib::WavPack::File *>(file);
+                if (WVfile) {
+                    TagLib::APE::ItemListMap map = WVfile->APETag()->itemListMap();
+                    for(auto it=map.begin(); it!=map.end(); ++it)
+                    {
+                        TagLib::String key = it->first;
+                        TagLib::APE::Item fr = it->second;
+                        if (strcmp(key.toCString(), "EARS") == 0) {
+                            parse_annotation(fr.toString().toCString(), has_data, sr, data);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        out = llll_get();
+
     } else {
         out = llll_get();
     }
     
     return out;
 }
+
 
 
 

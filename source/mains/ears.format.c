@@ -347,11 +347,11 @@ void buf_format_bang(t_buf_format *x)
                 if (binsize > 0)
                     data->binsize = binsize;
                 if (binoffset >= 0)
-                    data->offset = binoffset;
+                    data->binoffset = binoffset;
                 if (spectype != gensym("keep"))
                     data->type = spectype;
                 if (u != EARS_FREQUNIT_UNKNOWN)
-                    data->frequnit = u;
+                    data->binunit = u;
                 if (audiosr > 0)
                     data->original_audio_signal_sr = audiosr;
                 if (bins && !(bins->l_head && hatom_gettype(&bins->l_head->l_hatom) == H_SYM)) {

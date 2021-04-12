@@ -65,6 +65,7 @@ typedef struct _buf_write {
     long               mp3_bitrate_max;
     
     char               use_correction_file;
+    char               write_spectral_annotations;
 } t_buf_write;
 
 
@@ -80,7 +81,7 @@ void            buf_write_append_deferred(t_buf_write *x, t_symbol *msg, long ac
 void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s);
 void buf_write_inletinfo(t_buf_write *x, void *b, long a, char *t);
 
-void buf_write_markers(t_buf_write *x, t_symbol *filename, t_llll *markers);
+void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, double sr, t_ears_spectralbuf_metadata *data);
 void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags);
 
 // Globals and Statics
@@ -190,6 +191,11 @@ int C74_EXPORT main(void)
     // @description Toggles the ability to write WavPack correction file (according to a <m>bitrate</m> that
     // needs to be set via the corresponding attribute).
 
+    CLASS_ATTR_CHAR(c, "spectralannotations", 0, t_buf_write, write_spectral_annotations);
+    CLASS_ATTR_STYLE_LABEL(c, "spectralannotations", 0, "onoff", "Write Annotations for Spectral Buffers");
+    // @description Toggles the ability to write annotations for spectral buffers that include the original
+    // sampling rate, the bin size and offset, the bin unit and the individual bin positions.
+
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -247,6 +253,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->mp3_vbrmode = gensym("VBR");
         x->sampleformat = _sym_int16;
+        x->write_spectral_annotations = true;
         
         // @arg 0 @name filenames @optional 1 @type symbol
         // @digest Output file names
@@ -378,8 +385,13 @@ void buf_write_bang(t_buf_write *x)
             
             ears_buffer_write(buf, filename, (t_object *)x, &settings);
             
-            if (mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL)
-                buf_write_markers(x, filename, hatom_getllll(&mk_el->l_hatom));
+            t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get((t_object *)x, buf);
+            if ((x->write_spectral_annotations && data) || (mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL))
+                buf_write_markers_and_spectralannotation(x, filename,
+                                                 mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL ? hatom_getllll(&mk_el->l_hatom) : NULL,
+                                                 ears_buffer_get_sr((t_object *)x, buf),
+                                                 data);
+            
 
             if (tag_el && hatom_gettype(&tag_el->l_hatom) == H_LLLL)
                 buf_write_tags(x, filename, hatom_getllll(&tag_el->l_hatom));
@@ -1017,10 +1029,27 @@ void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags)
 }
  */
 
-
-void buf_write_markers_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers)
+char *buf_write_get_spectral_annotation_string(t_buf_write *x, double sr, t_ears_spectralbuf_metadata *data)
 {
-    if (!markers || markers->l_size == 0)
+    t_symbol *unit = ears_frequnit_to_symbol(data->binunit);
+    char *bins_buf = NULL;
+    llll_to_text_buf(data->bins, &bins_buf, 0, 6, 0, LLLL_T_NONE, LLLL_TE_SMART, NULL);
+    char *annotation = (char *)bach_newptr(((bins_buf ? strlen(bins_buf) : 0)+4096) * sizeof(char));
+    snprintf_zero(annotation, 4096, "earsspectral=1;sr=%.6f;audiosr=%.6f;spectype=%s;binsize=%.6f;binoffset=%.6f;binunit=%s;bins=%s",
+                  sr,
+                  data->original_audio_signal_sr,
+                  data->type ? data->type->s_name : "none",
+                  data->binsize,
+                  data->binoffset,
+                  unit ? unit->s_name : "none",
+                  bins_buf ? bins_buf : "");
+    bach_freeptr(bins_buf);
+    return annotation;
+}
+
+void buf_write_markers_and_spectralannotation_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers, double sr, t_ears_spectralbuf_metadata *data)
+{
+    if ((!markers || markers->l_size == 0) && !data)
         return;
 
     AIFF_Ref ref = AIFF_OpenFile(filename->s_name, F_RDONLY);
@@ -1048,7 +1077,7 @@ void buf_write_markers_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers)
     ref = AIFF_OpenFile(filename->s_name, F_WRONLY);
     if (ref) {
         // gotta re-write the samples
-        AIFF_SetAudioFormat(ref, channels, samplingRate, bitsPerSample);
+        AIFF_SetAudioFormat(ref, channels, sr, bitsPerSample);
         if (AIFF_StartWritingSamples(ref) < 1) {
             object_error((t_object *)x, "Error writing file");
         } else {
@@ -1059,24 +1088,31 @@ void buf_write_markers_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers)
         }
         
         
-        AIFF_StartWritingMarkers(ref);
-        
-        for (t_llllelem *mk = markers->l_head; mk; mk = mk->l_next) {
-            t_llll *mk_ll = hatom_getllll(&mk->l_hatom);
-            if (mk_ll && mk_ll->l_head) {
-                char *txtbuf = NULL;
-                uint64_t onset_samps = round(onset_to_fsamps(x, hatom_getdouble(&mk_ll->l_head->l_hatom), nSamples, samplingRate));
-                if (mk_ll->l_head->l_next)
-                    hatom_to_text_buf(&mk_ll->l_head->l_next->l_hatom, &txtbuf);
-                
-                AIFF_WriteMarker(ref, onset_samps, txtbuf);
-                
-                if (txtbuf)
-                    bach_freeptr(txtbuf);
-            }
+        if (data) { // add spectral annotations
+            char *annotation = buf_write_get_spectral_annotation_string(x, sr, data);
+            AIFF_SetAttribute(ref, AIFF_ANNO, annotation);
+            bach_freeptr(annotation);
         }
         
-        AIFF_EndWritingMarkers(ref);
+        if (markers && markers->l_head) {
+            AIFF_StartWritingMarkers(ref);
+            for (t_llllelem *mk = markers->l_head; mk; mk = mk->l_next) {
+                t_llll *mk_ll = hatom_getllll(&mk->l_hatom);
+                if (mk_ll && mk_ll->l_head) {
+                    char *txtbuf = NULL;
+                    uint64_t onset_samps = round(onset_to_fsamps(x, hatom_getdouble(&mk_ll->l_head->l_hatom), nSamples, samplingRate));
+                    if (mk_ll->l_head->l_next)
+                        hatom_to_text_buf(&mk_ll->l_head->l_next->l_hatom, &txtbuf);
+                    
+                    AIFF_WriteMarker(ref, onset_samps, txtbuf);
+                    
+                    if (txtbuf)
+                        bach_freeptr(txtbuf);
+                }
+            }
+            
+            AIFF_EndWritingMarkers(ref);
+        }
         
         AIFF_CloseFile(ref);
     }
@@ -1084,14 +1120,54 @@ void buf_write_markers_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers)
         bach_freeptr(samples);
 }
 
-void buf_write_markers(t_buf_write *x, t_symbol *filename, t_llll *markers)
+void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, double sr, t_ears_spectralbuf_metadata *data)
 {
-    if (!markers || markers->l_size == 0)
+    if ((!markers || markers->l_size == 0) && !data)
         return;
 
     if (ears_symbol_ends_with(filename, ".aif", true) || ears_symbol_ends_with(filename, ".aiff", true)) {
-        buf_write_markers_AIFF(x, filename, markers);
+        // we handle spectralannotation via ANNOTATIONS
+        buf_write_markers_and_spectralannotation_AIFF(x, filename, markers, sr, x->write_spectral_annotations ? data : NULL);
+        
     } else if (ears_symbol_ends_with(filename, ".wav", true) || ears_symbol_ends_with(filename, ".wave", true)){
+        // we handle spectralannotation via INFO tag
+        if (x->write_spectral_annotations && data) {
+            TagLib::FileRef f(filename->s_name);
+            TagLib::File *file = f.file();
+            if (file) {
+                TagLib::RIFF::File *RIFFfile = dynamic_cast<TagLib::RIFF::File *>(file);
+                if (RIFFfile) {
+                    TagLib::RIFF::WAV::File *RIFFWAVfile = dynamic_cast<TagLib::RIFF::WAV::File *>(file);
+                    if (RIFFWAVfile) {
+                        char *annotation = buf_write_get_spectral_annotation_string(x, sr, data);
+                        RIFFWAVfile->InfoTag()->setFieldText("EARS", annotation);
+                        bach_freeptr(annotation);
+                        f.save();
+                    }
+                }
+            }
+        }
+        // TODO
+        // MARKERS: should be handled by setting the Cue Chunks + associated List Chunks for the tags
+        
+    } else if (ears_symbol_ends_with(filename, ".wv", true)){
+        // we handle spectralannotation via an APE tag
+        if (x->write_spectral_annotations && data) {
+            TagLib::FileRef f(filename->s_name);
+            TagLib::File *file = f.file();
+            if (file) {
+                TagLib::WavPack::File *WVfile = dynamic_cast<TagLib::WavPack::File *>(file);
+                if (WVfile) {
+                    char *annotation = buf_write_get_spectral_annotation_string(x, sr, data);
+                    TagLib::APE::Item item = TagLib::APE::Item("EARS", annotation);
+                    WVfile->APETag()->setItem("EARS", item);
+                    bach_freeptr(annotation);
+                    f.save();
+                }
+            }
+        }
+        
     } else {
+        
     }
 }

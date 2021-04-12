@@ -735,7 +735,7 @@ t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *ph
                     
                     // position
                     if (data)
-                        llll_appenddouble(thispeak, data->offset + bin * data->binsize);
+                        llll_appenddouble(thispeak, data->binoffset + bin * data->binsize);
                     else
                         llll_appenddouble(thispeak, bin+1); // 1-based bin
                     
@@ -1120,13 +1120,13 @@ void warn_if(t_object *ob, bool condition, const char *warn_msg)
     }
 }
 
-void set_spec_metadata(t_ears_essentia_extractors_library *lib, long extractor_idx, double binsize, double offset, t_symbol *type, e_ears_frequnit frequnit, t_llll *bins, bool also_free_llll)
+void set_spec_metadata(t_ears_essentia_extractors_library *lib, long extractor_idx, double binsize, double binoffset, t_symbol *type, e_ears_frequnit binunit, t_llll *bins, bool also_free_llll)
 {
     lib->extractors[extractor_idx].has_spec_metadata = true;
     lib->extractors[extractor_idx].specdata.binsize = binsize;
-    lib->extractors[extractor_idx].specdata.offset = offset;
+    lib->extractors[extractor_idx].specdata.binoffset = binoffset;
     lib->extractors[extractor_idx].specdata.type = type;
-    lib->extractors[extractor_idx].specdata.frequnit = frequnit;
+    lib->extractors[extractor_idx].specdata.binunit = binunit;
     if (also_free_llll)
         llll_free(lib->extractors[extractor_idx].specdata.bins);
     lib->extractors[extractor_idx].specdata.bins = bins ? llll_clone(bins) : llll_get();
@@ -1259,9 +1259,9 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
             lib->extractors[i].has_spec_metadata = false;
             lib->extractors[i].specdata.original_audio_signal_sr = 0;
             lib->extractors[i].specdata.binsize = 0;
-            lib->extractors[i].specdata.offset = 0;
+            lib->extractors[i].specdata.binoffset = 0;
             lib->extractors[i].specdata.type = gensym("timeseries");
-            lib->extractors[i].specdata.frequnit = EARS_FREQUNIT_UNKNOWN;
+            lib->extractors[i].specdata.binunit = EARS_FREQUNIT_UNKNOWN;
             lib->extractors[i].essentia_num_outputs = 1;
             lib->extractors[i].framemode = ears_essentia_feature_to_framemode((t_object *)e_ob, (e_ears_feature)features[i]);
 
@@ -2527,20 +2527,51 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_HPCP:
                 {
+                    int HPCP_size = 12;
+                    double HPCP_referenceFrequency = eCFI(440, EARS_FREQUNIT_HERTZ);
+                    int HPCP_harmonics = 0;
+                    int HPCP_bandPreset = true;
+                    double HPCP_minFrequency = eCFI(40, EARS_FREQUNIT_HERTZ);
+                    double HPCP_maxFrequency = eCFI(500, EARS_FREQUNIT_HERTZ);
+                    int HPCP_maxShifted = false;
+                    t_symbol *HPCP_normalized = gensym("unitMax");
+                    double HPCP_bandSplitFrequency = eCFI(500, EARS_FREQUNIT_HERTZ);
+                    t_symbol *HPCP_weightType = gensym("squaredCosine");
+                    int HPCP_nonLinear = false;
+                    double HPCP_windowSize = eCPI(1, EARS_PITCHUNIT_MIDI);
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "idiiddisdsii",
+                                    gensym("size"), &HPCP_size,
+                                    gensym("referencefrequency"), &HPCP_referenceFrequency,
+                                    gensym("harmonics"), &HPCP_harmonics,
+                                    gensym("bandpreset"), &HPCP_bandPreset,
+                                    gensym("minfrequency"), &HPCP_minFrequency,
+                                    gensym("maxfrequency"), &HPCP_maxFrequency,
+                                    gensym("maxshifted"), &HPCP_maxShifted,
+                                    gensym("normalized"), &HPCP_normalized,
+                                    gensym("bandsplitfrequency"), &HPCP_bandSplitFrequency,
+                                    gensym("weighttype"), &HPCP_weightType,
+                                    gensym("nonlinear"), &HPCP_nonLinear,
+                                    gensym("windowsize"), &HPCP_windowSize
+                                    );
+                    convert_frequnit(lib, i, HPCP_referenceFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, HPCP_minFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, HPCP_maxFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_frequnit(lib, i, HPCP_bandSplitFrequency, NULL, EARS_FREQUNIT_HERTZ);
+                    convert_pitchunit(lib, i, HPCP_windowSize, NULL, EARS_PITCHUNIT_MIDI);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("HPCP",
                                                                             "sampleRate", sr,
-                                                                            "size", params->HPCP_size,
-                                                                            "referenceFrequency", params->HPCP_referenceFrequency,
-                                                                            "harmonics", params->HPCP_harmonics,
-                                                                            "bandPreset", params->HPCP_bandPreset,
-                                                                            "minFrequency", params->HPCP_minFrequency,
-                                                                            "maxFrequency", params->HPCP_maxFrequency,
-                                                                            "maxShifted", params->HPCP_maxShifted,
-                                                                            "normalized", params->HPCP_normalized,
-                                                                            "bandSplitFrequency", params->HPCP_bandSplitFrequency,
-                                                                            "weightType", params->HPCP_weightType,
-                                                                            "nonLinear", params->HPCP_nonLinear,
-                                                                            "windowSize", params->HPCP_windowSize);
+                                                                            "size", HPCP_size,
+                                                                            "referenceFrequency", HPCP_referenceFrequency,
+                                                                            "harmonics", HPCP_harmonics,
+                                                                            "bandPreset", HPCP_bandPreset,
+                                                                            "minFrequency", HPCP_minFrequency,
+                                                                            "maxFrequency", HPCP_maxFrequency,
+                                                                            "maxShifted", HPCP_maxShifted,
+                                                                            "normalized", HPCP_normalized,
+                                                                            "bandSplitFrequency", HPCP_bandSplitFrequency,
+                                                                            "weightType", HPCP_weightType,
+                                                                            "nonLinear", HPCP_nonLinear,
+                                                                            "windowSize", (int)round(HPCP_windowSize));
                     set_input2(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS, "frequencies", "magnitudes");
                     set_essentia_outputs(lib, i, "v", "hpcp");
                     set_custom_outputs(lib, i, "v", "hpcp");
@@ -3944,7 +3975,7 @@ t_ears_err ears_essentia_fill_buffer_from_vector(t_object *x, t_buffer_obj *buf,
         
         t_ears_spectralbuf_metadata data;
         if (specmetadata) {
-            ears_spectralbuf_metadata_fill(&data, audiosr, specmetadata->binsize, specmetadata->offset, specmetadata->frequnit, specmetadata->type, specmetadata->bins, false);
+            ears_spectralbuf_metadata_fill(&data, audiosr, specmetadata->binsize, specmetadata->binoffset, specmetadata->binunit, specmetadata->type, specmetadata->bins, false);
         } else {
             ears_spectralbuf_metadata_fill(&data, audiosr, 0, 0, EARS_FREQUNIT_UNKNOWN, gensym("timeseries"), NULL, false);
         }
@@ -4352,6 +4383,9 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
         lib->alg_Windower->output("frame").set(wframedata);
         lib->alg_FFT->input("frame").set(wframedata);
         lib->alg_FFT->output("fft").set(fftdata);
+        
+        lib->alg_Envelope->input("signal").set(data);
+        lib->alg_Envelope->output("signal").set(envdata);
 
         lib->alg_Car2pol->input("complex").set(fftdata);
         lib->alg_Car2pol->output("magnitude").set(specdata);
@@ -4468,6 +4502,7 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
             
             // resetting algorithms
             lib->alg_FrameCutter->reset();
+            lib->alg_Envelope->reset();
             lib->alg_Windower->reset();
             lib->alg_FFT->reset();
             lib->alg_Car2pol->reset();

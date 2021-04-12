@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 98.0, 932.0, 579.0 ],
+		"rect" : [ 175.0, 103.0, 932.0, 579.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 124.0, 932.0, 553.0 ],
+						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -174,7 +174,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u985000848",
+									"buffername" : "u853002804",
 									"id" : "obj-10",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -261,7 +261,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u709000858",
+									"buffername" : "u658002794",
 									"id" : "obj-16",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -562,7 +562,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 82.0, 275.0, 251.0, 23.0 ]
+									"patching_rect" : [ 82.0, 275.0, 251.0, 23.0 ],
+									"text" : "[ 882.358253 1753.106594 2623.854876 ]"
 								}
 
 							}
@@ -1051,11 +1052,11 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-19",
-									"linecount" : 11,
+									"linecount" : 10,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 519.0, 292.5, 152.0, 166.0 ],
+									"patching_rect" : [ 519.0, 292.5, 157.0, 152.0 ],
 									"text" : "multipitchklapuri\nmultipitchmelodia\npitchsaliencefunction\npitchmelodia\npredominantpitchmelodia\npitchyin\npitchyinfft\npitchyinprobabilistic\npitchyinprobabilities\nvibrato"
 								}
 
@@ -1281,7 +1282,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
+						"rect" : [ 175.0, 129.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1518,7 +1519,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u217000656",
+									"buffername" : "u400002756",
 									"id" : "obj-16",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 88.0, 239.0, 737.0, 348.0 ],
+		"rect" : [ 88.0, 100.0, 737.0, 348.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 737.0, 322.0 ],
+						"rect" : [ 88.0, 126.0, 737.0, 322.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -99,7 +99,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 372.5, 83.5, 117.0, 40.0 ],
-									"presentation_linecount" : 2,
 									"text" : "CQT Spectrogram"
 								}
 
@@ -115,7 +114,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 126.0, 83.5, 117.0, 40.0 ],
-									"presentation_linecount" : 2,
 									"text" : "STFT Spectrogram"
 								}
 
@@ -173,12 +171,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-24",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 637.0, 224.0, 58.0, 50.0 ],
-									"text" : "spectral pitch unit"
+									"patching_rect" : [ 637.0, 224.0, 58.0, 36.0 ],
+									"text" : "spectral bin unit"
 								}
 
 							}
@@ -396,7 +394,7 @@
 									"numoutlets" : 9,
 									"outlettype" : [ "list", "list", "list", "list", "list", "list", "list", "list", "list" ],
 									"patching_rect" : [ 10.0, 161.5, 649.0, 23.0 ],
-									"text" : "ears.info~ spectral numchannels numsamples sr audiosr spectype binsize binoffset specpitchunit"
+									"text" : "ears.info~ spectral numchannels numsamples sr audiosr spectype binsize binoffset binunit"
 								}
 
 							}
@@ -596,7 +594,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 88.0, 265.0, 737.0, 322.0 ],
+						"rect" : [ 0.0, 26.0, 737.0, 322.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

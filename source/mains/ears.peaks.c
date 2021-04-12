@@ -110,6 +110,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
+    earsbufobj_class_add_ampunit_attr(c);
 
     CLASS_ATTR_LONG(c, "interpolate", 0, t_buf_peaks, e_interpolate);
     CLASS_ATTR_STYLE_LABEL(c,"interpolate",0,"onoff","Interpolate");

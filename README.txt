@@ -41,11 +41,14 @@ A version of the library is included in the repository. On a Mac, simply enter t
     make install
 
 • For the [ears.write~] and [ears.read~] module: the LibAIFF library (http://aifftools.sourceforge.net/libaiff/, released under MIT License, compatible with GPLv3)
-A version of the library is included in the repository. On a Mac, simply enter the folder, then 
-
-    ./configure
-    make
-    make install 
+A modified version of the library is included in the repository.
+The modifications are the following:
+– Comment line 180 "Unprepare(p)" in libaiff.c
+– Added
+    r->buffer2 = NULL;
+    r->buflen2 = 0;
+at line 152 of libaiff.c
+You do not need to install the library, because the sources are directly compiled in the project.
 
 
 • the mpg123 library 1.23.4 (released under LGPLv2.1). 
