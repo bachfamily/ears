@@ -75,6 +75,8 @@
 				91664CDE2618913E00EDAF35 /* PBXTargetDependency */,
 				91664CE02618913E00EDAF35 /* PBXTargetDependency */,
 				91664CE22618913E00EDAF35 /* PBXTargetDependency */,
+				91B6DDDF262A165800A26106 /* PBXTargetDependency */,
+				91B6DDE1262A165D00A26106 /* PBXTargetDependency */,
 			);
 			name = "ears.map family";
 			productName = "ears.map family";
@@ -555,6 +557,7 @@
 		91B6DDCD2629B74000A26106 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		91B6DDD12629B74000A26106 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		91B6DDD22629B74000A26106 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
+		91B6DDE2262A179800A26106 /* ears.mc.outtilde.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91B6DDD92629B77200A26106 /* ears.mc.outtilde.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1321,6 +1324,20 @@
 			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
 			remoteInfo = lib_dada;
 		};
+		91B6DDDE262A165800A26106 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91B6DDB526296F9800A26106;
+			remoteInfo = "ears.mc.in~";
+		};
+		91B6DDE0262A165D00A26106 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91B6DDC82629B74000A26106;
+			remoteInfo = "ears.mc.out~";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -1565,24 +1582,16 @@
 		91664C6326188FFA00EDAF35 /* ears.in.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.in.cpp; path = ../mains/ears.in.cpp; sourceTree = "<group>"; };
 		91664C652618902700EDAF35 /* ears.out.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.out.cpp; path = ../mains/ears.out.cpp; sourceTree = "<group>"; };
 		91664C762618909D00EDAF35 /* ears.map~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.map~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91664C772618909D00EDAF35 /* ears.trim~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.trim~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.trim~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91664C88261890B300EDAF35 /* ears.mapinfo~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.mapinfo~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91664C89261890B400EDAF35 /* ears.map~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.map~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.map~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91664C9A261890C400EDAF35 /* ears.in~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.in~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91664C9B261890C500EDAF35 /* ears.mapinfo~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.mapinfo~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.mapinfo~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91664CAC261890D500EDAF35 /* ears.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91664CAD261890D500EDAF35 /* ears.in~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.in~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.in~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91664CBE261890E500EDAF35 /* ears.in.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.in.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
-		91664CBF261890E500EDAF35 /* ears.out~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.out~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.out~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91664CD0261890F400EDAF35 /* ears.out.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.out.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
-		91664CD1261890F500EDAF35 /* ears.in copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.in copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.in copy-Info.plist"; sourceTree = "<absolute>"; };
 		91664CE5261B16CA00EDAF35 /* ears.map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ears.map.h; path = ../commons/aa/ears.map.h; sourceTree = "<group>"; };
 		91664CE6261DFF1900EDAF35 /* ears.map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.map.cpp; path = ../commons/aa/ears.map.cpp; sourceTree = "<group>"; };
 		91B6DDC426296F9800A26106 /* ears.mc.in~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.mc.in~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91B6DDC526296F9900A26106 /* ears.in~ copy2-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.in~ copy2-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.in~ copy2-Info.plist"; sourceTree = "<absolute>"; };
 		91B6DDC626296FE900A26106 /* ears.mc.intilde.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.mc.intilde.cpp; path = ../mains/ears.mc.intilde.cpp; sourceTree = "<group>"; };
 		91B6DDD72629B74000A26106 /* ears.mc.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.mc.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91B6DDD82629B74000A26106 /* ears.mc.in~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.mc.in~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.mc.in~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91B6DDD92629B77200A26106 /* ears.mc.outtilde.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.mc.outtilde.cpp; path = ../mains/ears.mc.outtilde.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2119,14 +2128,6 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
-				91664C772618909D00EDAF35 /* ears.trim~ copy-Info.plist */,
-				91664C89261890B400EDAF35 /* ears.map~ copy-Info.plist */,
-				91664C9B261890C500EDAF35 /* ears.mapinfo~ copy-Info.plist */,
-				91664CAD261890D500EDAF35 /* ears.in~ copy-Info.plist */,
-				91664CBF261890E500EDAF35 /* ears.out~ copy-Info.plist */,
-				91664CD1261890F500EDAF35 /* ears.in copy-Info.plist */,
-				91B6DDC526296F9900A26106 /* ears.in~ copy2-Info.plist */,
-				91B6DDD82629B74000A26106 /* ears.mc.in~ copy-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
@@ -5788,6 +5789,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91B6DDE2262A179800A26106 /* ears.mc.outtilde.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6338,6 +6340,16 @@
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
 			targetProxy = 91B6DDCA2629B74000A26106 /* PBXContainerItemProxy */;
+		};
+		91B6DDDF262A165800A26106 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91B6DDB526296F9800A26106 /* ears.mc.in~ */;
+			targetProxy = 91B6DDDE262A165800A26106 /* PBXContainerItemProxy */;
+		};
+		91B6DDE1262A165D00A26106 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91B6DDC82629B74000A26106 /* ears.mc.out~ */;
+			targetProxy = 91B6DDE0262A165D00A26106 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

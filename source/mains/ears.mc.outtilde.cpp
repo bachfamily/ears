@@ -24,7 +24,7 @@ typedef struct _ears_mcouttilde
 } t_ears_mcouttilde;
 
 
-void *ears_mcouttilde_new(t_symbol *s, t_atom_long ac, t_atom* av);
+void *ears_mcouttilde_new(long buf, long offset);
 void ears_mcouttilde_free(t_ears_mcouttilde *x);
 
 void ears_mcouttilde_assist(t_ears_mcouttilde *x, void *b, long m, long a, char *s);
@@ -32,6 +32,7 @@ void ears_mcouttilde_assist(t_ears_mcouttilde *x, void *b, long m, long a, char 
 void ears_mcouttilde_int(t_ears_mcouttilde *x, t_atom_long i);
 
 void ears_mcouttilde_setchanmap(t_ears_mcouttilde *x, audioChanMap* map);
+void ears_mcouttilde_multichannelsignal(t_ears_mcouttilde *x);
 
 void ears_mcouttilde_dsp64(t_ears_mcouttilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
 void ears_mcouttilde_perform64(t_ears_mcouttilde *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam);
@@ -51,9 +52,10 @@ int C74_EXPORT main()
     
     class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_dsp64, "dsp64", A_CANT, 0);
     
-    class_addmethod(ears_mcintilde_class, (method)ears_mcouttilde_int, "int", A_CANT, 0);
+    class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_int, "int", A_CANT, 0);
 
-
+    
+    class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_multichannelsignal, "multichannelsignal", A_CANT, 0);
     class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_setchanmap, "setchanmap", A_CANT, 0);
     
     class_dspinit(ears_mcouttilde_class);
@@ -61,6 +63,14 @@ int C74_EXPORT main()
     class_register(CLASS_BOX, ears_mcouttilde_class);
     
     return 0;
+}
+
+void ears_mcouttilde_multichannelsignal(t_ears_mcouttilde *x)
+{
+    t_atom rv;
+    
+    // send the signal method to yourself
+    object_method_typed((t_object *) x, _sym_signal, 0, NULL, &rv);
 }
 
 void ears_mcouttilde_int(t_ears_mcouttilde *x, t_atom_long i)
@@ -78,11 +88,6 @@ void *ears_mcouttilde_new(long buf, long offset)
     t_ears_mcouttilde *x = (t_ears_mcouttilde*) object_alloc(ears_mcouttilde_class);
     x->earsMapParent = getParentEarsMap((t_object *) x);
     
-    if (ac > 0) {
-        x->bufIndex = atom_getlong(av);
-        ac--; av++;
-    }
-    
     dsp_setup((t_pxobject *) x, 1);
 
     x->bufIndex = buf >= 1 && buf <= EARSMAP_MAX_INPUT_BUFFERS ? buf : 1;
@@ -91,6 +96,8 @@ void *ears_mcouttilde_new(long buf, long offset)
     if (x->earsMapParent)
         object_method(x->earsMapParent, gensym("ears.out~_created"), x->bufIndex, x);
     
+    x->x_obj.z_misc |= Z_MC_INLETS;
+
     return x;
 }
 
@@ -115,7 +122,7 @@ void ears_mcouttilde_perform64(t_ears_mcouttilde *x, t_dspchain *dsp64, double *
     t_atom_long pos = x->position;
     
     long startChan = x->offset + 1;
-    long endChan = x->numins + x->offset;
+    long endChan = numins + x->offset;
     if (endChan == 0)
         endChan = 1;
     long inIdx, i;

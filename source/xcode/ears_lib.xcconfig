@@ -14,7 +14,7 @@ PRODUCT_NAME = $(PROJECT_NAME)
 PRODUCT_VERSION = 0.1
 
 // Paths
-C74SUPPORT = $(SRCROOT)/../../../max-sdk-7.3.3/source/c74support
+C74SUPPORT = $(SRCROOT)/../../../max-sdk-8.0.3/source/c74support
 BACHSOURCE = $(SRCROOT)/../../../bach/source
 HEADER_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes" "$(BACHSOURCE)/commons/**" "/usr/local/include" 
 FRAMEWORK_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes"

@@ -730,7 +730,6 @@ void earsmap_pupdate(t_earsmap *x, void *b, t_patcher *p)
 void *earsmap_subpatcher(t_earsmap *x, long index, void *arg)
 {
     // Report subpatchers if requested by an object that is not a dspchain
-    object_post((t_object *) x, "subpatcher %ld %p", index, arg);
     
     if ((t_ptr_uint) arg > 1)
         if (!NOGOOD(arg))

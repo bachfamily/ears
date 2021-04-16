@@ -25,7 +25,7 @@ typedef struct _ears_mcintilde
 } t_ears_mcintilde;
 
 
-void *ears_mcintilde_new(t_symbol *s, t_atom_long ac, t_atom* av);
+void *ears_mcintilde_new(long buf, long offset);
 void ears_mcintilde_assist(t_ears_mcintilde *x, void *b, long m, long a, char *s);
 
 void ears_mcintilde_bang(t_ears_mcintilde *x);
@@ -122,12 +122,13 @@ void ears_mcintilde_perform64(t_ears_mcintilde *x, t_dspchain *dsp64, double **i
     
     long startChan = offset + 1;
     long endChan = MAX(buf->chans, startChan + numouts - 1);
+    long bufchans = endChan - startChan - 1;
     t_atom_long pos = x->position;
 
     int chan, outNum;
     for (chan = startChan, outNum = 0; chan <= endChan; chan++, outNum++) {
         t_sample *out = outs[outNum];
-        float *tab = buf->samps + (pos * bufchans) + i;
+        float *tab = buf->samps + (pos * bufchans) + chan;
         t_atom_long frames = buf->frames;
         
         for (s = 0; s < vec_size && pos < frames; s++, pos++) {
