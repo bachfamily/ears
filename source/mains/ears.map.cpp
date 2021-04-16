@@ -163,7 +163,7 @@ void earsmap_setupOutObjects(t_earsmap *x);
 
 void earsmap_earsintildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *in);
 void earsmap_earsintildedeleted(t_earsmap *x, t_object *in);
-void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_atom_long chan, t_object *out);
+void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *out);
 void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out);
 
 void earsmap_earsincreated(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet);
@@ -449,13 +449,11 @@ void earsmap_earsintildedeleted(t_earsmap *x, t_object *in)
     x->earsInTildeObjects->erase(in);
 }
 
-void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_atom_long chan, t_object *out)
+void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *out)
 {
     x->earsOutTildeObjects->insert(out);
     if (bufIndex > x->nBufOutlets)
         x->nBufOutlets = bufIndex;
-    if (x->nOutBufChans[bufIndex - 1] < chan)
-        x->nOutBufChans[bufIndex - 1] = chan;
 }
 
 void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out)

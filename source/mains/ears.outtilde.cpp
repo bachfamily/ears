@@ -99,7 +99,7 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
     dsp_setup((t_pxobject *) x, x->nChans);
     
     if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out~_created"), x->bufIndex, x->chan, x);
+        object_method(x->earsMapParent, gensym("ears.out~_created"), x->bufIndex, x);
     
     return x;
 }
