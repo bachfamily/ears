@@ -10,17 +10,19 @@
 
 t_class *ears_in_class;
 
+const int EARS_IN_MAX_OUTLETS = 256;
 
 typedef struct _ears_in
 {
     t_object x_obj;
-    void *x_outlet;
-    long inlet_num;
+    void *outlets[EARS_IN_MAX_OUTLETS];
+    long outlet_nums[EARS_IN_MAX_OUTLETS];
+    long nOutlets;
     t_object* earsMapParent;
 } t_ears_in;
 
 
-t_ears_in *ears_in_new(t_atom_long inlet_num);
+t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av);
 void ears_in_assist(t_ears_in *x, void *b, long m, long a, char *s);
 
 void ears_in_bang(t_ears_in *x);
@@ -36,7 +38,7 @@ int C74_EXPORT main()
                            NULL,
                            sizeof(t_ears_in),
                            NULL,
-                           A_LONG,
+                           A_GIMME,
                            0);
     
     class_register(CLASS_BOX, ears_in_class);
@@ -44,35 +46,55 @@ int C74_EXPORT main()
     return 0;
 }
 
-t_ears_in *ears_in_new(t_atom_long inlet_num)
+t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av)
 {
     t_ears_in *x = (t_ears_in*) object_alloc(ears_in_class);
     x->earsMapParent = getParentEarsMap((t_object *) x);
-    x->x_outlet = outlet_new(x, NULL);
-    x->inlet_num = inlet_num;
     
-    dsp_setup((t_pxobject *) x, 0);
-    outlet_new(x, "signal");
-
+    if (ac > EARS_IN_MAX_OUTLETS) {
+        object_error((t_object *) x, "Too many outlets, cropping to %d", EARS_IN_MAX_OUTLETS);
+        ac = EARS_IN_MAX_OUTLETS;
+    }
+    
+    if (ac > 0) {
+        x->nOutlets = ac;
+        for (int i = ac - 1; i >= 0; i--) {
+            t_atom_long v = atom_getlong(av+i);
+            if (v < 1) {
+                object_error((t_object *) x, "Invalid inlet number at position %d, setting to 1", i + 1);
+                v = 1;
+            }
+            x->outlet_nums[i] = v;
+            x->outlets[i] = outlet_new(x, "anything");
+        }
+    } else {
+        x->nOutlets = 1;
+        x->outlet_nums[0] = 1;
+        x->outlets[0] = outlet_new(x, "anything");
+    }
+    
     if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.in_created"), inlet_num, x->x_outlet);
+        object_method(x->earsMapParent, gensym("ears.in_created"), x->nOutlets, x->outlet_nums, x->outlets);
     
     return x;
 }
 
 void ears_in_free(t_ears_in *x)
 {
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.in_deleted"), x->inlet_num, x->x_outlet);
+    if (x->earsMapParent) {
+        object_method(x->earsMapParent, gensym("ears.in_deleted"), x->nOutlets, x->outlet_nums, x->outlets);
+    }
 }
 
 
 void ears_in_assist(t_ears_in *x, void *b, long m, long a, char *s)
 {
+    /*
     if (m == ASSIST_OUTLET)
         sprintf(s,"(signal) Signal Input %ld of Patcher", (long) x->inlet_num);
     else
         sprintf(s,"(int) Inlet Number");
+     */
 }
 
 

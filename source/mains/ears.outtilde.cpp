@@ -11,14 +11,17 @@
 
 t_class *ears_outtilde_class;
 
+const int EARS_OUTTILDE_MAX_CHANS = 256;
 
 typedef struct _ears_outtilde
 {
     t_pxobject x_obj;
     t_atom_long bufIndex;
-    t_atom_long chan;
+    t_atom_long chan[EARS_OUTTILDE_MAX_CHANS];
+    int nChans;
     t_object* earsMapParent;
     audioChanMap* chanMap;
+    t_atom_long position;
 } t_ears_outtilde;
 
 
@@ -70,21 +73,34 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
         ac--; av++;
     }
     
+    if (ac > EARS_OUTTILDE_MAX_CHANS) {
+        object_error((t_object *) x, "Too many channels, cropping to %d", EARS_OUTTILDE_MAX_CHANS);
+        ac = EARS_OUTTILDE_MAX_CHANS;
+    }
+    
     if (ac > 0) {
-        x->chan = atom_getlong(av);
+        x->nChans = ac;
+        for (int i = 0; i < ac; i++) {
+            t_atom_long v = atom_getlong(av++);
+            if (v < 1) {
+                object_error((t_object *) x, "Invalid channel number at position %d, setting to 1", i + 1);
+                v = 1;
+            }
+            x->chan[i] = v;
+        }
+    } else {
+        x->nChans = 1;
+        x->chan[0] = 1;
     }
     
     if (x->bufIndex < 1 || x->bufIndex > EARSMAP_MAX_OUTPUT_BUFFERS)
         x->bufIndex = 1;
     
-    if (x->chan < 1)
-        x->chan = 1;
+    dsp_setup((t_pxobject *) x, x->nChans);
     
     if (x->earsMapParent)
         object_method(x->earsMapParent, gensym("ears.out~_created"), x->bufIndex, x->chan, x);
     
-    dsp_setup((t_pxobject *) x, 1);
-
     return x;
 }
 
@@ -106,14 +122,21 @@ void ears_outtilde_perform64(t_ears_outtilde *x, t_dspchain *dsp64, double **ins
     if (!x->chanMap)
         return;
     
-    audioChannel *ch = x->chanMap->getChannel(x->bufIndex, x->chan);
-    ch->insert(vec_size, ins[0]);
+    t_atom_long pos = x->position;
+    
+    for (int i = 0; i < x->nChans; i++) {
+        audioChannel *ch = x->chanMap->getChannel(x->bufIndex, x->chan[i]);
+        ch->skipTo(pos);
+        ch->insert(vec_size, ins[i]);
+    }
+    x->position += vec_size;
 }
 
 void ears_outtilde_dsp64(t_ears_outtilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
     if (x->earsMapParent)
         object_method(dsp64, gensym("dsp_add64"), x, ears_outtilde_perform64, 0, NULL);
+    x->position = 0;
 }
 
 void ears_outtilde_setchanmap(t_ears_outtilde *x, audioChanMap* map)

@@ -20,7 +20,7 @@
 #include <unordered_set>
 #include <map>
 #include <vector>
-
+#include <set>
 #include "ears.map.h"
 
 
@@ -92,10 +92,6 @@ typedef struct _earsmap
 
     t_bool running;
     
-    void *m_proxy[EARSMAP_MAX_INPUT_BUFFERS + EARSMAP_MAX_DATA_INLETS + 1];
-    long m_in;
-    void *m_outlets[EARSMAP_MAX_OUTPUT_BUFFERS + EARSMAP_MAX_DATA_OUTLETS + 1];
-    
     long vs;
     double sr;
 
@@ -113,9 +109,12 @@ typedef struct _earsmap
     t_atom_long nBufInlets;
     t_atom_long nBufOutlets;
     t_atom_long nOutBufChans[EARSMAP_MAX_OUTPUT_BUFFERS];
+    t_atom_long nDataOutlets;
     
     earsInOutlets *theInOutlets;
-    earsOuts *theOuts;
+    //earsOuts *theOuts;
+    std::set<t_object*> *theOuts;
+    void *dataOutlets[EARSMAP_MAX_DATA_OUTLETS];
 
     t_patcher *client_patch;
     long client_argc;
@@ -160,15 +159,17 @@ void earsmap_pupdate(t_earsmap *x, void *b, t_patcher *p);
 void *earsmap_subpatcher(t_earsmap *x, long index, void *arg);
 void earsmap_parentpatcher(t_earsmap *x, t_patcher **parent);
 
-void earsmap_earsintildecreated(t_earsmap *x, t_atom_long index, t_object *in);
+void earsmap_setupOutObjects(t_earsmap *x);
+
+void earsmap_earsintildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *in);
 void earsmap_earsintildedeleted(t_earsmap *x, t_object *in);
 void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_atom_long chan, t_object *out);
 void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out);
 
-void earsmap_earsincreated(t_earsmap *x, t_atom_long index, void *outlet);
-void earsmap_earsoutcreated(t_earsmap *x, t_atom_long index, t_object *obj);
-void earsmap_earsindeleted(t_earsmap *x, t_atom_long index, void *outlet);
-void earsmap_earsoutdeleted(t_earsmap *x, t_atom_long index, t_object *obj);
+void earsmap_earsincreated(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet);
+void earsmap_earsoutcreated(t_earsmap *x, long maxindex, t_object *obj);
+void earsmap_earsindeleted(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet);
+void earsmap_earsoutdeleted(t_earsmap *x, t_object *obj);
 
 void earsmap_earsmapinfocreated(t_earsmap *x, t_object *obj);
 void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj);
@@ -180,6 +181,7 @@ t_max_err earsmap_get_duration(t_earsmap *x, t_object *attr, long *argc, t_atom 
 
 t_max_err earsmap_set_vs(t_earsmap *x, t_object *attr, long argc, t_atom *argv);
 t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_atom **argv);
+
 
 
 
@@ -461,20 +463,23 @@ void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out)
     x->earsOutTildeObjects->erase(out);
 }
 
-void earsmap_earsincreated(t_earsmap *x, t_atom_long index, void *outlet) {
-    x->theInOutlets->insert(index, outlet);
+void earsmap_earsincreated(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet) {
+    for (int i = 0; i < n; i++)
+        x->theInOutlets->insert(*(index++), *(outlet++));
 }
 
-void earsmap_earsoutcreated(t_earsmap *x, t_atom_long index, t_object *obj) {
-    x->theOuts->insert(index, obj);
+void earsmap_earsoutcreated(t_earsmap *x, long maxindex, t_object *obj) {
+    x->theOuts->insert(obj);
+    if (x->nDataOutlets < maxindex)
+        x->nDataOutlets = maxindex;
 }
 
-void earsmap_earsindeleted(t_earsmap *x, t_atom_long index, void *outlet) {
-    x->theInOutlets->remove(index, outlet);
-}
+void earsmap_earsindeleted(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet) {
+    for (int i = 0; i < n; i++)
+        x->theInOutlets->remove(*(index++), *(outlet++));}
 
-void earsmap_earsoutdeleted(t_earsmap *x, t_atom_long index, t_object *obj) {
-    x->theOuts->remove(index, obj);
+void earsmap_earsoutdeleted(t_earsmap *x, t_object *obj) {
+    x->theOuts->erase(obj);
 }
 
 void earsmap_earsmapinfocreated(t_earsmap *x, t_object *obj)
@@ -486,8 +491,6 @@ void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj)
 {
     x->earsMapinfoObjects->erase(obj);
 }
-
-void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj);
 
 
 // 1 arg: patch name
@@ -526,7 +529,7 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     }
 
     x->theInOutlets = new earsInOutlets;
-    x->theOuts = new earsOuts;
+    x->theOuts = new std::set<t_object*>;
     x->earsInTildeObjects = new objectSet;
     x->earsOutTildeObjects = new objectSet;
     x->earsMapinfoObjects = new objectSet;
@@ -554,16 +557,18 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     intypes[i + x->nBufInlets] = 0;
     
     char outtypes[2048];
-    for (i = 0; i < x->theOuts->maxIdx; i++) {
-        outtypes[i] = 'a';
+    for (i = x->nDataOutlets - 1; i >= 0; i--) {
+        x->dataOutlets[i] = outlet_new(x, "anything");
     }
     for (i = 0; i < x->nBufOutlets; i++) {
-        outtypes[i + x->theOuts->maxIdx] = 'E';
+        outtypes[i] = 'E';
     }
-    outtypes[i + x->theOuts->maxIdx] = 0;
+    outtypes[i] = 0;
 
     earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, args);
     llll_free(args);
+
+    earsmap_setupOutObjects(x);
 
     if (x->vs == 0)
         x->vs = 128;
@@ -597,6 +602,13 @@ int earsmap_setSubAssoc(t_patcher *p, t_object *x)
         object_method(p, gensym("setassoc"), x);
     
     return 0;
+}
+
+void earsmap_setupOutObjects(t_earsmap *x)
+{
+    for (t_object* o: *x->theOuts) {
+        object_method(o, gensym("setoutlets"), x->nDataOutlets, x->dataOutlets);
+    }
 }
 
 void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
@@ -689,8 +701,14 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
     loadbang_resume();
     dsp_setloadupdate(savedLoadUpdate);
     
+    if (x->running) {
+        earsmap_setupOutObjects(x);
+    }
+    
     return;
 }
+
+
 
 void earsmap_open(t_earsmap *x)
 {
