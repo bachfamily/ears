@@ -93,7 +93,14 @@ void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
     dsp_setup((t_pxobject *) x, 0);
     
     if (ac > 0) {
-        x->bufIndex = atom_getlong(av);
+        t_atom_long v = atom_getlong(av);
+        if (v > 0 && v <= EARSMAP_MAX_INPUT_BUFFERS)
+            x->bufIndex = v;
+        else {
+            object_error((t_object *) x, "Bad input buffer number, setting to 1");
+            x->bufIndex = 1;
+        }
+        
         ac--; av++;
     }
     
@@ -147,17 +154,16 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
     t_atom_long bufchans = buf ? buf->chans : 0;
     int nChans = x->nChans;
     
+    t_atom_long pos = x->position;
+
     for (int i = 0; i < nChans; i++) {
         t_sample *out = outs[i];
         t_atom_long chan = x->chan[i];
         if (!buf || !buf->obj || bufchans < chan) {
             for (s = 0; s < vec_size; s++)
                 *(out++) = 0;
-            x->position += vec_size;
-            return;
         }
         
-        t_atom_long pos = x->position;
         float *tab = buf->samps + (pos * bufchans) + i;
         t_atom_long frames = buf->frames;
         

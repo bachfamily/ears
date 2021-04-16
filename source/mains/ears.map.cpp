@@ -838,9 +838,6 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
                     atom_setfloat(bufDurs + i, fr / sr * 1000.);
                 }
             }
-            
-            // double ears_buffers_get_collective_sr(t_object *ob, long numbuffers, t_buffer_obj **buffer, e_ears_resamplingpolicy resamplingpolicy)
-
         }
         
         if (sr == 0) {
