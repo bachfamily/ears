@@ -65,12 +65,12 @@ t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av)
                 v = 1;
             }
             x->outlet_nums[i] = v;
-            x->outlets[i] = outlet_new(x, "anything");
+            x->outlets[i] = outlet_new(x, NULL);
         }
     } else {
         x->nOutlets = 1;
         x->outlet_nums[0] = 1;
-        x->outlets[0] = outlet_new(x, "anything");
+        x->outlets[0] = outlet_new(x, NULL);
     }
     
     if (x->earsMapParent)

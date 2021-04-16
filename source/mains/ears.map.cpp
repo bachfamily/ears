@@ -216,19 +216,14 @@ int C74_EXPORT main()
     class_addmethod(earsmap_class, (method)earsmap_subpatcher, "subpatcher", A_CANT, 0);
     class_addmethod(earsmap_class, (method)earsmap_parentpatcher, "parentpatcher", A_CANT, 0);
     
-    class_addmethod(earsmap_class, (method)earsmap_anything, "anything", A_GIMME, 0);
     class_addmethod(earsmap_class, (method)earsmap_bang, "bang", 0);
     class_addmethod(earsmap_class, (method)earsmap_stop, "stop", 0);
 
-    
-    
-    //class_addmethod(earsmap_class, (method)earsmap_stop, "stop", A_CANT, 0);
-    //class_addmethod(earsmap_class, (method)earsmap_int, "int", A_LONG, 0);
-    //class_addmethod(earsmap_class, (method)earsmap_float, "float", A_FLOAT, 0);
-    //class_addmethod(earsmap_class, (method)earsmap_anything, "list", A_GIMME, 0);
-    //class_addmethod(earsmap_class, (method)earsmap_anything, "anything", A_GIMME, 0);
-    
-    //class_addmethod(earsmap_class, (method)earsmap_clear, "clear", 0);
+    class_addmethod(earsmap_class, (method)earsmap_int, "int", A_LONG, 0);
+    class_addmethod(earsmap_class, (method)earsmap_float, "float", A_FLOAT, 0);
+    class_addmethod(earsmap_class, (method)earsmap_anything, "list", A_GIMME, 0);
+    class_addmethod(earsmap_class, (method)earsmap_anything, "anything", A_GIMME, 0);
+
     class_addmethod(earsmap_class, (method)earsmap_loadpatch, "loadpatch", A_DEFER, 0);
     
     class_addmethod(earsmap_class, (method)earsmap_earsintildecreated, "ears.in~_created", A_CANT, 0);
@@ -747,12 +742,29 @@ void earsmap_parentpatcher(t_earsmap *x, t_patcher **parent)
     *parent = x->parent_patch;
 }
 
+void earsmap_int(t_earsmap *x, t_atom_long i)
+{
+    t_atom a[1];
+    atom_setlong(a, i);
+    earsmap_anything(x, gensym("int"), 1, a);
+}
+
+void earsmap_float(t_earsmap *x, t_atom_float f)
+{
+    t_atom a[1];
+    atom_setfloat(a, f);
+    earsmap_anything(x, gensym("int"), 1, a);
+}
+
 void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom* av)
 {
     long inlet = proxy_getinlet((t_object *) x);
     
     if (inlet > 0 && inlet >= x->nBufInlets) {
         // TODO: send to ears.in
+        for (auto o: x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
+            outlet_anything(o, s, ac, av);
+        }
         return;
     }
     
