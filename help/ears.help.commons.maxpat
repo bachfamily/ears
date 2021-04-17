@@ -721,6 +721,22 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-37",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 547.0, 522.5, 400.0, 50.0 ],
+									"presentation_linecount" : 3,
+									"text" : "AIFF formats contains ears spectral annotation in the ANNOTATION\nWAV format contains ears spectral annotation in the INFO tag\nWavPack format contains ears spectral annotation in the APE tag",
+									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"bubble" : 1,
 									"bubbleside" : 2,
 									"fontname" : "Arial",
@@ -730,8 +746,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 788.25, 161.0, 142.0, 84.0 ],
-									"presentation_linecount" : 7,
+									"patching_rect" : [ 788.25, 146.0, 143.0, 84.0 ],
 									"text" : "Spectral information is saved by [ears.write~] in AIFF, WAV and WavPack formats"
 								}
 
@@ -745,7 +760,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 871.0, 507.5, 65.0, 23.0 ]
+									"patching_rect" : [ 871.0, 492.5, 65.0, 23.0 ]
 								}
 
 							}
@@ -758,7 +773,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 802.25, 507.5, 50.0, 23.0 ]
+									"patching_rect" : [ 802.25, 492.5, 50.0, 23.0 ]
 								}
 
 							}
@@ -769,7 +784,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "list", "list" ],
-									"patching_rect" : [ 802.25, 476.5, 127.0, 23.0 ],
+									"patching_rect" : [ 802.25, 461.5, 127.0, 23.0 ],
 									"text" : "ears.info~ sr audiosr"
 								}
 
@@ -781,7 +796,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 802.25, 401.0, 92.0, 23.0 ],
+									"patching_rect" : [ 802.25, 386.0, 92.0, 23.0 ],
 									"text" : "/tmp/spec.wav"
 								}
 
@@ -793,7 +808,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 4,
 									"outlettype" : [ "", "", "", "" ],
-									"patching_rect" : [ 802.25, 441.0, 71.0, 23.0 ],
+									"patching_rect" : [ 802.25, 426.0, 71.0, 23.0 ],
 									"text" : "ears.read~"
 								}
 
@@ -805,7 +820,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 819.916666666666629, 324.5, 92.0, 23.0 ],
+									"patching_rect" : [ 819.916666666666629, 309.5, 92.0, 23.0 ],
 									"text" : "/tmp/spec.wav"
 								}
 
@@ -817,7 +832,7 @@
 									"numinlets" : 4,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 802.25, 355.0, 72.0, 23.0 ],
+									"patching_rect" : [ 802.25, 340.0, 72.0, 23.0 ],
 									"text" : "ears.write~"
 								}
 
@@ -829,7 +844,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 802.25, 291.0, 62.0, 23.0 ],
+									"patching_rect" : [ 802.25, 276.0, 62.0, 23.0 ],
 									"text" : "ears.stft~"
 								}
 
@@ -841,7 +856,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 802.25, 257.0, 114.0, 23.0 ],
+									"patching_rect" : [ 802.25, 242.0, 114.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -1209,7 +1224,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 261.5, 460.0, 122.0, 69.0 ],
+									"patching_rect" : [ 113.5, 441.0, 122.0, 69.0 ],
 									"text" : "You can change spectral buffer properties via ears.format~"
 								}
 
@@ -1221,7 +1236,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 174.5, 490.0, 82.0, 23.0 ],
+									"patching_rect" : [ 26.5, 471.0, 82.0, 23.0 ],
 									"text" : "ears.format~"
 								}
 
@@ -1236,7 +1251,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 541.5, 469.0, 117.0, 54.0 ],
+									"patching_rect" : [ 358.25, 455.5, 117.0, 54.0 ],
 									"text" : "useful to swap channels and samples"
 								}
 
@@ -1248,7 +1263,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 462.0, 484.5, 74.0, 23.0 ],
+									"patching_rect" : [ 278.75, 471.0, 74.0, 23.0 ],
 									"text" : "ears.trans~"
 								}
 
@@ -1263,7 +1278,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 119.0, 761.75, 94.0 ],
-									"presentation_linecount" : 6,
 									"text" : "A class of objects produce as output buffers whose content is in the spectral domain. Each sample represents an analysis frame and channel contains a bin. \n\nSpectral buffers also bear more information on their data, namely the original sample rate of the audio they represent as analysis. This information is crucial to work with them and reconstruct original audio; it is understood throughout the ears library, and it is preserved as metadata if you save the buffer via [ears.write~] in one of the following formats: WAV, AIFF, WavPack.",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
@@ -1326,7 +1340,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 773.5, 260.0, 20.0, 20.0 ],
+									"patching_rect" : [ 773.5, 245.0, 20.0, 20.0 ],
 									"rounded" : 60.0,
 									"text" : "1",
 									"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ]
@@ -1347,7 +1361,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 773.5, 402.5, 20.0, 20.0 ],
+									"patching_rect" : [ 773.5, 387.5, 20.0, 20.0 ],
 									"rounded" : 60.0,
 									"text" : "2",
 									"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ]
@@ -2227,8 +2241,8 @@
 												"name" : "Default M4L",
 												"default" : 												{
 													"fontname" : [ "Arial Bold" ],
-													"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-													"fontsize" : [ 11.0 ]
+													"fontsize" : [ 11.0 ],
+													"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 												}
 ,
 												"parentstyle" : "",
@@ -2238,8 +2252,8 @@
 												"name" : "Default M4L Poletti",
 												"default" : 												{
 													"fontname" : [ "Arial Bold" ],
-													"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-													"fontsize" : [ 10.0 ]
+													"fontsize" : [ 10.0 ],
+													"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 												}
 ,
 												"parentstyle" : "",
@@ -2249,6 +2263,8 @@
 												"name" : "Default M4L-1",
 												"default" : 												{
 													"fontname" : [ "Arial" ],
+													"fontface" : [ 1 ],
+													"fontsize" : [ 11.0 ],
 													"bgfillcolor" : 													{
 														"type" : "gradient",
 														"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -2257,9 +2273,7 @@
 														"angle" : 270.0,
 														"proportion" : 0.39
 													}
-,
-													"fontface" : [ 1 ],
-													"fontsize" : [ 11.0 ]
+
 												}
 ,
 												"parentstyle" : "",
@@ -2286,6 +2300,7 @@
 												"name" : "jbb",
 												"default" : 												{
 													"fontname" : [ "Arial" ],
+													"fontsize" : [ 9.0 ],
 													"bgfillcolor" : 													{
 														"type" : "gradient",
 														"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -2294,8 +2309,7 @@
 														"angle" : 270.0,
 														"proportion" : 0.39
 													}
-,
-													"fontsize" : [ 9.0 ]
+
 												}
 ,
 												"parentstyle" : "",
@@ -2655,8 +2669,8 @@
 								"name" : "Default M4L",
 								"default" : 								{
 									"fontname" : [ "Arial Bold" ],
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 11.0 ]
+									"fontsize" : [ 11.0 ],
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 								}
 ,
 								"parentstyle" : "",
@@ -2666,8 +2680,8 @@
 								"name" : "Default M4L Poletti",
 								"default" : 								{
 									"fontname" : [ "Arial Bold" ],
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 10.0 ]
+									"fontsize" : [ 10.0 ],
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 								}
 ,
 								"parentstyle" : "",
@@ -2677,6 +2691,8 @@
 								"name" : "Default M4L-1",
 								"default" : 								{
 									"fontname" : [ "Arial" ],
+									"fontface" : [ 1 ],
+									"fontsize" : [ 11.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -2685,9 +2701,7 @@
 										"angle" : 270.0,
 										"proportion" : 0.39
 									}
-,
-									"fontface" : [ 1 ],
-									"fontsize" : [ 11.0 ]
+
 								}
 ,
 								"parentstyle" : "",
@@ -2714,6 +2728,7 @@
 								"name" : "jbb",
 								"default" : 								{
 									"fontname" : [ "Arial" ],
+									"fontsize" : [ 9.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -2722,8 +2737,7 @@
 										"angle" : 270.0,
 										"proportion" : 0.39
 									}
-,
-									"fontsize" : [ 9.0 ]
+
 								}
 ,
 								"parentstyle" : "",
@@ -3221,8 +3235,8 @@
 								"name" : "Default M4L",
 								"default" : 								{
 									"fontname" : [ "Arial Bold" ],
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 11.0 ]
+									"fontsize" : [ 11.0 ],
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 								}
 ,
 								"parentstyle" : "",
@@ -3232,8 +3246,8 @@
 								"name" : "Default M4L Poletti",
 								"default" : 								{
 									"fontname" : [ "Arial Bold" ],
-									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ],
-									"fontsize" : [ 10.0 ]
+									"fontsize" : [ 10.0 ],
+									"patchlinecolor" : [ 0.290196, 0.309804, 0.301961, 0.85 ]
 								}
 ,
 								"parentstyle" : "",
@@ -3243,6 +3257,8 @@
 								"name" : "Default M4L-1",
 								"default" : 								{
 									"fontname" : [ "Arial" ],
+									"fontface" : [ 1 ],
+									"fontsize" : [ 11.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -3251,9 +3267,7 @@
 										"angle" : 270.0,
 										"proportion" : 0.39
 									}
-,
-									"fontface" : [ 1 ],
-									"fontsize" : [ 11.0 ]
+
 								}
 ,
 								"parentstyle" : "",
@@ -3280,6 +3294,7 @@
 								"name" : "jbb",
 								"default" : 								{
 									"fontname" : [ "Arial" ],
+									"fontsize" : [ 9.0 ],
 									"bgfillcolor" : 									{
 										"type" : "gradient",
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
@@ -3288,8 +3303,7 @@
 										"angle" : 270.0,
 										"proportion" : 0.39
 									}
-,
-									"fontsize" : [ 9.0 ]
+
 								}
 ,
 								"parentstyle" : "",

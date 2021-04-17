@@ -86,6 +86,8 @@
 		1E06EE881D366EE60064F23B /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E06EE8C1D366EE60064F23B /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1E06EE941D36703A0064F23B /* ears.crop.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E06EE931D36703A0064F23B /* ears.crop.c */; };
+		1E0739CD26257C9000A66190 /* ears.spectralannotations.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E0739CC26257C8F00A66190 /* ears.spectralannotations.h */; };
+		1E0739CE26257C9000A66190 /* ears.spectralannotations.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E0739CC26257C8F00A66190 /* ears.spectralannotations.h */; };
 		1E096CE5261F304B00E220EA /* ears.essentia_models.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EB2693C261EFE70000F48B4 /* ears.essentia_models.h */; };
 		1E096CE7261F304B00E220EA /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E096CEA261F304B00E220EA /* ears.essentia_models.c in Sources */ = {isa = PBXBuildFile; fileRef = 1EB2693B261EFE6F000F48B4 /* ears.essentia_models.c */; };
@@ -528,6 +530,7 @@
 		1ECBF9D71FE1F83D00F71382 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1ECBF9D81FE1F83D00F71382 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1ECBF9E01FE1F87400F71382 /* ears.pack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBF9DF1FE1F87400F71382 /* ears.pack.c */; };
+		1ECE21D9262A2C4F00C1AFDD /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 1ECE21D8262A2C4F00C1AFDD /* AudioFile.h */; };
 		1ECE416225D5AA920003CFA2 /* neon_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D763251CA91B0049B6A5 /* neon_mathfun.h */; };
 		1ECE416325D5AA920003CFA2 /* sse_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D764251CA91B0049B6A5 /* sse_mathfun.h */; };
 		1ECE416525D5AE8E0003CFA2 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
@@ -1461,6 +1464,7 @@
 		1E05F45C1FFD32B5000750B1 /* ears.onepole.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.onepole.c; path = ../mains/ears.onepole.c; sourceTree = SOURCE_ROOT; };
 		1E06EE911D366EE60064F23B /* ears.crop~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.crop~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E06EE931D36703A0064F23B /* ears.crop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.crop.c; path = ../mains/ears.crop.c; sourceTree = SOURCE_ROOT; };
+		1E0739CC26257C8F00A66190 /* ears.spectralannotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.spectralannotations.h; path = ../commons/dg/ears.spectralannotations.h; sourceTree = "<group>"; };
 		1E096CF2261F304B00E220EA /* ears.model.spr.analysis~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.model.spr.analysis~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E096D05261F305500E220EA /* ears.model.spr.synthesis~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.model.spr.synthesis~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E096D07261F30D200E220EA /* ears.model.spr.analysis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.model.spr.analysis.c; path = ../mains/ears.model.spr.analysis.c; sourceTree = "<group>"; };
@@ -1731,6 +1735,7 @@
 		1ECA8C2E1A45B30E001B9251 /* ears_lib.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ears_lib.xcconfig; sourceTree = SOURCE_ROOT; };
 		1ECBF9DD1FE1F83D00F71382 /* ears.pack~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.pack~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ECBF9DF1FE1F87400F71382 /* ears.pack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.pack.c; path = ../mains/ears.pack.c; sourceTree = SOURCE_ROOT; };
+		1ECE21D8262A2C4F00C1AFDD /* AudioFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFile.h; path = "../lib/AudioFile-master/AudioFile.h"; sourceTree = "<group>"; };
 		1ECE7A4C1FF67D7F005236BE /* ears.resample~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.resample~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ECE7A4E1FF67D99005236BE /* ears.resample.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.resample.c; path = ../mains/ears.resample.c; sourceTree = SOURCE_ROOT; };
 		1ECFD38D1FDEE9E90064849F /* ears.format~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.format~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2743,9 +2748,18 @@
 				1E9E8BD325F2DEAE00F54BC3 /* ears.mp3.h */,
 				1E9E8BD025F2DEAD00F54BC3 /* ears.wavpack.c */,
 				1E9E8BD125F2DEAD00F54BC3 /* ears.wavpack.h */,
+				1E0739CC26257C8F00A66190 /* ears.spectralannotations.h */,
 			);
 			name = commons;
 			sourceTree = SOURCE_ROOT;
+		};
+		1ECE21D7262A2C3E00C1AFDD /* AudioFile */ = {
+			isa = PBXGroup;
+			children = (
+				1ECE21D8262A2C4F00C1AFDD /* AudioFile.h */,
+			);
+			name = AudioFile;
+			sourceTree = "<group>";
 		};
 		1EF19B6526234338007B55BF /* libaiff */ = {
 			isa = PBXGroup;
@@ -2832,6 +2846,7 @@
 		1EFC4354196AEEA4000BDFBF /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				1ECE21D7262A2C3E00C1AFDD /* AudioFile */,
 				1EF19B6526234338007B55BF /* libaiff */,
 				1E9E8B3425F2AAD200F54BC3 /* WavPack */,
 				1E46D712251CA8F50049B6A5 /* rubberband */,
@@ -3114,7 +3129,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1ECE21D9262A2C4F00C1AFDD /* AudioFile.h in Headers */,
 				1EF19B7F2623AB11007B55BF /* ears.libtag_commons.h in Headers */,
+				1E0739CD26257C9000A66190 /* ears.spectralannotations.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3414,6 +3431,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1EF19B802623AB11007B55BF /* ears.libtag_commons.h in Headers */,
+				1E0739CE26257C9000A66190 /* ears.spectralannotations.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

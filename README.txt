@@ -51,6 +51,10 @@ at line 152 of libaiff.c
 You do not need to install the library, because the sources are directly compiled in the project.
 
 
+• For the [ears.write~] and [ears.read~] module: the AudioFile library released under GPLv3)
+A modified version of the library is included in the repository.
+The modifications extend the functionalities of the library in order to support marker and cues in WAV files.
+
 • the mpg123 library 1.23.4 (released under LGPLv2.1). 
 If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmpg123.a 
 

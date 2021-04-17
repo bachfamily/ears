@@ -48,7 +48,10 @@
 #define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
 #include <libaiff/libaiff.h>
 
+#include "AudioFile.h"
+
 #include "ears.libtag_commons.h"
+#include "ears.spectralannotations.h"
 
 typedef struct _buf_write {
     t_earsbufobj       e_ob;
@@ -81,7 +84,7 @@ void            buf_write_append_deferred(t_buf_write *x, t_symbol *msg, long ac
 void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s);
 void buf_write_inletinfo(t_buf_write *x, void *b, long a, char *t);
 
-void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, double sr, t_ears_spectralbuf_metadata *data);
+void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data);
 void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags);
 
 // Globals and Statics
@@ -389,7 +392,7 @@ void buf_write_bang(t_buf_write *x)
             if ((x->write_spectral_annotations && data) || (mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL))
                 buf_write_markers_and_spectralannotation(x, filename,
                                                  mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL ? hatom_getllll(&mk_el->l_hatom) : NULL,
-                                                 ears_buffer_get_sr((t_object *)x, buf),
+                                                 buf, ears_buffer_get_sr((t_object *)x, buf),
                                                  data);
             
 
@@ -1029,25 +1032,7 @@ void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags)
 }
  */
 
-char *buf_write_get_spectral_annotation_string(t_buf_write *x, double sr, t_ears_spectralbuf_metadata *data)
-{
-    t_symbol *unit = ears_frequnit_to_symbol(data->binunit);
-    char *bins_buf = NULL;
-    llll_to_text_buf(data->bins, &bins_buf, 0, 6, 0, LLLL_T_NONE, LLLL_TE_SMART, NULL);
-    char *annotation = (char *)bach_newptr(((bins_buf ? strlen(bins_buf) : 0)+4096) * sizeof(char));
-    snprintf_zero(annotation, 4096, "earsspectral=1;sr=%.6f;audiosr=%.6f;spectype=%s;binsize=%.6f;binoffset=%.6f;binunit=%s;bins=%s",
-                  sr,
-                  data->original_audio_signal_sr,
-                  data->type ? data->type->s_name : "none",
-                  data->binsize,
-                  data->binoffset,
-                  unit ? unit->s_name : "none",
-                  bins_buf ? bins_buf : "");
-    bach_freeptr(bins_buf);
-    return annotation;
-}
-
-void buf_write_markers_and_spectralannotation_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers, double sr, t_ears_spectralbuf_metadata *data)
+void buf_write_markers_and_spectralannotation_AIFF(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data)
 {
     if ((!markers || markers->l_size == 0) && !data)
         return;
@@ -1089,7 +1074,7 @@ void buf_write_markers_and_spectralannotation_AIFF(t_buf_write *x, t_symbol *fil
         
         
         if (data) { // add spectral annotations
-            char *annotation = buf_write_get_spectral_annotation_string(x, sr, data);
+            char *annotation = ears_spectralannotation_get_string((t_object *)x, sr, data);
             AIFF_SetAttribute(ref, AIFF_ANNO, annotation);
             bach_freeptr(annotation);
         }
@@ -1120,52 +1105,94 @@ void buf_write_markers_and_spectralannotation_AIFF(t_buf_write *x, t_symbol *fil
         bach_freeptr(samples);
 }
 
-void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, double sr, t_ears_spectralbuf_metadata *data)
+
+void AudioCues_from_llll(t_buf_write *x, t_llll *ll, t_buffer_obj *buf, AudioFile<double> &audiofile)
+{
+    long count = 1;
+    std::vector<AudioCue> cues;
+    for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+            t_llll *subll = hatom_getllll(&el->l_hatom);
+            if (subll && subll->l_head) {
+                if (hatom_gettype(&subll->l_head->l_hatom) == H_LLLL) {
+                    //may be a region
+                    t_llll *subsubll = hatom_getllll(&subll->l_head->l_hatom);
+                    if (subsubll && subsubll->l_size >= 3 && hatom_getsym(&subsubll->l_head->l_hatom) == gensym("region")) {
+                        AudioCue this_cue;
+                        this_cue.cueID = count++;
+                        this_cue.isRegion = true;
+                        this_cue.sampleStart = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&subsubll->l_head->l_next->l_hatom), buf);
+                        this_cue.sampleLength = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&subsubll->l_head->l_next->l_next->l_hatom), buf);
+                        if (subll->l_head->l_next) {
+                            char *txtbuf = NULL;
+                            hatom_to_text_buf(&subll->l_head->l_next->l_hatom, &txtbuf);
+                            this_cue.label = txtbuf;
+                            bach_freeptr(txtbuf);
+                        } else {
+                            this_cue.label = "";
+                        }
+                        cues.push_back(this_cue);
+                    }
+
+                } else {
+                    AudioCue this_cue;
+                    this_cue.cueID = count++;
+                    this_cue.isRegion = false;
+                    this_cue.sampleStart = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&subll->l_head->l_hatom), buf);
+                    this_cue.sampleLength = 0;
+                    if (subll->l_head->l_next) {
+                        char *txtbuf = NULL;
+                        hatom_to_text_buf(&subll->l_head->l_next->l_hatom, &txtbuf);
+                        this_cue.label = txtbuf;
+                        bach_freeptr(txtbuf);
+                    } else {
+                        this_cue.label = "";
+                    }
+                    cues.push_back(this_cue);
+                }
+            }
+        } else {
+            // single marker
+            AudioCue this_cue;
+            this_cue.cueID = count++;
+            this_cue.isRegion = false;
+            this_cue.label = "";
+            this_cue.sampleStart = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), buf);
+            this_cue.sampleLength = 0;
+            cues.push_back(this_cue);
+        }
+    }
+    audiofile.setCues(cues);
+}
+
+void buf_write_markers_WAV(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data)
+{
+    AudioFile<double> audioFile;
+    audioFile.load(filename->s_name);
+    AudioCues_from_llll(x, markers, buf, audioFile);
+    audioFile.save(filename->s_name);
+}
+
+void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data)
 {
     if ((!markers || markers->l_size == 0) && !data)
         return;
-
+    
     if (ears_symbol_ends_with(filename, ".aif", true) || ears_symbol_ends_with(filename, ".aiff", true)) {
-        // we handle spectralannotation via ANNOTATIONS
-        buf_write_markers_and_spectralannotation_AIFF(x, filename, markers, sr, x->write_spectral_annotations ? data : NULL);
+        // we handle spectralannotation via ANNOTATIONS directly with markers,
+        // so we don't read-write the same thing twice
+        buf_write_markers_and_spectralannotation_AIFF(x, filename, markers, buf, sr, x->write_spectral_annotations ? data : NULL);
         
     } else if (ears_symbol_ends_with(filename, ".wav", true) || ears_symbol_ends_with(filename, ".wave", true)){
-        // we handle spectralannotation via INFO tag
-        if (x->write_spectral_annotations && data) {
-            TagLib::FileRef f(filename->s_name);
-            TagLib::File *file = f.file();
-            if (file) {
-                TagLib::RIFF::File *RIFFfile = dynamic_cast<TagLib::RIFF::File *>(file);
-                if (RIFFfile) {
-                    TagLib::RIFF::WAV::File *RIFFWAVfile = dynamic_cast<TagLib::RIFF::WAV::File *>(file);
-                    if (RIFFWAVfile) {
-                        char *annotation = buf_write_get_spectral_annotation_string(x, sr, data);
-                        RIFFWAVfile->InfoTag()->setFieldText("EARS", annotation);
-                        bach_freeptr(annotation);
-                        f.save();
-                    }
-                }
-            }
-        }
-        // TODO
-        // MARKERS: should be handled by setting the Cue Chunks + associated List Chunks for the tags
+        if (x->write_spectral_annotations && data)
+            ears_spectralannotation_write((t_object *)x, filename, sr, data);
+        
+        if (markers)
+            buf_write_markers_WAV(x, filename, markers, buf, sr, data);
         
     } else if (ears_symbol_ends_with(filename, ".wv", true)){
-        // we handle spectralannotation via an APE tag
-        if (x->write_spectral_annotations && data) {
-            TagLib::FileRef f(filename->s_name);
-            TagLib::File *file = f.file();
-            if (file) {
-                TagLib::WavPack::File *WVfile = dynamic_cast<TagLib::WavPack::File *>(file);
-                if (WVfile) {
-                    char *annotation = buf_write_get_spectral_annotation_string(x, sr, data);
-                    TagLib::APE::Item item = TagLib::APE::Item("EARS", annotation);
-                    WVfile->APETag()->setItem("EARS", item);
-                    bach_freeptr(annotation);
-                    f.save();
-                }
-            }
-        }
+        if (x->write_spectral_annotations && data)
+            ears_spectralannotation_write((t_object *)x, filename, sr, data);
         
     } else {
         

@@ -52,6 +52,7 @@
 #define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
 #include <libaiff/libaiff.h>
 
+#include "AudioFile.h"
 
 typedef struct _buf_read {
     t_earsbufobj       e_ob;
@@ -296,7 +297,7 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                 } else {
 #endif
                     
-                    if (ears_symbol_ends_with(filepath, ".wv", true)) {
+                    if (ears_symbol_ends_with(filepath, ".wv", true)) { // WavPack files
                         long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
                         long endsamp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
                         ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset));
@@ -720,6 +721,30 @@ void parse_annotation(const char *annotation, bool *has_data, double *sr, t_ears
     }
 }
 
+void buf_read_llll_append_position(t_buf_read *x, t_llll *this_marker_ll, uint64_t position_samps, double sr, double num_samps)
+{
+    switch (x->e_ob.l_timeunit) {
+        case EARS_TIMEUNIT_SAMPS:
+            llll_appendlong(this_marker_ll, position_samps);
+            break;
+            
+        case EARS_TIMEUNIT_MS:
+            llll_appenddouble(this_marker_ll, ears_samps_to_ms(position_samps, sr));
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            llll_appenddouble(this_marker_ll, ((double)position_samps)/num_samps);
+            break;
+            
+        case EARS_TIMEUNIT_SECONDS:
+            llll_appenddouble(this_marker_ll, ears_samps_to_ms(position_samps, sr)/1000.);
+            break;
+            
+        default:
+            break;
+    }
+}
+
 t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data, bool *has_data, double *sr)
 {
     t_llll *out = llll_get();
@@ -756,26 +781,7 @@ t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *fi
                     break ;
                 
                 t_llll *this_marker_ll = llll_get();
-                switch (x->e_ob.l_timeunit) {
-                    case EARS_TIMEUNIT_SAMPS:
-                        llll_appendlong(this_marker_ll, position);
-                        break;
-
-                    case EARS_TIMEUNIT_MS:
-                        llll_appenddouble(this_marker_ll, ears_samps_to_ms(position, samplingRate));
-                        break;
-
-                    case EARS_TIMEUNIT_DURATION_RATIO:
-                        llll_appenddouble(this_marker_ll, ((double)position)/nSamples);
-                        break;
-                        
-                    case EARS_TIMEUNIT_SECONDS:
-                        llll_appenddouble(this_marker_ll, ears_samps_to_ms(position, samplingRate)/1000.);
-                        break;
-
-                    default:
-                        break;
-                }
+                buf_read_llll_append_position(x, this_marker_ll, position, samplingRate, nSamples);
                 if (name)
                     llll_appendsym(this_marker_ll, gensym(name));
 
@@ -788,6 +794,27 @@ t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *fi
         AIFF_CloseFile(ref);
     }
     
+    return out;
+}
+
+t_llll *AudioCues_to_llll(t_buf_read *x, AudioFile<double> &audioFile)
+{
+    t_llll *out = llll_get();
+    std::vector<AudioCue> cues = audioFile.getCues();
+    for (long i = 0; i < cues.size(); i++) {
+        t_llll *this_marker_ll = llll_get();
+        if (cues[i].isRegion) {
+            t_llll *sub_ll = llll_get();
+            llll_appendsym(sub_ll, gensym("region")); // as in bach's markers
+            buf_read_llll_append_position(x, sub_ll, cues[i].sampleStart, audioFile.getSampleRate(), audioFile.getNumSamplesPerChannel());
+            buf_read_llll_append_position(x, sub_ll, cues[i].sampleLength, audioFile.getSampleRate(), audioFile.getNumSamplesPerChannel());
+        } else {
+            buf_read_llll_append_position(x, this_marker_ll, cues[i].sampleStart, audioFile.getSampleRate(), audioFile.getNumSamplesPerChannel());
+        }
+        if (i < cues[i].label.size() > 0)
+            llll_appendsym(this_marker_ll, gensym(cues[i].label.c_str()));
+        llll_appendllll(out, this_marker_ll);
+    }
     return out;
 }
 
@@ -818,9 +845,11 @@ t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filenam
             }
         }
         
-        // TODO
-        // MARKERS: should be handled by retrieving the Cue Chunks + associated List Chunks for the tags
-        out = llll_get();
+        // MARKERS:
+        AudioFile<double> audioFile;
+        audioFile.load(filename->s_name);
+        out = AudioCues_to_llll(x, audioFile);
+        
     } else if (ears_symbol_ends_with(filename, ".wv", true)){
         
         // Spectral information is in the APE tag
