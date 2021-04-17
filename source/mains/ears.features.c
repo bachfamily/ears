@@ -145,7 +145,7 @@ int C74_EXPORT main(void)
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a features threshold (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(features)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(features)
     
     
     class_addmethod(c, (method)buf_features_notify,        "bachnotify",        A_CANT,        0);

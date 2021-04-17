@@ -97,7 +97,7 @@ int C74_EXPORT main(void)
     // @description A list or llll will be interpreted as a sequence of samples that will be put inside a buffer.
     // If the llll has depth 2, each levels of parentheses is considered to be a channel.
     // The buffer name will be then output.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(fromsamps)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(fromsamps)
     
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_fromsamps, sr);
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");

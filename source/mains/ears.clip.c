@@ -99,7 +99,7 @@ int C74_EXPORT main(void)
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a clip threshold (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(clip)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(clip)
 
     // @method number @digest Set clip
     // @description A number in the second inlet sets the clip parameter (depending on the <m>ampunit</m>).

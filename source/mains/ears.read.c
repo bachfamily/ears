@@ -119,7 +119,7 @@ int C74_EXPORT main(void)
     // @description A list or llll of filenames will trigger the import of such files as buffers, and the whole set of output buffer names will be output.
     // If the "append" message attribute is set to 1, then the imported buffers are appended to the existing ones.
     // @mattr append @type int @default 0 @digest Append buffers
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(read)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(read)
 
     // @method append @digest Import files as additional buffers
     // @description The <m>append</m> message, followed by a list of filenames, will import the files as buffers
@@ -797,7 +797,7 @@ t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *fi
     return out;
 }
 
-t_llll *AudioCues_to_llll(t_buf_read *x, AudioFile<double> &audioFile)
+t_llll *AudioCues_to_llll(t_buf_read *x, AudioFile<float> &audioFile)
 {
     t_llll *out = llll_get();
     std::vector<AudioCue> cues = audioFile.getCues();
@@ -846,7 +846,7 @@ t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filenam
         }
         
         // MARKERS:
-        AudioFile<double> audioFile;
+        AudioFile<float> audioFile;
         audioFile.load(filename->s_name);
         out = AudioCues_to_llll(x, audioFile);
         

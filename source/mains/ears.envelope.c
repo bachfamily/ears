@@ -97,7 +97,7 @@ int C74_EXPORT main(void)
     
     // @method llll @digest Envelope
     // @description An incoming llll is expected to contain the envelope that should be reproduced in the buffer.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(envelope)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(envelope)
     
     CLASS_ATTR_ATOM(c, "duration", 0, t_buf_envelope, duration);
     CLASS_ATTR_STYLE_LABEL(c,"duration",0,"text","Duration");

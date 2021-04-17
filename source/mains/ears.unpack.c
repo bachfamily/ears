@@ -102,7 +102,7 @@ int C74_EXPORT main(void)
     // @method symbol/llll @digest Unpack buffer channels
     // @description An incoming symbol or llll will be considered as a buffer name, whose channels should be unpacked and output as
     // separate buffers.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(unpack)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(unpack)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);

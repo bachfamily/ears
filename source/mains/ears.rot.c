@@ -100,7 +100,7 @@ int C74_EXPORT main(void)
 
     // @method number @digest Set shift amount
     // @description A number in the second inlet sets the shift amount (in the unit defined by the <m>timeunit</m> attribute).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(rot)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(rot)
 
 
     earsbufobj_class_add_outname_attr(c);

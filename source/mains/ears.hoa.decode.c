@@ -137,7 +137,7 @@ int C74_EXPORT main(void)
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a hoadecode parameter (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(hoadecode)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(hoadecode)
 
     // @method number @digest Set hoadecode
     // @description A number in the second inlet sets the hoadecode parameter (depending on the <m>ampunit</m>).

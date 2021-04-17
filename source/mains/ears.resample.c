@@ -101,9 +101,10 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
     // buffer names (depending on the <m>naming</m> attribute).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(resample)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(resample)
     
     earsbufobj_class_add_outname_attr(c);
+    //    earsbufobj_class_add_blocking_attr(c); <<< not working 
     //    earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
@@ -112,7 +113,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "filtersize", 0, t_buf_resample, window_width);
     CLASS_ATTR_STYLE_LABEL(c,"filtersize",0,"text","Filter Size");
     CLASS_ATTR_BASIC(c, "filtersize", 0);
-    // @description Sets the resampling filter size in samples
+    // @description Sets the resampling filter size (in the <m>antimeunit</m>)
 
     
     class_register(CLASS_BOX, c);
@@ -173,6 +174,15 @@ t_buf_resample *buf_resample_new(t_symbol *s, short argc, t_atom *argv)
         
         earsbufobj_setup((t_earsbufobj *)x, "E4", "E", names);
 
+/*        { //debug stuff
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 1, true);
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
+            t_llll *temp = llll_from_text_buf("earsBufDrumLoop");
+            earsbufobj_store_buffer_list((t_earsbufobj *)x, temp, 0);
+            ears_buffer_set_size_samps((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), 441000);
+            llll_free(temp);
+        }
+  */
         llll_free(args);
         llll_free(names);
         
@@ -203,7 +213,7 @@ void buf_resample_bang(t_buf_resample *x)
         
         long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->window_width, in, false, true);
         
-        if (in != out)
+        if (in != out) 
             ears_buffer_clone((t_object *)x, in, out);
         
         if (hatom_gettype(&el->l_hatom) == H_LLLL) { // factor is envelope

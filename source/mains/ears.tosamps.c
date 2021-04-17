@@ -95,7 +95,7 @@ int C74_EXPORT main(void)
     // @method symbol/llll @digest Convert buffer to samples
     // @description A buffer name (as a symbol or llll) will trigger the output of its sample values, as llll,
     // organized with one parenthesis level for each channel.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(tosamps)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(tosamps)
     
     llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
     

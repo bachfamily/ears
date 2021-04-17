@@ -6,7 +6,7 @@
 */
 
 
-#define EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER
+#define EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD
 // @method (mouse) @digest Open the buffer display window
 // @description Double-clicking on the object will open the display window for the output buffer(s).
 // If more than 10 buffers are to be output, only the first 10 are displayed.

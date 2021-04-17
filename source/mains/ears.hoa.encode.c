@@ -128,7 +128,7 @@ int C74_EXPORT main(void)
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a hoaencode parameter (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(hoaencode)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(hoaencode)
 
     // @method number @digest Set hoaencode
     // @description A number in the second inlet sets the hoaencode parameter (depending on the <m>ampunit</m>).

@@ -144,7 +144,7 @@ int C74_EXPORT main(void)
     // as a single buffer and output the resulting buffer name.
     // Alternatively, a buffer name for each inlet can be provided (in symbol or llll form); the first inlet
     // will also trigger the channel packing and the output.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(pack)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(pack)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);

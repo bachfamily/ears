@@ -100,7 +100,7 @@ int C74_EXPORT main(void)
 
     // @method number @digest Set slice position
     // @description A number in the second inlet sets the slice position (in the unit defined by the <m>timeunit</m> attribute).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(slice)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(slice)
 
 
     earsbufobj_class_add_outname_attr(c);

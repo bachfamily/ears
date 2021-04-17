@@ -97,7 +97,7 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(window)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(window)
 
     // @method symbol/llll @digest Set window type
     // @description A symbol (or an llll containing a symbol) in the second inlet sets the window type.

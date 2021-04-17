@@ -14,35 +14,56 @@
 
 
 #define EARSBUFOBJ_ADD_DEFERRED_METHODS(NAME) \
-void buf_ ## NAME ## _bang_deferred(t_buf_ ## NAME *x); \
-void buf_ ## NAME ## _anything_deferred(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av); \
-void buf_ ## NAME ## _bang_deferred(t_buf_ ## NAME *x) \
+void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x); \
+void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av); \
+void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
 { \
-defer(x, (method)buf_ ## NAME ##_bang, NULL, 0, NULL); \
+    switch (x->e_ob.l_blocking) { \
+        case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
+        break; \
+        case EARSBUFOBJ_BLOCKING_SCHEDULER: \
+            schedule(x, (method)buf_ ## NAME ##_bang, 0, NULL, 0, NULL); \
+        break; \
+        case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
+        default: \
+            defer(x, (method)buf_ ## NAME ##_bang, NULL, 0, NULL); \
+        break; \
+    } \
 } \
-void buf_ ## NAME ## _anything_deferred(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av) \
+\
+void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av) \
 { \
-x->e_ob.l_curr_proxy = proxy_getinlet((t_object *) x); \
-defer(x, (method)buf_ ## NAME ##_anything, msg, ac, av); \
+    x->e_ob.l_curr_proxy = proxy_getinlet((t_object *) x); \
+    switch (x->e_ob.l_blocking) { \
+        case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
+        break; \
+        case EARSBUFOBJ_BLOCKING_SCHEDULER: \
+            schedule(x, (method)buf_ ## NAME ##_anything, 0, msg, ac, av); \
+        break; \
+        case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
+        default: \
+            defer(x, (method)buf_ ## NAME ##_anything, msg, ac, av); \
+        break; \
+    } \
 } \
 
 
 #define EARSBUFOBJ_ADD_INT_FLOAT_METHODS(NAME) \
-void buf_ ## NAME ## _int_deferred(t_buf_ ## NAME *x, t_atom_long num); \
-void buf_ ## NAME ## _float_deferred(t_buf_ ## NAME *x, t_atom_float num); \
+void buf_ ## NAME ## _int_handlethread(t_buf_ ## NAME *x, t_atom_long num); \
+void buf_ ## NAME ## _float_handlethread(t_buf_ ## NAME *x, t_atom_float num); \
 \
-void buf_ ## NAME ## _int_deferred(t_buf_ ## NAME *x, t_atom_long num) \
+void buf_ ## NAME ## _int_handlethread(t_buf_ ## NAME *x, t_atom_long num) \
 { \
     t_atom argv[1]; \
     atom_setlong(argv, num); \
-    buf_ ## NAME ## _anything_deferred(x, _sym_list, 1, argv); \
+    buf_ ## NAME ## _anything_handlethread(x, _sym_list, 1, argv); \
 } \
 \
-void buf_ ## NAME ## _float_deferred(t_buf_ ## NAME *x, t_atom_float num) \
+void buf_ ## NAME ## _float_handlethread(t_buf_ ## NAME *x, t_atom_float num) \
 { \
     t_atom argv[1]; \
     atom_setfloat(argv, num); \
-    buf_ ## NAME ## _anything_deferred(x, _sym_list, 1, argv); \
+    buf_ ## NAME ## _anything_handlethread(x, _sym_list, 1, argv); \
 } \
 
 
@@ -52,12 +73,12 @@ EARSBUFOBJ_ADD_DEFERRED_METHODS(NAME) \
 EARSBUFOBJ_ADD_INT_FLOAT_METHODS(NAME) \
 
 
-#define EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(NAME) \
-class_addmethod(c, (method)buf_ ## NAME ## _int_deferred,       "int",       A_LONG, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _float_deferred,     "float",     A_FLOAT, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _anything_deferred,  "anything",  A_GIMME, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _anything_deferred,  "list",      A_GIMME, 0); \
-class_addmethod(c, (method)buf_ ## NAME ## _bang_deferred,      "bang",     0); \
+#define EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(NAME) \
+class_addmethod(c, (method)buf_ ## NAME ## _int_handlethread,       "int",       A_LONG, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _float_handlethread,     "float",     A_FLOAT, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _anything_handlethread,  "anything",  A_GIMME, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _anything_handlethread,  "list",      A_GIMME, 0); \
+class_addmethod(c, (method)buf_ ## NAME ## _bang_handlethread,      "bang",     0); \
 \
 class_addmethod(c, (method)buf_ ## NAME ## _assist,                "assist",                A_CANT,        0); \
 class_addmethod(c, (method)buf_ ## NAME ## _inletinfo,            "inletinfo",            A_CANT,        0); \
@@ -133,6 +154,13 @@ typedef enum _earsbufobj_flag
     EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
 } e_earsbufobj_flag;
 
+typedef enum _earsbufobj_blocking
+{
+    EARSBUFOBJ_BLOCKING_OWNTHREAD = 0,    ///< Processing happens in an own separate thread
+    EARSBUFOBJ_BLOCKING_MAINTHREAD = 1,   ///< Processing happens in the main thread
+    EARSBUFOBJ_BLOCKING_SCHEDULER = 2,    ///< Processing happens in the scheduler thread
+} e_earsbufobj_blocking;
+
 
 typedef struct _earsbufobj
 {
@@ -153,13 +181,18 @@ typedef struct _earsbufobj
     t_int32					l_numbufouts;	///< how many buffer outlets
     t_earsbufobj_store      *l_outstore;	///< the out stores
     t_llll                  *l_outnames;    ///< Output names, could be a level2 list if outlets have multiple buffers
-    e_earsbufobj_namings    l_bufouts_naming;   ///< Names for buffer outlets are static, i.e. "destructive” operation mode.
-
-    // stuff for cycling over a finite list of generated output names
+    char                    l_bufouts_naming;   ///< One of the e_earsbufobj_namings.
+                                                /// Names for buffer outlets are static, i.e. "destructive” operation mode.
+// stuff for cycling over a finite list of generated output names
     t_llll                  *l_generated_outnames;    ///< Updated list of automatically generated output buffer names
                                                       ///  (one subllll for each buffer outlet
     long                    l_generated_outname_count[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
 
+    // threading
+    char                    l_blocking;   ///< One of the e_earsbufobj_blocking
+    
+    
+    
     // Settings
     char                    l_timeunit;      ///< Time unit
     char                    l_ampunit;      ///< Amplitude unit
@@ -225,6 +258,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
 /// Methods and attributes
 void earsbufobj_add_common_methods(t_class *c);
 void earsbufobj_class_add_outname_attr(t_class *c);
+void earsbufobj_class_add_blocking_attr(t_class *c);
 void earsbufobj_class_add_timeunit_attr(t_class *c);
 void earsbufobj_class_add_antimeunit_attr(t_class *c);
 void earsbufobj_class_add_ampunit_attr(t_class *c);

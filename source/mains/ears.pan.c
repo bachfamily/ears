@@ -195,7 +195,7 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
     // buffer names (depending on the <m>naming</m> attribute).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(pan)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(pan)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);

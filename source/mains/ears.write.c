@@ -157,7 +157,7 @@ int C74_EXPORT main(void)
     // a list or llll in the second inlet is expected to be a list of file names.
     // When the list or llll in the leftmost inlet is received, each of the buffers is saved on disk on the
     // corresponding file name
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(write)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(write)
 
     CLASS_ATTR_SYM(c, "format", 0, t_buf_write, sampleformat);
     CLASS_ATTR_STYLE_LABEL(c, "format", 0, "enum", "Sample Format");
@@ -1106,7 +1106,7 @@ void buf_write_markers_and_spectralannotation_AIFF(t_buf_write *x, t_symbol *fil
 }
 
 
-void AudioCues_from_llll(t_buf_write *x, t_llll *ll, t_buffer_obj *buf, AudioFile<double> &audiofile)
+void AudioCues_from_llll(t_buf_write *x, t_llll *ll, t_buffer_obj *buf, AudioFile<float> &audiofile)
 {
     long count = 1;
     std::vector<AudioCue> cues;
@@ -1167,7 +1167,7 @@ void AudioCues_from_llll(t_buf_write *x, t_llll *ll, t_buffer_obj *buf, AudioFil
 
 void buf_write_markers_WAV(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data)
 {
-    AudioFile<double> audioFile;
+    AudioFile<float> audioFile;
     audioFile.load(filename->s_name);
     AudioCues_from_llll(x, markers, buf, audioFile);
     audioFile.save(filename->s_name);
@@ -1193,7 +1193,6 @@ void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename
     } else if (ears_symbol_ends_with(filename, ".wv", true)){
         if (x->write_spectral_annotations && data)
             ears_spectralannotation_write((t_object *)x, filename, sr, data);
-        
     } else {
         
     }

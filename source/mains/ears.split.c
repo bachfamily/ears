@@ -140,7 +140,7 @@ int C74_EXPORT main(void)
 
     // @method number @digest Set split parameter
     // @description A number in the second inlet sets the split parameter (see <m>list/llll</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(split)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(split)
 
 
     earsbufobj_class_add_outname_attr(c);

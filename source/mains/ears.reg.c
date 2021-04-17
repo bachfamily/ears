@@ -101,7 +101,7 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Store buffers
     // @description A list or llll with buffer names will be considered as the names of the buffers to be stored and output
     // (also according on the <m>naming</m> attribute).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(reg) // TO DO: should we NOT defer this?
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(reg) // TO DO: should we NOT defer this?
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);

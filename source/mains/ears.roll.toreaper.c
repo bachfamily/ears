@@ -189,7 +189,7 @@ int C74_EXPORT main(void)
                          A_GIMME,
                          0L);
     
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(roll_toreaper)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(roll_toreaper)
     
     // @method (mouse) @digest Open the exported session.
     // @description Double-clicking opens the exported session in Reaper.

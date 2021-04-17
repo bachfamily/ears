@@ -115,7 +115,7 @@ int C74_EXPORT main(void)
     
     // @method symbol/llll @digest Get buffer information
     // @description A symbol or an llll with a single symbol is considered as a buffer name, whose information (depending on the arguments) is output.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(info) // TODO: should we NOT defer ears.info~?
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(info) // TODO: should we NOT defer ears.info~?
     
     earsbufobj_add_common_methods(c);
     

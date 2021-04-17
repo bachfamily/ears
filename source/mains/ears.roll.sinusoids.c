@@ -126,7 +126,7 @@ int C74_EXPORT main(void)
                          A_GIMME,
                          0L);
     
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(roll_sinusoids)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(roll_sinusoids)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);

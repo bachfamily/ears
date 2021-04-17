@@ -527,6 +527,7 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_frequnit = EARS_FREQUNIT_HERTZ;
     e_ob->l_angleunit = EARS_ANGLEUNIT_RADIANS;
     e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+    e_ob->l_blocking = EARSBUFOBJ_BLOCKING_MAINTHREAD;
     
     e_ob->l_resamplingpolicy = EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR;
     e_ob->l_resamplingfilterwidth = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH;
@@ -1221,6 +1222,19 @@ void earsbufobj_class_add_outname_attr(t_class *c)
     // unique names.
 }
 
+void earsbufobj_class_add_blocking_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "blocking", 0, t_earsbufobj, l_blocking);
+    CLASS_ATTR_STYLE_LABEL(c,"blocking",0,"text","Blocking Mode");
+    CLASS_ATTR_BASIC(c, "blocking", 0);
+    CLASS_ATTR_CATEGORY(c, "blocking", 0, "Behavior");
+    // @description Sets the blocking mode, i.e. the thread to be used for computation: <br />
+    // 0: the object uses its own separate thread; <br />
+    // 1: the object uses the main thread (default); <br />
+    // 2: the object uses its the scheduler thread. <br />
+}
+
+
 
 t_max_err earsbufobj_setattr_ampunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
@@ -1520,7 +1534,7 @@ t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t
         long old_bufouts_naming = e_ob->l_bufouts_naming;
         
         if (atom_gettype(argv) == A_LONG)
-            e_ob->l_bufouts_naming = (e_earsbufobj_namings)atom_getlong(argv);
+            e_ob->l_bufouts_naming = atom_getlong(argv);
         else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
             if (s == gensym("copy"))

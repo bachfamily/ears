@@ -100,7 +100,7 @@ int C74_EXPORT main(void)
     // @method symbol/llll @digest Process buffers
     // @description A symbol or an llll with a single symbol in any of the two inlets will set the left or right buffer.
     // The first inlet will als trigger the interleaving of the channels of the two buffers, and the output buffer name will be output.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(lace)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(lace)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_naming_attr(c);

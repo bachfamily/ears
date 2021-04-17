@@ -131,7 +131,7 @@ int C74_EXPORT main(void)
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
     // A number or an llll in the second, third, or fourth inlet is expected to receive the yaw, pitch and roll parameters
     // or envelopes (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(hoamirror)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(hoamirror)
 
     // @method number @digest Set yaw, pitch, roll
     // @description A number in the second, third or fourth inlet respectively sets the yaw, pitch and roll

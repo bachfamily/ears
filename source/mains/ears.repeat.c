@@ -100,7 +100,7 @@ int C74_EXPORT main(void)
 
     // @method int @digest Set number of repetitions
     // @description An integer number in the second inlet sets the number of repetitions.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_DEFER(repeat)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(repeat)
 
 
     earsbufobj_class_add_outname_attr(c);
