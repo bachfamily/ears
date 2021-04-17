@@ -53,7 +53,7 @@ int C74_EXPORT main()
     
     class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_dsp64, "dsp64", A_CANT, 0);
     
-    class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_int, "int", A_CANT, 0);
+    class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_int, "int", A_LONG, 0);
     
     class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_setbuffers, "setbuffers", A_CANT, 0);
     class_addmethod(ears_mcintilde_class, (method)myobject_multichanneloutputs, "multichanneloutputs", A_CANT, 0);

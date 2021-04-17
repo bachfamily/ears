@@ -62,28 +62,28 @@ int C74_EXPORT main()
 void ears_out_bang(t_ears_out *x)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet - 1]; o != nullptr)
+    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
         outlet_bang(o);
 }
 
 void ears_out_int(t_ears_out *x, t_atom_long i)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet - 1]; o != nullptr)
+    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
         outlet_int(o, i);
 }
 
 void ears_out_float(t_ears_out *x, t_atom_float f)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet - 1]; o != nullptr)
+    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
         outlet_float(o, f);
 }
 
 void ears_out_anything(t_ears_out *x, t_symbol *s, long ac, t_atom *av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet - 1]; o != nullptr)
+    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
         outlet_anything(o, s, ac, av);
 }
 

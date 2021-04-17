@@ -52,10 +52,8 @@ int C74_EXPORT main()
     
     class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_dsp64, "dsp64", A_CANT, 0);
     
-    class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_int, "int", A_CANT, 0);
-
+    class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_int, "int", A_LONG, 0);
     
-    class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_multichannelsignal, "multichannelsignal", A_CANT, 0);
     class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_setchanmap, "setchanmap", A_CANT, 0);
     
     class_dspinit(ears_mcouttilde_class);
@@ -63,14 +61,6 @@ int C74_EXPORT main()
     class_register(CLASS_BOX, ears_mcouttilde_class);
     
     return 0;
-}
-
-void ears_mcouttilde_multichannelsignal(t_ears_mcouttilde *x)
-{
-    t_atom rv;
-    
-    // send the signal method to yourself
-    object_method_typed((t_object *) x, _sym_signal, 0, NULL, &rv);
 }
 
 void ears_mcouttilde_int(t_ears_mcouttilde *x, t_atom_long i)

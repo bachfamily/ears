@@ -37,27 +37,33 @@ class earsmapMultiMap
 public:
     earsmapMultiMap() : maxIdx(0) { }
     
-    std::map<t_atom_long, std::unordered_set<T>> theMap;
+    std::map<t_atom_long, std::unordered_set<T>*> theMap;
     
     int maxIdx;
     
     void insert(t_atom_long idx, T what) {
         if (theMap.find(idx) == theMap.end()) {
-            theMap.insert(std::pair<t_atom_long, std::unordered_set<T>>(idx, std::unordered_set<T>()));
+            std::unordered_set<T>* s = new std::unordered_set<T>;
+            theMap[idx] = s;
+            //.insert(std::pair<t_atom_long, std::unordered_set<T>*>(idx, s));
         }
-        theMap[idx].insert(what);
+        theMap[idx]->insert(what);
         if (maxIdx < idx)
             maxIdx = idx;
     }
     
     void remove(t_atom_long idx, T what) {
-        theMap[idx].erase(what);
-        if (theMap[idx].size() == 0) {
+        theMap[idx]->erase(what);
+        if (theMap[idx]->size() == 0) {
+            delete theMap[idx];
             theMap.erase(idx);
         }
     }
     
     void clear() {
+        for (auto o: theMap) {
+            delete o.second;
+        }
         theMap.clear();
     }
 };
@@ -74,7 +80,7 @@ public:
             t_atom_long index = i.first;
             auto oSet = i.second;
             void *out = index <= nOutlets ? outlets[index] : nullptr;
-            for (t_object* o: oSet)
+            for (t_object* o: *oSet)
                 object_method(o, gensym("setoutlet"), index, out);
         }
     }
@@ -100,9 +106,12 @@ typedef struct _earsmap
     double tail;
     
     long scalarmode;
+    long reload;
     
     long autoclock;
     t_symbol *clock_name;
+    
+    t_symbol *patch_name;
     
     t_bool stopped;
     
@@ -277,6 +286,10 @@ int C74_EXPORT main()
     CLASS_ATTR_LONG(earsmap_class, "scalarmode", 0, t_earsmap, scalarmode);
     CLASS_ATTR_STYLE_LABEL(earsmap_class, "scalarmode", 0, "onoff", "Scalar Mode");
     CLASS_ATTR_FILTER_CLIP(earsmap_class, "scalarmode", 0, 1);
+    
+    CLASS_ATTR_LONG(earsmap_class, "reload", 0, t_earsmap, reload);
+    CLASS_ATTR_STYLE_LABEL(earsmap_class, "reload", 0, "onoff", "Reload");
+    CLASS_ATTR_FILTER_CLIP(earsmap_class, "reload", 0, 1);
     
     CLASS_ATTR_LONG(earsmap_class, "autoclock", 0, t_earsmap, autoclock);
     CLASS_ATTR_STYLE_LABEL(earsmap_class, "autoclock", 0, "onoff", "Automatic Clock Message");
@@ -639,6 +652,10 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
         return;
     }
     
+    if (x->client_patch) {
+        object_free(x->client_patch);
+    }
+    
     t_symbol *ps_earsmap = gensym(EARSMAP_SPECIALSYM);
     t_symbol *ps_inhibit_subpatcher_vis = gensym("inhibit_subpatcher_vis");
     t_symbol *ps_PAT = gensym("#P");
@@ -660,7 +677,7 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
     short savedLoadUpdate = dsp_setloadupdate(false);
     loadbang_suspend();
     x->client_patch = (t_patcher *)intload(name, outvol, 0, ac, av, false);
-    object_method(x->client_patch, gensym("setclass"));
+    //object_method(x->client_patch, gensym("setclass"));
     
     // Restore previous loading symbol bindings
     
@@ -753,7 +770,7 @@ void earsmap_float(t_earsmap *x, t_atom_float f)
 {
     t_atom a[1];
     atom_setfloat(a, f);
-    earsmap_anything(x, gensym("int"), 1, a);
+    earsmap_anything(x, gensym("float"), 1, a);
 }
 
 void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom* av)
@@ -762,7 +779,7 @@ void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom* av)
     
     if (inlet > 0 && inlet >= x->nBufInlets) {
         // TODO: send to ears.in
-        for (auto o: x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
+        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_anything(o, s, ac, av);
         }
         return;
@@ -803,6 +820,9 @@ void earsmap_bang(t_earsmap *x)
 void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
 {
     double sr;
+    
+    if (x->reload)
+        earsmap_loadpatch((t_earsmap*) x, x->patch_name, x->client_argc, x->client_argv);
     
     // Get number of buffers on which to iterate
     long num_buffer_to_iter = LONG_MAX;

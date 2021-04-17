@@ -1,5 +1,5 @@
 //
-//  ears.in.cpp
+//  ears.out~.cpp
 //  lib_ears
 //
 //  Created by andreaagostini on 03/04/2021.
@@ -30,10 +30,8 @@ void ears_outtilde_free(t_ears_outtilde *x);
 
 void ears_outtilde_assist(t_ears_outtilde *x, void *b, long m, long a, char *s);
 
-void ears_outtilde_bang(t_ears_outtilde *x);
-void ears_outtildet(t_ears_outtilde *x, t_atom_long i);
-void ears_outtilde_float(t_ears_outtilde *x, t_atom_float f);
-void ears_outtilde_anything(t_ears_outtilde *x, t_symbol *s, long ac, t_atom *av);
+void ears_outtilde_int(t_ears_outtilde *x, t_atom_long i);
+void ears_outtilde_list(t_ears_outtilde *x, t_symbol *s, long ac, t_atom *av);
 
 void ears_outtilde_setchanmap(t_ears_outtilde *x, audioChanMap* map);
 
@@ -52,8 +50,10 @@ int C74_EXPORT main()
                                    A_GIMME,
                                    0);
     
-    class_addmethod(ears_outtilde_class, (method)ears_outtilde_dsp64, "dsp64", A_CANT, 0);
+    class_addmethod(ears_outtilde_class, (method)ears_outtilde_list, "list", A_GIMME, 0);
+
     
+    class_addmethod(ears_outtilde_class, (method)ears_outtilde_dsp64, "dsp64", A_CANT, 0);
     class_addmethod(ears_outtilde_class, (method)ears_outtilde_setchanmap, "setchanmap", A_CANT, 0);
 
     class_dspinit(ears_outtilde_class);
@@ -111,6 +111,24 @@ void ears_outtilde_free(t_ears_outtilde *x)
     dsp_free((t_pxobject*) x);
 }
 
+void ears_outtilde_list(t_ears_outtilde *x, t_symbol *s, long ac, t_atom *av)
+{
+    t_atom_long startCh;
+    bach_assert_objerror_goto(x, ac >= 2, "Wrong format", ears_intilde_error);
+    startCh = atom_getlong(av++);
+    ac--;
+    bach_assert_objerror_goto(x, startCh > 0, "Bad starting channel", ears_intilde_error);
+    for (int i = 0; i < ac && i < EARS_OUTTILDE_MAX_CHANS; i++) {
+        t_atom_long v = atom_getlong(av++);
+        if (v < 1) {
+            object_error((t_object *) x, "Wrong channel index, setting to 1");
+            v = 1;
+        }
+        x->chan[i] = v;
+    }
+ears_intilde_error:
+    return;
+}
 
 void ears_outtilde_assist(t_ears_outtilde *x, void *b, long m, long a, char *s)
 {

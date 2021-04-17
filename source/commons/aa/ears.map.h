@@ -86,7 +86,7 @@ public:
     
     audioChannel() : frames(0), chans(0) { };
     
-    audioChannel(t_atom_long fr, t_atom_long ch): frames(fr), chans(ch), lastAllocSize(EARSMAP_MAX_VS / 2), totSize(EARSMAP_MAX_VS / 2), position(0) {
+    audioChannel(t_atom_long fr, t_atom_long ch): frames(fr), chans(ch), lastAllocSize(EARSMAP_MAX_VS / 2), totSize(0), position(0) {
         getNewSampleVector();
     }
     
@@ -100,6 +100,7 @@ public:
             getNewSampleVector();
         }
         position = pos;
+        currPosition = pos - (totSize - lastAllocSize);
     }
     
     void insert(t_atom_long n, t_sample* samps) {

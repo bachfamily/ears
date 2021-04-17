@@ -1,5 +1,5 @@
 //
-//  ears.in.cpp
+//  ears.in~.cpp
 //  lib_ears
 //
 //  Created by andreaagostini on 03/04/2021.
@@ -29,10 +29,8 @@ typedef struct _ears_intilde
 void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av);
 void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s);
 
-void ears_intilde_bang(t_ears_intilde *x);
-void ears_intildet(t_ears_intilde *x, t_atom_long i);
-void ears_intilde_float(t_ears_intilde *x, t_atom_float f);
-void ears_intilde_anything(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av);
+void ears_intilde_int(t_ears_intilde *x, t_atom_long i);
+void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av);
 
 void ears_intilde_setbuffers(t_ears_intilde *x, bufferData* bufs);
 
@@ -54,8 +52,8 @@ int C74_EXPORT main()
     
     class_addmethod(ears_intilde_class, (method)ears_intilde_dsp64, "dsp64", A_CANT, 0);
 
-    class_addmethod(ears_intilde_class, (method)ears_intilde_anything, "list", A_CANT, 0);
-    class_addmethod(ears_intilde_class, (method)ears_intilde_anything, "anything", A_CANT, 0);
+    //class_addmethod(ears_intilde_class, (method)ears_intilde_int, "int", A_LONG, 0);
+    class_addmethod(ears_intilde_class, (method)ears_intilde_list, "list", A_GIMME, 0);
 
     class_addmethod(ears_intilde_class, (method)ears_intilde_setbuffers, "setbuffers", A_CANT, 0);
     
@@ -66,7 +64,12 @@ int C74_EXPORT main()
     return 0;
 }
 
-void ears_intilde_anything(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av)
+void ears_intilde_int(t_ears_intilde *x, t_atom_long i)
+{
+    
+}
+
+void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av)
 {
     t_atom_long startCh;
     bach_assert_objerror_goto(x, ac >= 2, "Wrong format", ears_intilde_error);
