@@ -32,7 +32,7 @@ public:
     t_atom_long frames;
     double sr;
     
-    bufferData() : obj(nullptr) { }
+    bufferData() : obj(nullptr), ref(nullptr), samps(nullptr), chans(0), frames(0), sr(0) { }
     
     bufferData(t_object* x, t_symbol *name) {
         set(x, name);
@@ -48,8 +48,10 @@ public:
     }
     
     virtual ~bufferData() {
-        if (obj)
+        if (obj) {
             buffer_unlocksamples(obj);
+            object_free(ref);
+        }
     }
 };
 

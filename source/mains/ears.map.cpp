@@ -920,6 +920,14 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
         
         t_dspchain* chain = dspchain_compile(x->client_patch, vs, sr);
         
+        // check and compile again,
+        // because the compilation won't work for gen~ the first time
+        if (chain && chain->c_broken)
+        {
+            object_free(chain);
+            chain = dspchain_compile(x->client_patch, vs, sr);
+        }
+        
         if (chain) {
             
             t_atom_long s;
