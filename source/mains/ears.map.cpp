@@ -259,7 +259,7 @@ int C74_EXPORT main()
     CLASS_ATTR_ACCESSORS(earsmap_class, "vs", NULL, (method) earsmap_set_vs);
     CLASS_ATTR_LABEL(earsmap_class, "vs", 0, "Vector Size");
 
-    CLASS_ATTR_LONG(earsmap_class, "sr", 0, t_earsmap, vs);
+    CLASS_ATTR_LONG(earsmap_class, "sr", 0, t_earsmap, sr);
     CLASS_ATTR_FILTER_MIN(earsmap_class, "sr", 0);
     CLASS_ATTR_LABEL(earsmap_class, "sr", 0, "Default Sample Rate");
 
@@ -908,18 +908,19 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
         
         const t_atom_long vs = x->vs;
 
+        audioChanMap chanMap;
+        
+        for (t_object* o : *x->earsInTildeObjects) {
+            object_method(o, gensym("setbuffers"), bufs);
+        }
+        
+        for (t_object* o : *x->earsOutTildeObjects) {
+            object_method(o, gensym("setchanmap"), &chanMap);
+        }
+        
         t_dspchain* chain = dspchain_compile(x->client_patch, vs, sr);
         
         if (chain) {
-            audioChanMap chanMap;
-            
-            for (t_object* o : *x->earsInTildeObjects) {
-                object_method(o, gensym("setbuffers"), bufs);
-            }
-            
-            for (t_object* o : *x->earsOutTildeObjects) {
-                object_method(o, gensym("setchanmap"), &chanMap);
-            }
             
             t_atom_long s;
             for (s = 0; s < duration && !x->stopped; s += vs) {

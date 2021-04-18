@@ -113,11 +113,13 @@ void ears_mcintilde_perform64(t_ears_mcintilde *x, t_dspchain *dsp64, double **i
     int s;
     long offset = x->offset;
     if (!buf || offset > buf->chans - 1) {
-        t_sample *out = outs[0];
-        for (s = 0; s < vec_size; s++)
-            *(out++) = 0;
-        x->position += vec_size;
-        return;
+        for (int ch = 0; ch < numouts; ch++) {
+            t_sample *out = *(outs++);
+            for (s = 0; s < vec_size; s++)
+                *(out++) = 0;
+            x->position += vec_size;
+            return;
+        }
     }
     
     long startChan = offset + 1;
@@ -147,7 +149,7 @@ void ears_mcintilde_perform64(t_ears_mcintilde *x, t_dspchain *dsp64, double **i
 void ears_mcintilde_dsp64(t_ears_mcintilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
     x->position = 0;
-    if (x->earsMapParent)
+    if (x->earsMapParent && count[0])
         object_method(dsp64, gensym("dsp_add64"), x, ears_mcintilde_perform64, 0, NULL);
 }
 

@@ -165,18 +165,18 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
         if (!buf || !buf->obj || bufchans < chan) {
             for (s = 0; s < vec_size; s++)
                 *(out++) = 0;
-        }
-        
-        float *tab = buf->samps + (pos * bufchans) + i;
-        t_atom_long frames = buf->frames;
-        
-        for (s = 0; s < vec_size && pos < frames; s++, pos++) {
-            *(out++) = *tab;
-            tab += bufchans;
-        }
-        
-        for ( ; s < vec_size; s++) {
-            *(out++) = 0;
+        } else {
+            float *tab = buf->samps + (pos * bufchans) + i;
+            t_atom_long frames = buf->frames;
+            
+            for (s = 0; s < vec_size && pos < frames; s++, pos++) {
+                *(out++) = *tab;
+                tab += bufchans;
+            }
+            
+            for ( ; s < vec_size; s++) {
+                *(out++) = 0;
+            }
         }
     }
     

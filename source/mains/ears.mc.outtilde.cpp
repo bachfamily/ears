@@ -106,9 +106,6 @@ void ears_mcouttilde_assist(t_ears_mcouttilde *x, void *b, long m, long a, char 
 
 void ears_mcouttilde_perform64(t_ears_mcouttilde *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam)
 {
-    if (!x->chanMap)
-        return;
-    
     t_atom_long pos = x->position;
     
     long startChan = x->offset + 1;
@@ -127,7 +124,7 @@ void ears_mcouttilde_perform64(t_ears_mcouttilde *x, t_dspchain *dsp64, double *
 
 void ears_mcouttilde_dsp64(t_ears_mcouttilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
-    if (x->earsMapParent)
+    if (x->earsMapParent && x->chanMap && count[0])
         object_method(dsp64, gensym("dsp_add64"), x, ears_mcouttilde_perform64, 0, NULL);
     x->position = 0;
 }

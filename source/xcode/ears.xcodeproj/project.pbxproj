@@ -1614,7 +1614,6 @@
 		1EFF132A1D1D4F5900B7C47A /* ears.playmp3~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.playmp3~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EFFE9BA1D1D533600691C4C /* libmpg123.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmpg123.a; path = /usr/local/lib/libmpg123.a; sourceTree = "<absolute>"; };
 		91076E45262B2F29006905B6 /* ears.tovector~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.tovector~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91076E46262B2F29006905B6 /* ears.fromvector~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.fromvector~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.fromvector~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91076E49262B3E03006905B6 /* ears.tovector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.tovector.cpp; path = ../mains/ears.tovector.cpp; sourceTree = "<group>"; };
 		91664C5E26188F5000EDAF35 /* ears.map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.map.cpp; path = ../mains/ears.map.cpp; sourceTree = "<group>"; };
 		91664C5F26188FA800EDAF35 /* ears.mapinfo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.mapinfo.cpp; path = ../mains/ears.mapinfo.cpp; sourceTree = "<group>"; };
@@ -1635,7 +1634,6 @@
 		91B6DDD72629B74000A26106 /* ears.mc.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.mc.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91B6DDD92629B77200A26106 /* ears.mc.outtilde.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.mc.outtilde.cpp; path = ../mains/ears.mc.outtilde.cpp; sourceTree = "<group>"; };
 		91B6DDF2262B2AD600A26106 /* ears.fromvector~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.fromvector~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91B6DDF3262B2AD600A26106 /* ears.in~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.in~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.in~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91B6DDF6262B2B1800A26106 /* ears.fromvector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.fromvector.cpp; path = ../ears.fromvector.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2190,8 +2188,6 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
-				91B6DDF3262B2AD600A26106 /* ears.in~ copy-Info.plist */,
-				91076E46262B2F29006905B6 /* ears.fromvector~ copy-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
