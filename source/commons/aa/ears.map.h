@@ -49,7 +49,8 @@ public:
     
     virtual ~bufferData() {
         if (obj) {
-            buffer_unlocksamples(obj);
+            if (samps)
+                buffer_unlocksamples(obj);
             object_free(ref);
         }
     }
