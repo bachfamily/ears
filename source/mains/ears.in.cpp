@@ -6,7 +6,7 @@
 //
 
 
-#include "ears.map.h"
+#include "ears.process_commons.h"
 
 t_class *ears_in_class;
 
@@ -18,7 +18,7 @@ typedef struct _ears_in
     void *outlets[EARS_IN_MAX_OUTLETS];
     long outlet_nums[EARS_IN_MAX_OUTLETS];
     long nOutlets;
-    t_object* earsMapParent;
+    t_object* earsProcessParent;
 } t_ears_in;
 
 
@@ -33,6 +33,9 @@ void ears_in_anything(t_ears_in *x, t_symbol *s, long ac, t_atom *av);
 
 int C74_EXPORT main()
 {
+    common_symbols_init();
+    llllobj_common_symbols_init();
+    
     ears_in_class = class_new("ears.in",
                            (method)ears_in_new,
                            NULL,
@@ -49,7 +52,7 @@ int C74_EXPORT main()
 t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av)
 {
     t_ears_in *x = (t_ears_in*) object_alloc(ears_in_class);
-    x->earsMapParent = getParentEarsMap((t_object *) x);
+    x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
     if (ac > EARS_IN_MAX_OUTLETS) {
         object_error((t_object *) x, "Too many outlets, cropping to %d", EARS_IN_MAX_OUTLETS);
@@ -73,16 +76,16 @@ t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av)
         x->outlets[0] = outlet_new(x, NULL);
     }
     
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.in_created"), x->nOutlets, x->outlet_nums, x->outlets);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.in_created"), x->nOutlets, x->outlet_nums, x->outlets);
     
     return x;
 }
 
 void ears_in_free(t_ears_in *x)
 {
-    if (x->earsMapParent) {
-        object_method(x->earsMapParent, gensym("ears.in_deleted"), x->nOutlets, x->outlet_nums, x->outlets);
+    if (x->earsProcessParent) {
+        object_method(x->earsProcessParent, gensym("ears.in_deleted"), x->nOutlets, x->outlet_nums, x->outlets);
     }
 }
 

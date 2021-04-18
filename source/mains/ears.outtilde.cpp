@@ -6,7 +6,7 @@
 //
 
 
-#include "ears.map.h"
+#include "ears.process_commons.h"
 #include <z_dsp.h>
 
 t_class *ears_outtilde_class;
@@ -19,7 +19,7 @@ typedef struct _ears_outtilde
     t_atom_long bufIndex;
     t_atom_long chan[EARS_OUTTILDE_MAX_CHANS];
     int nChans;
-    t_object* earsMapParent;
+    t_object* earsProcessParent;
     audioChanMap* chanMap;
     t_atom_long position;
 } t_ears_outtilde;
@@ -42,6 +42,9 @@ void ears_outtilde_perform64(t_ears_outtilde *x, t_dspchain *dsp64, double **ins
 
 int C74_EXPORT main()
 {
+    common_symbols_init();
+    llllobj_common_symbols_init();
+    
     ears_outtilde_class = class_new("ears.out~",
                                    (method) ears_outtilde_new,
                                    (method) ears_outtilde_free,
@@ -66,7 +69,7 @@ int C74_EXPORT main()
 void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
 {
     t_ears_outtilde *x = (t_ears_outtilde*) object_alloc(ears_outtilde_class);
-    x->earsMapParent = getParentEarsMap((t_object *) x);
+    x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
     if (ac > 0) {
         x->bufIndex = atom_getlong(av);
@@ -93,21 +96,21 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
         x->chan[0] = 1;
     }
     
-    if (x->bufIndex < 1 || x->bufIndex > EARSMAP_MAX_OUTPUT_BUFFERS)
+    if (x->bufIndex < 1 || x->bufIndex > EARS_PROCESS_MAX_OUTPUT_BUFFERS)
         x->bufIndex = 1;
     
     dsp_setup((t_pxobject *) x, x->nChans);
     
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out~_created"), x->bufIndex, x);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.out~_created"), x->bufIndex, x);
     
     return x;
 }
 
 void ears_outtilde_free(t_ears_outtilde *x)
 {
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out~_deleted"), x);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.out~_deleted"), x);
     dsp_free((t_pxobject*) x);
 }
 
@@ -152,7 +155,7 @@ void ears_outtilde_perform64(t_ears_outtilde *x, t_dspchain *dsp64, double **ins
 
 void ears_outtilde_dsp64(t_ears_outtilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
-    if (x->earsMapParent)
+    if (x->earsProcessParent)
         object_method(dsp64, gensym("dsp_add64"), x, ears_outtilde_perform64, 0, NULL);
     x->position = 0;
 }

@@ -6,7 +6,7 @@
 //
 
 
-#include "ears.map.h"
+#include "ears.process_commons.h"
 #include <z_dsp.h>
 
 t_class *ears_mcouttilde_class;
@@ -18,7 +18,7 @@ typedef struct _ears_mcouttilde
     t_pxobject x_obj;
     t_atom_long bufIndex;
     t_atom_long offset;
-    t_object* earsMapParent;
+    t_object* earsProcessParent;
     audioChanMap* chanMap;
     t_atom_long position;
 } t_ears_mcouttilde;
@@ -41,6 +41,9 @@ void ears_mcouttilde_perform64(t_ears_mcouttilde *x, t_dspchain *dsp64, double *
 
 int C74_EXPORT main()
 {
+    common_symbols_init();
+    llllobj_common_symbols_init();
+    
     ears_mcouttilde_class = class_new("ears.mc.out~",
                                     (method) ears_mcouttilde_new,
                                     (method) ears_mcouttilde_free,
@@ -76,15 +79,15 @@ void ears_mcouttilde_int(t_ears_mcouttilde *x, t_atom_long i)
 void *ears_mcouttilde_new(long buf, long offset)
 {
     t_ears_mcouttilde *x = (t_ears_mcouttilde*) object_alloc(ears_mcouttilde_class);
-    x->earsMapParent = getParentEarsMap((t_object *) x);
+    x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
     dsp_setup((t_pxobject *) x, 1);
 
-    x->bufIndex = buf >= 1 && buf <= EARSMAP_MAX_INPUT_BUFFERS ? buf : 1;
+    x->bufIndex = buf >= 1 && buf <= EARS_PROCESS_MAX_INPUT_BUFFERS ? buf : 1;
     ears_mcouttilde_int(x, offset);
     
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out~_created"), x->bufIndex, x);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.out~_created"), x->bufIndex, x);
     
     x->x_obj.z_misc |= Z_MC_INLETS;
 
@@ -93,8 +96,8 @@ void *ears_mcouttilde_new(long buf, long offset)
 
 void ears_mcouttilde_free(t_ears_mcouttilde *x)
 {
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out~_deleted"), x);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.out~_deleted"), x);
     dsp_free((t_pxobject*) x);
 }
 
@@ -124,7 +127,7 @@ void ears_mcouttilde_perform64(t_ears_mcouttilde *x, t_dspchain *dsp64, double *
 
 void ears_mcouttilde_dsp64(t_ears_mcouttilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
-    if (x->earsMapParent && x->chanMap && count[0])
+    if (x->earsProcessParent && x->chanMap && count[0])
         object_method(dsp64, gensym("dsp_add64"), x, ears_mcouttilde_perform64, 0, NULL);
     x->position = 0;
 }

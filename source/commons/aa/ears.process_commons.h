@@ -1,12 +1,12 @@
 //
-//  ears.map.h
+//  ears.process_commons.h
 //  ears
 //
 //  Created by andreaagostini on 05/04/2021.
 //
 
-#ifndef ears_map_h
-#define ears_map_h
+#ifndef ears_process_h
+#define ears_process_h
 
 #include <ears.commons.h>
 #include <ext_buffer.h>
@@ -14,13 +14,12 @@
 #include <unordered_map>
 #include <map>
 
-const int EARSMAP_MAX_INPUT_BUFFERS = 16;
-const int EARSMAP_MAX_OUTPUT_BUFFERS = EARSMAP_MAX_INPUT_BUFFERS;
-const int EARSMAP_MAX_DATA_INLETS = 16;
-const int EARSMAP_MAX_DATA_OUTLETS = EARSMAP_MAX_DATA_INLETS;
+const int EARS_PROCESS_MAX_INPUT_BUFFERS = 16;
+const int EARS_PROCESS_MAX_OUTPUT_BUFFERS = EARS_PROCESS_MAX_INPUT_BUFFERS;
+const int EARS_PROCESS_MAX_DATA_INLETS = 16;
+const int EARS_PROCESS_MAX_DATA_OUTLETS = EARS_PROCESS_MAX_DATA_INLETS;
 
-const char EARSMAP_SPECIALSYM[] = "_x_x_ears.map~_x_x_";
-const int EARSMAP_MAX_VS = 4096;
+const int EARS_PROCESS_MAX_VS = 4096;
 
 
 class bufferData {
@@ -89,7 +88,7 @@ public:
     
     audioChannel() : frames(0), chans(0) { };
     
-    audioChannel(t_atom_long fr, t_atom_long ch): frames(fr), chans(ch), lastAllocSize(EARSMAP_MAX_VS / 2), totSize(0), position(0) {
+    audioChannel(t_atom_long fr, t_atom_long ch): frames(fr), chans(ch), lastAllocSize(EARS_PROCESS_MAX_VS / 2), totSize(0), position(0) {
         getNewSampleVector();
     }
     
@@ -178,7 +177,7 @@ public:
     std::map<bufAndChan, audioChannel*> theMap; // TODO: change to unordered_map
     std::vector<int> chansPerBuf;
     
-    audioChanMap() : chansPerBuf(EARSMAP_MAX_OUTPUT_BUFFERS, 0) { }
+    audioChanMap() : chansPerBuf(EARS_PROCESS_MAX_OUTPUT_BUFFERS, 0) { }
     
     virtual ~audioChanMap() {
         for (auto i: theMap)
@@ -206,19 +205,4 @@ public:
 };
 
 
-
-
-
-
-
-
-t_object *getParentEarsMap(t_object *x);
-
-
-
-
-
-
-
-
-#endif /* ears_map_h */
+#endif /* ears_process_h */

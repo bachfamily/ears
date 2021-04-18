@@ -6,7 +6,7 @@
 //
 
 
-#include "ears.map.h"
+#include "ears.process_commons.h"
 
 t_class *ears_out_class;
 
@@ -15,12 +15,12 @@ const int EARS_OUT_MAX_INLETS = 256;
 typedef struct _ears_out
 {
     t_object x_obj;
-    void *earsmap_outlets[EARS_OUT_MAX_INLETS]; // the outlet of the host object
+    void *earsprocess_outlets[EARS_OUT_MAX_INLETS]; // the outlet of the host object
     void *proxies[EARS_OUT_MAX_INLETS];
     long proxy_num;
     long nInlets;
     long outlet_nums[EARS_OUT_MAX_INLETS];
-    t_object* earsMapParent;
+    t_object* earsProcessParent;
 } t_ears_out;
 
 
@@ -37,6 +37,9 @@ void ears_out_setoutlets(t_ears_out *x, long n, void** outlets);
 
 int C74_EXPORT main()
 {
+    common_symbols_init();
+    llllobj_common_symbols_init();
+    
     ears_out_class = class_new("ears.out",
                            (method)ears_out_new,
                            NULL,
@@ -62,28 +65,28 @@ int C74_EXPORT main()
 void ears_out_bang(t_ears_out *x)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
+    if (void *o = x->earsprocess_outlets[inlet]; o != nullptr)
         outlet_bang(o);
 }
 
 void ears_out_int(t_ears_out *x, t_atom_long i)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
+    if (void *o = x->earsprocess_outlets[inlet]; o != nullptr)
         outlet_int(o, i);
 }
 
 void ears_out_float(t_ears_out *x, t_atom_float f)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
+    if (void *o = x->earsprocess_outlets[inlet]; o != nullptr)
         outlet_float(o, f);
 }
 
 void ears_out_anything(t_ears_out *x, t_symbol *s, long ac, t_atom *av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (void *o = x->earsmap_outlets[inlet]; o != nullptr)
+    if (void *o = x->earsprocess_outlets[inlet]; o != nullptr)
         outlet_anything(o, s, ac, av);
 }
 
@@ -92,7 +95,7 @@ void ears_out_setoutlets(t_ears_out *x, long n, void** out)
     for (int i = 0; i < x->nInlets; i++) {
         long o = x->outlet_nums[i];
         if (o <= n)
-            x->earsmap_outlets[i] = out[o - 1];
+            x->earsprocess_outlets[i] = out[o - 1];
     }
 }
 
@@ -100,7 +103,7 @@ void ears_out_setoutlets(t_ears_out *x, long n, void** out)
 void *ears_out_new(t_symbol *s, t_atom_long ac, t_atom* av)
 {
     t_ears_out *x = (t_ears_out *) object_alloc(ears_out_class);
-    x->earsMapParent = getParentEarsMap((t_object *) x);
+    x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
     if (ac > EARS_OUT_MAX_INLETS) {
         object_error((t_object *) x, "Too many inlets, cropping to %d", EARS_OUT_MAX_INLETS);
@@ -135,16 +138,16 @@ void *ears_out_new(t_symbol *s, t_atom_long ac, t_atom* av)
         maxidx = 1;
     }
     
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out_created"),
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.out_created"),
                       maxidx, x);
     return x;
 }
 
 void ears_out_free(t_ears_out *x)
 {
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.out_deleted"), x);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.out_deleted"), x);
 }
 
 void ears_out_assist(t_ears_out *x, void *b, long m, long a, char *s)

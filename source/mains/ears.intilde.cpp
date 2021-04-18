@@ -6,7 +6,7 @@
 //
 
 
-#include "ears.map.h"
+#include "ears.process_commons.h"
 #include <z_dsp.h>
 #include <ext_buffer.h>
 
@@ -20,7 +20,7 @@ typedef struct _ears_intilde
     t_atom_long bufIndex;
     t_atom_long chan[EARS_INTILDE_MAX_CHANS];
     int nChans;
-    t_object* earsMapParent;
+    t_object* earsProcessParent;
     bufferData* bufs;
     t_atom_long position;
 } t_ears_intilde;
@@ -42,6 +42,9 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
 
 int C74_EXPORT main()
 {
+    common_symbols_init();
+    llllobj_common_symbols_init();
+    
     ears_intilde_class = class_new("ears.in~",
                               (method)ears_intilde_new,
                               NULL,
@@ -91,13 +94,13 @@ ears_intilde_error:
 void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
 {
     t_ears_intilde *x = (t_ears_intilde*) object_alloc(ears_intilde_class);
-    x->earsMapParent = getParentEarsMap((t_object *) x);
+    x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
     dsp_setup((t_pxobject *) x, 0);
     
     if (ac > 0) {
         t_atom_long v = atom_getlong(av);
-        if (v > 0 && v <= EARSMAP_MAX_INPUT_BUFFERS)
+        if (v > 0 && v <= EARS_PROCESS_MAX_INPUT_BUFFERS)
             x->bufIndex = v;
         else {
             object_error((t_object *) x, "Bad input buffer number, setting to 1");
@@ -129,15 +132,15 @@ void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
         outlet_new((t_object *) x, "signal");
     }
 
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.in~_created"), x->bufIndex, x);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.in~_created"), x->bufIndex, x);
     return x;
 }
 
 void ears_intilde_free(t_ears_intilde *x)
 {
-    if (x->earsMapParent)
-        object_method(x->earsMapParent, gensym("ears.in~_deleted"), x);
+    if (x->earsProcessParent)
+        object_method(x->earsProcessParent, gensym("ears.in~_deleted"), x);
     dsp_free((t_pxobject *) x);
 }
 
@@ -186,7 +189,7 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
 void ears_intilde_dsp64(t_ears_intilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
     x->position = 0;
-    if (x->earsMapParent)
+    if (x->earsProcessParent)
         object_method(dsp64, gensym("dsp_add64"), x, ears_intilde_perform64, 0, NULL);
 }
 

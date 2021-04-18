@@ -6,7 +6,7 @@
 //
 
 
-#include "ears.map.h"
+#include "ears.process_commons.h"
 #include <z_dsp.h>
 
 t_class *ears_tovector_class;
@@ -14,8 +14,8 @@ t_class *ears_tovector_class;
 typedef struct _ears_tovector
 {
     t_pxobject x_obj;
-    t_object* earsMapParent;
-    double vec[EARSMAP_MAX_VS];
+    t_object* earsProcessParent;
+    double vec[EARS_PROCESS_MAX_VS];
     long n;
     long leftalign;
     long autoclear;
@@ -42,6 +42,9 @@ void ears_tovector_perform64(t_ears_tovector *x, t_dspchain *dsp64, double **ins
 
 int C74_EXPORT main()
 {
+    common_symbols_init();
+    llllobj_common_symbols_init();
+    
     ears_tovector_class = class_new("ears.tovector~",
                                     (method) ears_tovector_new,
                                     (method) ears_tovector_free,
@@ -78,7 +81,7 @@ int C74_EXPORT main()
 void *ears_tovector_new(t_symbol *s, t_atom_long ac, t_atom* av)
 {
     t_ears_tovector *x = (t_ears_tovector*) object_alloc(ears_tovector_class);
-    x->earsMapParent = getParentEarsMap((t_object *) x);
+    x->earsProcessParent = getParentEarsProcess((t_object *) x);
     x->autoclear = 1;
     attr_args_process(x, ac, av);
     dsp_setup((t_pxobject *) x, 0);
@@ -95,21 +98,21 @@ void ears_tovector_free(t_ears_tovector *x)
 
 void ears_tovector_int(t_ears_tovector *x, t_atom_long i)
 {
-    if (int n = x->n; n < EARSMAP_MAX_VS) {
+    if (int n = x->n; n < EARS_PROCESS_MAX_VS) {
         x->vec[n++] = i;
     }
 }
 
 void ears_tovector_float(t_ears_tovector *x, double f)
 {
-    if (int n = x->n; n < EARSMAP_MAX_VS) {
+    if (int n = x->n; n < EARS_PROCESS_MAX_VS) {
         x->vec[n++] = f;
     }
 }
 
 void ears_tovector_list(t_ears_tovector *x, t_symbol *s, long ac, t_atom *av)
 {
-    long end = MIN(ac, EARSMAP_MAX_VS);
+    long end = MIN(ac, EARS_PROCESS_MAX_VS);
     for (int n = x->n; n < end; n++) {
         x->vec[n] = atom_getfloat(av++);
     }
@@ -128,11 +131,11 @@ void ears_tovector_set(t_ears_tovector *x, t_symbol *s, long ac, t_atom *av)
         object_error((t_object *) x, "set: not enough values");
     }
     long n = atom_getlong(av++) - 1;
-    if (n < 0 || n >= EARSMAP_MAX_VS) {
+    if (n < 0 || n >= EARS_PROCESS_MAX_VS) {
         object_error((t_object *) x, "set: bad starting value");
     }
 
-    long end = MIN(n + ac - 1, EARSMAP_MAX_VS);
+    long end = MIN(n + ac - 1, EARS_PROCESS_MAX_VS);
     
     for (int i = n - 1; i < end; i++) {
         x->vec[i] = atom_getfloat(av++);
@@ -161,7 +164,7 @@ void ears_tovector_perform64(t_ears_tovector *x, t_dspchain *dsp64, double **ins
 void ears_tovector_dsp64(t_ears_tovector *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
     object_method(dsp64, gensym("dsp_add64"), x, ears_tovector_perform64, 0, NULL);
-    if (!x->earsMapParent) {
-        object_warn((t_object *) x, "Can cause trouble if used outside ears.map~");
+    if (!x->earsProcessParent) {
+        object_warn((t_object *) x, "Can cause trouble if used outside ears.process~");
     }
 }

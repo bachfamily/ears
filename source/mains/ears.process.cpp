@@ -12,7 +12,6 @@
 
 #include <ext.h>
 #include <ext_obex.h>
-#include <z_dsp.h> // ???
 #include <ext_wind.h>
 #include <ext_buffer.h>
 #include <jpatcher_api.h>
@@ -21,7 +20,7 @@
 #include <map>
 #include <vector>
 #include <set>
-#include "ears.map.h"
+#include "ears.process_commons.h"
 
 
 
@@ -29,13 +28,13 @@
 // Shouldn't be necessary with recent version of the Max SDK, but it won't hurt either
 #define object_method_direct_cpp(rt, sig, x, s, ...) ((rt (*)sig)object_method_direct_getmethod((t_object *)x, s))((t_object*)object_method_direct_getobject((t_object *)x, s), __VA_ARGS__)
 
-t_class *earsmap_class;
+t_class *earsprocess_class;
 
 template <typename T>
-class earsmapMultiMap
+class earsprocessMultiMap
 {
 public:
-    earsmapMultiMap() : maxIdx(0) { }
+    earsprocessMultiMap() : maxIdx(0) { }
     
     std::map<t_atom_long, std::unordered_set<T>*> theMap;
     
@@ -68,12 +67,12 @@ public:
     }
 };
 
-typedef earsmapMultiMap<void*> earsInOutlets;
+typedef earsprocessMultiMap<void*> earsInOutlets;
 
-class earsOuts : public earsmapMultiMap<t_object *>
+class earsOuts : public earsprocessMultiMap<t_object *>
 {
 public:
-    using earsmapMultiMap::earsmapMultiMap;
+    using earsprocessMultiMap::earsprocessMultiMap;
     
     void setOutlets(long nOutlets, void** outlets) {
         for (auto i: theMap) {
@@ -88,11 +87,11 @@ public:
 
 typedef std::unordered_set<t_object*> objectSet;
 
-typedef struct _earsmap
+typedef struct _earsprocess
 {
     t_earsbufobj e_ob;
     
-    t_symbol* inbuf[EARSMAP_MAX_INPUT_BUFFERS];
+    t_symbol* inbuf[EARS_PROCESS_MAX_INPUT_BUFFERS];
     
     t_patcher *parent_patch;
 
@@ -117,13 +116,13 @@ typedef struct _earsmap
     
     t_atom_long nBufInlets;
     t_atom_long nBufOutlets;
-    t_atom_long nOutBufChans[EARSMAP_MAX_OUTPUT_BUFFERS];
+    t_atom_long nOutBufChans[EARS_PROCESS_MAX_OUTPUT_BUFFERS];
     t_atom_long nDataOutlets;
     
     earsInOutlets *theInOutlets;
     //earsOuts *theOuts;
     std::set<t_object*> *theOuts;
-    void *dataOutlets[EARSMAP_MAX_DATA_OUTLETS];
+    void *dataOutlets[EARS_PROCESS_MAX_DATA_OUTLETS];
 
     t_patcher *client_patch;
     long client_argc;
@@ -131,65 +130,65 @@ typedef struct _earsmap
     
     objectSet* earsInTildeObjects;
     objectSet* earsOutTildeObjects;
-    objectSet* earsMapinfoObjects;
+    objectSet* earsprocessinfoObjects;
     
     t_bool generator;
     
-} t_earsmap;
+} t_earsprocess;
 
 
 
-void *earsmap_new(t_symbol *s, long argc, t_atom *argv);
-void earsmap_free(t_earsmap *x);
-void earsmap_assist(t_earsmap *x, void *b, long m, long a, char *s);
+void *earsprocess_new(t_symbol *s, long argc, t_atom *argv);
+void earsprocess_free(t_earsprocess *x);
+void earsprocess_assist(t_earsprocess *x, void *b, long m, long a, char *s);
 
 
-void earsmap_deletepatch(t_earsmap *x, t_symbol *msg, long argc, t_atom *argv);
-void earsmap_clear(t_earsmap *x);
-void earsmap_loadpatch(t_earsmap *x, t_symbol *s, long argc, t_atom *argv);
+void earsprocess_deletepatch(t_earsprocess *x, t_symbol *msg, long argc, t_atom *argv);
+void earsprocess_clear(t_earsprocess *x);
+void earsprocess_loadpatch(t_earsprocess *x, t_symbol *s, long argc, t_atom *argv);
 
 
-void earsmap_bang(t_earsmap *x);
-void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av);
+void earsprocess_bang(t_earsprocess *x);
+void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *av);
 
-void earsmap_stop(t_earsmap *x);
-void earsmap_int(t_earsmap *x, t_atom_long n);
-void earsmap_float(t_earsmap *x, t_atom_float f);
-void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long argc, t_atom *argv);
+void earsprocess_stop(t_earsprocess *x);
+void earsprocess_int(t_earsprocess *x, t_atom_long n);
+void earsprocess_float(t_earsprocess *x, t_atom_float f);
+void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long argc, t_atom *argv);
 
-void earsmap_dsp64(t_earsmap *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
+void earsprocess_dsp64(t_earsprocess *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
 
-void earsmap_dblclick(t_earsmap *x);
-void earsmap_open(t_earsmap *x);
-void earsmap_pclose(t_earsmap *x);
-void earsmap_wclose(t_earsmap *x);
+void earsprocess_dblclick(t_earsprocess *x);
+void earsprocess_open(t_earsprocess *x);
+void earsprocess_pclose(t_earsprocess *x);
+void earsprocess_wclose(t_earsprocess *x);
 
-void earsmap_pupdate(t_earsmap *x, void *b, t_patcher *p);
-void *earsmap_subpatcher(t_earsmap *x, long index, void *arg);
-void earsmap_parentpatcher(t_earsmap *x, t_patcher **parent);
+void earsprocess_pupdate(t_earsprocess *x, void *b, t_patcher *p);
+void *earsprocess_subpatcher(t_earsprocess *x, long index, void *arg);
+void earsprocess_parentpatcher(t_earsprocess *x, t_patcher **parent);
 
-void earsmap_setupOutObjects(t_earsmap *x);
+void earsprocess_setupOutObjects(t_earsprocess *x);
 
-void earsmap_earsintildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *in);
-void earsmap_earsintildedeleted(t_earsmap *x, t_object *in);
-void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *out);
-void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out);
+void earsprocess_earsintildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *in);
+void earsprocess_earsintildedeleted(t_earsprocess *x, t_object *in);
+void earsprocess_earsouttildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *out);
+void earsprocess_earsouttildedeleted(t_earsprocess *x, t_object *out);
 
-void earsmap_earsincreated(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet);
-void earsmap_earsoutcreated(t_earsmap *x, long maxindex, t_object *obj);
-void earsmap_earsindeleted(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet);
-void earsmap_earsoutdeleted(t_earsmap *x, t_object *obj);
+void earsprocess_earsincreated(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet);
+void earsprocess_earsoutcreated(t_earsprocess *x, long maxindex, t_object *obj);
+void earsprocess_earsindeleted(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet);
+void earsprocess_earsoutdeleted(t_earsprocess *x, t_object *obj);
 
-void earsmap_earsmapinfocreated(t_earsmap *x, t_object *obj);
-void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj);
+void earsprocess_earsprocessinfocreated(t_earsprocess *x, t_object *obj);
+void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj);
 
-void earsmap_autoclock(t_earsmap *x, t_patcher *p);
+void earsprocess_autoclock(t_earsprocess *x, t_patcher *p);
 
-t_max_err earsmap_set_duration(t_earsmap *x, t_object *attr, long argc, t_atom *argv);
-t_max_err earsmap_get_duration(t_earsmap *x, t_object *attr, long *argc, t_atom **argv);
+t_max_err earsprocess_set_duration(t_earsprocess *x, t_object *attr, long argc, t_atom *argv);
+t_max_err earsprocess_get_duration(t_earsprocess *x, t_object *attr, long *argc, t_atom **argv);
 
-t_max_err earsmap_set_vs(t_earsmap *x, t_object *attr, long argc, t_atom *argv);
-t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_atom **argv);
+t_max_err earsprocess_set_vs(t_earsprocess *x, t_object *attr, long argc, t_atom *argv);
+t_max_err earsprocess_get_ownsdspchain(t_earsprocess *x, t_object *attr, long *argc, t_atom **argv);
 
 
 
@@ -212,97 +211,97 @@ int C74_EXPORT main()
         return 1;
     }
     
-    earsmap_class = class_new("ears.map~", (method)earsmap_new, (method)earsmap_free, sizeof(t_earsmap), NULL, A_GIMME, 0);
+    earsprocess_class = class_new("ears.process~", (method)earsprocess_new, (method)earsprocess_free, sizeof(t_earsprocess), NULL, A_GIMME, 0);
     
     
     
-    //class_addmethod(earsmap_class, (method)earsmap_assist, "assist", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_open, "open", 0);
-    class_addmethod(earsmap_class, (method)earsmap_open, "dblclick", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_wclose, "wclose", 0);
+    //class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_open, "open", 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_open, "dblclick", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_wclose, "wclose", 0);
     
-    class_addmethod(earsmap_class, (method)earsmap_pupdate, "pupdate", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_subpatcher, "subpatcher", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_parentpatcher, "parentpatcher", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_pupdate, "pupdate", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_subpatcher, "subpatcher", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_parentpatcher, "parentpatcher", A_CANT, 0);
     
-    class_addmethod(earsmap_class, (method)earsmap_bang, "bang", 0);
-    class_addmethod(earsmap_class, (method)earsmap_stop, "stop", 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_bang, "bang", 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_stop, "stop", 0);
 
-    class_addmethod(earsmap_class, (method)earsmap_int, "int", A_LONG, 0);
-    class_addmethod(earsmap_class, (method)earsmap_float, "float", A_FLOAT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_anything, "list", A_GIMME, 0);
-    class_addmethod(earsmap_class, (method)earsmap_anything, "anything", A_GIMME, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_anything, "list", A_GIMME, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
 
-    class_addmethod(earsmap_class, (method)earsmap_loadpatch, "loadpatch", A_DEFER, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_loadpatch, "loadpatch", A_DEFER, 0);
     
-    class_addmethod(earsmap_class, (method)earsmap_earsintildecreated, "ears.in~_created", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsouttildecreated, "ears.out~_created", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsintildedeleted, "ears.in~_deleted", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsouttildedeleted, "ears.out~_deleted", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsintildecreated, "ears.in~_created", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsouttildecreated, "ears.out~_created", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsintildedeleted, "ears.in~_deleted", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsouttildedeleted, "ears.out~_deleted", A_CANT, 0);
 
-    class_addmethod(earsmap_class, (method)earsmap_earsincreated, "ears.in_created", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsoutcreated, "ears.out_created", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsindeleted, "ears.in_deleted", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsoutdeleted, "ears.out_deleted", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsincreated, "ears.in_created", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsoutcreated, "ears.out_created", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsindeleted, "ears.in_deleted", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsoutdeleted, "ears.out_deleted", A_CANT, 0);
     
-    class_addmethod(earsmap_class, (method)earsmap_earsmapinfocreated, "ears.mapinfo~_created", A_CANT, 0);
-    class_addmethod(earsmap_class, (method)earsmap_earsmapinfodeleted, "ears.mapinfo~_deleted", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsprocessinfocreated, "ears.processinfo~_created", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_earsprocessinfodeleted, "ears.processinfo~_deleted", A_CANT, 0);
     
-    earsbufobj_class_add_outname_attr(earsmap_class);
-    earsbufobj_class_add_naming_attr(earsmap_class);
+    earsbufobj_class_add_outname_attr(earsprocess_class);
+    earsbufobj_class_add_naming_attr(earsprocess_class);
 
-    CLASS_ATTR_OBJ(earsmap_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsmap, e_ob);
-    CLASS_ATTR_ACCESSORS(earsmap_class, "ownsdspchain", (method) earsmap_get_ownsdspchain, NULL);
-    CLASS_ATTR_INVISIBLE(earsmap_class, "ownsdspchain", 0);
+    CLASS_ATTR_OBJ(earsprocess_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsprocess, e_ob);
+    CLASS_ATTR_ACCESSORS(earsprocess_class, "ownsdspchain", (method) earsprocess_get_ownsdspchain, NULL);
+    CLASS_ATTR_INVISIBLE(earsprocess_class, "ownsdspchain", 0);
     
-    CLASS_ATTR_LONG(earsmap_class, "vs", 0, t_earsmap, vs);
-    CLASS_ATTR_ACCESSORS(earsmap_class, "vs", NULL, (method) earsmap_set_vs);
-    CLASS_ATTR_LABEL(earsmap_class, "vs", 0, "Vector Size");
+    CLASS_ATTR_LONG(earsprocess_class, "vs", 0, t_earsprocess, vs);
+    CLASS_ATTR_ACCESSORS(earsprocess_class, "vs", NULL, (method) earsprocess_set_vs);
+    CLASS_ATTR_LABEL(earsprocess_class, "vs", 0, "Vector Size");
 
-    CLASS_ATTR_LONG(earsmap_class, "sr", 0, t_earsmap, sr);
-    CLASS_ATTR_FILTER_MIN(earsmap_class, "sr", 0);
-    CLASS_ATTR_LABEL(earsmap_class, "sr", 0, "Default Sample Rate");
+    CLASS_ATTR_LONG(earsprocess_class, "sr", 0, t_earsprocess, sr);
+    CLASS_ATTR_FILTER_MIN(earsprocess_class, "sr", 0);
+    CLASS_ATTR_LABEL(earsprocess_class, "sr", 0, "Default Sample Rate");
 
     /*
-    CLASS_ATTR_LONG(earsmap_class, "durationpolicy", 0, t_earsmap, durationpolicy);
-    CLASS_ATTR_STYLE_LABEL(earsmap_class, "durationpolicy", 0, "enumindex", "Duration Policy");
-    CLASS_ATTR_FILTER_CLIP(earsmap_class, "durationpolicy", 0, 2);
-    CLASS_ATTR_ENUMINDEX(earsmap_class, "durationpolicy", 0, "Shortest Longest Fixed");
+    CLASS_ATTR_LONG(earsprocess_class, "durationpolicy", 0, t_earsprocess, durationpolicy);
+    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "durationpolicy", 0, "enumindex", "Duration Policy");
+    CLASS_ATTR_FILTER_CLIP(earsprocess_class, "durationpolicy", 0, 2);
+    CLASS_ATTR_ENUMINDEX(earsprocess_class, "durationpolicy", 0, "Shortest Longest Fixed");
      */
     
     
-    CLASS_ATTR_ATOM_ARRAY(earsmap_class, "duration", 0, t_earsmap, dummydur, 2);
-    CLASS_ATTR_ACCESSORS(earsmap_class, "duration", (method) earsmap_get_duration, (method) earsmap_set_duration);
+    CLASS_ATTR_ATOM_ARRAY(earsprocess_class, "duration", 0, t_earsprocess, dummydur, 2);
+    CLASS_ATTR_ACCESSORS(earsprocess_class, "duration", (method) earsprocess_get_duration, (method) earsprocess_set_duration);
 
-    //CLASS_ATTR_LONG(earsmap_class, "durationpolicy", 0, t_earsmap, durationpolicy);
-    //CLASS_ATTR_STYLE_LABEL(earsmap_class, "durationpolicy", 0, "enumindex", "Duration Policy");
-    //CLASS_ATTR_FILTER_CLIP(earsmap_class, "durationpolicy", 0, 2);
-    //CLASS_ATTR_ENUMINDEX(earsmap_class, "durationpolicy", 0, "Shortest Longest Fixed");
+    //CLASS_ATTR_LONG(earsprocess_class, "durationpolicy", 0, t_earsprocess, durationpolicy);
+    //CLASS_ATTR_STYLE_LABEL(earsprocess_class, "durationpolicy", 0, "enumindex", "Duration Policy");
+    //CLASS_ATTR_FILTER_CLIP(earsprocess_class, "durationpolicy", 0, 2);
+    //CLASS_ATTR_ENUMINDEX(earsprocess_class, "durationpolicy", 0, "Shortest Longest Fixed");
 
-    //CLASS_ATTR_DOUBLE(earsmap_class, "tail", 0, t_earsmap, tail);
-    //CLASS_ATTR_LABEL(earsmap_class, "tail", 0, "Tail or Fixed Duration");
-    //CLASS_ATTR_FILTER_MIN(earsmap_class, "tail", 0);
+    //CLASS_ATTR_DOUBLE(earsprocess_class, "tail", 0, t_earsprocess, tail);
+    //CLASS_ATTR_LABEL(earsprocess_class, "tail", 0, "Tail or Fixed Duration");
+    //CLASS_ATTR_FILTER_MIN(earsprocess_class, "tail", 0);
     
-    CLASS_ATTR_LONG(earsmap_class, "scalarmode", 0, t_earsmap, scalarmode);
-    CLASS_ATTR_STYLE_LABEL(earsmap_class, "scalarmode", 0, "onoff", "Scalar Mode");
-    CLASS_ATTR_FILTER_CLIP(earsmap_class, "scalarmode", 0, 1);
+    CLASS_ATTR_LONG(earsprocess_class, "scalarmode", 0, t_earsprocess, scalarmode);
+    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "scalarmode", 0, "onoff", "Scalar Mode");
+    CLASS_ATTR_FILTER_CLIP(earsprocess_class, "scalarmode", 0, 1);
     
-    CLASS_ATTR_LONG(earsmap_class, "reload", 0, t_earsmap, reload);
-    CLASS_ATTR_STYLE_LABEL(earsmap_class, "reload", 0, "onoff", "Reload");
-    CLASS_ATTR_FILTER_CLIP(earsmap_class, "reload", 0, 1);
+    CLASS_ATTR_LONG(earsprocess_class, "reload", 0, t_earsprocess, reload);
+    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "reload", 0, "onoff", "Reload");
+    CLASS_ATTR_FILTER_CLIP(earsprocess_class, "reload", 0, 1);
     
-    CLASS_ATTR_LONG(earsmap_class, "autoclock", 0, t_earsmap, autoclock);
-    CLASS_ATTR_STYLE_LABEL(earsmap_class, "autoclock", 0, "onoff", "Automatic Clock Message");
-    CLASS_ATTR_FILTER_CLIP(earsmap_class, "autoclock", 0, 1);
+    CLASS_ATTR_LONG(earsprocess_class, "autoclock", 0, t_earsprocess, autoclock);
+    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "autoclock", 0, "onoff", "Automatic Clock Message");
+    CLASS_ATTR_FILTER_CLIP(earsprocess_class, "autoclock", 0, 1);
 
-    class_register(CLASS_BOX, earsmap_class);
+    class_register(CLASS_BOX, earsprocess_class);
     
     return 0;
 }
 
 
 
-t_max_err earsmap_set_vs(t_earsmap *x, t_object *attr, long argc, t_atom *argv)
+t_max_err earsprocess_set_vs(t_earsprocess *x, t_object *attr, long argc, t_atom *argv)
 {
     if (argc != 1) {
         object_error((t_object *) x, "vs: wrong number of arguments");
@@ -322,7 +321,7 @@ t_max_err earsmap_set_vs(t_earsmap *x, t_object *attr, long argc, t_atom *argv)
 
 
 
-t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_atom **argv)
+t_max_err earsprocess_get_ownsdspchain(t_earsprocess *x, t_object *attr, long *argc, t_atom **argv)
 {
     char alloc = false;
     
@@ -335,7 +334,7 @@ t_max_err earsmap_get_ownsdspchain(t_earsmap *x, t_object *attr, long *argc, t_a
 }
 
 
-t_max_err earsmap_set_duration(t_earsmap *x, t_object *attr, long argc, t_atom *argv)
+t_max_err earsprocess_set_duration(t_earsprocess *x, t_object *attr, long argc, t_atom *argv)
 {
     t_llll *ll = llll_parse(argc, argv);
     
@@ -402,7 +401,7 @@ t_max_err earsmap_set_duration(t_earsmap *x, t_object *attr, long argc, t_atom *
 
 
 
-t_max_err earsmap_get_duration(t_earsmap *x, t_object *attr, long *argc, t_atom **argv)
+t_max_err earsprocess_get_duration(t_earsprocess *x, t_object *attr, long *argc, t_atom **argv)
 {
     char alloc;
     atom_alloc_array(2, argc, argv, &alloc);
@@ -444,7 +443,7 @@ t_max_err earsmap_get_duration(t_earsmap *x, t_object *attr, long *argc, t_atom 
  */
 
 
-void earsmap_earsintildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *in)
+void earsprocess_earsintildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *in)
 {
     x->earsInTildeObjects->insert(in);
     x->generator = false;
@@ -452,58 +451,58 @@ void earsmap_earsintildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *in
         x->nBufInlets = bufIndex;
 }
 
-void earsmap_earsintildedeleted(t_earsmap *x, t_object *in)
+void earsprocess_earsintildedeleted(t_earsprocess *x, t_object *in)
 {
     x->earsInTildeObjects->erase(in);
 }
 
-void earsmap_earsouttildecreated(t_earsmap *x, t_atom_long bufIndex, t_object *out)
+void earsprocess_earsouttildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *out)
 {
     x->earsOutTildeObjects->insert(out);
     if (bufIndex > x->nBufOutlets)
         x->nBufOutlets = bufIndex;
 }
 
-void earsmap_earsouttildedeleted(t_earsmap *x, t_object *out)
+void earsprocess_earsouttildedeleted(t_earsprocess *x, t_object *out)
 {
     x->earsOutTildeObjects->erase(out);
 }
 
-void earsmap_earsincreated(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet) {
+void earsprocess_earsincreated(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet) {
     for (int i = 0; i < n; i++)
         x->theInOutlets->insert(*(index++), *(outlet++));
 }
 
-void earsmap_earsoutcreated(t_earsmap *x, long maxindex, t_object *obj) {
+void earsprocess_earsoutcreated(t_earsprocess *x, long maxindex, t_object *obj) {
     x->theOuts->insert(obj);
     if (x->nDataOutlets < maxindex)
         x->nDataOutlets = maxindex;
 }
 
-void earsmap_earsindeleted(t_earsmap *x, t_atom_long n, t_atom_long *index, void **outlet) {
+void earsprocess_earsindeleted(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet) {
     for (int i = 0; i < n; i++)
         x->theInOutlets->remove(*(index++), *(outlet++));}
 
-void earsmap_earsoutdeleted(t_earsmap *x, t_object *obj) {
+void earsprocess_earsoutdeleted(t_earsprocess *x, t_object *obj) {
     x->theOuts->erase(obj);
 }
 
-void earsmap_earsmapinfocreated(t_earsmap *x, t_object *obj)
+void earsprocess_earsprocessinfocreated(t_earsprocess *x, t_object *obj)
 {
-    x->earsMapinfoObjects->insert(obj);
+    x->earsprocessinfoObjects->insert(obj);
 }
 
-void earsmap_earsmapinfodeleted(t_earsmap *x, t_object *obj)
+void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 {
-    x->earsMapinfoObjects->erase(obj);
+    x->earsprocessinfoObjects->erase(obj);
 }
 
 
 // 1 arg: patch name
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
-void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
+void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
 {
-    t_earsmap *x = (t_earsmap *) object_alloc(earsmap_class);
+    t_earsprocess *x = (t_earsprocess *) object_alloc(earsprocess_class);
     t_symbol *patchname = nullptr;
     
     earsbufobj_init((t_earsbufobj*) x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
@@ -538,7 +537,7 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     x->theOuts = new std::set<t_object*>;
     x->earsInTildeObjects = new objectSet;
     x->earsOutTildeObjects = new objectSet;
-    x->earsMapinfoObjects = new objectSet;
+    x->earsprocessinfoObjects = new objectSet;
 
     // Get parent patcher
     
@@ -548,7 +547,7 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     
     x->nBufInlets = 1;
     if (patchname)
-        earsmap_loadpatch(x, patchname, 0, NULL);
+        earsprocess_loadpatch(x, patchname, 0, NULL);
     
     // e = buffer; E = buffer list;
 
@@ -574,7 +573,7 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, args);
     llll_free(args);
 
-    earsmap_setupOutObjects(x);
+    earsprocess_setupOutObjects(x);
 
     if (x->vs == 0)
         x->vs = 128;
@@ -584,22 +583,22 @@ void *earsmap_new(t_symbol *s, long argc, t_atom *argv)
     return x;
 }
 
-void earsmap_free(t_earsmap *x)
+void earsprocess_free(t_earsprocess *x)
 {
-    earsmap_wclose(x);
+    earsprocess_wclose(x);
     object_free(x->client_patch);
     
     delete x->theInOutlets;
     delete x->theOuts;
     delete x->earsInTildeObjects;
     delete x->earsOutTildeObjects;
-    delete x->earsMapinfoObjects;
+    delete x->earsprocessinfoObjects;
     
     earsbufobj_free((t_earsbufobj*) x);
 }
 
 
-int earsmap_setSubAssoc(t_patcher *p, t_object *x)
+int earsprocess_setSubAssoc(t_patcher *p, t_object *x)
 {
     t_object *assoc;
     
@@ -610,21 +609,21 @@ int earsmap_setSubAssoc(t_patcher *p, t_object *x)
     return 0;
 }
 
-void earsmap_setupOutObjects(t_earsmap *x)
+void earsprocess_setupOutObjects(t_earsprocess *x)
 {
     for (t_object* o: *x->theOuts) {
         object_method(o, gensym("setoutlets"), x->nDataOutlets, x->dataOutlets);
     }
 }
 
-void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
+void earsprocess_loadpatch(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
 {
     
     x->theInOutlets->clear();
     x->theOuts->clear();
     x->earsInTildeObjects->clear();
     x->earsOutTildeObjects->clear();
-    x->earsMapinfoObjects->clear();
+    x->earsprocessinfoObjects->clear();
 
     x->generator = true;
     
@@ -656,19 +655,19 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
         object_free(x->client_patch);
     }
     
-    t_symbol *ps_earsmap = gensym(EARSMAP_SPECIALSYM);
+    t_symbol *ps_earsprocess = gensym(EARS_PROCESS_SPECIALSYM);
     t_symbol *ps_inhibit_subpatcher_vis = gensym("inhibit_subpatcher_vis");
     t_symbol *ps_PAT = gensym("#P");
     
     // Store the old loading symbols
     
-    t_object *previous = ps_earsmap->s_thing;
+    t_object *previous = ps_earsprocess->s_thing;
     t_object *save_inhibit_state = ps_inhibit_subpatcher_vis->s_thing;
     t_patcher *saveparent = (t_patcher *)ps_PAT->s_thing;
     
     // Bind to the loading symbols
     
-    ps_earsmap->s_thing = (t_object *) x;
+    ps_earsprocess->s_thing = (t_object *) x;
     ps_inhibit_subpatcher_vis->s_thing = (t_object *) -1;
     ps_PAT->s_thing = x->parent_patch;
     
@@ -681,7 +680,7 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
     
     // Restore previous loading symbol bindings
     
-    ps_earsmap->s_thing = previous;
+    ps_earsprocess->s_thing = previous;
     ps_inhibit_subpatcher_vis->s_thing = save_inhibit_state;
     ps_PAT->s_thing = (t_object *) saveparent;
 
@@ -691,6 +690,8 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
         dsp_setloadupdate(savedLoadUpdate);
         return;
     }
+    
+    x->patch_name = patchname;
     
     if (!ispatcher((t_object *)x->client_patch)) {
         object_error((t_object *) x, "%s is not a patch", name);
@@ -706,13 +707,13 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
     
     // this apparently associates the patcher to the objects it contains
     // what is the difference wrt the "iterate" method?
-    object_method(x->client_patch, gensym("traverse"), earsmap_setSubAssoc, x, &result);
+    object_method(x->client_patch, _sym_traverse, earsprocess_setSubAssoc, x, &result);
     
     loadbang_resume();
     dsp_setloadupdate(savedLoadUpdate);
     
     if (x->running) {
-        earsmap_setupOutObjects(x);
+        earsprocess_setupOutObjects(x);
     }
     
     return;
@@ -720,26 +721,26 @@ void earsmap_loadpatch(t_earsmap *x, t_symbol *patchname, long ac, t_atom *av)
 
 
 
-void earsmap_open(t_earsmap *x)
+void earsprocess_open(t_earsprocess *x)
 {
     if (x->client_patch)
-        object_method((t_object *) x->client_patch, gensym("front"));
+        object_method((t_object *) x->client_patch, _sym_front);
 }
 
-void earsmap_wclose(t_earsmap *x)
+void earsprocess_wclose(t_earsprocess *x)
 {
     if (x->client_patch)
-        object_method((t_object *) x->client_patch, gensym("wclose"));
+        object_method((t_object *) x->client_patch, _sym_wclose);
 }
 
 
-// check: does Max call this when the patch gets updated?
-void earsmap_pupdate(t_earsmap *x, void *b, t_patcher *p)
+// never called apparently
+void earsprocess_pupdate(t_earsprocess *x, void *b, t_patcher *p)
 {
-    object_post((t_object *) x, "pupdate");
+    //
 }
 
-void *earsmap_subpatcher(t_earsmap *x, long index, void *arg)
+void *earsprocess_subpatcher(t_earsprocess *x, long index, void *arg)
 {
     // Report subpatchers if requested by an object that is not a dspchain
     
@@ -754,26 +755,26 @@ void *earsmap_subpatcher(t_earsmap *x, long index, void *arg)
         return nullptr;
 }
 
-void earsmap_parentpatcher(t_earsmap *x, t_patcher **parent)
+void earsprocess_parentpatcher(t_earsprocess *x, t_patcher **parent)
 {
     *parent = x->parent_patch;
 }
 
-void earsmap_int(t_earsmap *x, t_atom_long i)
+void earsprocess_int(t_earsprocess *x, t_atom_long i)
 {
     t_atom a[1];
     atom_setlong(a, i);
-    earsmap_anything(x, gensym("int"), 1, a);
+    earsprocess_anything(x, _sym_int, 1, a);
 }
 
-void earsmap_float(t_earsmap *x, t_atom_float f)
+void earsprocess_float(t_earsprocess *x, t_atom_float f)
 {
     t_atom a[1];
     atom_setfloat(a, f);
-    earsmap_anything(x, gensym("float"), 1, a);
+    earsprocess_anything(x, _sym_float, 1, a);
 }
 
-void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom* av)
+void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
 {
     long inlet = proxy_getinlet((t_object *) x);
     
@@ -796,12 +797,12 @@ void earsmap_anything(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom* av)
     }
     
     if (inlet == 0)
-        earsmap_bang(x);
+        earsprocess_bang(x);
     
     llll_free(parsed);
 }
 
-void earsmap_bang(t_earsmap *x)
+void earsprocess_bang(t_earsprocess *x)
 {
     
     if (!x->client_patch)
@@ -810,19 +811,19 @@ void earsmap_bang(t_earsmap *x)
     long inlet = proxy_getinlet((t_object *) x);
     
     if (inlet > 0) {
-        earsmap_anything(x, _sym_bang, 0, NULL);
+        earsprocess_anything(x, _sym_bang, 0, NULL);
     } else {
-        defer(x, (method) earsmap_bang_do, NULL, 0, NULL);
+        defer(x, (method) earsprocess_bang_do, NULL, 0, NULL);
     }
 
 }
 
-void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
+void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *av)
 {
     double sr;
     
     if (x->reload)
-        earsmap_loadpatch((t_earsmap*) x, x->patch_name, x->client_argc, x->client_argv);
+        earsprocess_loadpatch((t_earsprocess*) x, x->patch_name, x->client_argc, x->client_argv);
     
     // Get number of buffers on which to iterate
     long num_buffer_to_iter = LONG_MAX;
@@ -842,8 +843,8 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, i, num_buffer_to_iter, true);
     
     for (int iterBuf = 0; iterBuf < num_buffer_to_iter; iterBuf++) {
-        bufferData bufs[EARSMAP_MAX_INPUT_BUFFERS];
-        t_atom bufDurs[EARSMAP_MAX_INPUT_BUFFERS];
+        bufferData bufs[EARS_PROCESS_MAX_INPUT_BUFFERS];
+        t_atom bufDurs[EARS_PROCESS_MAX_INPUT_BUFFERS];
 
         t_atom_long maxDur = 0;
         t_atom_long minDur = 0;
@@ -896,13 +897,13 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
         t_object *setclock = (t_object *) newinstance(gensym("setclock"), 1, &scarg);
 
         if (iterBuf == 0) {
-            earsmap_autoclock(x, x->client_patch);
-            for (t_object* o : *x->earsMapinfoObjects) {
+            earsprocess_autoclock(x, x->client_patch);
+            for (t_object* o : *x->earsprocessinfoObjects) {
                 object_method(o, gensym("prepare"), &scarg);
             }
         }
         
-        for (t_object* o : *x->earsMapinfoObjects) {
+        for (t_object* o : *x->earsprocessinfoObjects) {
             object_method(o, gensym("start"), x->nBufInlets, bufDurs);
         }
         
@@ -941,7 +942,7 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
             
             object_free((t_object *) chain);
             
-            bufferData outBuf[EARSMAP_MAX_OUTPUT_BUFFERS];
+            bufferData outBuf[EARS_PROCESS_MAX_OUTPUT_BUFFERS];
             
             for (int i = 0; i < x->nBufOutlets; i++) {            
                 t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, i, iterBuf);
@@ -959,7 +960,7 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
             }
         }
         
-        for (const auto &i : *x->earsMapinfoObjects) {
+        for (const auto &i : *x->earsprocessinfoObjects) {
             object_method(i, gensym("end"));
         }
         
@@ -971,21 +972,22 @@ void earsmap_bang_do(t_earsmap *x, t_symbol *s, t_atom_long ac, t_atom *av)
         earsbufobj_outlet_buffer((t_earsbufobj *)x, i);
 }
 
-void earsmap_stop(t_earsmap *x)
+void earsprocess_stop(t_earsprocess *x)
 {
     x->stopped = true;
 }
 
 
-void earsmap_autoclock(t_earsmap *x, t_patcher *p)
+void earsprocess_autoclock(t_earsprocess *x, t_patcher *p)
 {
     for (t_box *b = jpatcher_get_firstobject(p); b; b = jbox_get_nextobject(b))
     {
         t_object *o = jbox_get_object(b);
-        if (object_classname(o) == gensym("ears.map~"))
+        if (object_classname(o) == gensym("ears.process~"))
             continue;
         method c = zgetfn(o, gensym("clock"));
-        if (c)
+        if (c ||
+            object_classname(o) == gensym("pipe"))
             (c)(o, x->clock_name);
         
         
@@ -993,7 +995,7 @@ void earsmap_autoclock(t_earsmap *x, t_patcher *p)
         long index = 0;
         
         while (b && (subpatch = (t_patcher *)object_subpatcher(o, &index, x))) {
-            earsmap_autoclock(x, subpatch);
+            earsprocess_autoclock(x, subpatch);
         }
     }
 }
