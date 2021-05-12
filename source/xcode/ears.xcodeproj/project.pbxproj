@@ -7065,7 +7065,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7104,7 +7103,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7144,7 +7142,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7183,7 +7180,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7614,7 +7610,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7653,7 +7648,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7692,7 +7686,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7730,7 +7723,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7916,7 +7908,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -7955,7 +7946,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9264,7 +9254,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9303,7 +9292,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9416,7 +9404,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9455,7 +9442,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9860,7 +9846,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9899,7 +9884,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9939,7 +9923,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -9978,7 +9961,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -10018,7 +10000,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -10057,7 +10038,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -10097,7 +10077,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -10136,7 +10115,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -11018,7 +10996,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -11057,7 +11034,6 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
-					/usr/local/Cellar/fftw/3.3.8_2/lib/libfftw3.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",

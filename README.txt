@@ -31,12 +31,10 @@ Notice we are using the KissFFT library because it is already a dependency of ba
     ./waf install
 
 • For the [ears.write~] and [ears.read~] module: the TagLib (https://taglib.org/, released under LGPL)
-A version of the library is included in the repository. On a Mac, simply enter the folder, then 
+A version of the library is included in the repository. On a Mac, simply enter the folder source/lib/taglib-1.12/
+then 
 
-    cmake -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 \
-      -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" \
-      -DBUILD_SHARED_LIBS=OFF 
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" -DBUILD_SHARED_LIBS=OFF .
     make
     make install
 
