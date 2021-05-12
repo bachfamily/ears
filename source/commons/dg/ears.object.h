@@ -14,15 +14,15 @@
 
 
 #define EARSBUFOBJ_ADD_DEFERRED_METHODS(NAME) \
-void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x); \
-void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av); \
-void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
+void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x); \
+void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av); \
+void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
 { \
     switch (x->e_ob.l_blocking) { \
         case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
         break; \
         case EARSBUFOBJ_BLOCKING_SCHEDULER: \
-            schedule(x, (method)buf_ ## NAME ##_bang, 0, NULL, 0, NULL); \
+            schedule(x, (method)buf_ ## NAME ##_bang, 0, NULL, 0, NULL); \
         break; \
         case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
         default: \
