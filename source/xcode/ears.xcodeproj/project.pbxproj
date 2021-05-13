@@ -171,6 +171,7 @@
 		1E1D8E4F22B1861E003699A6 /* allpass.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1E1D8E4722B1861E003699A6 /* allpass.hpp */; };
 		1E1D8E5022B1861E003699A6 /* comb.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1E1D8E4822B1861E003699A6 /* comb.hpp */; };
 		1E1D8E5122B1861E003699A6 /* allpass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E1D8E4922B1861E003699A6 /* allpass.cpp */; };
+		1E1F7B50264D826C003BC73C /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E21A48426148C50001E5BCC /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E21A48826148C50001E5BCC /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E21A48926148C50001E5BCC /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
@@ -1894,25 +1895,15 @@
 		91319B57264C027100364EAB /* ears.mc.outtilde.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.mc.outtilde.cpp; path = ../mains/ears.mc.outtilde.cpp; sourceTree = "<group>"; };
 		91319B58264C027200364EAB /* ears.tovector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.tovector.cpp; path = ../mains/ears.tovector.cpp; sourceTree = "<group>"; };
 		91319B68264C02A700364EAB /* ears.process~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.process~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319B69264C02A700364EAB /* ears.pan~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.pan~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.pan~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319B7D264C149500364EAB /* ears.fromvector~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.fromvector~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319B7E264C149600364EAB /* ears.process~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.process~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.process~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319B8F264C14F500364EAB /* ears.in.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.in.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319B90264C14F600364EAB /* ears.fromvector~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.fromvector~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.fromvector~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319BA1264C151000364EAB /* ears.in~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.in~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319BA2264C151000364EAB /* ears.in copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.in copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.in copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319BB2264C15FD00364EAB /* ears.mc.in~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.mc.in~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319BB3264C15FD00364EAB /* ears.in~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.in~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.in~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319BC4264C165700364EAB /* ears.mc.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.mc.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319BC5264C165700364EAB /* ears.mc.in~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.mc.in~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.mc.in~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319BD7264C168400364EAB /* ears.out.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.out.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319BD8264C168400364EAB /* ears.mc.out~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.mc.out~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.mc.out~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319BE9264C16A100364EAB /* ears.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319BEA264C16A200364EAB /* ears.out copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.out copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.out copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319BFB264C16D200364EAB /* ears.processinfo~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.processinfo~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319BFC264C16D300364EAB /* ears.out~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.out~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.out~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91319C0E264C172500364EAB /* ears.tovector.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.tovector.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319C0F264C172500364EAB /* ears.processinfo~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.processinfo~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.processinfo~ copy-Info.plist"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2451,6 +2442,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E1F7B50264D826C003BC73C /* lib_ears.a in Frameworks */,
 				1EFFE9B91D1D523E00691C4C /* MaxAudioAPI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2558,16 +2550,6 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
-				91319B69264C02A700364EAB /* ears.pan~ copy-Info.plist */,
-				91319B7E264C149600364EAB /* ears.process~ copy-Info.plist */,
-				91319B90264C14F600364EAB /* ears.fromvector~ copy-Info.plist */,
-				91319BA2264C151000364EAB /* ears.in copy-Info.plist */,
-				91319BB3264C15FD00364EAB /* ears.in~ copy-Info.plist */,
-				91319BC5264C165700364EAB /* ears.mc.in~ copy-Info.plist */,
-				91319BD8264C168400364EAB /* ears.mc.out~ copy-Info.plist */,
-				91319BEA264C16A200364EAB /* ears.out copy-Info.plist */,
-				91319BFC264C16D300364EAB /* ears.out~ copy-Info.plist */,
-				91319C0F264C172500364EAB /* ears.processinfo~ copy-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
@@ -12127,6 +12109,7 @@
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -12139,10 +12122,11 @@
 				);
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
+					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				REZ_SEARCH_PATHS = "\"/Users/danieleghisi/max-sdk-7.0.3/source/dada/commons\"";
+				REZ_SEARCH_PATHS = "";
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 			};
 			name = Development;
@@ -12161,6 +12145,7 @@
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -12173,10 +12158,11 @@
 				);
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
+					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				REZ_SEARCH_PATHS = "\"/Users/danieleghisi/max-sdk-7.0.3/source/dada/commons\"";
+				REZ_SEARCH_PATHS = "";
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 			};
 			name = Deployment;

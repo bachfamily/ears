@@ -1282,6 +1282,10 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
             }
             
             switch (features[i]) {
+                case EARS_FEATURE_FRAMETIME: // dummy feature to retrieve frame positions
+                    lib->extractors[i].num_outputs = 1;
+                    lib->extractors[i].essentia_num_outputs = 1;
+                    break;
                     
                 case EARS_FEATURE_SPECTRUM:
                     lib->extractors[i].algorithm = AlgorithmFactory::create("UnaryOperator", "type", "identity");
@@ -3518,6 +3522,7 @@ e_ears_essentia_framemode ears_essentia_feature_to_framemode(t_object *x, e_ears
 
             
         case EARS_FEATURE_ONSETDETECTION:
+        case EARS_FEATURE_FRAMETIME:
             return EARS_ESSENTIA_FRAMEMODE_FRAMEWISEONLY;
             break;
             
@@ -4427,16 +4432,33 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
 
     } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  err = EARS_ERR_ESSENTIA;   }
     
+    // keeping track of frame central positions
+    std::vector<double> frames_position_samps;
+    bool must_set_frames_position_samps = true;
+    bool frames_position_samps_has_real_hopsize = true;
+    bool must_output_frame_positions = false;
+    for (long i = 0; i < lib->num_extractors; i++) {
+        if (lib->extractors[i].feature == EARS_FEATURE_FRAMETIME) {
+            must_output_frame_positions = true;
+            break;
+        }
+    }
+
+    
     for (long i = 0; i < lib->num_extractors; i++) {
         e_ears_essentia_temporalmode temporalmode = lib->extractors[i].temporalmode;
         e_ears_essentia_extractor_input_type inputtype = lib->extractors[i].input_type;
         t_ears_spectralbuf_metadata *specmetadata = lib->extractors[i].has_spec_metadata ? &lib->extractors[i].specdata : NULL;
-
+        
         for (long o = 0; o < EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS; o++)
-            if (lib->extractors[i].result)
+            if (lib->extractors[i].result[o])
                 llll_free(lib->extractors[i].result[o]);
         for (long o = 0; o < lib->extractors[i].essentia_num_outputs; o++)
             lib->extractors[i].result[o] = llll_get();
+
+        if (lib->extractors[i].feature == EARS_FEATURE_FRAMETIME) {
+            continue; // we'll handle this later on
+        }
         
         try {
             
@@ -4486,8 +4508,10 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
             e_ears_essentia_framemode framemode = lib->extractors[i].framemode;
             
             bool need_framewise_iteration =
-                ((temporalmode == EARS_ESSENTIA_TEMPORALMODE_TIMESERIES && framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES
-                  && framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY && framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS) ||
+                ((temporalmode == EARS_ESSENTIA_TEMPORALMODE_TIMESERIES &&
+                  framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES &&
+                  framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY &&
+                  framemode != EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS) ||
 //                 (temporalmode == EARS_ESSENTIA_TEMPORALMODE_BUFFER && lib->extractors[i].essentia_output_type[0] != 's') ||
                  inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME ||
                  inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM ||
@@ -4538,7 +4562,10 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
 
                 lib->alg_FrameCutter->reset();
 
+                double frames_position_cur = 0;
                 while (true) {
+                    
+                    // cutting
                     lib->alg_FrameCutter->compute();
                     if (!framedata.size()) {
                         if (inputtype == EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH) {
@@ -4553,6 +4580,14 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                         break;
                     }
                     
+                    
+                    if (must_set_frames_position_samps) {
+                        // keeping track of frame position and updating cursor
+                        frames_position_samps.push_back(frames_position_cur);
+                        frames_position_cur += (Real)params->hopsize_samps;
+                    }
+
+                    // windowing
                     lib->alg_Windower->compute();
                     
                     switch (inputtype) {
@@ -4716,6 +4751,8 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                     }
                 }
                 
+                must_set_frames_position_samps = false;
+                
                 for (long o = 0; o < lib->extractors[i].essentia_num_outputs; o++) {
                     switch (temporalmode) {
                         case EARS_ESSENTIA_TEMPORALMODE_TIMESERIES:
@@ -4803,32 +4840,38 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                     
                     if (lib->extractors[i].framemode == EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMES || lib->extractors[i].framemode == EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY || lib->extractors[i].framemode == EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS) {
                         
+                        long numframes = features[o].size();
+                        
                         // Check number of frames: they may be > due to sample approximations
                         if (atom_gettype(&e_ob->a_numframes) != A_SYM) {
-                            long numframes = atom_getlong(&e_ob->a_numframes);
+                            numframes = atom_getlong(&e_ob->a_numframes);
                             if (features[o].size() > numframes) {
                                 object_warn((t_object *)e_ob, "Due to hopsize rounding errors, the number of frames differs from the requested one.");
-                                object_warn((t_object *)e_ob, "%ld final frame%s will be dropped to match the request; consider using integer hopsize to avoid this problem.", features[o].size() - numframes, features[o].size() - numframes == 1 ? "" : "s");
+                                object_warn((t_object *)e_ob, "%ld final frame%s will be dropped to match the request; consider using an integer number of samples as hopsize to avoid this problem.", features[o].size() - numframes, features[o].size() - numframes == 1 ? "" : "s");
                             }
                             while (features[o].size() > numframes)
                                 features[o].pop_back();
                         }
                         
-                        // We need to summarize anyway
+                        
+                        // We may need to summarize anyway
                         switch (temporalmode) {
                             case EARS_ESSENTIA_TEMPORALMODE_TIMESERIES:
-                                append_framewise_features(lib, i, o, params, buf, features[o]);
-/*                                for (long f = 0; f < features[o].size(); f++) {
-                                    t_llll *inner = llll_get();
-                                    for (long g = 0; g < features[o][f].size(); g++) {
-                                        double val = ears_essentia_handle_units(features[o][f][g], buf, &lib->extractors[i], o);
-                                        if (lib->extractors[i].output_type[o] == 'i')
-                                            llll_appendlong(inner, val);
-                                        else
-                                            llll_appenddouble(inner, val);
+                            {
+                                if (must_set_frames_position_samps) {
+                                    long cur = 0;
+                                    for (long f = 0; f < numframes; f++) {
+                                        frames_position_samps.push_back(cur);
+                                        cur += (int)params->hopsize_samps;
                                     }
-                                    llll_appendllll(lib->extractors[i].result[o], inner);
-                                } */
+                                } else if (!must_set_frames_position_samps &&
+                                           frames_position_samps_has_real_hopsize &&
+                                           (Real)params->hopsize_samps != (int)params->hopsize_samps &&
+                                           must_output_frame_positions) {
+                                    object_warn((t_object *)e_ob, "The object is mixing features supporting a non-integer number of samples as hop size, with features that do not. The frame temporal position may be inaccurate for some of them. Consider using an integer number of samples as hop size, or splitting the features in different objects.");
+                                }
+                                append_framewise_features(lib, i, o, params, buf, features[o]);
+                            }
                                 break;
                             case EARS_ESSENTIA_TEMPORALMODE_WHOLE:
                             {
@@ -4910,6 +4953,16 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
             
         } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  err =  EARS_ERR_ESSENTIA;   }
     }
+    
+    
+    for (long i = 0; i < lib->num_extractors; i++) {
+        if (lib->extractors[i].feature == EARS_FEATURE_FRAMETIME) {
+            for (long f = 0; f < frames_position_samps.size(); f++) {
+                llll_appenddouble(lib->extractors[i].result[0], ears_convert_timeunit(frames_position_samps[f], buf, EARS_TIMEUNIT_SAMPS, lib->extractors[i].local_timeunit));
+            }
+        }
+    }
+
     
     return err;
 }

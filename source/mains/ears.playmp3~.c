@@ -42,7 +42,9 @@
 #include "ext.h"			// standard Max include, always required (except in Jitter)
 #include "ext_obex.h"		// required for "new" style objects
 #include "z_dsp.h"			// required for MSP objects
-#include <mpg123.h>
+#include "llllobj.h"
+#include "llll_commons_ext.h"
+#include "ears.mp3.h"
 
 #define EARS_PLAYMP3_ENABLE_SAMPLEACCURATELOOPING
 
@@ -369,7 +371,7 @@ end:
 }
 
 
-void ears_ezlocate_file_char(const char *filename_in, char *filename_out, t_fourcc *file_type)
+void ears_playmp3_ezlocate_file_char(const char *filename_in, char *filename_out, t_fourcc *file_type)
 {
     char filename[MAX_FILENAME_CHARS];
     short path = 0;
@@ -421,7 +423,7 @@ int open_file(t_playmp3 *x, const char *path, double start_ms, double end_ms, do
     }
     
     char conformed_path[MAX_PATH_CHARS];
-    ears_ezlocate_file_char(path, conformed_path, NULL);
+    ears_playmp3_ezlocate_file_char(path, conformed_path, NULL);
     // was:
 //    path_nameconform(path, conformed_path, PATH_STYLE_MAX, PATH_TYPE_BOOT);
     
