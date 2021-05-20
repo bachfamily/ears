@@ -530,24 +530,6 @@
       "ears.crop~"
     ]
   },
-  "ears.roll.sinusoids~": {
-    "digest": "Convert a <o>bach.roll</o> into a mix of sinusoids",
-    "module": "ears",
-    "category": [
-      "ears export"
-    ],
-    "keywords": [
-      "buffer",
-      "roll",
-      "bounce",
-      "export",
-      "sinusoids",
-      "cycle"
-    ],
-    "seealso": [
-      "ears.read~"
-    ]
-  },
   "ears.pan~": {
     "digest": "1D buffer panning",
     "module": "ears",
@@ -1024,6 +1006,24 @@
     ],
     "seealso": [
       "ears.model.sine.synthesis~"
+    ]
+  },
+  "ears.roll.synthesis~": {
+    "digest": "Convert a <o>bach.roll</o> into a mix of synthesis",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export",
+      "synthesis",
+      "cycle"
+    ],
+    "seealso": [
+      "ears.read~"
     ]
   },
   "ears.split~": {

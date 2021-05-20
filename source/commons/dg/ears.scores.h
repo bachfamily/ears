@@ -15,11 +15,12 @@
 typedef enum _ears_scoretobuf_mode
 {
     EARS_SCORETOBUF_MODE_NONE = 0,
-    EARS_SCORETOBUF_MODE_SINUSOIDS = 1,
+    EARS_SCORETOBUF_MODE_SYNTHESIS = 1,
     EARS_SCORETOBUF_MODE_SAMPLING = 2,
 } e_ears_scoretobuf_mode;
 
 t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, t_llll *roll_gs, t_buffer_obj *dest,
+                               e_ears_synthmode synthmode, float *wavetable, long wavetable_length,
                                char use_mute_solos, char use_durations,
                                long num_channels,
                                long filename_slot, long offset_slot, long gain_slot, long pan_slot, long rate_slot,
@@ -32,7 +33,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                t_llll *voice_pan, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
-                               double middleAtuning);
+                               double middleAtuning, long oversampling, long resamplingfiltersize);
 
 
 t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_symbol *reaper_header,

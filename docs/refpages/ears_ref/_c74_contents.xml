@@ -29,7 +29,6 @@
 <refpage name='ears.freeverb~.maxref.xml'/>
 <refpage name='ears.model.spr.synthesis~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
-<refpage name='ears.roll.sinusoids~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
 <refpage name='ears.cqt~.maxref.xml'/>
 <refpage name='ears.envelope~.maxref.xml'/>
@@ -56,6 +55,7 @@
 <refpage name='ears.window~.maxref.xml'/>
 <refpage name='ears.gain~.maxref.xml'/>
 <refpage name='ears.model.sine.analysis~.maxref.xml'/>
+<refpage name='ears.roll.synthesis~.maxref.xml'/>
 <refpage name='ears.split~.maxref.xml'/>
 <refpage name='ears.hoa.rotate~.maxref.xml'/>
 <refpage name='ears.tempogram~.maxref.xml'/>

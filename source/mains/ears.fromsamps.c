@@ -102,7 +102,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_fromsamps, sr);
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");
     CLASS_ATTR_BASIC(c, "sr", 0);
-    // @description Sets the sample rate for the output buffer. If zero (default) then the current sample rate is used.
+    // @description Sets the sample rate for the output buffer. If zero (default) then the current Max sample rate is used.
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -181,8 +181,7 @@ void buf_fromsamps_anything(t_buf_fromsamps *x, t_symbol *msg, long ac, t_atom *
             if (parsed->l_depth == 1) // flat llll = 1 channel only
                 llll_wrap_once(&parsed);
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
-            if (x->sr > 0)
-                ears_buffer_set_sr((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), x->sr);
+            ears_buffer_set_sr((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), x->sr > 0 ? x->sr : EARS_DEFAULT_SR);
             ears_buffer_from_llll((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), parsed, true);
             buf_fromsamps_bang(x);
         }

@@ -284,15 +284,15 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="hrid3v2" get="1" set="1" type="int" size="1">
+		<attribute name="hr" get="1" set="1" type="int" size="1">
 			<digest>
-				Human-Readable ID3v2 Frame IDs
+				Human-Readable IDs
 			</digest>
 			<description>
-				Toggles the ability to output human-readable ID3v2
+				Toggles the ability to output human-readable Frames and Tag IDs instead of four-letter codes
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Human-Readable ID3v2 Frame IDs" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Human-Readable IDs" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>

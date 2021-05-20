@@ -190,7 +190,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_roll_sampling, sr);
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");
     CLASS_ATTR_BASIC(c, "sr", 0);
-    // @description Sets the sample rate for the output buffer.
+    // @description Sets the sample rate for the output buffer. If zero (default), the current Max sample rate is used.
 
     CLASS_ATTR_LONG(c, "numchannels", 0, t_buf_roll_sampling, num_channels);
     CLASS_ATTR_STYLE_LABEL(c,"numchannels",0,"text","Output Number Of Channels");
@@ -398,14 +398,17 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
     t_buffer_obj *outbuf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
 
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-    ears_roll_to_buffer((t_earsbufobj *)x, EARS_SCORETOBUF_MODE_SAMPLING, roll_gs, outbuf, x->use_mute_solos, x->use_durations, x->num_channels,
-                        x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->rate_slot, x->ps_slot, x->ts_slot, x->sr, (e_ears_normalization_modes)x->normalization_mode,
+    ears_roll_to_buffer((t_earsbufobj *)x, EARS_SCORETOBUF_MODE_SAMPLING, roll_gs, outbuf,
+                        EARS_SYNTHMODE_NONE, NULL, 0, //< we're not using synthesis
+                        x->use_mute_solos, x->use_durations, x->num_channels,
+                        x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->rate_slot, x->ps_slot, x->ts_slot,
+                        x->sr > 0 ? x->sr : EARS_DEFAULT_SR, (e_ears_normalization_modes)x->normalization_mode,
                         (e_ears_channel_convert_modes)x->channelmode,
                         x->fadein_amount, x->fadeout_amount, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type,
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, 1, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

@@ -275,6 +275,7 @@ char is_slot_temporal_absolute(t_llll *header, long slotnum)
                                           
 // mode: sinusoids or samples
 t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, t_llll *roll_gs, t_buffer_obj *dest,
+                               e_ears_synthmode synthmode, float *wavetable, long wavetable_length,
                                char use_mute_solos, char use_durations,
                                long num_channels,
                                long filename_slot, long offset_slot, long gain_slot, long pan_slot, long rate_slot,
@@ -286,7 +287,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                t_llll *voice_pan, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
-                               double middleAtuning)
+                               double middleAtuning, long oversampling, long resamplingfiltersize)
 {
     t_ears_err err = EARS_ERR_NONE;
     t_llll *body = llll_clone(roll_gs);
@@ -298,7 +299,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     
     char there_are_solos = ears_roll_there_are_solos(body);
     
-    if (mode != EARS_SCORETOBUF_MODE_SINUSOIDS && mode != EARS_SCORETOBUF_MODE_SAMPLING) {
+    if (mode != EARS_SCORETOBUF_MODE_SYNTHESIS && mode != EARS_SCORETOBUF_MODE_SAMPLING) {
         object_error((t_object *)e_ob, "Unsupported mode!");
         return EARS_ERR_GENERIC;
     }
@@ -370,11 +371,13 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 
                 t_ears_err this_err = EARS_ERR_NONE;
                 
-                if (mode == EARS_SCORETOBUF_MODE_SINUSOIDS) {
+                if (mode == EARS_SCORETOBUF_MODE_SYNTHESIS) {
                     this_err = ears_buffer_synth_from_duration_line((t_object *)e_ob, &buf,
+                                                                    synthmode, wavetable, wavetable_length,
                                                                     note_pitch_cents, note_duration_ms, note_velocity, breakpoints,
-                                                                    veltoamp_mode, amp_vel_min, amp_vel_max, middleAtuning, sr, buffer_index++, earsbufobj_get_slope_mapping(e_ob));
+                                                                    veltoamp_mode, amp_vel_min, amp_vel_max, middleAtuning, sr, buffer_index++, earsbufobj_get_slope_mapping(e_ob), oversampling, resamplingfiltersize);
                 } else if (mode == EARS_SCORETOBUF_MODE_SAMPLING) {
+                    // TO DO: optimize for IDENTICAL samples
                     t_symbol *filename = get_filename_from_note_llll(note_ll, filename_slot);
                     double rate = 1.;
 
