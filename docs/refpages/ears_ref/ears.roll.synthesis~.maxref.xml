@@ -233,6 +233,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Reduce Multichannel Gain To Avoid Clipping" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -246,7 +247,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade In Amount" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -275,6 +275,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade In Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -288,7 +289,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Amount" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -317,6 +317,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -412,6 +413,20 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="oversampling" get="1" set="1" type="int" size="1">
+			<digest>
+				Oversampling for Antialiasing
+			</digest>
+			<description>
+				Sets the oversampling factor to avoid antialiasing. This is used by every <m>waveform</m> except for sinusoids.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Oversampling for Antialiasing" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="panlaw" get="1" set="1" type="int" size="1">
 			<digest>
 				Pan Law
@@ -423,7 +438,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pan Law" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -467,6 +481,19 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Per-Voice Panning" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="resamplingfiltersize" get="1" set="1" type="int" size="1">
+			<digest>
+				Resampling Filter Size
+			</digest>
+			<description>
+				Sets the resampling filter size.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Filter Size" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
@@ -482,7 +509,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Multichannel Spread" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -491,7 +517,7 @@
 				Output Sample Rate
 			</digest>
 			<description>
-				Sets the sample rate for the output buffer.
+				Sets the sample rate for the output buffer. If zero (default), the current Max sample rate is used.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
@@ -540,6 +566,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Velocity" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Velocity Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>

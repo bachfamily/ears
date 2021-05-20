@@ -295,8 +295,6 @@
 			<description>
 				Sets the name for each one of the buffer outlets. Leave blank to auto-assign
 				unique names.
-				earsbufobj_class_add_blocking_attr(c); <<< not working
-				earsbufobj_class_add_timeunit_attr(c);
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />

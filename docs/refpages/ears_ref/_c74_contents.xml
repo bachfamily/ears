@@ -9,8 +9,8 @@
 <refpage name='ears.model.sine.synthesis~.maxref.xml'/>
 <refpage name='ears.crop~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
-<refpage name='ears.model.spr.analysis~.maxref.xml'/>
 <refpage name='ears.rubberband~.maxref.xml'/>
+<refpage name='ears.model.stochastic.analysis~.maxref.xml'/>
 <refpage name='ears.model~.maxref.xml'/>
 <refpage name='ears.read~.maxref.xml'/>
 <refpage name='ears.slice~.maxref.xml'/>
@@ -27,8 +27,8 @@
 <refpage name='ears.info~.maxref.xml'/>
 <refpage name='ears.channel~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>
-<refpage name='ears.model.spr.synthesis~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
+<refpage name='ears.model.sps.analysis~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
 <refpage name='ears.cqt~.maxref.xml'/>
 <refpage name='ears.envelope~.maxref.xml'/>
@@ -40,6 +40,7 @@
 <refpage name='ears.rev~.maxref.xml'/>
 <refpage name='ears.hoa.encode~.maxref.xml'/>
 <refpage name='ears.expr~.maxref.xml'/>
+<refpage name='ears.model.sps.synthesis~.maxref.xml'/>
 <refpage name='ears.paulstretch~.maxref.xml'/>
 <refpage name='ears.fft~.maxref.xml'/>
 <refpage name='ears.peaks~.maxref.xml'/>
@@ -48,6 +49,7 @@
 <refpage name='ears.offset~.maxref.xml'/>
 <refpage name='ears.istft~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
+<refpage name='ears.model.stochastic.synthesis~.maxref.xml'/>
 <refpage name='ears.overdrive~.maxref.xml'/>
 <refpage name='ears.roll.sampling~.maxref.xml'/>
 <refpage name='ears.roll.toreaper~.maxref.xml'/>
