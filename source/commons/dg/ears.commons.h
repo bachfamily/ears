@@ -362,6 +362,7 @@ t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
 // SET properties
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames);
 t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr);
+t_ears_err ears_buffer_clear(t_object *ob, t_buffer_obj *buf);
 
 t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels);
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels);

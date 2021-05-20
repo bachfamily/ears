@@ -48,7 +48,11 @@ void SpsModelAnal::configure() {
   _sineModelAnal->configure( "sampleRate", parameter("sampleRate").toReal(),
                               "maxnSines", parameter("maxnSines").toInt() ,
                               "freqDevOffset", parameter("freqDevOffset").toInt(),
-                              "freqDevSlope",  parameter("freqDevSlope").toReal()
+                              "freqDevSlope",  parameter("freqDevSlope").toReal(),
+                              "magnitudeThreshold", parameter("magnitudeThreshold").toReal(),
+                              "maxPeaks", parameter("maxPeaks").toInt(),
+                              "minFrequency", parameter("minFrequency").toReal(),
+                              "orderBy", parameter("orderBy")
                               );
 
   int subtrFFTSize = std::min(parameter("fftSize").toInt()/4, 4*parameter("hopSize").toInt());  // make sure the FFT size 

@@ -43,7 +43,7 @@ void SpsModelSynth::configure()
                             "hopSize", _hopSize
                             );
 
- _stochasticModelSynth->configure("fftSize", 2* parameter("hopSize").toInt(),
+ _stochasticModelSynth->configure("fftSize", 2* parameter("hopSize").toInt(), // _fftSize
                             "hopSize", parameter("hopSize").toInt(),
                             "stocf", parameter("stocf").toReal());
 

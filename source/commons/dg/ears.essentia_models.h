@@ -42,11 +42,29 @@ t_ears_err ears_model_sine_synthesis(t_object *ob, double sr,
                                     long channelidx
                                     );
 
-// SPR
+// Stochastic
 
-t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, double sr,
-                                   t_llll **frequencies_ll, t_llll **magnitudes_ll, t_llll **phases_ll,
-                                   std::vector<std::vector<essentia::Real>> &framewiseResiduals,
+t_ears_err ears_model_stochastic_analysis(t_object *ob, std::vector<Real> samples, double sr,
+                                          t_llll **stocenv_ll,
+                                          long channelidx,
+                                          t_ears_essentia_analysis_params *params,
+                                          e_ears_ampunit out_ampunit,
+                                          double stocf
+                                          );
+
+t_ears_err ears_model_stochastic_synthesis(t_object *ob, double sr,
+                                           t_llll *stocenv_ll,
+                                           t_buffer_obj *outbuf,
+                                           t_ears_essentia_analysis_params *params,
+                                           e_ears_ampunit in_ampunit,
+                                           long channelidx,
+                                           double stocf
+                                           );
+
+// SPS
+
+t_ears_err ears_model_SPS_analysis(t_object *ob, std::vector<Real> samples, double sr,
+                                   t_llll **frequencies_ll, t_llll **magnitudes_ll, t_llll **phases_ll, t_llll **stocenv_ll,
                                    long channelidx,
                                    t_ears_essentia_analysis_params *params,
                                    e_ears_angleunit out_angleunit,
@@ -59,17 +77,18 @@ t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, doub
                                    double maxFrequency,
                                    long maxPeaks,
                                    long maxnSines,
-                                   const char *orderBy
+                                   const char *orderBy,
+                                   double stocf
                                    );
 
-t_ears_err ears_model_SPR_synthesis(t_object *ob, double sr,
-                                    t_llll *frequencies_ll, t_llll *magnitudes_ll, t_llll *phases_ll,
-                                    t_buffer_obj *residual,
-                                    t_buffer_obj *outbuf,
+t_ears_err ears_model_SPS_synthesis(t_object *ob, double sr,
+                                    t_llll *frequencies_ll, t_llll *magnitudes_ll, t_llll *phases_ll, t_llll *stocenv_ll,
+                                    t_buffer_obj *outbuf, t_buffer_obj *outsinebuf, t_buffer_obj *outstocbuf,
                                     t_ears_essentia_analysis_params *params,
                                     e_ears_angleunit in_angleunit,
                                     e_ears_ampunit in_ampunit,
                                     e_ears_frequnit in_frequnit,
-                                    long channelidx
+                                    long channelidx,
+                                    double stocf
                                     );
 #endif // _EARS_BUF_RUBBERBAND_MODELS_H_

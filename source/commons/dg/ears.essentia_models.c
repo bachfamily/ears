@@ -286,21 +286,29 @@ t_ears_err ears_model_sine_synthesis(t_object *ob, double sr,
             ifft->compute();
             overlapAdd->compute();
             
+            // skip first half window
+            if (counter >= floor(framesize_samps / (hopsize_samps * 2.f))){
+                allaudio.insert(allaudio.end(), audioOutput.begin(), audioOutput.end());
+            }
+            
+            /*
             if (counter == 0) {
-                // skip first half window (should we also skip the last half window?)
                 for (long s = params->framesize_samps/2; s < audioOutput.size(); s++) {
                     allaudio.push_back(audioOutput[s]);
                 }
             } else {
                 allaudio.insert(allaudio.end(), audioOutput.begin(), audioOutput.end());
             }
+             */
 
             counter++;
         }
         
         // putting audio into channel
-        if (channelidx == 0)
+        if (channelidx == 0) {
             ears_buffer_set_size_samps(ob, outbuf, allaudio.size());
+            ears_buffer_clear(ob, outbuf);
+        }
         
         ears_buffer_setchannel(ob, outbuf, channelidx, allaudio);
     }
@@ -325,9 +333,8 @@ t_ears_err ears_model_sine_synthesis(t_object *ob, double sr,
 
 
 
-t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, double sr,
-                                   t_llll **frequencies_ll, t_llll **magnitudes_ll, t_llll **phases_ll,
-                                   std::vector<std::vector<essentia::Real>> &framewiseResiduals,
+t_ears_err ears_model_SPS_analysis(t_object *ob, std::vector<Real> samples, double sr,
+                                   t_llll **frequencies_ll, t_llll **magnitudes_ll, t_llll **phases_ll, t_llll **stocenv_ll,
                                    long channelidx,
                                    t_ears_essentia_analysis_params *params,
                                    e_ears_angleunit out_angleunit,
@@ -340,7 +347,8 @@ t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, doub
                                    double maxFrequency,
                                    long maxPeaks,
                                    long maxnSines,
-                                   const char *orderBy
+                                   const char *orderBy,
+                                   double stocf
                                    )
 {
     t_ears_err err = EARS_ERR_NONE;
@@ -351,17 +359,15 @@ t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, doub
     
     std::vector<essentia::Real> framedata;
     std::vector<essentia::Real> wframedata;
+    std::vector<essentia::Real> stocenv;
     std::vector<essentia::Real> magnitudes, frequencies, phases;
-    std::vector<essentia::Real> residual;
-    std::vector<essentia::Real> residualAudio;
-
-    framewiseResiduals.clear();
     
     *frequencies_ll = llll_get();
     *magnitudes_ll = llll_get();
     *phases_ll = llll_get();
-    
-    essentia::standard::Algorithm *frameCutter, *sprAnal, *overlapAdd;
+    *stocenv_ll = llll_get();
+
+    essentia::standard::Algorithm *frameCutter, *spsAnal;
     try {
         frameCutter = essentia::standard::AlgorithmFactory::create("FrameCutter",
                                                                    "frameSize", framesize_samps,
@@ -369,8 +375,10 @@ t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, doub
                                                                    "startFromZero", params->startFromZero,
                                                                    "lastFrameToEndOfFile", params->lastFrameToEndOfFile);
         
-        sprAnal = essentia::standard::AlgorithmFactory::create("SprModelAnal",
+        spsAnal = essentia::standard::AlgorithmFactory::create("SpsModelAnal",
                                                             "sampleRate", sr,
+                                                            "fftSize", framesize_samps,
+                                                            "hopSize", (int)hopsize_samps,
                                                             "freqDevOffset", (int)freqDevOffset,
                                                             "freqDevSlope", freqDevSlope,
                                                             "magnitudeThreshold", magnitudeThreshold,
@@ -378,23 +386,17 @@ t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, doub
                                                             "maxFrequency", maxFrequency,
                                                             "maxPeaks", (int)maxPeaks,
                                                             "maxnSines", (int)maxnSines,
+                                                            "stocf", (Real)stocf,
                                                             "orderBy", orderBy);
-
-        overlapAdd = essentia::standard::AlgorithmFactory::create("OverlapAdd",
-                                                                  "frameSize", framesize_samps,
-                                                                  "hopSize", (int)hopsize_samps);
 
         frameCutter->input("signal").set(samples);
         frameCutter->output("frame").set(framedata);
-        sprAnal->input("frame").set(framedata);
-        sprAnal->output("frequencies").set(frequencies);
-        sprAnal->output("magnitudes").set(magnitudes);
-        sprAnal->output("phases").set(phases);
-        sprAnal->output("res").set(residual);
+        spsAnal->input("frame").set(framedata);
+        spsAnal->output("frequencies").set(frequencies);
+        spsAnal->output("magnitudes").set(magnitudes);
+        spsAnal->output("phases").set(phases);
+        spsAnal->output("stocenv").set(stocenv);
         
-        overlapAdd->input("signal").set(residual);
-        overlapAdd->output("signal").set(residualAudio);
-
     } catch (essentia::EssentiaException e) {
         object_error(ob, e.what());
         return EARS_ERR_ESSENTIA;
@@ -402,24 +404,220 @@ t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, doub
     
     try {
         frameCutter->reset();
-        long counter = 0, numsamps = 0;
+        long counter = 0;
         while (true) {
             frameCutter->compute(); // new frame
             if (!framedata.size()) {
                 break;
             }
             
-            sprAnal->compute();
+            spsAnal->compute();
             
             ears_convert_ampunit(magnitudes, NULL, EARS_AMPUNIT_DECIBEL, out_ampunit);
             ears_convert_frequnit(frequencies, NULL, EARS_FREQUNIT_HERTZ, out_frequnit);
             ears_convert_angleunit(phases, NULL, EARS_ANGLEUNIT_RADIANS, out_angleunit);
-            
+            ears_convert_ampunit(stocenv, NULL, EARS_AMPUNIT_DECIBEL, out_ampunit);
+
             llll_appendllll(*frequencies_ll, llll_from_vector(frequencies));
             llll_appendllll(*magnitudes_ll, llll_from_vector(magnitudes));
             llll_appendllll(*phases_ll, llll_from_vector(phases));
+            llll_appendllll(*stocenv_ll, llll_from_vector(stocenv));
+
+            counter++;
+        }
+    }
+    catch (essentia::EssentiaException e)
+    {
+        object_error(ob, e.what());
+    }
+    
+    delete frameCutter;
+    delete spsAnal;
+    
+    return err;
+}
+
+
+t_ears_err ears_model_SPS_synthesis(t_object *ob, double sr,
+                                    t_llll *frequencies_ll, t_llll *magnitudes_ll, t_llll *phases_ll, t_llll *stocenv_ll,
+                                    t_buffer_obj *outbuf, t_buffer_obj *outsinebuf, t_buffer_obj *outstocbuf,
+                                    t_ears_essentia_analysis_params *params,
+                                    e_ears_angleunit in_angleunit,
+                                    e_ears_ampunit in_ampunit,
+                                    e_ears_frequnit in_frequnit,
+                                    long channelidx,
+                                    double stocf
+                                    )
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    // we approximate the hopsize to the nearest sample. Otherwise the overlap add gives troubles...
+    long hopsize_samps = (long)params->hopsize_samps;
+    int framesize_samps = (int)params->framesize_samps;
+    
+    std::vector<essentia::Real> magnitudes, frequencies, phases, stocenv;
+    std::vector<std::complex<essentia::Real>> sfftframe;
+    std::vector<essentia::Real> audioOutput, audioOutputSine, audioOutputStoc;
+    
+    essentia::standard::Algorithm *spsmodelsynth;
+    try {
+        
+        spsmodelsynth  = essentia::standard::AlgorithmFactory::create("SpsModelSynth",
+                                                                       "sampleRate", sr,
+                                                                       "fftSize", framesize_samps,
+                                                                       "hopSize", (int)hopsize_samps,
+                                                                       "stocf", (Real)stocf);
+        
+        
+        spsmodelsynth->input("magnitudes").set(magnitudes);
+        spsmodelsynth->input("frequencies").set(frequencies);
+        spsmodelsynth->input("phases").set(phases);
+        spsmodelsynth->input("stocenv").set(stocenv);
+        spsmodelsynth->output("frame").set(audioOutput);
+        spsmodelsynth->output("sineframe").set(audioOutputSine);
+        spsmodelsynth->output("stocframe").set(audioOutputStoc);
+
+    } catch (essentia::EssentiaException e) {
+        object_error(ob, e.what());
+        return EARS_ERR_ESSENTIA;
+    }
+    
+    try {
+        std::vector<essentia::Real> allaudio, allaudiosine, allaudiostoc;
+        
+        long counter = 0;
+        t_llllelem *frequencies_el = frequencies_ll->l_head;
+        t_llllelem *magnitudes_el = magnitudes_ll->l_head;
+        t_llllelem *phases_el = phases_ll->l_head;
+        t_llllelem *stocenv_el = stocenv_ll->l_head;
+
+        for ( ; frequencies_el && magnitudes_el && phases_el && stocenv_el;
+             frequencies_el = frequencies_el->l_next,
+             magnitudes_el = magnitudes_el->l_next,
+             phases_el = phases_el->l_next,
+             stocenv_el = stocenv_el->l_next) {
             
-            framewiseResiduals.push_back(residual);
+            if (hatom_gettype(&frequencies_el->l_hatom) != H_LLLL ||
+                hatom_gettype(&magnitudes_el->l_hatom) != H_LLLL ||
+                hatom_gettype(&phases_el->l_hatom) != H_LLLL ||
+                hatom_gettype(&stocenv_el->l_hatom) != H_LLLL) {
+                err = EARS_ERR_GENERIC;
+                break;
+            }
+            
+            t_llll *freqframe_llll = hatom_getllll(&frequencies_el->l_hatom);
+            t_llll *magframe_llll = hatom_getllll(&magnitudes_el->l_hatom);
+            t_llll *phframe_llll = hatom_getllll(&phases_el->l_hatom);
+            t_llll *stenvframe_llll = hatom_getllll(&stocenv_el->l_hatom);
+
+            frequencies = vector_from_llll(freqframe_llll);
+            magnitudes = vector_from_llll(magframe_llll);
+            phases = vector_from_llll(phframe_llll);
+            stocenv = vector_from_llll(stenvframe_llll);
+            
+            ears_convert_ampunit(magnitudes, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
+            ears_convert_frequnit(frequencies, NULL, in_frequnit, EARS_FREQUNIT_HERTZ);
+            ears_convert_angleunit(phases, NULL, in_angleunit, EARS_ANGLEUNIT_RADIANS);
+            ears_convert_ampunit(stocenv, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
+
+            // Sine model synthesis
+            spsmodelsynth->compute();
+            
+            // skip first half window
+            if (counter >= floor(framesize_samps / (hopsize_samps * 2.f))){
+                allaudio.insert(allaudio.end(), audioOutput.begin(), audioOutput.end());
+                allaudiosine.insert(allaudiosine.end(), audioOutputSine.begin(), audioOutputSine.end());
+                allaudiostoc.insert(allaudiostoc.end(), audioOutputStoc.begin(), audioOutputStoc.end());
+            }
+            
+            counter++;
+        }
+        
+        if (channelidx == 0) {
+            ears_buffer_set_size_samps(ob, outbuf, allaudio.size());
+            ears_buffer_set_size_samps(ob, outsinebuf, allaudiosine.size());
+            ears_buffer_set_size_samps(ob, outstocbuf, allaudiostoc.size());
+            ears_buffer_clear(ob, outbuf);
+            ears_buffer_clear(ob, outsinebuf);
+            ears_buffer_clear(ob, outstocbuf);
+        }
+        
+        ears_buffer_sumchannel(ob, outbuf, channelidx, allaudio);
+        ears_buffer_sumchannel(ob, outsinebuf, channelidx, allaudiosine);
+        ears_buffer_sumchannel(ob, outstocbuf, channelidx, allaudiostoc);
+    }
+    catch (essentia::EssentiaException e)
+    {
+        object_error(ob, e.what());
+    }
+    
+    delete spsmodelsynth;
+    
+    return err;
+}
+
+
+
+
+
+t_ears_err ears_model_stochastic_analysis(t_object *ob, std::vector<Real> samples, double sr,
+                                   t_llll **stocenv_ll,
+                                   long channelidx,
+                                   t_ears_essentia_analysis_params *params,
+                                   e_ears_ampunit out_ampunit,
+                                   double stocf
+                                   )
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    // we approximate the hopsize to the nearest sample. Otherwise the overlap add gives troubles...
+    long hopsize_samps = (long)params->hopsize_samps;
+    int framesize_samps = (int)params->framesize_samps;
+    
+    std::vector<essentia::Real> framedata;
+    std::vector<essentia::Real> stocenv;
+    
+    *stocenv_ll = llll_get();
+    
+    essentia::standard::Algorithm *frameCutter, *stocAnal;
+    try {
+        frameCutter = essentia::standard::AlgorithmFactory::create("FrameCutter",
+                                                                   "frameSize", framesize_samps,
+                                                                   "hopSize", (Real)hopsize_samps,
+                                                                   "startFromZero", params->startFromZero,
+                                                                   "lastFrameToEndOfFile", params->lastFrameToEndOfFile);
+        
+        stocAnal = essentia::standard::AlgorithmFactory::create("StochasticModelAnal",
+                                                               "sampleRate", sr,
+                                                                "fftSize", framesize_samps,
+                                                                "hopSize", (int)hopsize_samps,
+                                                               "stocf", (Real)stocf
+                                                                );
+        
+        frameCutter->input("signal").set(samples);
+        frameCutter->output("frame").set(framedata);
+        stocAnal->input("frame").set(framedata);
+        stocAnal->output("stocenv").set(stocenv);
+        
+    } catch (essentia::EssentiaException e) {
+        object_error(ob, e.what());
+        return EARS_ERR_ESSENTIA;
+    }
+    
+    try {
+        frameCutter->reset();
+        long counter = 0;
+        while (true) {
+            frameCutter->compute(); // new frame
+            if (!framedata.size()) {
+                break;
+            }
+            
+            stocAnal->compute();
+            
+            ears_convert_ampunit(stocenv, NULL, EARS_AMPUNIT_DECIBEL, out_ampunit);
+            
+            llll_appendllll(*stocenv_ll, llll_from_vector(stocenv));
             
             counter++;
         }
@@ -430,22 +628,19 @@ t_ears_err ears_model_SPR_analysis(t_object *ob, std::vector<Real> samples, doub
     }
     
     delete frameCutter;
-    delete sprAnal;
-    delete overlapAdd;
+    delete stocAnal;
     
     return err;
 }
 
 
-t_ears_err ears_model_SPR_synthesis(t_object *ob, double sr,
-                                    t_llll *frequencies_ll, t_llll *magnitudes_ll, t_llll *phases_ll,
-                                    t_buffer_obj *residual,
+t_ears_err ears_model_stochastic_synthesis(t_object *ob, double sr,
+                                    t_llll *stocenv_ll,
                                     t_buffer_obj *outbuf,
                                     t_ears_essentia_analysis_params *params,
-                                    e_ears_angleunit in_angleunit,
                                     e_ears_ampunit in_ampunit,
-                                    e_ears_frequnit in_frequnit,
-                                    long channelidx
+                                    long channelidx,
+                                    double stocf
                                     )
 {
     t_ears_err err = EARS_ERR_NONE;
@@ -454,39 +649,21 @@ t_ears_err ears_model_SPR_synthesis(t_object *ob, double sr,
     long hopsize_samps = (long)params->hopsize_samps;
     int framesize_samps = (int)params->framesize_samps;
     
-    std::vector<essentia::Real> magnitudes, frequencies, phases;
-    std::vector<std::complex<essentia::Real>> sfftframe;
-    std::vector<essentia::Real> ifftframe;
-    std::vector<essentia::Real> wifftframe;
+    std::vector<essentia::Real> stocenv;
     std::vector<essentia::Real> audioOutput;
     
-    essentia::standard::Algorithm *sinemodelsynth, *ifft, *overlapAdd;
+    essentia::standard::Algorithm *stocmodelsynth;
     try {
         
-        sinemodelsynth  = essentia::standard::AlgorithmFactory::create("SineModelSynth",
-                                                                       "sampleRate", sr,
-                                                                       "fftSize", framesize_samps,
-                                                                       "hopSize", (int)hopsize_samps);
-        
-        ifft     = essentia::standard::AlgorithmFactory::create("IFFT",
-                                                                "size", framesize_samps);
-        
-        overlapAdd = essentia::standard::AlgorithmFactory::create("OverlapAdd",
-                                                                  "frameSize", framesize_samps,
-                                                                  "hopSize", (int)hopsize_samps);
+        stocmodelsynth  = essentia::standard::AlgorithmFactory::create("StochasticModelSynth",
+                                                                      "sampleRate", sr,
+                                                                      "fftSize", framesize_samps,
+                                                                      "hopSize", (int)hopsize_samps,
+                                                                      "stocf", (Real)stocf);
         
         
-        sinemodelsynth->input("magnitudes").set(magnitudes);
-        sinemodelsynth->input("frequencies").set(frequencies);
-        sinemodelsynth->input("phases").set(phases);
-        sinemodelsynth->output("fft").set(sfftframe);
-        
-        // Synthesis
-        ifft->input("fft").set(sfftframe);
-        ifft->output("frame").set(ifftframe);
-        
-        overlapAdd->input("signal").set(ifftframe);
-        overlapAdd->output("signal").set(audioOutput);
+        stocmodelsynth->input("stocenv").set(stocenv);
+        stocmodelsynth->output("frame").set(audioOutput);
         
     } catch (essentia::EssentiaException e) {
         object_error(ob, e.what());
@@ -494,54 +671,38 @@ t_ears_err ears_model_SPR_synthesis(t_object *ob, double sr,
     }
     
     try {
-        std::vector<essentia::Real> allaudio;
+        std::vector<essentia::Real> allaudio, allaudiosine, allaudiostoc;
         
         long counter = 0;
-        t_llllelem *frequencies_el = frequencies_ll->l_head;
-        t_llllelem *magnitudes_el = magnitudes_ll->l_head;
-        t_llllelem *phases_el = phases_ll->l_head;
+        t_llllelem *stocenv_el = stocenv_ll->l_head;
         
-        for ( ; frequencies_el && magnitudes_el && phases_el;
-             frequencies_el = frequencies_el->l_next,
-             magnitudes_el = magnitudes_el->l_next,
-             phases_el = phases_el->l_next) {
+        for ( ; stocenv_el; stocenv_el = stocenv_el->l_next) {
             
-            if (hatom_gettype(&frequencies_el->l_hatom) != H_LLLL ||
-                hatom_gettype(&magnitudes_el->l_hatom) != H_LLLL ||
-                hatom_gettype(&phases_el->l_hatom) != H_LLLL) {
+            if (hatom_gettype(&stocenv_el->l_hatom) != H_LLLL) {
                 err = EARS_ERR_GENERIC;
                 break;
             }
             
-            t_llll *freqframe_llll = hatom_getllll(&frequencies_el->l_hatom);
-            t_llll *magframe_llll = hatom_getllll(&magnitudes_el->l_hatom);
-            t_llll *phframe_llll = hatom_getllll(&phases_el->l_hatom);
+            t_llll *stenvframe_llll = hatom_getllll(&stocenv_el->l_hatom);
             
-            frequencies = vector_from_llll(freqframe_llll);
-            magnitudes = vector_from_llll(magframe_llll);
-            phases = vector_from_llll(phframe_llll);
+            stocenv = vector_from_llll(stenvframe_llll);
             
-            ears_convert_ampunit(magnitudes, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
-            ears_convert_frequnit(frequencies, NULL, in_frequnit, EARS_FREQUNIT_HERTZ);
-            ears_convert_angleunit(phases, NULL, in_angleunit, EARS_ANGLEUNIT_RADIANS);
-            
+            ears_convert_ampunit(stocenv, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
             
             // Sine model synthesis
-            sinemodelsynth->compute();
+            stocmodelsynth->compute();
             
-            ifft->compute();
-            overlapAdd->compute();
-            
-            if (counter == 0) {
-                // skip first half window (should we also skip the last half window?)
-                for (long s = params->framesize_samps/2; s < audioOutput.size(); s++) {
-                    allaudio.push_back(audioOutput[s]);
-                }
-            } else {
+            // skip first half window
+            if (counter >= floor(framesize_samps / (hopsize_samps * 2.f))){
                 allaudio.insert(allaudio.end(), audioOutput.begin(), audioOutput.end());
             }
             
             counter++;
+        }
+        
+        if (channelidx == 0) {
+            ears_buffer_set_size_samps(ob, outbuf, allaudio.size());
+            ears_buffer_clear(ob, outbuf);
         }
         
         ears_buffer_sumchannel(ob, outbuf, channelidx, allaudio);
@@ -551,9 +712,7 @@ t_ears_err ears_model_SPR_synthesis(t_object *ob, double sr,
         object_error(ob, e.what());
     }
     
-    delete sinemodelsynth;
-    delete ifft;
-    delete overlapAdd;
+    delete stocmodelsynth;
     
     return err;
 }

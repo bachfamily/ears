@@ -58,6 +58,7 @@ t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbo
 }
 
 
+
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
     if (num_frames != ears_buffer_get_size_samps(ob, buf)) {
@@ -78,6 +79,11 @@ t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr)
     return EARS_ERR_NONE;
 }
 
+t_ears_err ears_buffer_clear(t_object *ob, t_buffer_obj *buf)
+{
+    typedmess(buf, gensym("clear"), 0, NULL);
+    return EARS_ERR_NONE;
+}
 
 t_symbol *ears_buffer_get_name(t_object *ob, t_buffer_obj *buf)
 {

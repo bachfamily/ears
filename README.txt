@@ -21,6 +21,8 @@ Dependencies
 The packaged version of Essentia has been modified to 
 1) prevent the collision with functions named "error" (in debugger.h). The naming has been modified to "essentia_error". 
 2) allow non-integer hopSize for the frameCutter algorithm
+3) fix some little bugs (e.g. parameters of the SPS model were not passed to the internal sinusoidal model).
+
 To build the library, you should use the lightweighted configuration, without dependencies. Enter the library folder and then:
 
     ./waf configure --build-static --fft='KISS' --lightweight=""
