@@ -9579,6 +9579,7 @@
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -9621,6 +9622,7 @@
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -12001,6 +12003,7 @@
 					/usr/local/include/,
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -12042,6 +12045,7 @@
 					/usr/local/include/,
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

@@ -50,7 +50,7 @@
 #include "ears.libtag_commons.h"
 
 #define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
-#include <libaiff/libaiff.h>
+#include "libaiff.h"
 
 #include "AudioFile.h"
 
@@ -60,6 +60,7 @@ typedef struct _buf_read {
     char                native_mp3_handling;
     
     t_llll              *filenames;
+    t_symbol            **formatsyms;
     
     char                human_readable_frame_ids;
     
@@ -79,7 +80,8 @@ void            buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_
 long            buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *view);
 
 t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename);
-t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data, bool *has_data, double *sr);
+t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data,
+                                                bool *has_data, double *sr, t_symbol **sampleformat);
 
 void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s);
 void buf_read_inletinfo(t_buf_read *x, void *b, long a, char *t);
@@ -136,6 +138,8 @@ int C74_EXPORT main(void)
     class_addmethod(c, (method)buf_read_acceptsdrag, "acceptsdrag_locked", A_CANT, 0);
     class_addmethod(c, (method)buf_read_acceptsdrag, "acceptsdrag_unlocked", A_CANT, 0);
     
+    llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
+
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
@@ -181,11 +185,14 @@ void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s)
                 sprintf(s, "symbol/list: Soundfile Names"); // @out 1 @type symbol/list @digest Soundfile names
                 break;
             case 2:
-                sprintf(s, "llll (%s): Metadata Tags", type); // @out 2 @type llll @digest Metadata tags
+                sprintf(s, "symbol/list: Sample Formats"); // @out 2 @type symbol/list @digest Sample formats
                 break;
             case 3:
+                sprintf(s, "llll (%s): Metadata Tags", type); // @out 3 @type llll @digest Metadata tags
+                break;
+            case 4:
             default:
-                sprintf(s, "llll (%s): Markers", type); // @out 3 @type llll @digest Markers
+                sprintf(s, "llll (%s): Markers", type); // @out 4 @type llll @digest Markers
                 break;
         }
     }
@@ -207,6 +214,7 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->native_mp3_handling = 1;
         x->filenames = llll_make();
+        x->formatsyms = (t_symbol **)bach_newptr(1 * sizeof(t_symbol *));
         
         earsbufobj_init((t_earsbufobj *)x, 0);
         
@@ -219,7 +227,7 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "4", "44aE", names);
+        earsbufobj_setup((t_earsbufobj *)x, "4", "44aaE", names);
 
         llll_free(args);
         llll_free(names);
@@ -233,7 +241,7 @@ void buf_read_free(t_buf_read *x)
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     //    mpg123_exit(); // can't call this here, should call it on Max quit... TO DO!
 #endif
-    
+    bach_freeptr(x->formatsyms);
     llll_free(x->filenames);
     earsbufobj_free((t_earsbufobj *)x);
 }
@@ -242,7 +250,24 @@ void buf_read_free(t_buf_read *x)
 
 void buf_read_bang(t_buf_read *x)
 {
+    earsbufobj_shoot_llll((t_earsbufobj *)x, 4);
+    
+    earsbufobj_shoot_llll((t_earsbufobj *)x, 3);
+    
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    long numsyms = x->filenames->l_size;
+    t_symbol **syms = (t_symbol **)bach_newptr(numsyms * sizeof(t_symbol *));
+    t_llllelem *el; long i;
+    for (i = 0, el = x->filenames->l_head; i < numsyms && el; i++, el = el->l_next)
+        syms[i] = (hatom_gettype(&el->l_hatom) == H_SYM) ? hatom_getsym(&el->l_hatom) : _llllobj_sym_none;
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
+    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 2, numsyms, x->formatsyms);
+    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 1, numsyms, syms);
+    bach_freeptr(syms);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
+
 }
 
 
@@ -266,6 +291,8 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
         t_llllelem *elem;
         t_llll *tags = llll_get();
         t_llll *markers = llll_get();
+        
+        x->formatsyms = (t_symbol **)bach_resizeptr(x->formatsyms, MAX(1, files->l_size) * sizeof(t_symbol *));
 
         earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
         
@@ -286,11 +313,13 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
             }
             
             if (filepath) {
-                
+                t_symbol *sampleformat = _llllobj_sym_unknown;
+
                 buf_read_addpathsym(x, filepath, count+offset);
                 
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
                 if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
+                    sampleformat = gensym("compressed");
                     long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
                     long endsamp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
                     ears_buffer_read_handle_mp3((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset));
@@ -300,9 +329,10 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                     if (ears_symbol_ends_with(filepath, ".wv", true)) { // WavPack files
                         long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
                         long endsamp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
-                        ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset));
+                        ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset), &sampleformat);
                     } else {
                         // trying to load file into input buffer
+                        // sample format for wav/aiff/flac will be handled by buf_read_markers_and_spectralannotation()
                         earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset, filepath);
                         
                         if (start > 0 || end > 0) {
@@ -326,7 +356,7 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                 t_ears_spectralbuf_metadata data = spectralbuf_metadata_get_empty();
                 bool has_data = false;
                 double sr = DBL_MIN;
-                llll_appendllll(markers, buf_read_markers_and_spectralannotation(x, filepath, &data, &has_data, &sr));
+                llll_appendllll(markers, buf_read_markers_and_spectralannotation(x, filepath, &data, &has_data, &sr, &sampleformat));
 
                 if (has_data){
                     t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset);
@@ -335,8 +365,13 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
                         ears_buffer_set_sr((t_object *)x, buf, sr);
                     llll_free(data.bins);
                 }
+ 
+
+                x->formatsyms[count] = sampleformat;
+
             } else {
                 // empty buffer will do.
+                // TODO store metadata
                 char *txtbuf = NULL;
                 hatom_to_text_buf(&elem->l_hatom, &txtbuf);
                 object_warn((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
@@ -347,23 +382,31 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
             
         }
         if (count > 0) {
-            earsbufobj_outlet_llll((t_earsbufobj *)x, 3, markers);
-            earsbufobj_outlet_llll((t_earsbufobj *)x, 2, tags);
+            
+            earsbufobj_gunload_llll((t_earsbufobj *)x, 4, markers);
+            earsbufobj_shoot_llll((t_earsbufobj *)x, 4);
+
+            earsbufobj_gunload_llll((t_earsbufobj *)x, 3, tags);
+            earsbufobj_shoot_llll((t_earsbufobj *)x, 3);
+
             
             long numsyms = x->filenames->l_size;
-            t_symbol **syms = (t_symbol **)bach_newptr(numsyms * sizeof(t_symbol *));
             t_llllelem *el; long i;
+
+            earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 2, numsyms, x->formatsyms);
+            
+            t_symbol **syms = (t_symbol **)bach_newptr(numsyms * sizeof(t_symbol *));
             for (i = 0, el = x->filenames->l_head; i < numsyms && el; i++, el = el->l_next)
                 syms[i] = (hatom_gettype(&el->l_hatom) == H_SYM) ? hatom_getsym(&el->l_hatom) : _llllobj_sym_none;
             earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 1, numsyms, syms);
             bach_freeptr(syms);
+
             
             earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
+        } else {
+            llll_free(tags);
+            llll_free(markers);
         }
-        
-        llll_free(tags);
-        llll_free(markers);
-
     } else if (files) {
         // null llll
         if (!append) {
@@ -533,7 +576,8 @@ t_llll *buf_get_tags_ID3v2(t_buf_read *x, TagLib::ID3v2::Tag *tags)
 {
     t_llll *tags_ll = llll_get();
     llll_appendsym(tags_ll, gensym("ID3v2"));
-    if(tags) {
+
+    if (tags) {
         TagLib::ID3v2::FrameList fl = tags->frameList();
         
         TagLib::ID3v2::FrameList::ConstIterator it;
@@ -602,11 +646,9 @@ t_llll *buf_get_tags_ID3v2(t_buf_read *x, TagLib::ID3v2::Tag *tags)
         }
 
     }
-    
+
     return tags_ll;
 }
-
-
 
 t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename)
 {
@@ -637,8 +679,10 @@ t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename)
 
         TagLib::RIFF::WAV::File *RIFFWAVfile = dynamic_cast<TagLib::RIFF::WAV::File *>(file);
         if (RIFFWAVfile) {
-            llll_appendllll(out, buf_get_tags_INFO(x, RIFFWAVfile->InfoTag()));
-            llll_appendllll(out, buf_get_tags_ID3v2(x, RIFFWAVfile->ID3v2Tag()));
+            t_llll *infotag_ll = buf_get_tags_INFO(x, RIFFWAVfile->InfoTag());
+            t_llll *id3v2tag_ll = buf_get_tags_ID3v2(x, RIFFWAVfile->ID3v2Tag());
+            llll_appendllll(out, infotag_ll);
+            llll_appendllll(out, id3v2tag_ll);
         }
     }
     
@@ -745,7 +789,9 @@ void buf_read_llll_append_position(t_buf_read *x, t_llll *this_marker_ll, uint64
     }
 }
 
-t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data, bool *has_data, double *sr)
+t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *filename,
+                                                     t_ears_spectralbuf_metadata *data, bool *has_data, double *sr,
+                                                     t_symbol **sampleformat)
 {
     t_llll *out = llll_get();
     
@@ -764,6 +810,17 @@ t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *fi
                                 &segmentSize) < 1 ) {
             object_error((t_object *)x, "Error reading markers.");
         } else {
+            
+            
+            if (true) { // Assuming PCM for aiff
+                switch (bitsPerSample) {
+                    case 8: *sampleformat = _sym_int8; break;
+                    case 16: *sampleformat = _sym_int16; break;
+                    case 24: *sampleformat = _sym_int24; break;
+                    case 32: *sampleformat = _sym_int32; break;
+                    default: *sampleformat = _llllobj_sym_unknown; break;
+                }
+            }
             
             while (true) {
                 int id;
@@ -818,14 +875,57 @@ t_llll *AudioCues_to_llll(t_buf_read *x, AudioFile<float> &audioFile)
     return out;
 }
 
-t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data, bool *has_data, double *sr)
+inline bool get_bit(char c, int bit)
+{
+    return (c >> bit) & 1;
+}
+
+
+t_symbol *encoding_to_sample_format(AudioEncoding enc, int numbits)
+{
+    switch (enc) {
+        case AudioEncoding::Encoding_PCM:
+            switch (numbits) {
+                case 8: return _sym_int8; break;
+                case 16: return _sym_int16; break;
+                case 24: return _sym_int24; break;
+                case 32: return _sym_int32; break;
+                default: return _llllobj_sym_unknown; break;
+            }
+            break;
+
+        case AudioEncoding::Encoding_MULaw:
+            return _sym_mulaw;
+            break;
+
+        case AudioEncoding::Encoding_ALaw:
+            return gensym("alaw");
+            break;
+
+        case AudioEncoding::Encoding_IEEEFloat:
+            switch (numbits) {
+                case 32: return _sym_float32; break;
+                case 64: return _sym_float64; break;
+                default: return _llllobj_sym_unknown; break;
+            }
+            break;
+            
+        default:
+            return _llllobj_sym_unknown;
+            break;
+    }
+}
+
+t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data,
+                                                bool *has_data, double *sr, t_symbol **sampleformat)
 {
     t_llll *out = NULL;
     *has_data = false;
     
     if (ears_symbol_ends_with(filename, ".aif", true) || ears_symbol_ends_with(filename, ".aiff", true)) {
         // spectral information is embedded in the ANNOTATION
-        out = buf_read_markers_and_spectralannotation_AIFF(x, filename, data, has_data, sr);
+        out = buf_read_markers_and_spectralannotation_AIFF(x, filename, data, has_data, sr, sampleformat);
+        
     } else if (ears_symbol_ends_with(filename, ".wav", true) || ears_symbol_ends_with(filename, ".wave", true)){
         // Spectral information is embedded in the INFO tag
         if (data) {
@@ -850,8 +950,10 @@ t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filenam
         audioFile.load(filename->s_name);
         out = AudioCues_to_llll(x, audioFile);
         
-    } else if (ears_symbol_ends_with(filename, ".wv", true)){
+        *sampleformat = encoding_to_sample_format(audioFile.getEncoding(), audioFile.getBitDepth());
         
+    } else if (ears_symbol_ends_with(filename, ".wv", true)){
+        // sample format already handled before, nothing to do
         // Spectral information is in the APE tag
         if (data) {
             TagLib::FileRef f(filename->s_name);
@@ -875,6 +977,36 @@ t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filenam
 
         out = llll_get();
 
+    } else if (ears_symbol_ends_with(filename, ".flac", true)) {
+
+        // FLAC ONLY SUPPORT INTEGER ENCODING.
+        // We get the information about the number of bytes directly from the binary data
+        // (see https://xiph.org/flac/format.html#def_STREAMINFO )
+        FILE *fp = fopen (filename->s_name, "r");
+        if (fp) {
+            char bufA = 0, bufB;
+            fseek(fp, 4+4+2+2+3+3+2, SEEK_SET);
+            fread(&bufA, 1, 1, fp);
+            fread(&bufB, 1, 1, fp);
+            int num_bytes = 1 + get_bit(bufB, 4) + get_bit(bufB, 5) * 2 + get_bit(bufB, 6) * 4 + + get_bit(bufB, 7) * 8 + get_bit(bufA, 0) * 16;
+            switch (num_bytes) {
+                case 8: *sampleformat = _sym_int8; break;
+                case 16: *sampleformat = _sym_int16; break;
+                case 24: *sampleformat = _sym_int24; break;
+                case 32: *sampleformat = _sym_int32; break;
+                default: *sampleformat = _llllobj_sym_unknown; break;
+            }
+            fclose (fp);
+        } else {
+            *sampleformat = _llllobj_sym_unknown;
+        }
+        
+        out = llll_get();
+        
+    } else if (ears_symbol_ends_with(filename, ".au", true)) {
+        *sampleformat = _sym_mulaw;
+        out = llll_get();
+    
     } else {
         out = llll_get();
     }

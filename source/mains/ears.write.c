@@ -46,7 +46,7 @@
 #include "ears.object.h"
 
 #define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
-#include <libaiff/libaiff.h>
+#include "libaiff.h"
 
 #include "AudioFile.h"
 
@@ -84,7 +84,7 @@ void            buf_write_append_deferred(t_buf_write *x, t_symbol *msg, long ac
 void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s);
 void buf_write_inletinfo(t_buf_write *x, void *b, long a, char *t);
 
-void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data);
+void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data, t_symbol *sampleformat);
 void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags);
 
 // Globals and Statics
@@ -221,12 +221,16 @@ void buf_write_assist(t_buf_write *x, void *b, long m, long a, char *s)
                 break;
 
             case 2:
-                sprintf(s, "llll: Metadata Tags"); // @in 2 @type llll @digest Metadata tags
+                sprintf(s, "symbol/llll: Sample format"); // @in 2 @type symbol/llll @digest Sample format
                 break;
                 
             case 3:
+                sprintf(s, "llll: Metadata Tags"); // @in 3 @type llll @digest Metadata tags
+                break;
+                
+            case 4:
             default:
-                sprintf(s, "llll: Markers"); // @in 3 @type llll @digest Markers
+                sprintf(s, "llll: Markers"); // @in 4 @type llll @digest Markers
                 break;
                 
         }
@@ -275,7 +279,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E444", "aa", NULL);
+        earsbufobj_setup((t_earsbufobj *)x, "E4444", "aa", NULL);
 
         llll_free(args);
     }
@@ -393,7 +397,7 @@ void buf_write_bang(t_buf_write *x)
                 buf_write_markers_and_spectralannotation(x, filename,
                                                  mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL ? hatom_getllll(&mk_el->l_hatom) : NULL,
                                                  buf, ears_buffer_get_sr((t_object *)x, buf),
-                                                 data);
+                                                 data, x->sampleformat);
             
 
             if (tag_el && hatom_gettype(&tag_el->l_hatom) == H_LLLL)
@@ -449,13 +453,25 @@ void buf_write_anything(t_buf_write *x, t_symbol *msg, long ac, t_atom *av)
             
         } else if (inlet == 2) {
             earsbufobj_mutex_lock((t_earsbufobj *)x);
+            if (parsed && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
+                t_symbol *format = hatom_getsym(&parsed->l_head->l_hatom);
+                if (format != _llllobj_sym_unknown && format != gensym("compressed"))
+                    x->sampleformat = format;
+                else if (format == _llllobj_sym_unknown)
+                    object_warn((t_object *)x, "Using unknown sample type.");
+            } else
+                object_error((t_object *)x, "Invalid sample format");
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+            
+        } else if (inlet == 3) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
             llll_free(x->tags);
             x->tags = llll_clone(parsed);
             if (x->tags->l_depth == 2)
                 llll_wrap_once(&x->tags);
             earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
-        } else if (inlet == 3) {
+        } else if (inlet == 4) {
             earsbufobj_mutex_lock((t_earsbufobj *)x);
             llll_free(x->markers);
             x->markers = llll_clone(parsed);
@@ -1165,15 +1181,33 @@ void AudioCues_from_llll(t_buf_write *x, t_llll *ll, t_buffer_obj *buf, AudioFil
     audiofile.setCues(cues);
 }
 
-void buf_write_markers_WAV(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data)
+AudioEncoding sample_format_to_encoding(t_symbol *sampleformat)
+{
+    if (sampleformat == _sym_int8 || sampleformat == _sym_int16 || sampleformat == _sym_int24 || sampleformat == _sym_int32)
+        return AudioEncoding::Encoding_PCM;
+    if (sampleformat == _sym_float32 || sampleformat == _sym_float64)
+        return AudioEncoding::Encoding_IEEEFloat;
+    if (sampleformat == _sym_mulaw)
+        return AudioEncoding::Encoding_MULaw;
+    if (sampleformat == gensym("alaw"))
+        return AudioEncoding::Encoding_ALaw;
+    if (sampleformat == gensym("compressed"))
+        return AudioEncoding::Encoding_Compressed;
+    return AudioEncoding::Encoding_Unknown;
+}
+
+void buf_write_markers_WAV(t_buf_write *x, t_symbol *filename, t_llll *markers,
+                           t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data, t_symbol *sampleformat)
 {
     AudioFile<float> audioFile;
     audioFile.load(filename->s_name);
     AudioCues_from_llll(x, markers, buf, audioFile);
-    audioFile.save(filename->s_name);
+    audioFile.save(filename->s_name, AudioFileFormat::Wave, sample_format_to_encoding(sampleformat));
 }
 
-void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename, t_llll *markers, t_buffer_obj *buf, double sr, t_ears_spectralbuf_metadata *data)
+void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename,
+                                              t_llll *markers, t_buffer_obj *buf, double sr,
+                                              t_ears_spectralbuf_metadata *data, t_symbol *sampleformat)
 {
     if ((!markers || markers->l_size == 0) && !data)
         return;
@@ -1188,7 +1222,7 @@ void buf_write_markers_and_spectralannotation(t_buf_write *x, t_symbol *filename
             ears_spectralannotation_write((t_object *)x, filename, sr, data);
         
         if (markers)
-            buf_write_markers_WAV(x, filename, markers, buf, sr, data);
+            buf_write_markers_WAV(x, filename, markers, buf, sr, data, sampleformat);
         
     } else if (ears_symbol_ends_with(filename, ".wv", true)){
         if (x->write_spectral_annotations && data)

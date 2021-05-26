@@ -64,6 +64,38 @@ enum class AudioFileFormat
     Aiff
 };
 
+enum class AudioEncoding
+{
+    Encoding_Unknown = 0x0000,
+    Encoding_PCM = 0x0001,
+    Encoding_IEEEFloat = 0x0003,
+    Encoding_ALaw = 0x0006,
+    Encoding_MULaw = 0x0007,
+    Encoding_Compressed = 0x0008,
+};
+
+
+
+//=============================================================
+enum AIFFAudioFormat
+{
+    Uncompressed,
+    Compressed,
+    Error
+};
+
+
+//=============================================================
+enum WavAudioFormat
+{
+    PCM = 0x0001,
+    IEEEFloat = 0x0003,
+    ALaw = 0x0006,
+    MULaw = 0x0007,
+    Extensible = 0xFFFE
+};
+
+
 typedef struct _AudioCue
 {
     uint32_t    cueID;
@@ -99,7 +131,7 @@ public:
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
      */
-    bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
+    bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave, AudioEncoding encoding = AudioEncoding::Encoding_PCM);
         
     //=============================================================
     /** @Returns the sample rate */
@@ -113,7 +145,10 @@ public:
     
     /** @Returns true if the audio file is stereo */
     bool isStereo() const;
-    
+
+    /** @Returns the encoding of the file */
+    AudioEncoding getEncoding() const;
+
     /** @Returns the bit depth of each sample */
     int getBitDepth() const;
     
@@ -198,8 +233,8 @@ private:
     bool decodeAiffFile (std::vector<uint8_t>& fileData);
     
     //=============================================================
-    bool saveToWaveFile (std::string filePath);
-    bool saveToAiffFile (std::string filePath);
+    bool saveToWaveFile (std::string filePath, WavAudioFormat audioEncoding);
+    bool saveToAiffFile (std::string filePath, AIFFAudioFormat audioEncoding);
     
     //=============================================================
     void clearAudioBuffer();
@@ -236,6 +271,7 @@ private:
     
     //=============================================================
     AudioFileFormat audioFileFormat;
+    AudioEncoding audioEncoding;
     uint32_t sampleRate;
     int bitDepth;
     bool logErrorsToConsole {true};
@@ -266,23 +302,6 @@ static std::unordered_map <uint32_t, std::vector<uint8_t>> aiffSampleRateTable =
     {5644800, {64, 21, 172, 68, 0, 0, 0, 0, 0, 0}}
 };
 
-//=============================================================
-enum WavAudioFormat
-{
-    PCM = 0x0001,
-    IEEEFloat = 0x0003,
-    ALaw = 0x0006,
-    MULaw = 0x0007,
-    Extensible = 0xFFFE
-};
-
-//=============================================================
-enum AIFFAudioFormat
-{
-    Uncompressed,
-    Compressed,
-    Error
-};
 
 //=============================================================
 /* IMPLEMENTATION */
@@ -344,6 +363,14 @@ int AudioFile<T>::getBitDepth() const
 {
     return bitDepth;
 }
+
+//=============================================================
+template <class T>
+AudioEncoding AudioFile<T>::getEncoding() const
+{
+    return audioEncoding;
+}
+
 
 //=============================================================
 template <class T>
@@ -585,6 +612,32 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     
     uint16_t numBytesPerSample = static_cast<uint16_t> (bitDepth) / 8;
     
+    switch (audioFormat) {
+        case WavAudioFormat::PCM:
+            audioEncoding = AudioEncoding::Encoding_PCM;
+            break;
+
+        case WavAudioFormat::IEEEFloat:
+            audioEncoding = AudioEncoding::Encoding_IEEEFloat;
+            break;
+
+        case WavAudioFormat::MULaw:
+            audioEncoding = AudioEncoding::Encoding_MULaw;
+            break;
+
+        case WavAudioFormat::ALaw:
+            audioEncoding = AudioEncoding::Encoding_ALaw;
+            break;
+
+        case WavAudioFormat::Extensible:
+            audioEncoding = AudioEncoding::Encoding_PCM;
+            break;
+
+        default:
+            audioEncoding = AudioEncoding::Encoding_Unknown;
+            break;
+    }
+    
     // check that the audio format is PCM or Float or extensible
     if (audioFormat != WavAudioFormat::PCM && audioFormat != WavAudioFormat::IEEEFloat && audioFormat != WavAudioFormat::Extensible)
     {
@@ -592,8 +645,8 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
         return false;
     }
     
-    // check the number of channels is mono or stereo
-    if (numChannels < 1 || numChannels > 128)
+    // check the number of channels
+    if (numChannels < 1) // || numChannels > 128)
     {
         reportError ("ERROR: this WAV file seems to be an invalid number of channels (or corrupted?)");
         return false;
@@ -790,6 +843,20 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     
     int audioFormat = format == "AIFF" ? AIFFAudioFormat::Uncompressed : format == "AIFC" ? AIFFAudioFormat::Compressed : AIFFAudioFormat::Error;
     
+    switch (audioFormat) {
+        case AIFFAudioFormat::Uncompressed:
+            audioEncoding = AudioEncoding::Encoding_PCM;
+            break;
+            
+        case AIFFAudioFormat::Compressed:
+            audioEncoding = AudioEncoding::Encoding_Compressed;
+            break;
+            
+        default:
+            audioEncoding = AudioEncoding::Encoding_Unknown;
+            break;
+    }
+    
     // -----------------------------------------------------------
     // try and find the start points of key chunks
     int indexOfCommChunk = getIndexOfChunk (fileData, "COMM", 12, Endianness::BigEndian);
@@ -822,9 +889,9 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     }
     
     // check the number of channels is mono or stereo
-    if (numChannels < 1 ||numChannels > 2)
+    if (numChannels < 1) // || numChannels > 2)
     {
-        reportError ("ERROR: this AIFF file seems to be neither mono nor stereo (perhaps multi-track, or corrupted?)");
+        reportError ("ERROR: this AIFF file seem to have an invalid number of channels");
         return false;
     }
     
@@ -851,7 +918,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     // sanity check the data
     if ((soundDataChunkSize - 8) != totalNumAudioSampleBytes || totalNumAudioSampleBytes > static_cast<long>(fileData.size() - samplesStartIndex))
     {
-        reportError ("ERROR: the metadatafor this file doesn't seem right");
+        reportError ("ERROR: the metadata for this file doesn't seem right");
         return false;
     }
     
@@ -962,15 +1029,22 @@ void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
+bool AudioFile<T>::save (std::string filePath, AudioFileFormat format, AudioEncoding encoding)
 {
     if (format == AudioFileFormat::Wave)
     {
-        return saveToWaveFile (filePath);
+        return saveToWaveFile (filePath,
+                               audioEncoding == AudioEncoding::Encoding_PCM ? WavAudioFormat::PCM :
+                               audioEncoding == AudioEncoding::Encoding_IEEEFloat ? WavAudioFormat::IEEEFloat :
+                               audioEncoding == AudioEncoding::Encoding_ALaw ? WavAudioFormat::ALaw :
+                               audioEncoding == AudioEncoding::Encoding_MULaw ? WavAudioFormat::MULaw :
+                               WavAudioFormat::PCM
+                               );
     }
     else if (format == AudioFileFormat::Aiff)
     {
-        return saveToAiffFile (filePath);
+        return saveToAiffFile (filePath,
+                               audioEncoding == AudioEncoding::Encoding_Compressed ? AIFFAudioFormat::Compressed : AIFFAudioFormat::Uncompressed);
     }
     
     return false;
@@ -978,12 +1052,18 @@ bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::saveToWaveFile (std::string filePath)
+bool AudioFile<T>::saveToWaveFile (std::string filePath, WavAudioFormat audioEncoding)
 {
     std::vector<uint8_t> fileData;
     
     int32_t dataChunkSize = getNumSamplesPerChannel() * (getNumChannels() * bitDepth / 8);
-    int16_t audioFormat = bitDepth == 32 ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
+//    int16_t audioFormat = bitDepth == 32 ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
+    int16_t audioFormat = audioEncoding;
+    
+    // see https://stackoverflow.com/questions/31739143/when-to-use-wave-extensible-format
+    if (audioFormat == WavAudioFormat::PCM && (getNumChannels() > 2 || bitDepth > 16 || sampleRate > 44100))
+        audioFormat = WavAudioFormat::Extensible;
+        
     int32_t formatChunkSize = audioFormat == WavAudioFormat::PCM ? 16 : 18;
     int32_t iXMLChunkSize = static_cast<int32_t> (iXMLChunk.size());
     
@@ -1138,8 +1218,10 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::saveToAiffFile (std::string filePath)
+bool AudioFile<T>::saveToAiffFile (std::string filePath, AIFFAudioFormat encoding)
 {
+    // encoding is ignored for now
+    
     std::vector<uint8_t> fileData;
     
     int32_t numBytesPerSample = bitDepth / 8;

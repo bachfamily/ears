@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 441.0, 157.0, 811.0, 514.0 ],
+		"rect" : [ 34.0, 192.0, 811.0, 527.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -85,8 +85,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 496.583333333333371, 339.0, 261.833333333333314, 98.0 ],
-					"presentation_linecount" : 7,
+					"patching_rect" : [ 496.583333333333371, 339.0, 265.0, 98.0 ],
 					"text" : "the exclamation mark is for dynamic naming: it's the way of allowing an object the generation of different buffers each time it is triggered (don't forget the \"reset\" message, though)."
 				}
 
@@ -102,8 +101,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 554.0, 234.0, 189.0, 40.0 ],
-					"presentation_linecount" : 4,
+					"patching_rect" : [ 554.0, 234.0, 191.0, 40.0 ],
 					"text" : "the equal sign is for in-place operation (save memory...)"
 				}
 
@@ -418,8 +416,8 @@
 					"id" : "obj-7",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
+					"numoutlets" : 4,
+					"outlettype" : [ "", "", "", "" ],
 					"patching_rect" : [ 19.0, 153.0, 106.0, 22.0 ],
 					"text" : "ears.read~ source"
 				}

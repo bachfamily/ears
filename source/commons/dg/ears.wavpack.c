@@ -2,7 +2,7 @@
 
 
 
-long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start_sample, long end_sample, t_buffer_obj *buf)
+long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start_sample, long end_sample, t_buffer_obj *buf, t_symbol **sampleformat)
 {
     char error = 0;
     long ears_err = EARS_ERR_NONE;
@@ -20,6 +20,24 @@ long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start_sa
     long num_channels = WavpackGetNumChannels(wpc);
     int bitspersample = WavpackGetBitsPerSample (wpc);
     long sr = WavpackGetSampleRate(wpc);
+    
+    // set sample format
+    *sampleformat = _llllobj_sym_unknown;
+    if (WavpackGetMode(wpc) & MODE_FLOAT) {
+        switch (bitspersample) {
+            case 32: *sampleformat = _sym_float32; break;
+            // float64 is not supported by wavpack
+            default: break;
+        }
+    } else {
+        switch (bitspersample) {
+            case 8: *sampleformat = _sym_int8; break;
+            case 16: *sampleformat = _sym_int16; break;
+            case 24: *sampleformat = _sym_int24; break;
+            case 32: *sampleformat = _sym_int32; break;
+            default: break;
+        }
+    }
     
     if (start_sample < 0)
         start_sample = 0;

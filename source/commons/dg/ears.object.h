@@ -322,6 +322,8 @@ void earsbufobj_outlet_anything(t_earsbufobj *e_ob, long outnum, t_symbol *s, lo
 void earsbufobj_outlet_symbol_list(t_earsbufobj *e_ob, long outnum, long numsymbols, t_symbol **s);
 void earsbufobj_outlet_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll);
 void earsbufobj_outlet_bang(t_earsbufobj *e_ob, long outnum);
+void earsbufobj_shoot_llll(t_earsbufobj *e_ob, long outnum);
+void earsbufobj_gunload_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll);
 
 t_earsbufobj_store *earsbufobj_get_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long index);
 void earsbufobj_store_copy_format(t_earsbufobj *e_ob, e_earsbufobj_in_out source, long source_store_idx, long source_buffer_idx, e_earsbufobj_in_out dest, long dest_store_idx, long dest_buffer_idx);
