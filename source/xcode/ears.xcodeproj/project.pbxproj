@@ -13,7 +13,6 @@
 			buildPhases = (
 			);
 			dependencies = (
-				91319B6D264C039F00364EAB /* PBXTargetDependency */,
 				1E096D0C261F32B400E220EA /* PBXTargetDependency */,
 				1E096D0E261F32B400E220EA /* PBXTargetDependency */,
 				1E7E3501261F1A750068FB3B /* PBXTargetDependency */,
@@ -73,6 +72,16 @@
 				1ED65E4F1D38546B007BE0C1 /* PBXTargetDependency */,
 				1E06EE961D36762E0064F23B /* PBXTargetDependency */,
 				1EFF132E1D1D4F7F00B7C47A /* PBXTargetDependency */,
+				9157D0A3266D06E300AAAFDE /* PBXTargetDependency */,
+				9157D0A5266D06E700AAAFDE /* PBXTargetDependency */,
+				9157D0A7266D06EB00AAAFDE /* PBXTargetDependency */,
+				9157D0A9266D06EF00AAAFDE /* PBXTargetDependency */,
+				9157D0AB266D06F400AAAFDE /* PBXTargetDependency */,
+				9157D0AD266D06F700AAAFDE /* PBXTargetDependency */,
+				9157D0AF266D06FA00AAAFDE /* PBXTargetDependency */,
+				9157D0B1266D06FE00AAAFDE /* PBXTargetDependency */,
+				9157D0B3266D070100AAAFDE /* PBXTargetDependency */,
+				91319B6D264C039F00364EAB /* PBXTargetDependency */,
 			);
 			name = ears;
 			productName = dada;
@@ -633,7 +642,6 @@
 		91319B8A264C14F500364EAB /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319B91264C150C00364EAB /* ears.in.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B50264C026F00364EAB /* ears.in.cpp */; };
 		91319B97264C151000364EAB /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
-		91319B99264C151000364EAB /* ears.in.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B50264C026F00364EAB /* ears.in.cpp */; };
 		91319B9B264C151000364EAB /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		91319B9C264C151000364EAB /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319BA8264C15FD00364EAB /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
@@ -660,6 +668,7 @@
 		91319C08264C172500364EAB /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		91319C09264C172500364EAB /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319C10264C173800364EAB /* ears.tovector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B58264C027200364EAB /* ears.tovector.cpp */; };
+		9157D0A1266BEF5D00AAAFDE /* ears.intilde.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B51264C026F00364EAB /* ears.intilde.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1565,6 +1574,69 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
 			remoteInfo = lib_dada;
+		};
+		9157D0A2266D06E300AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B6E264C149500364EAB;
+			remoteInfo = "ears.fromvector~";
+		};
+		9157D0A4266D06E700AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B80264C14F500364EAB;
+			remoteInfo = ears.in;
+		};
+		9157D0A6266D06EB00AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B92264C151000364EAB;
+			remoteInfo = "ears.in~";
+		};
+		9157D0A8266D06EF00AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BA3264C15FD00364EAB;
+			remoteInfo = "ears.mc.in~";
+		};
+		9157D0AA266D06F400AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BB5264C165700364EAB;
+			remoteInfo = "ears.mc.out~";
+		};
+		9157D0AC266D06F700AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BC8264C168400364EAB;
+			remoteInfo = ears.out;
+		};
+		9157D0AE266D06FA00AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BDA264C16A100364EAB;
+			remoteInfo = "ears.out~";
+		};
+		9157D0B0266D06FE00AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BEC264C16D200364EAB;
+			remoteInfo = "ears.processinfo~";
+		};
+		9157D0B2266D070100AAAFDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BFF264C172500364EAB;
+			remoteInfo = ears.tovector;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -6949,7 +7021,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91319B99264C151000364EAB /* ears.in.cpp in Sources */,
+				9157D0A1266BEF5D00AAAFDE /* ears.intilde.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7648,6 +7720,51 @@
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
 			targetProxy = 91319C01264C172500364EAB /* PBXContainerItemProxy */;
+		};
+		9157D0A3266D06E300AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B6E264C149500364EAB /* ears.fromvector~ */;
+			targetProxy = 9157D0A2266D06E300AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0A5266D06E700AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B80264C14F500364EAB /* ears.in */;
+			targetProxy = 9157D0A4266D06E700AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0A7266D06EB00AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B92264C151000364EAB /* ears.in~ */;
+			targetProxy = 9157D0A6266D06EB00AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0A9266D06EF00AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BA3264C15FD00364EAB /* ears.mc.in~ */;
+			targetProxy = 9157D0A8266D06EF00AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0AB266D06F400AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BB5264C165700364EAB /* ears.mc.out~ */;
+			targetProxy = 9157D0AA266D06F400AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0AD266D06F700AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BC8264C168400364EAB /* ears.out */;
+			targetProxy = 9157D0AC266D06F700AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0AF266D06FA00AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BDA264C16A100364EAB /* ears.out~ */;
+			targetProxy = 9157D0AE266D06FA00AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0B1266D06FE00AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BEC264C16D200364EAB /* ears.processinfo~ */;
+			targetProxy = 9157D0B0266D06FE00AAAFDE /* PBXContainerItemProxy */;
+		};
+		9157D0B3266D070100AAAFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BFF264C172500364EAB /* ears.tovector */;
+			targetProxy = 9157D0B2266D070100AAAFDE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

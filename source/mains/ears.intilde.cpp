@@ -28,6 +28,7 @@ typedef struct _ears_intilde
 
 void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av);
 void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s);
+//void ears_intilde_inletinfo(t_ears_intilde *x, void *b, long a, char *t);
 
 void ears_intilde_int(t_ears_intilde *x, t_atom_long i);
 void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av);
@@ -54,11 +55,11 @@ int C74_EXPORT main()
                               0);
     
     class_addmethod(ears_intilde_class, (method)ears_intilde_dsp64, "dsp64", A_CANT, 0);
-
-    //class_addmethod(ears_intilde_class, (method)ears_intilde_int, "int", A_LONG, 0);
     class_addmethod(ears_intilde_class, (method)ears_intilde_list, "list", A_GIMME, 0);
-
     class_addmethod(ears_intilde_class, (method)ears_intilde_setbuffers, "setbuffers", A_CANT, 0);
+    
+    class_addmethod(ears_intilde_class, (method)ears_intilde_assist, "assist", A_CANT, 0);
+    //class_addmethod(ears_intilde_class, (method)ears_intilde_inletinfo, "inletinfo", A_CANT, 0);
     
     class_dspinit(ears_intilde_class);
 
@@ -67,18 +68,17 @@ int C74_EXPORT main()
     return 0;
 }
 
-void ears_intilde_int(t_ears_intilde *x, t_atom_long i)
-{
-    
-}
-
 void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av)
 {
-    t_atom_long startCh;
+    t_atom_long bufIdx;
     bach_assert_objerror_goto(x, ac >= 2, "Wrong format", ears_intilde_error);
-    startCh = atom_getlong(av++);
+    bufIdx = atom_getlong(av++);
+    
+    bach_assert_objerror_goto(x, bufIdx > 0, "Bad starting channel", ears_intilde_error);
+
+    x->bufIndex = bufIdx;
     ac--;
-    bach_assert_objerror_goto(x, startCh > 0, "Bad starting channel", ears_intilde_error);
+    
     for (int i = 0; i < ac && i < EARS_INTILDE_MAX_CHANS; i++) {
         t_atom_long v = atom_getlong(av++);
         if (v < 1) {
@@ -144,11 +144,6 @@ void ears_intilde_free(t_ears_intilde *x)
     dsp_free((t_pxobject *) x);
 }
 
-void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s)
-{
-
-}
-
 
 // TODO: parallelize
 
@@ -186,6 +181,7 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
     x->position += vec_size;
 }
 
+
 void ears_intilde_dsp64(t_ears_intilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
     x->position = 0;
@@ -193,10 +189,18 @@ void ears_intilde_dsp64(t_ears_intilde *x, t_object *dsp64, short *count, double
         object_method(dsp64, gensym("dsp_add64"), x, ears_intilde_perform64, 0, NULL);
 }
 
+
 void ears_intilde_setbuffers(t_ears_intilde *x, bufferData* bufs)
 {
     x->bufs = bufs;
 }
 
 
-
+void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s)
+{
+    if (m == ASSIST_INLET) {
+        sprintf(s, "list: Buffer index and channels"); // @in 1 @type list @digest Buffer index and channels
+    } else {
+        sprintf(s, "signal: Audio from buffer"); // @in 1 @loop 1 @type signal @digest Audio from buffer
+    }
+}
