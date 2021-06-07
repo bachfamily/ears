@@ -648,7 +648,6 @@
 		91319B8A264C14F500364EAB /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319B91264C150C00364EAB /* ears.in.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B50264C026F00364EAB /* ears.in.cpp */; };
 		91319B97264C151000364EAB /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
-		91319B99264C151000364EAB /* ears.in.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B50264C026F00364EAB /* ears.in.cpp */; };
 		91319B9B264C151000364EAB /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		91319B9C264C151000364EAB /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319BA8264C15FD00364EAB /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
@@ -675,6 +674,7 @@
 		91319C08264C172500364EAB /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		91319C09264C172500364EAB /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319C10264C173800364EAB /* ears.tovector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B58264C027200364EAB /* ears.tovector.cpp */; };
+		9157D0B4266E2AE900AAAFDE /* ears.intilde.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B51264C026F00364EAB /* ears.intilde.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -7105,7 +7105,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91319B99264C151000364EAB /* ears.in.cpp in Sources */,
+				9157D0B4266E2AE900AAAFDE /* ears.intilde.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
