@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -470,8 +470,8 @@
 					"id" : "obj-6",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
+					"numoutlets" : 5,
+					"outlettype" : [ "", "", "", "", "" ],
 					"patching_rect" : [ 527.0, 240.0, 66.0, 22.0 ],
 					"text" : "ears.read~"
 				}
@@ -496,8 +496,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 9.0, 6.961723327636719, 272.0, 42.0 ],
-					"text" : "query and process"
+					"patching_rect" : [ 9.0, 6.961723327636719, 282.0, 42.0 ],
+					"text" : "Query and Process"
 				}
 
 			}

@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -81,7 +81,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "concat",
-					"chanoffset" : 0,
 					"id" : "obj-5",
 					"maxclass" : "waveform~",
 					"numinlets" : 5,
@@ -179,7 +178,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 6.961723327636719, 485.0, 42.0 ],
-					"text" : "concatenate files in a folder"
+					"text" : "Concatenate Files in a Folder"
 				}
 
 			}
@@ -229,8 +228,8 @@
 					"id" : "obj-17",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
+					"numoutlets" : 5,
+					"outlettype" : [ "", "", "", "", "" ],
 					"patching_rect" : [ 9.0, 179.0, 66.0, 22.0 ],
 					"text" : "ears.read~"
 				}
@@ -401,14 +400,14 @@
 		"dependency_cache" : [ 			{
 				"name" : "bach.path2llll.maxpat",
 				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
+				"patcherrelativepath" : "../../../../bach/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "bach.filter.maxpat",
 				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
+				"patcherrelativepath" : "../../../../bach/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}

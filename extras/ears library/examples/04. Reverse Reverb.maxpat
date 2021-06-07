@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -334,8 +334,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 9.0, 6.961723327636719, 215.0, 42.0 ],
-					"text" : "reverse reverb"
+					"patching_rect" : [ 9.0, 6.961723327636719, 240.0, 42.0 ],
+					"text" : "Reverse Reverb"
 				}
 
 			}
@@ -526,7 +526,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.shift~.mxo",
+				"name" : "ears.offset~.mxo",
 				"type" : "iLaX"
 			}
  ],

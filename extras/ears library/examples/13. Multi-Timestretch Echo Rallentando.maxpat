@@ -416,8 +416,8 @@
 					"id" : "obj-7",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 4,
-					"outlettype" : [ "", "", "", "" ],
+					"numoutlets" : 5,
+					"outlettype" : [ "", "", "", "", "" ],
 					"patching_rect" : [ 19.0, 153.0, 106.0, 22.0 ],
 					"text" : "ears.read~ source"
 				}
@@ -469,7 +469,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 6.961723327636719, 636.0, 42.0 ],
-					"text" : "multi-timestretch echo rallentando"
+					"text" : "Multi-Timestretch Echo Rallentando"
 				}
 
 			}

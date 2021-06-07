@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -39,6 +39,18 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"fontsize" : 18.0,
+					"id" : "obj-2",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 9.0, 50.961723327636719, 433.0, 27.0 ],
+					"text" : "This patch pans a mono file on multiple loudspeakers"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-1",
 					"maxclass" : "newobj",
@@ -83,7 +95,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "u189001700",
-					"chanoffset" : 2,
 					"id" : "obj-38",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -98,7 +109,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "u189001700",
-					"chanoffset" : 3,
 					"id" : "obj-39",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -113,7 +123,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "u189001700",
-					"chanoffset" : 4,
 					"id" : "obj-35",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -128,7 +137,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "u189001700",
-					"chanoffset" : 5,
 					"id" : "obj-36",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -143,7 +151,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "u189001700",
-					"chanoffset" : 6,
 					"id" : "obj-33",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -158,7 +165,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "u189001700",
-					"chanoffset" : 7,
 					"id" : "obj-20",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -185,7 +191,6 @@
 , 			{
 				"box" : 				{
 					"buffername" : "u189001700",
-					"chanoffset" : 8,
 					"id" : "obj-22",
 					"maxclass" : "waveform~",
 					"numinlets" : 5,
@@ -364,7 +369,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 6.961723327636719, 590.0, 42.0 ],
-					"text" : "pan a mono file on multiple loudspeakers"
+					"text" : "Off-line Panning"
 				}
 
 			}

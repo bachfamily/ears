@@ -13,6 +13,15 @@
 			buildPhases = (
 			);
 			dependencies = (
+				1E8944CA26642B4400CBD13C /* PBXTargetDependency */,
+				1E8944CC26642B4400CBD13C /* PBXTargetDependency */,
+				1E8944CE26642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D026642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D226642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D426642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D626642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D826642B4400CBD13C /* PBXTargetDependency */,
+				1E8944DA26642B4400CBD13C /* PBXTargetDependency */,
 				1E7CB9BB2656625800CFBC5C /* PBXTargetDependency */,
 				1E7CB9BD2656625800CFBC5C /* PBXTargetDependency */,
 				91319B6D264C039F00364EAB /* PBXTargetDependency */,
@@ -1174,6 +1183,69 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1E89421220CD69F300547CB7;
 			remoteInfo = ears.expr;
+		};
+		1E8944C926642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B6E264C149500364EAB;
+			remoteInfo = "ears.fromvector~";
+		};
+		1E8944CB26642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B80264C14F500364EAB;
+			remoteInfo = ears.in;
+		};
+		1E8944CD26642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B92264C151000364EAB;
+			remoteInfo = "ears.in~";
+		};
+		1E8944CF26642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BA3264C15FD00364EAB;
+			remoteInfo = "ears.mc.in~";
+		};
+		1E8944D126642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BB5264C165700364EAB;
+			remoteInfo = "ears.mc.out~";
+		};
+		1E8944D326642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BC8264C168400364EAB;
+			remoteInfo = ears.out;
+		};
+		1E8944D526642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BDA264C16A100364EAB;
+			remoteInfo = "ears.out~";
+		};
+		1E8944D726642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BEC264C16D200364EAB;
+			remoteInfo = "ears.processinfo~";
+		};
+		1E8944D926642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BFF264C172500364EAB;
+			remoteInfo = ears.tovector;
 		};
 		1E8D27041F5C3B2F00BE6205 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -7514,6 +7586,51 @@
 			isa = PBXTargetDependency;
 			target = 1E89421220CD69F300547CB7 /* ears.expr~ */;
 			targetProxy = 1E89422720CD733C00547CB7 /* PBXContainerItemProxy */;
+		};
+		1E8944CA26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B6E264C149500364EAB /* ears.fromvector~ */;
+			targetProxy = 1E8944C926642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944CC26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B80264C14F500364EAB /* ears.in */;
+			targetProxy = 1E8944CB26642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944CE26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B92264C151000364EAB /* ears.in~ */;
+			targetProxy = 1E8944CD26642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D026642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BA3264C15FD00364EAB /* ears.mc.in~ */;
+			targetProxy = 1E8944CF26642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D226642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BB5264C165700364EAB /* ears.mc.out~ */;
+			targetProxy = 1E8944D126642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D426642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BC8264C168400364EAB /* ears.out */;
+			targetProxy = 1E8944D326642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D626642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BDA264C16A100364EAB /* ears.out~ */;
+			targetProxy = 1E8944D526642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D826642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BEC264C16D200364EAB /* ears.processinfo~ */;
+			targetProxy = 1E8944D726642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944DA26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BFF264C172500364EAB /* ears.tovector */;
+			targetProxy = 1E8944D926642B4400CBD13C /* PBXContainerItemProxy */;
 		};
 		1E8D27031F5C3B2F00BE6205 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

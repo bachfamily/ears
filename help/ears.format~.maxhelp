@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 0,
-			"revision" : 5,
+			"minor" : 1,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 141.0, 79.0, 742.0, 497.0 ],
+		"rect" : [ 100.0, 79.0, 742.0, 497.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,7 @@
 		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontname" : "Arial",
@@ -51,8 +52,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
-							"revision" : 5,
+							"minor" : 1,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -86,6 +87,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-15",
@@ -320,14 +322,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
-							"revision" : 5,
+							"minor" : 1,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 141.0, 105.0, 742.0, 471.0 ],
+						"rect" : [ 100.0, 105.0, 742.0, 471.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -355,6 +357,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bubble" : 1,
@@ -690,8 +693,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 271.5, 230.0, 23.0 ],
-									"text" : "ears.format~ @sr 22050 @resample 0"
+									"patching_rect" : [ 17.0, 271.5, 149.0, 23.0 ],
+									"text" : "ears.format~ @sr 22050"
 								}
 
 							}
@@ -859,8 +862,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
-							"revision" : 5,
+							"minor" : 1,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -894,6 +897,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [  ],
 						"lines" : [  ]
 					}
