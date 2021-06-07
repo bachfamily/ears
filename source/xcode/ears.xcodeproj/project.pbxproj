@@ -3021,8 +3021,8 @@
 			isa = PBXGroup;
 			children = (
 				1EF5DA232386DD0A00024510 /* mains */,
-				1EFC4354196AEEA4000BDFBF /* libraries */,
 				1EB91C52190C00D400E05E70 /* commons */,
+				1EFC4354196AEEA4000BDFBF /* libraries */,
 			);
 			name = Source;
 			sourceTree = SOURCE_ROOT;

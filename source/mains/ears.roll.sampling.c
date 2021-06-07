@@ -85,6 +85,8 @@ typedef struct _buf_roll_sampling {
     // velocity to gain
     e_ears_veltoamp_modes veltoamp_mode;
     double velrange[2];
+    
+    char        optimize_for_identical_samples;
 
 } t_buf_roll_sampling;
 
@@ -350,6 +352,8 @@ t_buf_roll_sampling *buf_roll_sampling_new(t_symbol *s, short argc, t_atom *argv
         x->filename_slot = 8;
         x->gain_slot = 0;
         x->pan_slot = 0;
+        
+        x->optimize_for_identical_samples = 1;
 
         x->panvoices = llll_from_text_buf("");
 
@@ -402,13 +406,13 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
                         EARS_SYNTHMODE_NONE, NULL, 0, //< we're not using synthesis
                         x->use_mute_solos, x->use_durations, x->num_channels,
                         x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->rate_slot, x->ps_slot, x->ts_slot,
-                        x->sr > 0 ? x->sr : EARS_DEFAULT_SR, (e_ears_normalization_modes)x->normalization_mode,
+                        x->sr > 0 ? x->sr : ears_get_current_Max_sr(), (e_ears_normalization_modes)x->normalization_mode,
                         (e_ears_channel_convert_modes)x->channelmode,
                         x->fadein_amount, x->fadeout_amount, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type,
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, 1, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, 1, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

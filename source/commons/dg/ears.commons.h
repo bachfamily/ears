@@ -22,7 +22,7 @@
 
 #define EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK 10
 #define EARS_MAX_NUM_CHANNELS 2048 // max num channels per buffer
-#define EARS_DEFAULT_SR (sys_getsr())
+#define ears_get_current_Max_sr() (sys_getsr())
 
 #define EARS_FROMFILE_NATIVE_MP3_HANDLING
 

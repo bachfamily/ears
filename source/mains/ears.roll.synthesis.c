@@ -422,12 +422,12 @@ void buf_roll_synthesis_bang(t_buf_roll_synthesis *x)
     ears_roll_to_buffer((t_earsbufobj *)x, EARS_SCORETOBUF_MODE_SYNTHESIS, roll_gs, outbuf,
                         synthmode, wavetable, wavetable_length,
                         x->use_mute_solos, true, x->num_channels,
-                        0, 0, x->gain_slot, x->pan_slot, 0, 0, 0, x->sr > 0 ? x->sr : EARS_DEFAULT_SR, (e_ears_normalization_modes)x->normalization_mode, EARS_CHANNELCONVERTMODE_PAN,
+                        0, 0, x->gain_slot, x->pan_slot, 0, 0, 0, x->sr > 0 ? x->sr : ears_get_current_Max_sr(), (e_ears_normalization_modes)x->normalization_mode, EARS_CHANNELCONVERTMODE_PAN,
                         x->fadein_amount, x->fadeout_amount, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type,
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning, x->oversampling, x->e_ob.l_resamplingfilterwidth);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning, x->oversampling, x->e_ob.l_resamplingfilterwidth, false);
     
     if (wavetable)
         buffer_unlocksamples(buf);
