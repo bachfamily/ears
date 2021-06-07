@@ -141,6 +141,7 @@ typedef struct _earsprocess
 void *earsprocess_new(t_symbol *s, long argc, t_atom *argv);
 void earsprocess_free(t_earsprocess *x);
 void earsprocess_assist(t_earsprocess *x, void *b, long m, long a, char *s);
+void earsprocess_inletinfo(t_earsprocess *x, void *b, long a, char *t);
 
 
 void earsprocess_deletepatch(t_earsprocess *x, t_symbol *msg, long argc, t_atom *argv);
@@ -247,6 +248,9 @@ int C74_EXPORT main()
     class_addmethod(earsprocess_class, (method)earsprocess_earsprocessinfocreated, "ears.processinfo~_created", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_earsprocessinfodeleted, "ears.processinfo~_deleted", A_CANT, 0);
     
+    class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_inletinfo, "inletinfo", A_CANT, 0);
+
     earsbufobj_class_add_outname_attr(earsprocess_class);
     earsbufobj_class_add_naming_attr(earsprocess_class);
 
@@ -999,5 +1003,32 @@ void earsprocess_autoclock(t_earsprocess *x, t_patcher *p)
         }
     }
 }
+
+
+void earsprocess_assist(t_earsprocess *x, void *b, long m, long a, char *s)
+{
+    if (m == ASSIST_INLET) {
+        if (a < x->nBufInlets) {
+            sprintf(s, "symbol/list/llll: Incoming buffer Name"); // @in 0 @loop 1 @type symbol/llll @digest Incoming buffer name
+        } else {
+            sprintf(s, "symbol/list/llll: Incoming data"); // @in 1 @loop 1 @type symbol/llll @digest Incoming data
+        }
+    } else {
+        if (a < x->nBufOutlets) {
+            sprintf(s, "symbol/list/llll: Output buffer"); // @out 0 @loop 1 @type symbol/llll @digest Output buffer
+        } else {
+            sprintf(s, "symbol/list/llll: Output data"); // @out 1 @loop 1 @type symbol/llll @digest Output data
+        }
+    }
+}
+
+
+void earsprocess_inletinfo(t_earsprocess *x, void *b, long a, char *t)
+{
+    if (a != 0)
+        *t = 1;
+}
+
+
 
 
