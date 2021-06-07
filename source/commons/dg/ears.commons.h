@@ -186,6 +186,19 @@ typedef enum {
 
 
 
+/** Synthesis modes
+ @ingroup misc */
+typedef enum {
+    EARS_SYNTHMODE_NONE =         0,    ///< No synth
+    EARS_SYNTHMODE_SINUSOIDS =    1,    ///< Sinusoids
+    EARS_SYNTHMODE_TRIANGULAR =   2,    ///< Triangular wave
+    EARS_SYNTHMODE_RECTANGULAR =  3,    ///< Rectangular wave
+    EARS_SYNTHMODE_SAWTOOTH =  4,       ///< Sawtooth
+    EARS_SYNTHMODE_WAVETABLE =  5,      ///< Sawtooth
+} e_ears_synthmode;
+
+
+
 typedef struct _ears_envelope_iterator
 {
     t_llll      *env;               ///< The envelope
@@ -309,6 +322,7 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
 // Filtering
 t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double cutoff_freq, char highpass); // also works inplace
 t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double a0, double a1, double a2, double b1, double b2); // also works inplace
+t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long factor);
 
 // Transposition
 t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
@@ -348,6 +362,7 @@ t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
 // SET properties
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames);
 t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr);
+t_ears_err ears_buffer_clear(t_object *ob, t_buffer_obj *buf);
 
 t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels);
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels);
@@ -372,7 +387,9 @@ void ears_writewave(t_object *buf, t_symbol *filename);
 void ears_writeraw(t_object *buf, t_symbol *filename);
 t_symbol *get_conformed_resolved_path(t_symbol *filename);
 
-
+// Sinc-resampling and sinc-interpolation
+long ears_resample(float *in, long num_in_frames, float **out, long num_out_frames, double factor, double fmax, double sr, double window_width, long num_channels);
+double ears_interp_circular_bandlimited(float *in, long num_in_frames, double index, double window_width);
 
 
 /// Helper tools
@@ -387,12 +404,14 @@ double ears_envelope_iterator_get_max_y(t_ears_envelope_iterator *eei);
 
 
 
-// These two functions are to be uses with caution, they do not create a buffer reference, only a buffer object, to be used and then freed:
+// These two functions are to be uses with caution: they do not create a buffer reference, only a buffer object, to be used and then freed:
 t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, double sr, long buffer_idx);
 t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **dest,
+                                                e_ears_synthmode mode, float *wavetable, long wavetable_length,
                                                 double midicents, double duration_ms, double velocity, t_llll *breakpoints,
                                                 e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
-                                                double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping);
+                                                double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping,
+                                                long oversampling, long resamplingfiltersize);
 
 
 

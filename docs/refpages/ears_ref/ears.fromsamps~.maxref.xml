@@ -237,7 +237,7 @@
 				Output Sample Rate
 			</digest>
 			<description>
-				Sets the sample rate for the output buffer. If zero (default) then the current sample rate is used.
+				Sets the sample rate for the output buffer. If zero (default) then the current Max sample rate is used.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Sample Rate" />

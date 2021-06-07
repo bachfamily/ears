@@ -169,22 +169,6 @@
       "clip"
     ]
   },
-  "ears.model.spr.analysis~": {
-    "digest": "Sinusoidal-plus-residual analysis model",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "model",
-      "analysis",
-      "resynthesis"
-    ],
-    "seealso": [
-      "ears.model.spr.synthesis~"
-    ]
-  },
   "ears.rubberband~": {
     "digest": "Rubber Band pitch and time processing",
     "module": "ears",
@@ -205,6 +189,22 @@
     "seealso": [
       "ears.paulstretch~",
       "ears.resample~"
+    ]
+  },
+  "ears.model.stochastic.analysis~": {
+    "digest": "Sinusoidal-plus-residual analysis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "analysis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.stochastic.synthesis~"
     ]
   },
   "ears.model~": {
@@ -496,22 +496,6 @@
       "ears.paulstretch~"
     ]
   },
-  "ears.model.spr.synthesis~": {
-    "digest": "Sinusoidal synthesis model",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "model",
-      "synthesis",
-      "resynthesis"
-    ],
-    "seealso": [
-      "ears.model.spr.analysis~"
-    ]
-  },
   "ears.repeat~": {
     "digest": "Repeat buffer",
     "module": "ears",
@@ -530,22 +514,20 @@
       "ears.crop~"
     ]
   },
-  "ears.roll.sinusoids~": {
-    "digest": "Convert a <o>bach.roll</o> into a mix of sinusoids",
+  "ears.model.sps.analysis~": {
+    "digest": "Sinusoidal-plus-residual analysis model",
     "module": "ears",
     "category": [
-      "ears export"
+      "ears spectral"
     ],
     "keywords": [
       "buffer",
-      "roll",
-      "bounce",
-      "export",
-      "sinusoids",
-      "cycle"
+      "model",
+      "analysis",
+      "resynthesis"
     ],
     "seealso": [
-      "ears.read~"
+      "ears.model.sps.synthesis~"
     ]
   },
   "ears.pan~": {
@@ -763,6 +745,22 @@
       "ears.mix~"
     ]
   },
+  "ears.model.sps.synthesis~": {
+    "digest": "Sinusoidal synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "synthesis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.sps.analysis~"
+    ]
+  },
   "ears.paulstretch~": {
     "digest": "Paulstretch timestretching",
     "module": "ears",
@@ -902,6 +900,22 @@
       "ears.convert~"
     ]
   },
+  "ears.model.stochastic.synthesis~": {
+    "digest": "Sinusoidal synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "synthesis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.stochastic.analysis~"
+    ]
+  },
   "ears.overdrive~": {
     "digest": "Buffer soft clipping",
     "module": "ears",
@@ -1024,6 +1038,24 @@
     ],
     "seealso": [
       "ears.model.sine.synthesis~"
+    ]
+  },
+  "ears.roll.synthesis~": {
+    "digest": "Convert a <o>bach.roll</o> into a mix of synthesis",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export",
+      "synthesis",
+      "cycle"
+    ],
+    "seealso": [
+      "ears.read~"
     ]
   },
   "ears.split~": {

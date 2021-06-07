@@ -104,11 +104,12 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(resample)
     
     earsbufobj_class_add_outname_attr(c);
-    //    earsbufobj_class_add_blocking_attr(c); <<< not working 
-    //    earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
+
+    //    earsbufobj_class_add_blocking_attr(c); <<< not working
+    //    earsbufobj_class_add_timeunit_attr(c);
 
     CLASS_ATTR_LONG(c, "filtersize", 0, t_buf_resample, window_width);
     CLASS_ATTR_STYLE_LABEL(c,"filtersize",0,"text","Filter Size");

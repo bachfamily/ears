@@ -23,6 +23,8 @@ typedef enum {
     EARS_FEATURE_UNKNOWN = -1,
     EARS_FEATURE_NONE = 0,
 
+    EARS_FEATURE_FRAMETIME, //< time position of analysis windows
+
     EARS_FEATURE_SPECTRUM,
     EARS_FEATURE_POWERSPECTRUM,
     

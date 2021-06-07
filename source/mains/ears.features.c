@@ -230,7 +230,12 @@ int C74_EXPORT main(void)
 const char *ears_features_feature_to_description(e_ears_feature feature)
 {
     switch (feature) {
+
+        case EARS_FEATURE_FRAMETIME:
+            return "Analysis Frame Center Time";
+            break;
             
+
         case EARS_FEATURE_SPECTRUM:
             return "Magnitude Spectrum";
             break;
@@ -719,6 +724,10 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
 
     *temporalmode = tm;
 
+    if (s == gensym("frametime"))
+        return EARS_FEATURE_FRAMETIME;
+
+    
     if (s == gensym("spectrum"))
         return EARS_FEATURE_SPECTRUM;
     if (s == gensym("powerspectrum"))
@@ -1524,7 +1533,7 @@ void buf_features_bang(t_buf_features *x)
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
-    for (long o = 0; o < x->num_outlets; o++) {
+    for (long o = x->num_outlets - 1; o >= 0; o--) {
         long feat_idx = x->outlet_featureidx[o];
         if (x->temporalmodes[feat_idx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
             earsbufobj_outlet_buffer((t_earsbufobj *)x, o);

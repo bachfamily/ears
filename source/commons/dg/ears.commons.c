@@ -58,6 +58,7 @@ t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbo
 }
 
 
+
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
     if (num_frames != ears_buffer_get_size_samps(ob, buf)) {
@@ -78,6 +79,11 @@ t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr)
     return EARS_ERR_NONE;
 }
 
+t_ears_err ears_buffer_clear(t_object *ob, t_buffer_obj *buf)
+{
+    typedmess(buf, gensym("clear"), 0, NULL);
+    return EARS_ERR_NONE;
+}
 
 t_symbol *ears_buffer_get_name(t_object *ob, t_buffer_obj *buf)
 {
@@ -506,7 +512,23 @@ t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val)
 
 
 
-
+double ears_interp_circular_bandlimited(float *in, long num_in_frames, double index, double window_width)
+{
+    long i, j;
+    double r_w, r_a, r_snc;
+    double r_g = 1;
+    double r_y = 0;
+    for (i = -window_width/2; i <= window_width/2; i++) { // For 1 window width
+        j = (long)(index + i);          // Calc input sample index
+        //rem calculate von Hann Window. Scale and calculate Sinc
+        r_w     = 0.5 - 0.5 * cos(TWOPI*(0.5 + (j - index)/window_width));
+        r_a     = TWOPI*(j - index)*0.5;
+        r_snc   = (r_a != 0 ? sin(r_a)/r_a : 1); ///<< sin(r_a) is slow. Do we have other options?
+        j = positive_mod(j, num_in_frames);
+        r_y   = r_y + r_g * r_w * r_snc * in[j];
+    }
+    return r_y;                  // Return new filtered sample
+}
 
 
 
@@ -525,7 +547,7 @@ long ears_resample(float *in, long num_in_frames, float **out, long num_out_fram
             double r_w, r_a, r_snc;
             double r_g = 2 * fmax / sr; // Calc gain correction factor
             double r_y = 0;
-            for (i = -window_width/2; i < window_width/2; i++) { // For 1 window width
+            for (i = -window_width/2; i <= window_width/2; i++) { // For 1 window width // Was: i < window_width/2.
                 j = (long)(x + i);          // Calc input sample index
                 //rem calculate von Hann Window. Scale and calculate Sinc
                 r_w     = 0.5 - 0.5 * cos(TWOPI*(0.5 + (j - x)/window_width));
@@ -3271,15 +3293,69 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
     return err;
 }
 
+// DEFINITELY NOT THE QUICKEST SYNTH ;-)
+// No antialiasing happening here; this should be done later, if one wants it
+double ears_synth_calc(double phase, e_ears_synthmode mode, float *wavetable, long wavetable_length, long resampling_filter_width)
+{
+    switch (mode) {
+        case EARS_SYNTHMODE_SINUSOIDS:
+            return sin(phase);
+            break;
+
+        case EARS_SYNTHMODE_TRIANGULAR:
+            phase = positive_fmod(phase, TWOPI);
+            return phase < PIOVERTWO ? phase/PIOVERTWO : (phase < 3*PIOVERTWO ? 2 - phase/PIOVERTWO : phase/PIOVERTWO-4);
+            break;
+
+        case EARS_SYNTHMODE_RECTANGULAR:
+            phase = positive_fmod(phase, TWOPI);
+            return phase > PI ? -1 : 1;
+            break;
+
+        case EARS_SYNTHMODE_SAWTOOTH:
+            phase = positive_fmod(phase, TWOPI);
+            return 2 * phase/TWOPI - 1;
+            break;
+
+        case EARS_SYNTHMODE_WAVETABLE:
+        {
+            
+            phase = positive_fmod(phase, TWOPI);
+            double idx = wavetable_length * (phase/TWOPI);
+            if (false) { // LINEAR INTERPOLATION
+                long idx_floor = floor(idx);
+                long idx_ceil = idx_floor + 1;
+                double diff = idx - idx_floor;
+                if (idx_floor >= wavetable_length) idx_floor -= wavetable_length;
+                if (idx_ceil >= wavetable_length) idx_ceil -= wavetable_length;
+                return (1-diff) * wavetable[idx_floor] + diff * wavetable[idx_ceil]; // linear interpolation
+            } else {
+                return ears_interp_circular_bandlimited(wavetable, wavetable_length, idx, resampling_filter_width);
+            }
+            
+        }
+            break;
+
+        default:
+            return 0;
+            break;
+    }
+}
 
 
 t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **dest,
+                                                e_ears_synthmode mode, float *wavetable, long wavetable_length,
                                                 double midicents, double duration_ms, double velocity, t_llll *breakpoints,
                                                 e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
-                                                double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping)
+                                                double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping,
+                                                long oversampling, long resamplingfiltersize)
 {
+    if (mode == EARS_SYNTHMODE_SINUSOIDS)
+        oversampling = 1; // no need for oversampling if we just use sinusoids, as we will not filter for antialiasing
+
     t_ears_err err = EARS_ERR_NONE;
-    long duration_samps = (long)ceil(duration_ms * (sr/1000.));
+    double sr_os = sr * oversampling;
+    long duration_samps = (long)ceil(duration_ms * (sr_os/1000.));
     t_symbol *name = default_synth2buffername(buffer_idx);
     t_atom a;
     atom_setsym(&a, name);
@@ -3287,10 +3363,14 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
     *dest = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
 
     ears_buffer_set_size_and_numchannels(e_ob, *dest, duration_samps, 1);
+    ears_buffer_set_sr(e_ob, *dest, sr_os);
 
     float *sample = buffer_locksamples(*dest);
 
-    if (!sample) {
+    if (mode == EARS_SYNTHMODE_WAVETABLE && (!wavetable || wavetable_length < 2)) {
+        err = EARS_ERR_GENERIC;
+        object_error(e_ob, "No wavetable provided, or wavetable is too short.");
+    } else if (!sample) {
         err = EARS_ERR_CANT_READ;
         object_error(e_ob, EARS_ERROR_BUF_CANT_READ);
     } else {
@@ -3316,7 +3396,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                 }
             }
             
-            ears_llll_to_env_samples(pitchenv, duration_samps, sr, EARS_TIMEUNIT_DURATION_RATIO);
+            ears_llll_to_env_samples(pitchenv, duration_samps, sr_os, EARS_TIMEUNIT_DURATION_RATIO);
             
             bool has_no_velocity = false;
             for (t_llllelem *el = pitchenv->l_head; el; el = el->l_next) {
@@ -3335,7 +3415,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                 llll_clear(velocityenv);
                 llll_appenddouble(velocityenv, velocity);
             } else {
-                ears_llll_to_env_samples(velocityenv, duration_samps, sr, EARS_TIMEUNIT_DURATION_RATIO);
+                ears_llll_to_env_samples(velocityenv, duration_samps, sr_os, EARS_TIMEUNIT_DURATION_RATIO);
             }
         }
 
@@ -3345,7 +3425,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
 
         // synthesizing
         double running_phase = 0;
-        double t_step = (1./sr);
+        double t_step = (1./sr_os);
         for (long i = 0; i < framecount; i++) {
             double cents = ears_envelope_iterator_walk_interp(&eei_deltapitch, i, framecount) + midicents;
             double vel = ears_envelope_iterator_walk_interp(&eei_vel, i, framecount);
@@ -3363,7 +3443,10 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                     break;
             }
             
-            sample[i] = amp * sin(running_phase);
+//            sample[i] = amp * sin(running_phase);
+
+            // TO DO: this resamplingfiltersize may be different (smaller?) than the one used below for reducing the sample rate
+            sample[i] = amp * ears_synth_calc(running_phase, mode, wavetable, wavetable_length, resamplingfiltersize);
 
             running_phase += TWOPI * freq * t_step;
             while (running_phase > TWOPI)
@@ -3373,6 +3456,33 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
         
         buffer_setdirty(*dest);
         buffer_unlocksamples(*dest);
+        
+        
+        
+        switch (mode) {
+            case EARS_SYNTHMODE_SAWTOOTH:
+            case EARS_SYNTHMODE_RECTANGULAR:
+            case EARS_SYNTHMODE_TRIANGULAR:
+            case EARS_SYNTHMODE_WAVETABLE:
+                // a fourth order lowpass for antialiasing
+                ears_buffer_onepole(e_ob, *dest, *dest, sr * 0.5, false);
+                ears_buffer_onepole(e_ob, *dest, *dest, sr * 0.5, false);
+                ears_buffer_onepole(e_ob, *dest, *dest, sr * 0.5, false);
+                ears_buffer_onepole(e_ob, *dest, *dest, sr * 0.5, false);
+                break;
+                
+            default:
+                break;
+        }
+        
+        if (oversampling > 1) {
+            ears_buffer_resample(e_ob, *dest, 1./oversampling, resamplingfiltersize);
+            ears_buffer_set_sr(e_ob, *dest, sr);
+            
+            // This would be faster:
+            //            ears_buffer_decimate(e_ob, *dest, *dest, oversampling);
+        }
+
         llll_free(pitchenv);
         llll_free(velocityenv);
     }
@@ -3555,6 +3665,61 @@ t_ears_err ears_buffer_trim(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
 
 
 
+t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long factor)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample_wk = NULL;
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        double sr = ears_buffer_get_sr(ob, source);
+        
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
+            buffer_unlocksamples(source);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format(ob, source, dest);
+        }
+
+        ears_buffer_set_size_samps(ob, dest, framecount/factor);
+        ears_buffer_set_sr(ob, dest, sr/factor);
+
+        float *dest_sample = buffer_locksamples(dest);
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            long g = 0;
+            for (long f = 0; f < framecount; f += factor, g++) {
+                for (long c = 0; c < channelcount; c++) {
+                    dest_sample[g * channelcount + c] = orig_sample_wk[f * channelcount + c];
+                }
+            }
+            
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        }
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
 
 t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double cutoff_freq, char highpass)
 {
