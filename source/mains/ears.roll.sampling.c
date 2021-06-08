@@ -56,6 +56,7 @@ typedef struct _buf_roll_sampling {
     long        num_channels;
     char        normalization_mode;
     char        channelmode;
+    long        oversampling;
 
     long        filename_slot;
     long        offset_slot;
@@ -155,10 +156,13 @@ int C74_EXPORT main(void)
 
     CLASS_STICKY_ATTR(c,"category",0,"Slots");
 
+    CLASS_ATTR_LONG(c, "audioslot", 0, t_buf_roll_sampling, filename_slot);
+    CLASS_ATTR_STYLE_LABEL(c,"audioslot",0,"text","Slot Containing File Names Or Buffer Names");
+    CLASS_ATTR_BASIC(c, "audioslot", 0);
+    // @description Sets the number of slots containing file names or buffer names.
+
     CLASS_ATTR_LONG(c, "fileslot", 0, t_buf_roll_sampling, filename_slot);
-    CLASS_ATTR_STYLE_LABEL(c,"fileslot",0,"text","Slot Containing File Names");
-    CLASS_ATTR_BASIC(c, "fileslot", 0);
-    // @description Sets the number of slots containing the file names.
+    CLASS_ATTR_INVISIBLE(c, "fileslot", 0);
 
     CLASS_ATTR_LONG(c, "offsetslot", 0, t_buf_roll_sampling, offset_slot);
     CLASS_ATTR_STYLE_LABEL(c,"offsetslot",0,"text","Slot Containing Offset In File");
@@ -194,6 +198,14 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "sr", 0);
     // @description Sets the sample rate for the output buffer. If zero (default), the current Max sample rate is used.
 
+    CLASS_ATTR_LONG(c, "oversampling", 0, t_buf_roll_sampling, oversampling);
+    CLASS_ATTR_STYLE_LABEL(c,"oversampling",0,"text","Oversampling");
+    CLASS_ATTR_CATEGORY(c, "oversampling", 0, "Resampling");
+    CLASS_ATTR_INVISIBLE(c, "oversampling", 0);
+    // @ignore all
+    // @description Sets the oversampling factor for subsample processing.
+    
+    
     CLASS_ATTR_LONG(c, "numchannels", 0, t_buf_roll_sampling, num_channels);
     CLASS_ATTR_STYLE_LABEL(c,"numchannels",0,"text","Output Number Of Channels");
     CLASS_ATTR_BASIC(c, "numchannels", 0);
@@ -346,7 +358,8 @@ t_buf_roll_sampling *buf_roll_sampling_new(t_symbol *s, short argc, t_atom *argv
         x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
         x->use_mute_solos = true;
         x->use_durations = true;
-        x->sr = 44100;
+        x->sr = ears_get_current_Max_sr();
+        x->oversampling = 1;
         x->num_channels = 2;
         x->offset_slot = 0;
         x->filename_slot = 8;
@@ -412,7 +425,7 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, 1, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

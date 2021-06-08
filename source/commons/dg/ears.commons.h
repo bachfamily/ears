@@ -405,7 +405,8 @@ double ears_envelope_iterator_get_max_y(t_ears_envelope_iterator *eei);
 
 
 // These two functions are to be uses with caution: they do not create a buffer reference, only a buffer object, to be used and then freed:
-t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, double sr, long buffer_idx);
+t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, long buffer_idx);
+t_ears_err ears_buffer_from_buffer(t_object *ob, t_buffer_obj **dest, t_symbol *buffername, double start_ms, double end_ms, long buffer_idx);
 t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **dest,
                                                 e_ears_synthmode mode, float *wavetable, long wavetable_length,
                                                 double midicents, double duration_ms, double velocity, t_llll *breakpoints,

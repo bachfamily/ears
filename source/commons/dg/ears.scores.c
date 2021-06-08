@@ -329,7 +329,13 @@ t_ears_err ears_roll_to_buffer_get_buffer(t_earsbufobj *e_ob,
         newinfo.stretch_factor = stretch_factor;
     }
     
-    this_err = ears_buffer_from_file((t_object *)e_ob, buf, filename, start_ms, end_ms, sr, (*buffer_index)++);
+    if (!ears_ezlocate_file(filename, NULL) && ears_buffer_symbol_is_buffer(filename)) {
+        // it's a buffer!
+        this_err = ears_buffer_from_buffer((t_object *)e_ob, buf, filename, start_ms, end_ms, (*buffer_index)++);
+   } else {
+        // it's (possibly) a file!
+        this_err = ears_buffer_from_file((t_object *)e_ob, buf, filename, start_ms, end_ms, (*buffer_index)++);
+    }
     
     newinfo.buffer = *buf;
     
@@ -481,6 +487,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     }
                 }
                 
+                double sr_os = sr;
                 if (mode == EARS_SCORETOBUF_MODE_SYNTHESIS) {
                     this_err = ears_buffer_synth_from_duration_line((t_object *)e_ob, &buf,
                                                                     synthmode, wavetable, wavetable_length,
@@ -489,6 +496,8 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 } else if (mode == EARS_SCORETOBUF_MODE_SAMPLING) {
                     t_symbol *filename = get_filename_from_note_llll(note_ll, filename_slot);
                     double rate = 1.;
+                    
+                    sr_os = sr * oversampling;
                     
                     if (rate_slot) {
                         t_llll *rate_ll = get_slot_from_note_llll(note_ll, rate_slot);
@@ -502,7 +511,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
 
 
                     // this function optimizes for identical samples (if needed):
-                    this_err = ears_roll_to_buffer_get_buffer(e_ob, noteinfo, &buf, &new_buffer, filename, rate, start, end, NULL, gain_env, pan_env, this_voice_pan, fadein_amount, fadeout_amount, 0, 1., sr, &buffer_index, optimize_for_identical_samples);
+                    this_err = ears_roll_to_buffer_get_buffer(e_ob, noteinfo, &buf, &new_buffer, filename, rate, start, end, NULL, gain_env, pan_env, this_voice_pan, fadein_amount, fadeout_amount, 0, 1., sr_os, &buffer_index, optimize_for_identical_samples);
                     
                 }
                 
@@ -510,8 +519,8 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     // Now a sequence of in-place operations to modify the buffer
                     // only if the buffer is a new one, and is not exactly the same as a previous one (in sampling mode)
                     
-                    if (buffer_getsamplerate(buf) != sr)
-                        ears_buffer_convert_sr((t_object *)e_ob, buf, sr);
+                    if (buffer_getsamplerate(buf) != sr_os)
+                        ears_buffer_convert_sr((t_object *)e_ob, buf, sr_os);
 
                     if (gain_env) {
                         t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARS_TIMEUNIT_SAMPS, gain_min, gain_max, false);
@@ -559,7 +568,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 }
                 llll_appenddouble(gains, note_gain);
                 
-                llll_appenddouble(offset_samps, ears_ms_to_samps(onset_ms, sr));
+                llll_appenddouble(offset_samps, ears_ms_to_samps(onset_ms, sr_os));
             }
         }
     }
@@ -568,6 +577,11 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     // mixing
     ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode,
                               earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth);
+    
+    if (oversampling > 1) {
+        ears_buffer_resample((t_object *)e_ob, dest, 1./oversampling, resamplingfiltersize);
+        ears_buffer_set_sr((t_object *)e_ob, dest, sr);
+    }
     
     // freeing buffers
     if (optimize_for_identical_samples) {
@@ -865,7 +879,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                             object_warn((t_object *)e_ob, "Cannot retrieve buffer.");
                     } else {
                         double end = use_durations ? start + note_duration_ms : -1;
-                        ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, sys_getsr(), 0);
+                        ears_buffer_from_file((t_object *)e_ob, &buf, filename, start, end, 0);
                     }
                     if (buf) {
                         fade_in_ms = earsbufobj_time_to_ms(e_ob, fade_in_amount, buf);

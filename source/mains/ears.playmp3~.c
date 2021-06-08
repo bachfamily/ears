@@ -176,7 +176,7 @@ void *playmp3_new(t_symbol *s, long argc, t_atom *argv)
         long i, num_outs = true_ac ? CLAMP(atom_getlong(argv), 1, 2) : 1;
 
         x->num_outs = num_outs;
-        x->samplerate = 44100;
+        x->samplerate = ears_get_current_Max_sr();
         systhread_mutex_new(&x->c_mutex, 0);
 
         x->m_clock = clock_new((t_object *)x, (method) playmp3_task);

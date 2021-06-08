@@ -3263,7 +3263,6 @@ end:
 
 
 
-
 t_symbol *default_filepath2buffername(t_symbol *filepath, long buffer_index)
 {
     char temp[MAX_PATH_CHARS * 2];
@@ -3278,12 +3277,23 @@ t_symbol *default_synth2buffername(long buffer_index)
     return gensym(temp);
 }
 
-
-
+t_ears_err ears_buffer_from_buffer(t_object *ob, t_buffer_obj **dest, t_symbol *buffername, double start_ms, double end_ms, long buffer_idx)
+{
+    t_symbol *name = default_filepath2buffername(buffername, buffer_idx);
+    t_atom a;
+    atom_setsym(&a, name);
+    *dest = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
+    
+    t_ears_err this_err = ears_buffer_clone(ob, ears_buffer_getobject(buffername), *dest);
+    
+    if (start_ms > 0 || end_ms >= 0)
+        ears_buffer_crop_ms(ob, *dest, *dest, start_ms, end_ms);
+    return this_err;
+}
 
 // This is not used by the [ears.read] object, but rather from other objects.
 // The <dest> buffers are meant to be used and freed.
-t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, double sr, long buffer_idx)
+t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, long buffer_idx)
 {
     t_ears_err err = EARS_ERR_NONE;
     t_symbol *filepath = ears_ezlocate_file(file, NULL);
@@ -3303,9 +3313,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
             
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
             if (ears_symbol_ends_with(filepath, ".mp3", true)) {
-                long startsamp = start_ms >= 0 ? ears_ms_to_samps(start_ms, sr) : -1;
-                long endsamp = end_ms >= 0 ? ears_ms_to_samps(end_ms, sr) : -1;
-                err = ears_buffer_read_handle_mp3(ob, filepath->s_name, startsamp, endsamp, *dest);
+                err = ears_buffer_read_handle_mp3(ob, filepath->s_name, start_ms, end_ms, *dest, EARS_TIMEUNIT_MS);
             } else {
 #endif
                 // trying to load file into input buffer
@@ -3517,7 +3525,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
             ears_buffer_resample(e_ob, *dest, 1./oversampling, resamplingfiltersize);
             ears_buffer_set_sr(e_ob, *dest, sr);
             
-            // This would be faster:
+            // This would be faster but of course less precise:
             //            ears_buffer_decimate(e_ob, *dest, *dest, oversampling);
         }
 

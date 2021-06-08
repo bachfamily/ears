@@ -12,7 +12,7 @@
 #include "ears.commons.h"
 #include "wavpack.h"
 
-long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start_sample, long end_sample, t_buffer_obj *buf, t_symbol **sampleformat);
+long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start, long end, t_buffer_obj *buf, t_symbol **sampleformat, e_ears_timeunit timeunit);
 void ears_writewavpack(t_object *buf, t_symbol *filename, t_ears_encoding_settings *settings);
 
 

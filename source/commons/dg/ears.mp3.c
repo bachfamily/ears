@@ -20,9 +20,12 @@ void ears_mpg123_init()
 }
 
 
-long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start_sample, double end_sample, t_buffer_obj *buf)
+long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, double end, t_buffer_obj *buf, e_ears_timeunit timeunit)
 {
     long ears_err = EARS_ERR_NONE;
+    
+    double start_sample = start;
+    double end_sample = end;
     
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     mpg123_handle *mh;
@@ -44,6 +47,28 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start_samp
     mpg123_open(mh, filename);
     mpg123_getformat(mh, &rate, &channels, &encoding);
     
+    switch (timeunit) {
+        case EARS_TIMEUNIT_SAMPS:
+            start_sample = start;
+            end_sample = end;
+            break;
+
+        case EARS_TIMEUNIT_MS:
+            start_sample = start >= 0 ? ears_ms_to_samps(start, rate) : -1;
+            end_sample = end >= 0 ? ears_ms_to_samps(end, rate) : -1;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_RATIO:
+        {
+            long numframes = mpg123_length(mh);
+            start_sample = start >= 0 ? start * numframes : -1;
+            end_sample = end >= 0 ? end * numframes : -1;
+        }
+            break;
+
+        default:
+            break;
+    }
     
     /* set the output format */
     mpg123_format_none(mh);

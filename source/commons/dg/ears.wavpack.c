@@ -2,9 +2,11 @@
 
 
 
-long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start_sample, long end_sample, t_buffer_obj *buf, t_symbol **sampleformat)
+long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start, long end, t_buffer_obj *buf, t_symbol **sampleformat, e_ears_timeunit timeunit)
 {
     char error = 0;
+    long start_sample = start;
+    long end_sample = end;
     long ears_err = EARS_ERR_NONE;
     int flags = OPEN_NORMALIZE | OPEN_WVC;
     int norm_offset = 0;
@@ -38,6 +40,27 @@ long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start_sa
             default: break;
         }
     }
+    
+    switch (timeunit) {
+        case EARS_TIMEUNIT_MS:
+            start_sample = start >= 0 ? ears_ms_to_samps(start, sr) : -1;
+            end_sample = end >= 0 ? ears_ms_to_samps(end, sr) : -1;
+            break;
+
+        case EARS_TIMEUNIT_SAMPS:
+            start_sample = start;
+            end_sample = end;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            start_sample = start >= 0 ? start * num_samples : -1;
+            end_sample = end >= 0 ? end * num_samples : -1;
+            break;
+
+        default:
+            break;
+    }
+
     
     if (start_sample < 0)
         start_sample = 0;
