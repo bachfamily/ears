@@ -52,7 +52,7 @@
 typedef struct _buf_offset {
     t_earsbufobj       e_ob;
     t_llll             *amount;
-    
+    char               interp_offsets;
 } t_buf_offset;
 
 
@@ -106,6 +106,11 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_resamplingfiltersize_attr(c);
+    
+    CLASS_ATTR_CHAR(c, "interp", 0, t_buf_offset, interp_offsets);
+    CLASS_ATTR_STYLE_LABEL(c,"interp",0,"onoff","Interpolate Non-Integer Offset");
+    // @description Toggles the ability to perform band-limited interpolation via resampling for non-integer offsets.
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -140,7 +145,8 @@ t_buf_offset *buf_offset_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_offset*)object_alloc_debug(s_tag_class);
     if (x) {
         x->amount = llll_from_text_buf("0.", false);
-
+        x->interp_offsets = 0;
+        
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
         // @arg 0 @name outname @optional 1 @type symbol
@@ -199,9 +205,10 @@ void buf_offset_bang(t_buf_offset *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long amount_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in);
-        
-        ears_buffer_offset((t_object *)x, in, out, amount_samps);
+        if (x->interp_offsets)
+            ears_buffer_offset_subsampleprec((t_object *)x, in, out, earsbufobj_time_to_fsamps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in), x->e_ob.l_resamplingfilterwidth);
+        else
+            ears_buffer_offset((t_object *)x, in, out, earsbufobj_time_to_samps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in));
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
