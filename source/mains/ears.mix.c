@@ -104,10 +104,19 @@ int C74_EXPORT main(void)
                          A_GIMME,
                          0L);
     
-    // @method list/llll @digest Process buffers
-    // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // @method list/llll @digest Function depends on inlet
+    // @description A list or llll in the furst inlet with buffer names will trigger the buffer processing and output the processed
+    // buffer names (depending on the <m>naming</m> attribute). <br />
+    // A number, list or llll in the second inlet is interpreted to contain the gain
+    // for each one of the incoming buffer (in the current <m>ampunit</m>). <br />
+    // A number, list or llll in the third inlet is interpreted to contain the temporal offset
+    // for each one of the incoming buffer (in the current <m>timeunit</m>). Non-integer sample offsets are only accounted for
+    // if the <m>interp</m> attribute is on, otherwise they are rounded to the nearest integer sample. <br />
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(mix)
+
+    // @method number @digest Set Gain or Offset
+    // See <m>list</m> method, for second or third inlet.
+
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);

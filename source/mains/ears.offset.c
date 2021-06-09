@@ -98,11 +98,17 @@ int C74_EXPORT main(void)
                          A_GIMME,
                          0L);
 
-    // @method list/llll @digest Process buffers
-    // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // @method list/llll @digest Process buffers or Set Offset
+    // @description A list or llll in the first inlet with buffer names will trigger the buffer processing and output the processed
+    // buffer names (depending on the <m>naming</m> attribute). <br />
+    // A number, list or llll in the second inlet sets the offset in the
+    // defined <m>timeunit</m>. Non-integer sample offsets are accounted for only if the <m>interp</m> attribute is
+    // active, otherwise they are rounded to the nearest sample.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(offset)
     
+    // @method number @digest Set Offset
+    // See <m>list</m> method, for second inlet.
+
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
@@ -158,8 +164,9 @@ t_buf_offset *buf_offset_new(t_symbol *s, short argc, t_atom *argv)
         t_llllelem *cur = args ? args->l_head : NULL;
 
         // @arg 1 @name initial_amount @optional 1 @type number
-        // @digest Initial Shift Amount
+        // @digest Initial Offset
         // @description Initial amount of offseting (unit depends on the <m>timeunit</m> attribute).
+        // See <m>int<m> or <m>float</m> messages.
         if (cur) {
             if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
                 llll_free(x->amount);

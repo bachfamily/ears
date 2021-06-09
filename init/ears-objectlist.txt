@@ -9,7 +9,6 @@ max oblist "ears objects" ears.crop~;
 max oblist "ears objects" ears.clip~;
 max oblist "ears objects" ears.rubberband~;
 max oblist "ears objects" ears.model.stochastic.analysis~;
-max oblist "ears objects" ears.model~;
 max oblist "ears objects" ears.read~;
 max oblist "ears objects" ears.slice~;
 max oblist "ears objects" ears.format~;

@@ -207,23 +207,6 @@
       "ears.model.stochastic.synthesis~"
     ]
   },
-  "ears.model~": {
-    "digest": "Apply analysis/synthesis model",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "model",
-      "synthesis",
-      "analysis",
-      "resynthesis"
-    ],
-    "seealso": [
-      "ears.features~"
-    ]
-  },
   "ears.read~": {
     "digest": "Store files in buffers",
     "module": "ears",

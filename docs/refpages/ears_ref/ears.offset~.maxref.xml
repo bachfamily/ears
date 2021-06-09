@@ -61,10 +61,11 @@
 		</objarg>
 		<objarg name="initial_amount" optional="1" type="number">
 			<digest>
-				Initial Shift Amount
+				Initial Offset
 			</digest>
 			<description>
 				Initial amount of offseting (unit depends on the <m>timeunit</m> attribute).
+				See <m>int<m> or <m>float</m> messages.
 			</description>
 		</objarg>
 	</objarglist>
@@ -84,11 +85,22 @@
 		<method name="list/llll">
 			<arglist />
 			<digest>
-				Process buffers
+				Process buffers or Set Offset
 			</digest>
 			<description>
-				A list or llll with buffer names will trigger the buffer processing and output the processed
-				buffer names (depending on the <m>naming</m> attribute).
+				A list or llll in the first inlet with buffer names will trigger the buffer processing and output the processed
+				buffer names (depending on the <m>naming</m> attribute). <br />
+				A number, list or llll in the second inlet sets the offset in the
+				defined <m>timeunit</m>. Non-integer sample offsets are accounted for only if the <m>interp</m> attribute is
+				active, otherwise they are rounded to the nearest sample.
+			</description>
+		</method>
+		<method name="number">
+			<arglist />
+			<digest>
+				Set Offset
+			</digest>
+			<description>
 			</description>
 		</method>
 		<method name="reset">
@@ -246,6 +258,19 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="interp" get="1" set="1" type="int" size="1">
+			<digest>
+				Interpolate Non-Integer Offset
+			</digest>
+			<description>
+				Toggles the ability to perform band-limited interpolation via resampling for non-integer offsets.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Interpolate Non-Integer Offset" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -277,6 +302,20 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="resamplingfiltersize" get="1" set="1" type="int" size="1">
+			<digest>
+				Resampling Filter Size
+			</digest>
+			<description>
+				Sets the resampling filter size.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Filter Size" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
