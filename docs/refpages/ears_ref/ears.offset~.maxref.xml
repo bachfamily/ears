@@ -65,7 +65,7 @@
 			</digest>
 			<description>
 				Initial amount of offseting (unit depends on the <m>timeunit</m> attribute).
-				See <m>int<m> or <m>float</m> messages.
+				See <m>int</m> or <m>float</m> messages.
 			</description>
 		</objarg>
 	</objarglist>

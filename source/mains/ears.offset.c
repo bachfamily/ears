@@ -166,7 +166,7 @@ t_buf_offset *buf_offset_new(t_symbol *s, short argc, t_atom *argv)
         // @arg 1 @name initial_amount @optional 1 @type number
         // @digest Initial Offset
         // @description Initial amount of offseting (unit depends on the <m>timeunit</m> attribute).
-        // See <m>int<m> or <m>float</m> messages.
+        // See <m>int</m> or <m>float</m> messages.
         if (cur) {
             if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
                 llll_free(x->amount);
