@@ -1,0 +1,42 @@
+Performing C++ SOURCE FILE Test HAVE_ISO_STRDUP failed with the following output:
+Change Dir: /Users/danieleghisi/Documents/Max 7/Packages/ears/source/lib/taglib-1.12/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_3ca77/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_3ca77.dir/build.make CMakeFiles/cmTC_3ca77.dir/build
+Building CXX object CMakeFiles/cmTC_3ca77.dir/src.cxx.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -DHAVE_ISO_STRDUP -arch i386 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -mmacosx-version-min=10.6 -o CMakeFiles/cmTC_3ca77.dir/src.cxx.o -c "/Users/danieleghisi/Documents/Max 7/Packages/ears/source/lib/taglib-1.12/CMakeFiles/CMakeTmp/src.cxx"
+/Users/danieleghisi/Documents/Max 7/Packages/ears/source/lib/taglib-1.12/CMakeFiles/CMakeTmp/src.cxx:4:5: error: use of undeclared identifier '_strdup'; did you mean 'strdup'?
+    _strdup(0);
+    ^~~~~~~
+    strdup
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include/string.h:117:7: note: 'strdup' declared here
+char    *strdup(const char *__s1);
+         ^
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_3ca77.dir/src.cxx.o] Error 1
+make: *** [cmTC_3ca77/fast] Error 2
+
+
+Source file was:
+
+  #include <cstring>
+  int main() {
+    _strdup(0);
+    return 0;
+  }
+
+Determining if the function __RTTI___ exists in the Crun failed with the following output:
+Change Dir: /Users/danieleghisi/Documents/Max 7/Packages/ears/source/lib/taglib-1.12/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_a11aa/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_a11aa.dir/build.make CMakeFiles/cmTC_a11aa.dir/build
+Building C object CMakeFiles/cmTC_a11aa.dir/CheckFunctionExists.c.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=__RTTI___ -arch i386 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -mmacosx-version-min=10.6 -o CMakeFiles/cmTC_a11aa.dir/CheckFunctionExists.c.o -c /usr/local/Cellar/cmake/3.18.2/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTC_a11aa
+/usr/local/Cellar/cmake/3.18.2/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a11aa.dir/link.txt --verbose=1
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=__RTTI___ -arch i386 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -mmacosx-version-min=10.6 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_a11aa.dir/CheckFunctionExists.c.o -o cmTC_a11aa  -lCrun 
+ld: library not found for -lCrun
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make[1]: *** [cmTC_a11aa] Error 1
+make: *** [cmTC_a11aa/fast] Error 2
+
+
+
