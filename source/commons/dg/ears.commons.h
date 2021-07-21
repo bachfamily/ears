@@ -22,7 +22,7 @@
 
 #define EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK 10
 #define EARS_MAX_NUM_CHANNELS 2048 // max num channels per buffer
-#define EARS_DEFAULT_SR (sys_getsr())
+#define ears_get_current_Max_sr() (sys_getsr())
 
 #define EARS_FROMFILE_NATIVE_MP3_HANDLING
 
@@ -228,6 +228,7 @@ t_ears_err ears_buffer_crop_ms_inplace(t_object *ob, t_buffer_obj *buf, double s
 t_ears_err ears_buffer_crop_ms_inplace_maxapi(t_object *ob, t_buffer_obj *buf, long start_ms, long end_ms);
 t_ears_err ears_buffer_offset(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long shift_samps);
 t_ears_err ears_buffer_trim(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double amp_thresh_linear, char trim_start, char trim_end);
+t_ears_err ears_buffer_offset_subsampleprec(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double shift_samps, double resamplingfiltersize); // version with subsample precision via sinc band-limited interpolation
 
 
 t_ears_err ears_buffer_clone(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
@@ -254,6 +255,10 @@ t_ears_err ears_buffer_normalize_rms(t_object *ob, t_buffer_obj *source, t_buffe
 t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest, t_llll *gains, long *offset_samps,
                            e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping,
                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
+                                          t_llll *gains, double *offset_samps,
+                                          e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping,
+                                          e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize); // version with interpolated offsets, with subsample handling for offsets
 t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
 t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type);
 
@@ -390,6 +395,7 @@ t_symbol *get_conformed_resolved_path(t_symbol *filename);
 // Sinc-resampling and sinc-interpolation
 long ears_resample(float *in, long num_in_frames, float **out, long num_out_frames, double factor, double fmax, double sr, double window_width, long num_channels);
 double ears_interp_circular_bandlimited(float *in, long num_in_frames, double index, double window_width);
+double ears_interp_bandlimited(float *in, long num_in_frames, double index, double window_width, long step);
 
 
 /// Helper tools
@@ -405,7 +411,8 @@ double ears_envelope_iterator_get_max_y(t_ears_envelope_iterator *eei);
 
 
 // These two functions are to be uses with caution: they do not create a buffer reference, only a buffer object, to be used and then freed:
-t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, double sr, long buffer_idx);
+t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *file, double start_ms, double end_ms, long buffer_idx);
+t_ears_err ears_buffer_from_buffer(t_object *ob, t_buffer_obj **dest, t_symbol *buffername, double start_ms, double end_ms, long buffer_idx);
 t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **dest,
                                                 e_ears_synthmode mode, float *wavetable, long wavetable_length,
                                                 double midicents, double duration_ms, double velocity, t_llll *breakpoints,

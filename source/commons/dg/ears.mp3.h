@@ -12,7 +12,7 @@
 #include "ears.commons.h"
 #include <lame/lame.h> // only used to export mp3s
 
-long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start_sample, double end_sample, t_buffer_obj *buf);
+long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, double end, t_buffer_obj *buf, e_ears_timeunit timeunit);
 
 void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *settings);
 

@@ -1992,6 +1992,16 @@ void earsbufobj_outlet_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
     llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, ll);
 }
 
+void earsbufobj_gunload_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
+{
+    llllobj_gunload_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, ll, outnum);
+}
+
+void earsbufobj_shoot_llll(t_earsbufobj *e_ob, long outnum)
+{
+    llllobj_shoot_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
+}
+
 void earsbufobj_outlet_bang(t_earsbufobj *e_ob, long outnum)
 {
     llllobj_outlet_bang((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);

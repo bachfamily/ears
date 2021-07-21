@@ -91,11 +91,24 @@
 		<method name="list/llll">
 			<arglist />
 			<digest>
-				Process buffers
+				Function depends on inlet
 			</digest>
 			<description>
-				A list or llll with buffer names will trigger the buffer processing and output the processed
-				buffer names (depending on the <m>naming</m> attribute).
+				A list or llll in the furst inlet with buffer names will trigger the buffer processing and output the processed
+				buffer names (depending on the <m>naming</m> attribute). <br />
+				A number, list or llll in the second inlet is interpreted to contain the gain
+				for each one of the incoming buffer (in the current <m>ampunit</m>). <br />
+				A number, list or llll in the third inlet is interpreted to contain the temporal offset
+				for each one of the incoming buffer (in the current <m>timeunit</m>). Non-integer sample offsets are only accounted for
+				if the <m>interp</m> attribute is on, otherwise they are rounded to the nearest integer sample. <br />
+			</description>
+		</method>
+		<method name="number">
+			<arglist />
+			<digest>
+				Set Gain or Offset
+			</digest>
+			<description>
 			</description>
 		</method>
 		<method name="reset">
@@ -291,6 +304,19 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="interp" get="1" set="1" type="int" size="1">
+			<digest>
+				Interpolate Non-Integer Offset
+			</digest>
+			<description>
+				Toggles the ability to perform band-limited interpolation via resampling for non-integer offsets.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Interpolate Non-Integer Offset" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">

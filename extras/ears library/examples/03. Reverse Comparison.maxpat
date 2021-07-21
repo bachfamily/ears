@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -40,13 +40,24 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"fontsize" : 18.0,
+					"id" : "obj-22",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 9.0, 50.961723327636719, 433.0, 27.0 ],
+					"text" : "This patch compares ways of reversing a buffer"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"fontsize" : 16.628932029946398,
 					"id" : "obj-31",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 339.0, 86.0, 228.0, 25.0 ],
-					"presentation_linecount" : 6,
 					"text" : "Compare with straight Max:"
 				}
 
@@ -117,8 +128,8 @@
 					"id" : "obj-20",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
+					"numoutlets" : 5,
+					"outlettype" : [ "", "", "", "", "" ],
 					"patching_rect" : [ 19.0, 165.0, 66.0, 22.0 ],
 					"text" : "ears.read~"
 				}
@@ -362,7 +373,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 6.961723327636719, 590.0, 42.0 ],
-					"text" : "reversing a buffer"
+					"text" : "Reverse Comparison"
 				}
 
 			}

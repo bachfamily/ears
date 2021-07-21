@@ -56,6 +56,7 @@ typedef struct _buf_roll_sampling {
     long        num_channels;
     char        normalization_mode;
     char        channelmode;
+    long        oversampling;
 
     long        filename_slot;
     long        offset_slot;
@@ -85,6 +86,8 @@ typedef struct _buf_roll_sampling {
     // velocity to gain
     e_ears_veltoamp_modes veltoamp_mode;
     double velrange[2];
+    
+    char        optimize_for_identical_samples;
 
 } t_buf_roll_sampling;
 
@@ -153,10 +156,13 @@ int C74_EXPORT main(void)
 
     CLASS_STICKY_ATTR(c,"category",0,"Slots");
 
+    CLASS_ATTR_LONG(c, "audioslot", 0, t_buf_roll_sampling, filename_slot);
+    CLASS_ATTR_STYLE_LABEL(c,"audioslot",0,"text","Slot Containing File Names Or Buffer Names");
+    CLASS_ATTR_BASIC(c, "audioslot", 0);
+    // @description Sets the number of slots containing file names or buffer names.
+
     CLASS_ATTR_LONG(c, "fileslot", 0, t_buf_roll_sampling, filename_slot);
-    CLASS_ATTR_STYLE_LABEL(c,"fileslot",0,"text","Slot Containing File Names");
-    CLASS_ATTR_BASIC(c, "fileslot", 0);
-    // @description Sets the number of slots containing the file names.
+    CLASS_ATTR_INVISIBLE(c, "fileslot", 0);
 
     CLASS_ATTR_LONG(c, "offsetslot", 0, t_buf_roll_sampling, offset_slot);
     CLASS_ATTR_STYLE_LABEL(c,"offsetslot",0,"text","Slot Containing Offset In File");
@@ -192,6 +198,14 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "sr", 0);
     // @description Sets the sample rate for the output buffer. If zero (default), the current Max sample rate is used.
 
+    CLASS_ATTR_LONG(c, "oversampling", 0, t_buf_roll_sampling, oversampling);
+    CLASS_ATTR_STYLE_LABEL(c,"oversampling",0,"text","Oversampling");
+    CLASS_ATTR_CATEGORY(c, "oversampling", 0, "Resampling");
+    CLASS_ATTR_INVISIBLE(c, "oversampling", 0);
+    // @ignore all
+    // @description Sets the oversampling factor for subsample processing.
+    
+    
     CLASS_ATTR_LONG(c, "numchannels", 0, t_buf_roll_sampling, num_channels);
     CLASS_ATTR_STYLE_LABEL(c,"numchannels",0,"text","Output Number Of Channels");
     CLASS_ATTR_BASIC(c, "numchannels", 0);
@@ -344,12 +358,15 @@ t_buf_roll_sampling *buf_roll_sampling_new(t_symbol *s, short argc, t_atom *argv
         x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
         x->use_mute_solos = true;
         x->use_durations = true;
-        x->sr = 44100;
+        x->sr = ears_get_current_Max_sr();
+        x->oversampling = 1;
         x->num_channels = 2;
         x->offset_slot = 0;
         x->filename_slot = 8;
         x->gain_slot = 0;
         x->pan_slot = 0;
+        
+        x->optimize_for_identical_samples = 1;
 
         x->panvoices = llll_from_text_buf("");
 
@@ -402,13 +419,13 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
                         EARS_SYNTHMODE_NONE, NULL, 0, //< we're not using synthesis
                         x->use_mute_solos, x->use_durations, x->num_channels,
                         x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->rate_slot, x->ps_slot, x->ts_slot,
-                        x->sr > 0 ? x->sr : EARS_DEFAULT_SR, (e_ears_normalization_modes)x->normalization_mode,
+                        x->sr > 0 ? x->sr : ears_get_current_Max_sr(), (e_ears_normalization_modes)x->normalization_mode,
                         (e_ears_channel_convert_modes)x->channelmode,
                         x->fadein_amount, x->fadeout_amount, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type,
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, 1, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

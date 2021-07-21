@@ -140,7 +140,8 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "sr", 0);
     CLASS_ATTR_STYLE_LABEL(c, "sr", 0, "text", "Sample Rate");
     // @description Sets the sample rate for the buffer
-    // Negative or zero values mean: don't change.
+    // Negative values mean: don't change.
+    // Zero means: use current Max's sample rate
     
     CLASS_ATTR_CHAR(c, "resample",	0,	t_buf_format, resample);
     CLASS_ATTR_BASIC(c, "resample", 0);
@@ -306,13 +307,15 @@ void buf_format_bang(t_buf_format *x)
         if (in != out)
             ears_buffer_clone((t_object *)x, in, out);
         
-        if (sr > 0) {
+        if (sr >= 0) {
+            if (sr == 0)
+                sr = ears_get_current_Max_sr();
             double curr_sr = ears_buffer_get_sr((t_object *)x, out);
             if (curr_sr != sr) {
                 if (x->resample)
-                    ears_buffer_convert_sr((t_object *)x, out, x->sr);
+                    ears_buffer_convert_sr((t_object *)x, out, sr);
                 else
-                    ears_buffer_set_sr((t_object *)x, out, x->sr);
+                    ears_buffer_set_sr((t_object *)x, out, sr);
             }
         }
         

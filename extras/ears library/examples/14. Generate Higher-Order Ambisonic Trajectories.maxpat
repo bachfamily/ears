@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -228,8 +228,8 @@
 					"id" : "obj-11",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
+					"numoutlets" : 5,
+					"outlettype" : [ "", "", "", "", "" ],
 					"patching_rect" : [ 144.5, 185.0, 66.0, 22.0 ],
 					"text" : "ears.read~"
 				}
@@ -265,7 +265,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 95.0, 403.0, 124.0, 22.0 ],
+					"patching_rect" : [ 58.25, 402.0, 124.0, 22.0 ],
 					"text" : "/tmp/mytrajectory.wav"
 				}
 
@@ -274,9 +274,9 @@
 				"box" : 				{
 					"id" : "obj-2",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
+					"numinlets" : 5,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 46.0, 442.0, 68.0, 22.0 ],
 					"text" : "ears.write~"
 				}
@@ -289,8 +289,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 9.0, 6.961723327636719, 636.0, 42.0 ],
-					"text" : "generate higher-order ambisonic trajectories"
+					"patching_rect" : [ 9.0, 6.961723327636719, 667.0, 42.0 ],
+					"text" : "Generate Higher-Order Ambisonic Trajectories"
 				}
 
 			}

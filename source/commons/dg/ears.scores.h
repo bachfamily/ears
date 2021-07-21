@@ -19,6 +19,30 @@ typedef enum _ears_scoretobuf_mode
     EARS_SCORETOBUF_MODE_SAMPLING = 2,
 } e_ears_scoretobuf_mode;
 
+
+
+typedef struct _ears_note_buffer
+{
+    t_buffer_obj    *buffer;
+    
+    t_symbol    *filename;
+    double      rate;
+    double      start_ms;
+    double      end_ms;
+    t_llll      *breakpoints;
+    t_llll      *gain_env;
+    t_llll      *pan_env;
+    double      voice_pan;
+    
+    double      fadein_amount;
+    double      fadeout_amount;
+    
+    double      transp_mc;
+    double      stretch_factor;
+} t_ears_note_buffer;
+
+
+
 t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, t_llll *roll_gs, t_buffer_obj *dest,
                                e_ears_synthmode synthmode, float *wavetable, long wavetable_length,
                                char use_mute_solos, char use_durations,
@@ -33,7 +57,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                t_llll *voice_pan, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
-                               double middleAtuning, long oversampling, long resamplingfiltersize);
+                               double middleAtuning, long oversampling, long resamplingfiltersize, bool optimize_for_identical_samples);
 
 
 t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_symbol *reaper_header,

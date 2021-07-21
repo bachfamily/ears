@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 22.0, 79.0, 769.0, 607.0 ],
+		"rect" : [ 34.0, 79.0, 769.0, 607.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -60,8 +60,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 522.0, 529.5, 201.0, 37.0 ],
-					"presentation_linecount" : 2,
+					"patching_rect" : [ 493.0, 528.5, 201.0, 37.0 ],
 					"text" : "We save them in the /tmp/ folder\n(or change it as you like)"
 				}
 
@@ -93,7 +92,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 93.0, 103.5, 224.0, 37.0 ],
-					"presentation_linecount" : 4,
 					"text" : "A test folder (in the package media folder) containing such 5.1 split files"
 				}
 
@@ -106,7 +104,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 51.0, 476.0, 47.0 ],
-					"presentation_linecount" : 12,
 					"text" : "Suppose you have a folder with 5.1 audio files with pre-extensions .L .C .R .Ls .Rs .LFE.\nA filename is expected to be something like BlaBla.Ls.aif of BluBlu.LFE.wav\nWe take all files in the folder and save them in interleaved format in a temporary folder"
 				}
 
@@ -130,7 +127,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 361.5, 537.0, 155.0, 22.0 ],
+					"patching_rect" : [ 332.5, 535.0, 155.0, 22.0 ],
 					"text" : "sprintf symout /tmp/%s.wav"
 				}
 
@@ -142,7 +139,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 337.0, 475.0, 29.5, 22.0 ],
+					"patching_rect" : [ 308.0, 477.0, 29.5, 22.0 ],
 					"text" : "$1"
 				}
 
@@ -154,7 +151,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 5,
 					"outlettype" : [ "", "", "", "", "" ],
-					"patching_rect" : [ 337.0, 506.0, 117.0, 22.0 ],
+					"patching_rect" : [ 308.0, 506.0, 117.0, 22.0 ],
 					"text" : "regexp .+/(.+)\\\\..*\\\\..*"
 				}
 
@@ -163,10 +160,10 @@
 				"box" : 				{
 					"id" : "obj-37",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 176.0, 568.0, 204.5, 22.0 ],
+					"numinlets" : 5,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 176.0, 573.0, 204.5, 22.0 ],
 					"text" : "ears.write~"
 				}
 
@@ -206,9 +203,9 @@
 					"id" : "obj-27",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 176.0, 445.0, 180.0, 22.0 ],
+					"numoutlets" : 5,
+					"outlettype" : [ "", "", "", "", "" ],
+					"patching_rect" : [ 176.0, 441.0, 180.0, 22.0 ],
 					"text" : "ears.read~"
 				}
 
@@ -233,7 +230,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 236.0, 363.5, 297.0, 47.0 ],
-					"presentation_linecount" : 5,
 					"text" : "the ascii-betically sorted sequence will be\n.C .L .LFE .Ls .R .Rs\nWe assume there are no other extensions in the folder"
 				}
 
@@ -262,7 +258,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 581.0, 44.0, 157.0, 47.0 ],
-					"presentation_linecount" : 4,
 					"text" : "Ls = left surround\nRs = right surround\nLFE = low-frequency effects"
 				}
 
@@ -320,7 +315,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 465.0, 256.0, 231.0, 37.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Regroup elements with same name \n(up to pre-extensions and extensions)"
 				}
 
@@ -443,7 +437,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 6.961723327636719, 636.0, 42.0 ],
-					"text" : "batch combine 5.1 channels"
+					"text" : "Batch Combine 5.1 Channels"
 				}
 
 			}

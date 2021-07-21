@@ -439,7 +439,8 @@
 			</digest>
 			<description>
 				Sets the sample rate for the buffer
-				Negative or zero values mean: don't change.
+				Negative values mean: don't change.
+				Zero means: use current Max's sample rate
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Sample Rate" />

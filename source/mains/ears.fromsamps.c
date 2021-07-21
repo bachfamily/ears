@@ -181,7 +181,7 @@ void buf_fromsamps_anything(t_buf_fromsamps *x, t_symbol *msg, long ac, t_atom *
             if (parsed->l_depth == 1) // flat llll = 1 channel only
                 llll_wrap_once(&parsed);
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
-            ears_buffer_set_sr((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), x->sr > 0 ? x->sr : EARS_DEFAULT_SR);
+            ears_buffer_set_sr((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), x->sr > 0 ? x->sr : ears_get_current_Max_sr());
             ears_buffer_from_llll((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), parsed, true);
             buf_fromsamps_bang(x);
         }

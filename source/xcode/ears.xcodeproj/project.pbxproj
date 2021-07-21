@@ -13,6 +13,15 @@
 			buildPhases = (
 			);
 			dependencies = (
+				1E8944CA26642B4400CBD13C /* PBXTargetDependency */,
+				1E8944CC26642B4400CBD13C /* PBXTargetDependency */,
+				1E8944CE26642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D026642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D226642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D426642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D626642B4400CBD13C /* PBXTargetDependency */,
+				1E8944D826642B4400CBD13C /* PBXTargetDependency */,
+				1E8944DA26642B4400CBD13C /* PBXTargetDependency */,
 				1E7CB9BB2656625800CFBC5C /* PBXTargetDependency */,
 				1E7CB9BD2656625800CFBC5C /* PBXTargetDependency */,
 				91319B6D264C039F00364EAB /* PBXTargetDependency */,
@@ -1174,6 +1183,69 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1E89421220CD69F300547CB7;
 			remoteInfo = ears.expr;
+		};
+		1E8944C926642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B6E264C149500364EAB;
+			remoteInfo = "ears.fromvector~";
+		};
+		1E8944CB26642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B80264C14F500364EAB;
+			remoteInfo = ears.in;
+		};
+		1E8944CD26642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319B92264C151000364EAB;
+			remoteInfo = "ears.in~";
+		};
+		1E8944CF26642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BA3264C15FD00364EAB;
+			remoteInfo = "ears.mc.in~";
+		};
+		1E8944D126642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BB5264C165700364EAB;
+			remoteInfo = "ears.mc.out~";
+		};
+		1E8944D326642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BC8264C168400364EAB;
+			remoteInfo = ears.out;
+		};
+		1E8944D526642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BDA264C16A100364EAB;
+			remoteInfo = "ears.out~";
+		};
+		1E8944D726642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BEC264C16D200364EAB;
+			remoteInfo = "ears.processinfo~";
+		};
+		1E8944D926642B4400CBD13C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 91319BFF264C172500364EAB;
+			remoteInfo = ears.tovector;
 		};
 		1E8D27041F5C3B2F00BE6205 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2949,8 +3021,8 @@
 			isa = PBXGroup;
 			children = (
 				1EF5DA232386DD0A00024510 /* mains */,
-				1EFC4354196AEEA4000BDFBF /* libraries */,
 				1EB91C52190C00D400E05E70 /* commons */,
+				1EFC4354196AEEA4000BDFBF /* libraries */,
 			);
 			name = Source;
 			sourceTree = SOURCE_ROOT;
@@ -3105,6 +3177,7 @@
 				1EFCFA20265660EB0099BBB6 /* ears.model.stochastic.analysis.c */,
 				1EFCFA22265660FB0099BBB6 /* ears.model.stochastic.synthesis.c */,
 				1EB62F311F5B301E0099F454 /* ears.normalize.c */,
+				1E9889DB22B52D8B00E744B7 /* ears.offset.c */,
 				1E05F45C1FFD32B5000750B1 /* ears.onepole.c */,
 				91319B55264C027000364EAB /* ears.out.cpp */,
 				91319B52264C026F00364EAB /* ears.outtilde.cpp */,
@@ -3126,7 +3199,6 @@
 				1EC7AA65253C4F9800D72895 /* ears.roll.toreaper.c */,
 				1E1249C721777B090040B2EA /* ears.rot.c */,
 				1E10D57722F18AE3004BBFAC /* ears.rubberband.c */,
-				1E9889DB22B52D8B00E744B7 /* ears.offset.c */,
 				1E21AC1D2177D9480007E4C8 /* ears.slice.c */,
 				1E21A49026148C62001E5BCC /* ears.specshow.c */,
 				1E1E7DCE26126E2E0048DD61 /* ears.stft.c */,
@@ -7515,6 +7587,51 @@
 			target = 1E89421220CD69F300547CB7 /* ears.expr~ */;
 			targetProxy = 1E89422720CD733C00547CB7 /* PBXContainerItemProxy */;
 		};
+		1E8944CA26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B6E264C149500364EAB /* ears.fromvector~ */;
+			targetProxy = 1E8944C926642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944CC26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B80264C14F500364EAB /* ears.in */;
+			targetProxy = 1E8944CB26642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944CE26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319B92264C151000364EAB /* ears.in~ */;
+			targetProxy = 1E8944CD26642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D026642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BA3264C15FD00364EAB /* ears.mc.in~ */;
+			targetProxy = 1E8944CF26642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D226642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BB5264C165700364EAB /* ears.mc.out~ */;
+			targetProxy = 1E8944D126642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D426642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BC8264C168400364EAB /* ears.out */;
+			targetProxy = 1E8944D326642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D626642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BDA264C16A100364EAB /* ears.out~ */;
+			targetProxy = 1E8944D526642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944D826642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BEC264C16D200364EAB /* ears.processinfo~ */;
+			targetProxy = 1E8944D726642B4400CBD13C /* PBXContainerItemProxy */;
+		};
+		1E8944DA26642B4400CBD13C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 91319BFF264C172500364EAB /* ears.tovector */;
+			targetProxy = 1E8944D926642B4400CBD13C /* PBXContainerItemProxy */;
+		};
 		1E8D27031F5C3B2F00BE6205 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
@@ -9579,6 +9696,7 @@
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -9621,6 +9739,7 @@
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -12001,6 +12120,7 @@
 					/usr/local/include/,
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -12042,6 +12162,7 @@
 					/usr/local/include/,
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
+					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

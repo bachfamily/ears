@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 932.0, 553.0 ],
+						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1670,7 +1670,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
+						"rect" : [ 100.0, 126.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1701,6 +1701,19 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-32",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 28.0, 154.5, 114.0, 23.0 ],
+									"presentation_linecount" : 2,
+									"text" : "earsBufDrumLoop"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-38",
 									"maxclass" : "comment",
 									"numinlets" : 1,
@@ -1716,12 +1729,8 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 130.0, 440.5, 99.0, 23.0 ],
-									"saved_object_attributes" : 									{
-										"versionnumber" : 80104
-									}
-,
-									"text" : "bach.print Ticks"
+									"patching_rect" : [ 130.0, 440.5, 131.0, 23.0 ],
+									"text" : "print Ticks @popup 1"
 								}
 
 							}
@@ -1907,7 +1916,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u280000591",
+									"buffername" : "u848003292",
 									"id" : "obj-16",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1948,7 +1957,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 99.0, 167.0, 331.0, 21.0 ],
+									"patching_rect" : [ 153.575281181818241, 162.5, 331.0, 21.0 ],
 									"text" : "Three temporal modes are available:"
 								}
 
@@ -2271,6 +2280,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-6", 0 ],
 									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-32", 0 ]
 								}
 
 							}

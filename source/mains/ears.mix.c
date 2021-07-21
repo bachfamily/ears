@@ -51,7 +51,7 @@ typedef struct _buf_mix {
     t_earsbufobj       e_ob;
     
     char               normalization_mode;
-    
+    char               interp_offsets;
 /*    double             fade_left;
     double             fade_right;
     char               fade_amount_mode; /// see the enum above
@@ -104,10 +104,19 @@ int C74_EXPORT main(void)
                          A_GIMME,
                          0L);
     
-    // @method list/llll @digest Process buffers
-    // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // @method list/llll @digest Function depends on inlet
+    // @description A list or llll in the furst inlet with buffer names will trigger the buffer processing and output the processed
+    // buffer names (depending on the <m>naming</m> attribute). <br />
+    // A number, list or llll in the second inlet is interpreted to contain the gain
+    // for each one of the incoming buffer (in the current <m>ampunit</m>). <br />
+    // A number, list or llll in the third inlet is interpreted to contain the temporal offset
+    // for each one of the incoming buffer (in the current <m>timeunit</m>). Non-integer sample offsets are only accounted for
+    // if the <m>interp</m> attribute is on, otherwise they are rounded to the nearest integer sample. <br />
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(mix)
+
+    // @method number @digest Set Gain or Offset
+    // See <m>list</m> method, for second or third inlet.
+
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
@@ -127,6 +136,10 @@ int C74_EXPORT main(void)
     // @description Sets the normalization mode for the output buffer:
     // 0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 = Overload Protection Only, only
     // normalizes to 1. if some samples exceed in modulo 1.
+
+    CLASS_ATTR_CHAR(c, "interp", 0, t_buf_mix, interp_offsets);
+    CLASS_ATTR_STYLE_LABEL(c,"interp",0,"onoff","Interpolate Non-Integer Offset");
+    // @description Toggles the ability to perform band-limited interpolation via resampling for non-integer offsets.
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -171,6 +184,7 @@ t_buf_mix *buf_mix_new(t_symbol *s, short argc, t_atom *argv)
         x->gains = llll_get();
         x->offsets = llll_get();
         x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
+        x->interp_offsets = 0;
         
         earsbufobj_init((t_earsbufobj *)x, 0);
         
@@ -210,41 +224,77 @@ void buf_mix_bang(t_buf_mix *x)
     
     t_llll *gains_linear = llll_get();
     
-    t_buffer_obj **inbufs = (t_buffer_obj **)bach_newptrclear(num_buffers * sizeof(t_buffer_obj *));
-    long *offsets_samps = (long *)bach_newptrclear(num_buffers * sizeof(long));
-
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     t_llllelem *gain_el, *offset_el;
     long count;
     double last_offset_samps = 0, last_diff_samps = 0;
-    for (count = 0, gain_el = gains->l_head, offset_el = offsets->l_head; count < num_buffers;
-         count++, gain_el = (gain_el && gain_el->l_next) ? gain_el->l_next : gain_el, offset_el = offset_el ? offset_el->l_next : NULL) {
-        t_buffer_obj *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count);
-        if (gain_el)
-            llll_appendllll(gains_linear, earsbufobj_llllelem_to_linear_and_samples((t_earsbufobj *)x, gain_el, buf));
-        else
-            llll_appenddouble(gains_linear, 1.);
+
+    t_buffer_obj **inbufs = (t_buffer_obj **)bach_newptrclear(num_buffers * sizeof(t_buffer_obj *));
+    if (x->interp_offsets > 0) {
+        double *offsets_samps = (double *)bach_newptrclear(num_buffers * sizeof(double));
         
-        if (offset_el) {
-            double this_offset_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
-            offsets_samps[count] = MAX(0, this_offset_samps);
+        for (count = 0, gain_el = gains->l_head, offset_el = offsets->l_head; count < num_buffers;
+             count++, gain_el = (gain_el && gain_el->l_next) ? gain_el->l_next : gain_el, offset_el = offset_el ? offset_el->l_next : NULL) {
+            t_buffer_obj *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count);
+            if (gain_el)
+                llll_appendllll(gains_linear, earsbufobj_llllelem_to_linear_and_samples((t_earsbufobj *)x, gain_el, buf));
+            else
+                llll_appenddouble(gains_linear, 1.);
             
-            last_diff_samps = this_offset_samps - last_offset_samps;
-            last_offset_samps = this_offset_samps;
-        } else {
-            // padding with last difference, so that one can write just 0 1000 to mean 0 1000 2000 3000...
-            offsets_samps[count] = MAX(0, last_offset_samps + last_diff_samps);
-            last_offset_samps += last_diff_samps;
+            if (offset_el) {
+                double this_offset_samps = earsbufobj_time_to_fsamps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                offsets_samps[count] = MAX(0, this_offset_samps);
+                
+                last_diff_samps = this_offset_samps - last_offset_samps;
+                last_offset_samps = this_offset_samps;
+            } else {
+                // padding with last difference, so that one can write just 0 1000 to mean 0 1000 2000 3000...
+                offsets_samps[count] = MAX(0, last_offset_samps + last_diff_samps);
+                last_offset_samps += last_diff_samps;
+            }
+            
+            inbufs[count] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         }
         
-        inbufs[count] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
+        
+        ears_buffer_mix_subsampleprec((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+        
+        bach_freeptr(offsets_samps);
+    } else {
+        long *offsets_samps = (long *)bach_newptrclear(num_buffers * sizeof(long));
+         
+        for (count = 0, gain_el = gains->l_head, offset_el = offsets->l_head; count < num_buffers;
+             count++, gain_el = (gain_el && gain_el->l_next) ? gain_el->l_next : gain_el, offset_el = offset_el ? offset_el->l_next : NULL) {
+            t_buffer_obj *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count);
+            if (gain_el)
+                llll_appendllll(gains_linear, earsbufobj_llllelem_to_linear_and_samples((t_earsbufobj *)x, gain_el, buf));
+            else
+                llll_appenddouble(gains_linear, 1.);
+            
+            if (offset_el) {
+                double this_offset_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                offsets_samps[count] = MAX(0, this_offset_samps);
+                
+                last_diff_samps = this_offset_samps - last_offset_samps;
+                last_offset_samps = this_offset_samps;
+            } else {
+                // padding with last difference, so that one can write just 0 1000 to mean 0 1000 2000 3000...
+                offsets_samps[count] = MAX(0, last_offset_samps + last_diff_samps);
+                last_offset_samps += last_diff_samps;
+            }
+            
+            inbufs[count] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        }
+        
+        t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
+        
+        ears_buffer_mix((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+        
+        bach_freeptr(offsets_samps);
     }
-    
-    t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-    
-    ears_buffer_mix((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     
@@ -252,7 +302,6 @@ void buf_mix_bang(t_buf_mix *x)
     llll_free(gains_linear);
     llll_free(offsets);
     bach_freeptr(inbufs);
-    bach_freeptr(offsets_samps);
     
 }
 
