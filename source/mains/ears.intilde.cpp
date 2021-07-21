@@ -28,7 +28,7 @@ typedef struct _ears_intilde
 
 void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av);
 void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s);
-//void ears_intilde_inletinfo(t_ears_intilde *x, void *b, long a, char *t);
+void ears_intilde_inletinfo(t_ears_intilde *x, void *b, long a, char *t);
 
 void ears_intilde_int(t_ears_intilde *x, t_atom_long i);
 void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av);
@@ -59,7 +59,7 @@ int C74_EXPORT main()
     class_addmethod(ears_intilde_class, (method)ears_intilde_setbuffers, "setbuffers", A_CANT, 0);
     
     class_addmethod(ears_intilde_class, (method)ears_intilde_assist, "assist", A_CANT, 0);
-    //class_addmethod(ears_intilde_class, (method)ears_intilde_inletinfo, "inletinfo", A_CANT, 0);
+    class_addmethod(ears_intilde_class, (method)ears_intilde_inletinfo, "inletinfo", A_CANT, 0);
     
     class_dspinit(ears_intilde_class);
 
@@ -203,4 +203,9 @@ void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s)
     } else {
         sprintf(s, "signal: Audio from buffer"); // @in 1 @loop 1 @type signal @digest Audio from buffer
     }
+}
+
+void earsprocess_inletinfo(t_earsprocess *x, void *b, long a, char *t)
+{
+    *t = 1; // no hot inlets actually
 }
