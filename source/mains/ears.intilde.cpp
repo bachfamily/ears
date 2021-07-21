@@ -205,7 +205,7 @@ void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s)
     }
 }
 
-void earsprocess_inletinfo(t_earsprocess *x, void *b, long a, char *t)
+void earsprocess_inletinfo(t_ears_intilde *x, void *b, long a, char *t)
 {
     *t = 1; // no hot inlets actually
 }
