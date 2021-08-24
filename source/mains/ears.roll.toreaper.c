@@ -300,7 +300,7 @@ int C74_EXPORT main(void)
     // @description Sets the number of slots containing the transposition amount, in midicents (0 = none).
 
     CLASS_ATTR_LONG(c, "timestretchslot", 0, t_buf_roll_toreaper, timestretch_slot);
-    CLASS_ATTR_STYLE_LABEL(c,"timestretchslot",0,"text","Slot Containing Transposition Amount");
+    CLASS_ATTR_STYLE_LABEL(c,"timestretchslot",0,"text","Slot Containing Timestretch Ratio");
     // @description Sets the number of slots containing the timestretch ratio (0 = none).
 
     CLASS_ATTR_LONG(c, "fadeslot", 0, t_buf_roll_toreaper, fade_slot);
