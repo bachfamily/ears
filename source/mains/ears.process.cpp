@@ -1,9 +1,43 @@
-//
-//  earsprocess.cpp
-//  ears
-//
-//  Created by andreaagostini on 03/04/2021.
-//
+/**
+ @file
+ ears.process.c
+ 
+ @name
+ ears.process~
+ 
+ @realname
+ ears.process~
+ 
+ @type
+ object
+ 
+ @module
+ ears
+ 
+ @author
+ Andrea Agostini, partly based upon work by Alexander J. Harker
+ 
+ @digest
+ Offline host for patches operating on buffers
+ 
+ @description
+ Loads a DSP patch and runs it in non-realtime
+ reading from and writing to buffers
+
+ @discussion
+ 
+ @category
+ ears process
+ 
+ @keywords
+ buffer, offline, patch, patcher, non-realtime
+ 
+ @seealso
+ ears.in, ears.in~, ears.mc.in~, ears.out, ears.out~, ears.mc.out~, ears.processinfo~, ears.tovector~, ears.fromvector~
+ 
+ @owner
+ Andrea Agostini
+ */
 
 #include <stdio.h>
 
@@ -22,7 +56,7 @@
 
 
 // Fixes a compiler error with object_method_direct when building the code as cpp
-// Shouldn't be necessary with recent version of the Max SDK, but it won't hurt either
+// Shouldn't be necessary with recent versions of the Max SDK, but it won't hurt either
 #define object_method_direct_cpp(rt, sig, x, s, ...) ((rt (*)sig)object_method_direct_getmethod((t_object *)x, s))((t_object*)object_method_direct_getobject((t_object *)x, s), __VA_ARGS__)
 
 t_class *earsprocess_class;
@@ -143,7 +177,7 @@ void earsprocess_inletinfo(t_earsprocess *x, void *b, long a, char *t);
 
 void earsprocess_deletepatch(t_earsprocess *x, t_symbol *msg, long argc, t_atom *argv);
 void earsprocess_clear(t_earsprocess *x);
-void earsprocess_loadpatch(t_earsprocess *x, t_symbol *s, long argc, t_atom *argv);
+void earsprocess_patchername(t_earsprocess *x, t_symbol *s, long argc, t_atom *argv);
 
 
 void earsprocess_bang(t_earsprocess *x);
@@ -209,28 +243,73 @@ int C74_EXPORT main()
         return 1;
     }
     
-    earsprocess_class = class_new("ears.process~", (method)earsprocess_new, (method)earsprocess_free, sizeof(t_earsprocess), NULL, A_GIMME, 0);
+    CLASS_NEW_CHECK_SIZE(earsprocess_class, "ears.process~", (method)earsprocess_new, (method)earsprocess_free, sizeof(t_earsprocess), NULL, A_GIMME, 0);
     
     
     
     //class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
+    
+    // @method open @digest Open patcher
+    // @description The <m>open</m> message
+    // opens the patcher window loaded in the object, if any.
     class_addmethod(earsprocess_class, (method)earsprocess_open, "open", 0);
+    
+    
+    // @method (doubleclick) @digest Open patcher
+    // @description Double-clicking on the object
+    // opens the patcher window loaded in the object, if any.
     class_addmethod(earsprocess_class, (method)earsprocess_open, "dblclick", A_CANT, 0);
+    
+    // @method wclose @digest Closes patcher
+    // @description The <m>wclose</m> message
+    // closes the patcher window loaded in the object, if any.
     class_addmethod(earsprocess_class, (method)earsprocess_wclose, "wclose", 0);
+    
+
+    // @method bang @digest Run process
+    // @description
+    // A <m>bang</m> in any of the buffer inlets causes the object
+    // to perform the process with the latest received
+    // buffer names and parameters. <br/>
+    // A <m>bang</m> in any other inlet is routed
+    // to the client patch through its <o>ears.in</o> objects.
+    class_addmethod(earsprocess_class, (method)earsprocess_bang, "bang", 0);
+    
+    // @method stop @digest Stop process
+    // @description
+    // The <m>stop</m> message in any of the buffer inlets causes the object
+    // to stop immediately the process it is performing;
+    // in any other inlet, it is routed
+    // to the client patch through its <o>ears.in</o> objects.
+    class_addmethod(earsprocess_class, (method)earsprocess_stop, "stop", 0);
+
+
+    // @method patchername @digest Load patch
+    // @description
+    // The <m>patchername</m> message in any of the buffer inlets causes the object
+    // to stop immediately the process it is performing;
+    // in any other inlet, it is routed
+    // to the client patch through its <o>ears.in</o> objects.
+    class_addmethod(earsprocess_class, (method)earsprocess_patchername, "patchername", A_DEFER, 0);
+    
+    
+    class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_anything, "list", A_GIMME, 0);
+    
+    // @method int @digest Buffer name or passed to patcher
+    // @description
+    // An integer in any of the buffer inlets
+    // is considered a buffer name; see the <m>list/llll</m> method for more details.<br/>
+    // An integer in any other inlet is routed
+    // to the client patch through its <o>ears.in</o> objects.
+    class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
+
+    
     
     class_addmethod(earsprocess_class, (method)earsprocess_pupdate, "pupdate", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_subpatcher, "subpatcher", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_parentpatcher, "parentpatcher", A_CANT, 0);
-    
-    class_addmethod(earsprocess_class, (method)earsprocess_bang, "bang", 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_stop, "stop", 0);
-
-    class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_anything, "list", A_GIMME, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
-
-    class_addmethod(earsprocess_class, (method)earsprocess_loadpatch, "loadpatch", A_DEFER, 0);
     
     class_addmethod(earsprocess_class, (method)earsprocess_earsintildecreated, "ears.in~_created", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_earsouttildecreated, "ears.out~_created", A_CANT, 0);
@@ -548,7 +627,7 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     x->nBufInlets = 1;
     if (patchname)
-        earsprocess_loadpatch(x, patchname, 0, NULL);
+        earsprocess_patchername(x, patchname, 0, NULL);
     
     // e = buffer; E = buffer list;
 
@@ -617,8 +696,17 @@ void earsprocess_setupOutObjects(t_earsprocess *x)
     }
 }
 
-void earsprocess_loadpatch(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
+void earsprocess_patchername(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
 {
+    if (!x->client_patch)
+    return;
+    
+    long inlet = proxy_getinlet((t_object *) x);
+    
+    if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, patchname, ac, av);
+        return;
+    }
     
     x->theInOutlets->clear();
     x->theOuts->clear();
@@ -724,14 +812,30 @@ void earsprocess_loadpatch(t_earsprocess *x, t_symbol *patchname, long ac, t_ato
 
 void earsprocess_open(t_earsprocess *x)
 {
-    if (x->client_patch)
-        object_method((t_object *) x->client_patch, _sym_front);
+    if (!x->client_patch)
+        return;
+    
+    long inlet = proxy_getinlet((t_object *) x);
+    
+    if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, _sym_open, 0, NULL);
+    } else {
+        object_method((t_object *) x->client_patch, _sym_open);
+    }
 }
 
 void earsprocess_wclose(t_earsprocess *x)
 {
-    if (x->client_patch)
+    if (!x->client_patch)
+        return;
+    
+    long inlet = proxy_getinlet((t_object *) x);
+    
+    if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, _sym_wclose, 0, NULL);
+    } else {
         object_method((t_object *) x->client_patch, _sym_wclose);
+    }
 }
 
 
@@ -780,7 +884,7 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
     long inlet = proxy_getinlet((t_object *) x);
     
     if (inlet > 0 && inlet >= x->nBufInlets) {
-        // TODO: send to ears.in
+        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
         for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_anything(o, s, ac, av);
         }
@@ -805,13 +909,12 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
 
 void earsprocess_bang(t_earsprocess *x)
 {
-    
     if (!x->client_patch)
         return;
     
     long inlet = proxy_getinlet((t_object *) x);
     
-    if (inlet > 0) {
+    if (inlet >= x->nBufInlets) {
         earsprocess_anything(x, _sym_bang, 0, NULL);
     } else {
         defer(x, (method) earsprocess_bang_do, NULL, 0, NULL);
@@ -824,7 +927,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
     double sr;
     
     if (x->reload)
-        earsprocess_loadpatch((t_earsprocess*) x, x->patch_name, x->client_argc, x->client_argv);
+        earsprocess_patchername((t_earsprocess*) x, x->patch_name, x->client_argc, x->client_argv);
     
     // Get number of buffers on which to iterate
     long num_buffer_to_iter = LONG_MAX;
@@ -968,14 +1071,24 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         object_free(setclock);
     }
     
-    
     for (int i = x->nBufOutlets - 1; i >= 0 ; i--)
         earsbufobj_outlet_buffer((t_earsbufobj *)x, i);
 }
 
+
+
+
 void earsprocess_stop(t_earsprocess *x)
 {
-    x->stopped = true;
+    if (!x->client_patch)
+        return;
+    
+    long inlet = proxy_getinlet((t_object *) x);
+    if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, _sym_bang, 0, NULL);
+    } else {
+        x->stopped = true;
+    }
 }
 
 
