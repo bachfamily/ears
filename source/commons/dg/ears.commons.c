@@ -370,7 +370,7 @@ t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long num
 }
 
 
-// ONE NEEDS TO BE SURE that this function is called when the samples of buf ARE NOT LOCKED!!!!
+// ONE NEEDS TO MAKE SURE that this function is called when the samples of buf ARE NOT LOCKED!!!!
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels)
 {
     t_atom a[2];

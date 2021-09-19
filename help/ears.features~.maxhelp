@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 932.0, 579.0 ],
+		"rect" : [ 103.0, 79.0, 932.0, 579.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1307,7 +1307,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
+						"rect" : [ 103.0, 105.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1349,7 +1349,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 631.0, 69.599853515625, 297.0, 21.0 ],
+									"patching_rect" : [ 627.0, 69.599853515625, 297.0, 21.0 ],
 									"text" : "https://essentia.upf.edu/algorithms_reference.html",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
