@@ -297,12 +297,21 @@ int C74_EXPORT main()
     class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_anything, "list", A_GIMME, 0);
     
-    // @method int @digest Buffer name or passed to patcher
+    // @method list/llll @digest Function depends on inlet
     // @description
-    // An integer in any of the buffer inlets
-    // is considered a buffer name; see the <m>list/llll</m> method for more details.<br/>
-    // An integer in any other inlet is routed
-    // to the client patch through its <o>ears.in</o> objects.
+    // If a list or llll with buffer names is passed to one of the buffer inlets,
+    // The contents of the corresponding buffers will be passed
+    // to the loaded patcher through the patcher's
+    // <o>ears.in~</o> and <o>ears.mc.in~</o> objects,
+    // for being processed by the DSP chain of the patcher itself.
+    // The names of the buffers containing the processed audio,
+    // as output by the patcher's <o>ears.out~</o> and <o>ears.mc.out~</o> objects,
+    // will be subsequently output.<br/>
+    // Lists and llll received in non-buffer inlets
+    // will be passed as they are to the loaded patcher,
+    // through its <o>ears.in</o> objects.<br/>
+    // If the list or llll is received in the first inlet,
+    // The processing will be triggered.
     class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
 
     
@@ -334,47 +343,120 @@ int C74_EXPORT main()
     CLASS_ATTR_ACCESSORS(earsprocess_class, "ownsdspchain", (method) earsprocess_get_ownsdspchain, NULL);
     CLASS_ATTR_INVISIBLE(earsprocess_class, "ownsdspchain", 0);
     
+    
+    
     CLASS_ATTR_LONG(earsprocess_class, "vs", 0, t_earsprocess, vs);
     CLASS_ATTR_ACCESSORS(earsprocess_class, "vs", NULL, (method) earsprocess_set_vs);
     CLASS_ATTR_LABEL(earsprocess_class, "vs", 0, "Vector Size");
+    // @description
+    // The signal vector size of the loaded patcher.
+    // The default is 128.
+    
 
     CLASS_ATTR_LONG(earsprocess_class, "sr", 0, t_earsprocess, sr);
     CLASS_ATTR_FILTER_MIN(earsprocess_class, "sr", 0);
     CLASS_ATTR_LABEL(earsprocess_class, "sr", 0, "Default Sample Rate");
+    // @description
+    // The default sample rate of the loaded patcher,
+    // only used for generator patches
+    // (i.e., patches with no buffer inlets):
+    // if a patcher has buffer inlets, the sample rate of each run of the patcher
+    // corresponds to the sample rate of the incoming buffers.<br/>
+    // The default is 0, meaning that generator patches will run at the system sample rate.
 
-    /*
-    CLASS_ATTR_LONG(earsprocess_class, "durationpolicy", 0, t_earsprocess, durationpolicy);
-    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "durationpolicy", 0, "enumindex", "Duration Policy");
-    CLASS_ATTR_FILTER_CLIP(earsprocess_class, "durationpolicy", 0, 2);
-    CLASS_ATTR_ENUMINDEX(earsprocess_class, "durationpolicy", 0, "Shortest Longest Fixed");
-     */
     
     
     CLASS_ATTR_ATOM_ARRAY(earsprocess_class, "duration", 0, t_earsprocess, dummydur, 2);
     CLASS_ATTR_ACCESSORS(earsprocess_class, "duration", (method) earsprocess_get_duration, (method) earsprocess_set_duration);
+    // @description
+    // The <m>duration</m> attribute controls the duration
+    // of the resulting buffers with respect to the
+    // durations of the incoming one.
+    // It consists of a single symbol or integer setting the <b>duration policy</b>,
+    // followed by a number setting the <b>tail</b>.<br/><br/>
+    // The <b>duration policy</b> can take one of the following values:<br/>
+    // - <m>0</m> or <m>shortest</m> or <m>s</m>:
+    // the duration of the processed (and therefore resulting) audio
+    // is at most the duration of the shortest incoming buffer
+    // plus the tail. If a list of buffers is passed, to be processed in sequences,
+    // the processing duration refers to the per-iteration shortest buffer.
+    // The <m>shortest</m> policy is the default.<br/>
+    // - <m>1</m> or <m>longest</m> or <m>l</m>:
+    // the duration of the processed audio
+    // is at most the duration of the longest incoming buffer plus the tail.
+    // If the loaded patcher has a single buffer inlet,
+    // the <m>shortest</m> and <m>longest</m> policies are equivalent;
+    // if it has no buffer inlets, no processing will take place.<br/>
+    // - <m>2</m> or <m>fixed</m> or <m>f</m>
+    // or <m>maximum</m> or <m>m</m>:
+    // the duration of the processed audio
+    // is set to the value of the tail.
+    // This is the only meaningful setting when the patcher has no buffer inlets,
+    // typically because the patch generates audio rather than process it.<br/><br/>
+    // The <b>tail</b>, which is always measured in milliseconds,
+    // is optional, and defaults to 0, for the <b>shortest</b> and <b>longest</b> duration policies.
+    // In these cases, it sets an additional processing duration
+    // after the end of the shortest or longest buffer.
+    // For the <b>fixed</b> duration policy, it sets the actual
+    // duration of the processing, and it cannot be 0:
+    // if set to 0, or missing, it is changed to 60000.
+    // The processing can be interrupted at any time by the loaded patcher,
+    // through the <o>ears.processinfo~</m> object.
+    
+    
 
-    //CLASS_ATTR_LONG(earsprocess_class, "durationpolicy", 0, t_earsprocess, durationpolicy);
-    //CLASS_ATTR_STYLE_LABEL(earsprocess_class, "durationpolicy", 0, "enumindex", "Duration Policy");
-    //CLASS_ATTR_FILTER_CLIP(earsprocess_class, "durationpolicy", 0, 2);
-    //CLASS_ATTR_ENUMINDEX(earsprocess_class, "durationpolicy", 0, "Shortest Longest Fixed");
-
-    //CLASS_ATTR_DOUBLE(earsprocess_class, "tail", 0, t_earsprocess, tail);
-    //CLASS_ATTR_LABEL(earsprocess_class, "tail", 0, "Tail or Fixed Duration");
-    //CLASS_ATTR_FILTER_MIN(earsprocess_class, "tail", 0);
+    
     
     CLASS_ATTR_LONG(earsprocess_class, "scalarmode", 0, t_earsprocess, scalarmode);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "scalarmode", 0, "onoff", "Scalar Mode");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "scalarmode", 0, 1);
+    // @description
+    // When set to 1, if a buffer inlet receives a single buffer
+    // while other inlets receive lists of buffers,
+    // then the single buffer will be iterated repeatedly against the list of buffers, until the end of the shortest list.<br/>
+    // When set to 0 (as per the default), if a buffer inlet receives a single buffer
+    // no iterator will be performed, and only the first buffer of each inlet will be processed.
+    
     
     CLASS_ATTR_LONG(earsprocess_class, "reload", 0, t_earsprocess, reload);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "reload", 0, "onoff", "Reload");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "reload", 0, 1);
+    // @description
+    // When set to 1, the patch is reloaded before each run.
+    // In this case, initialisation data received through <o>ears.in</o> objects
+    // have to be sent again after each reloading,
+    // and the time required by the project might increase considerably,
+    // especially for complex patches.
+    // On the other hand, this guarantees that the patch
+    // is always "clean" before running.<br/>
+    // When set to 0 (as per the default), the patch is only loaded
+    // when <o>ears.process</o> is instantiated
+    // or when the <m>patchername</m> message is received.
+
+    
+    
     
     CLASS_ATTR_LONG(earsprocess_class, "autoclock", 0, t_earsprocess, autoclock);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "autoclock", 0, "onoff", "Automatic Clock Message");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "autoclock", 0, 1);
 
     class_register(CLASS_BOX, earsprocess_class);
+    // @description
+    // The <o>ears.process~</o> objects manages an internal <o>clock</o>
+    // to control scheduler-based objects such as
+    // <o>metro</o> and <o>delay</o>, the playback capabilities
+    // of <o>bach.roll</o> and <o>bach.score</o>, and more.
+    // In this way, their timing will be correct with respect to
+    // the non-realtime operation of the loaded patch,
+    // rather than the physical time of the outside world.
+    // If the <o>autoclock</o> attribute is set to 1 (as per the default),
+    // all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
+    // will automatically have their clock set by <o>ears.process~</o> before each run of the patch,
+    // thus guaranteeing that their timing is correct.</o><br/>
+    // If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
+    // and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.processinfo~</o>, to the relevant objects.<br/>
+    // Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
+    // There is currently no way to use such objects with correct timing inside <o>ears.process~</o>.
     
     return 0;
 }
@@ -1094,15 +1176,17 @@ void earsprocess_stop(t_earsprocess *x)
 
 void earsprocess_autoclock(t_earsprocess *x, t_patcher *p)
 {
+    t_symbol *name = x->clock_name;
     for (t_box *b = jpatcher_get_firstobject(p); b; b = jbox_get_nextobject(b))
     {
         t_object *o = jbox_get_object(b);
         if (object_classname(o) == gensym("ears.process~"))
             continue;
-        method c = zgetfn(o, gensym("clock"));
-        if (c ||
-            object_classname(o) == gensym("pipe"))
-            (c)(o, x->clock_name);
+        method c = zgetfn(o, _sym_clock);
+        if (c)
+            (c)(o, name);
+        else
+            object_attr_setsym(o, _sym_clock, name);
         
         
         t_patcher *subpatch;
