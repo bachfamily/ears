@@ -247,7 +247,7 @@ int C74_EXPORT main()
     
     
     
-    //class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
     
     // @method open @digest Open patcher
     // @description The <m>open</m> message
@@ -349,9 +349,10 @@ int C74_EXPORT main()
     CLASS_ATTR_ACCESSORS(earsprocess_class, "vs", NULL, (method) earsprocess_set_vs);
     CLASS_ATTR_LABEL(earsprocess_class, "vs", 0, "Vector Size");
     // @description
-    // The signal vector size of the loaded patcher.
+    // The signal vector size of the loaded patcher, expressed in samples.
+    // It must be a power of 2 between 1 and 4096.
     // The default is 128.
-    
+
 
     CLASS_ATTR_LONG(earsprocess_class, "sr", 0, t_earsprocess, sr);
     CLASS_ATTR_FILTER_MIN(earsprocess_class, "sr", 0);
@@ -449,10 +450,12 @@ int C74_EXPORT main()
     // In this way, their timing will be correct with respect to
     // the non-realtime operation of the loaded patch,
     // rather than the physical time of the outside world.
+    // The internal clock is synced to the non-realtime signal vector,
+    // as with "Scheduler in Overdrive" and "Scheduler in Audio Interrupt" both on.<br/>
     // If the <o>autoclock</o> attribute is set to 1 (as per the default),
     // all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
-    // will automatically have their clock set by <o>ears.process~</o> before each run of the patch,
-    // thus guaranteeing that their timing is correct.</o><br/>
+    // will automatically have their clock set by <o>ears.process~</o> before each run of the patch
+    //
     // If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
     // and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.processinfo~</o>, to the relevant objects.<br/>
     // Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
@@ -664,6 +667,14 @@ void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
 void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
 {
+    // @arg 0 @name outnames @optional 1 @type symbol
+    // @digest Output buffer names
+    // @description @copy EARS_DOC_OUTNAME_ATTR
+    
+    // @arg 1 @name patcher name @optional 1 @type symbol
+    // @digest Patcher name
+    // @description Sets the name of the patch to be loaded
+    
     t_earsprocess *x = (t_earsprocess *) object_alloc(earsprocess_class);
     t_symbol *patchname = nullptr;
     
@@ -1205,13 +1216,13 @@ void earsprocess_assist(t_earsprocess *x, void *b, long m, long a, char *s)
         if (a < x->nBufInlets) {
             sprintf(s, "symbol/list/llll: Incoming buffer Name"); // @in 0 @loop 1 @type symbol/llll @digest Incoming buffer name
         } else {
-            sprintf(s, "symbol/list/llll: Incoming data"); // @in 1 @loop 1 @type symbol/llll @digest Incoming data
+            sprintf(s, "symbol/list/llll: Incoming data"); // @in 1 @loop 1 @type symbol/llll @digest Incoming data for <o>ears.in</o>.
         }
     } else {
         if (a < x->nBufOutlets) {
             sprintf(s, "symbol/list/llll: Output buffer"); // @out 0 @loop 1 @type symbol/llll @digest Output buffer
         } else {
-            sprintf(s, "symbol/list/llll: Output data"); // @out 1 @loop 1 @type symbol/llll @digest Output data
+            sprintf(s, "symbol/list/llll: Output data"); // @out 1 @loop 1 @type symbol/llll @digest Output data from <o>ears.out</o>.
         }
     }
 }
