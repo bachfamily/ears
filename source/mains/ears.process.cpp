@@ -402,7 +402,7 @@ int C74_EXPORT main()
     // duration of the processing, and it cannot be 0:
     // if set to 0, or missing, it is changed to 60000.
     // The processing can be interrupted at any time by the loaded patcher,
-    // through the <o>ears.processinfo~</m> object.
+    // through the <o>ears.processinfo~</o> object.
     
     
 
