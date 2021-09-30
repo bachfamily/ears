@@ -791,9 +791,6 @@ void earsprocess_setupOutObjects(t_earsprocess *x)
 
 void earsprocess_patchername(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
 {
-    if (!x->client_patch)
-    return;
-    
     long inlet = proxy_getinlet((t_object *) x);
     
     if (inlet >= x->nBufInlets) {
@@ -908,13 +905,13 @@ void earsprocess_open(t_earsprocess *x)
     if (!x->client_patch)
         return;
     
-    long inlet = proxy_getinlet((t_object *) x);
+    //long inlet = proxy_getinlet((t_object *) x);
     
-    if (inlet >= x->nBufInlets) {
+    //if (inlet >= x->nBufInlets) {
         earsprocess_anything(x, _sym_open, 0, NULL);
-    } else {
-        object_method((t_object *) x->client_patch, _sym_open);
-    }
+    //} else {
+    //    object_method((t_object *) x->client_patch, _sym_open);
+    //}
 }
 
 void earsprocess_wclose(t_earsprocess *x)
