@@ -469,18 +469,6 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "earsBufAnton",
-									"id" : "obj-24",
-									"maxclass" : "waveform~",
-									"numinlets" : 5,
-									"numoutlets" : 6,
-									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 500.0, 92.0, 182.5, 39.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
 									"buffername" : "earsBufDrumLoop",
 									"id" : "obj-23",
 									"maxclass" : "waveform~",
@@ -512,18 +500,6 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 15.0, 360.0, 46.0, 23.0 ],
 									"text" : "set $1"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-8",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "float", "bang" ],
-									"patching_rect" : [ 500.0, 138.5, 170.0, 23.0 ],
-									"text" : "buffer~ earsBufAnton anton"
 								}
 
 							}
@@ -585,7 +561,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.biquad~", 80 ],
+									"jsarguments" : [ "ears.process~", 80 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,

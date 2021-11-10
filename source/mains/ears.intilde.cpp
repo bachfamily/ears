@@ -1,9 +1,43 @@
-//
-//  ears.in~.cpp
-//  lib_ears
-//
-//  Created by andreaagostini on 03/04/2021.
-//
+/**
+ @file
+ ears.intilde.c
+ 
+ @name
+ ears.in~
+ 
+ @realname
+ ears.in~
+ 
+ @type
+ object
+ 
+ @module
+ ears
+ 
+ @author
+ Andrea Agostini, partly based upon work by Alexander J. Harker
+ 
+ @digest
+ Signal input for a patch loaded by ears.process~
+ 
+ @description
+ Use the <o>ears.in~</o> object inside a patch loaded by ears.process~
+ to create a signal inlet receiving data from an input buffer.
+ 
+ @discussion
+ 
+ @category
+ ears process
+ 
+ @keywords
+ buffer, offline, patch, patcher, non-realtime
+ 
+ @seealso
+ ears.in, ears.mc.in~, ears.out~, ears.tovector~
+ 
+ @owner
+ Andrea Agostini
+ */
 
 
 #include "ears.process_commons.h"
