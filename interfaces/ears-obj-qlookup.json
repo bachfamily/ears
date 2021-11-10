@@ -504,6 +504,24 @@
       "ears.paulstretch~"
     ]
   },
+  "ears.assemble~": {
+    "digest": "Mix buffers one by one",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "assemble",
+      "mix",
+      "superpose",
+      "merge"
+    ],
+    "seealso": [
+      "ears.mix~",
+      "ears.read~"
+    ]
+  },
   "ears.repeat~": {
     "digest": "Repeat buffer",
     "module": "ears",
@@ -989,6 +1007,7 @@
       "merge"
     ],
     "seealso": [
+      "ears.assemble~",
       "ears.join~",
       "ears.crop~",
       "ears.read~",

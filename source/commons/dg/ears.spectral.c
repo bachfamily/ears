@@ -207,6 +207,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
 //            window[i] = pow(1 - pow(rescale(i, 0, framesize_samps - 1, -1., 1.), 2.), 1.25); // < this was the previously used window
         
         float *dest_sample = buffer_locksamples(dest);
+        long dest_sample_size = outframecount * channelcount;
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -249,8 +250,11 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
                     }
                     
                     // then overlap-adding the window
-                    for (long i = 0; i < framesize_samps; i++)
-                        dest_sample[(i + (n * half_framesize_samps)) * channelcount + c] += fin[i].r;
+                    for (long i = 0; i < framesize_samps; i++) {
+                        long ii = (i + (n * half_framesize_samps)) * channelcount + c;
+                        if (ii < dest_sample_size)
+                            dest_sample[ii] += fin[i].r;
+                    }
                 }
                 
                 start_pos += displace_pos;

@@ -394,6 +394,9 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                double middleAtuning, long oversampling, long resamplingfiltersize,
                                bool optimize_for_identical_samples)
 {
+    if (mode == EARS_SYNTHMODE_SINUSOIDS)
+        oversampling = 1; // no need for oversampling if we just use sinusoids, as we will not filter for antialiasing
+    
     t_ears_err err = EARS_ERR_NONE;
     t_llll *body = llll_clone(roll_gs);
     t_llll *header = ears_sliceheader(body);
@@ -515,7 +518,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     
                 }
                 
-                if (new_buffer) {
+                if (this_err == EARS_ERR_NONE && new_buffer) {
                     // Now a sequence of in-place operations to modify the buffer
                     // only if the buffer is a new one, and is not exactly the same as a previous one (in sampling mode)
                     

@@ -25,6 +25,7 @@ max oblist "ears objects" ears.tosamps~;
 max oblist "ears objects" ears.info~;
 max oblist "ears objects" ears.channel~;
 max oblist "ears objects" ears.freeverb~;
+max oblist "ears objects" ears.assemble~;
 max oblist "ears objects" ears.repeat~;
 max oblist "ears objects" ears.model.sps.analysis~;
 max oblist "ears objects" ears.pan~;

@@ -159,7 +159,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "audioslot", 0, t_buf_roll_sampling, filename_slot);
     CLASS_ATTR_STYLE_LABEL(c,"audioslot",0,"text","Slot Containing File Names Or Buffer Names");
     CLASS_ATTR_BASIC(c, "audioslot", 0);
-    // @description Sets the number of slots containing file names or buffer names.
+    // @description Sets the number of the slot containing file names or buffer names.
 
     CLASS_ATTR_LONG(c, "fileslot", 0, t_buf_roll_sampling, filename_slot);
     CLASS_ATTR_INVISIBLE(c, "fileslot", 0);
@@ -167,19 +167,19 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "offsetslot", 0, t_buf_roll_sampling, offset_slot);
     CLASS_ATTR_STYLE_LABEL(c,"offsetslot",0,"text","Slot Containing Offset In File");
     CLASS_ATTR_BASIC(c, "offsetslot", 0);
-    // @description Sets the number of slots containing the offset from the beginning of the file.
+    // @description Sets the number of the slot containing the offset from the beginning of the file.
 
     CLASS_ATTR_LONG(c, "gainslot", 0, t_buf_roll_sampling, gain_slot);
     CLASS_ATTR_STYLE_LABEL(c,"gainslot",0,"text","Slot Containing Gain");
-    // @description Sets the number of slots containing the gain or gain envelope.
+    // @description Sets the number of the slot containing the gain or gain envelope.
 
     CLASS_ATTR_LONG(c, "panslot", 0, t_buf_roll_sampling, pan_slot);
     CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Pan");
-    // @description Sets the number of slots containing the file names (0 = none).
+    // @description Sets the number of the slot containing the file names (0 = none).
 
     CLASS_ATTR_LONG(c, "rateslot", 0, t_buf_roll_sampling, rate_slot);
     CLASS_ATTR_STYLE_LABEL(c,"rateslot",0,"text","Slot Containing Rate");
-    // @description Sets the number of slots containing the rate (0 = none).
+    // @description Sets the number of the slot containing the rate (0 = none).
 
 //    CLASS_ATTR_LONG(c, "psslot", 0, t_buf_roll_sampling, ps_slot);
 //    CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Pitch Shift");
