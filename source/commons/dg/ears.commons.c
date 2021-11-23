@@ -1080,9 +1080,7 @@ t_ears_err ears_buffer_crop_inplace(t_object *ob, t_buffer_obj *buf, long start_
             sysmem_copyptr(sample + start_sample * channelcount, temp, channelcount * new_dest_frames * sizeof(float));
             
             buffer_unlocksamples(buf);
-            post("foo");
             ears_buffer_set_size_samps(ob, buf, new_dest_frames);
-            post("fee");
             sample = buffer_locksamples(buf);
             
             if (!sample) {
