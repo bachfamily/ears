@@ -265,6 +265,7 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
 
 // this is a sort of mix-inplace function: adds a newbuffer onto a basebuffer
 t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, long *basebuffer_numframes, long *basebuffer_allocatedframes);
+void ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps);
 
 
 t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type);

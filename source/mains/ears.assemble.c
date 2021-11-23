@@ -246,32 +246,7 @@ void buf_assemble_bang(t_buf_assemble *x)
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
 
     if (x->assembly_line_status == 1 || x->assembly_line_status == 2) {
-        // Finally, we normalize if needed
-        switch (x->normalization_mode) {
-            case EARS_NORMALIZE_DO:
-                ears_buffer_normalize_inplace((t_object *)x, out, 1.);
-                break;
-                
-            case EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY:
-            {
-                double maxabs = 0.;
-                t_ears_err err = ears_buffer_get_maxabs((t_object *)x, out, &maxabs);
-                if (err == EARS_ERR_EMPTY_BUFFER)
-                    object_warn((t_object *)x, EARS_ERROR_BUF_EMPTY_BUFFER);
-                if (err == EARS_ERR_NONE && maxabs > 1.) {
-                    object_warn((t_object *)x, "Mixdown peak is %.3f, output buffer will be normalized due to overload protection.", maxabs);
-                    ears_buffer_normalize_inplace((t_object *)x, out, 1.);
-                }
-            }
-                break;
-                
-            case EARS_NORMALIZE_DONT:
-            default:
-                break;
-        }
-        
-        // and crop the result
-        ears_buffer_set_size_samps_preserve((t_object *)x, out, x->curr_length_samps);
+        ears_buffer_assemble_close((t_object *)x, out, (e_ears_normalization_modes)x->normalization_mode, x->curr_length_samps);
     }
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);

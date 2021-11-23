@@ -88,7 +88,7 @@ typedef struct _buf_roll_sampling {
     double velrange[2];
     
     char        optimize_for_identical_samples;
-
+    char        use_assembly_line;
 } t_buf_roll_sampling;
 
 
@@ -321,7 +321,13 @@ int C74_EXPORT main(void)
 
 
     
-    
+    CLASS_ATTR_CHAR(c, "assemble",    0,    t_buf_roll_sampling, use_assembly_line);
+    CLASS_ATTR_STYLE_LABEL(c, "assemble", 0, "onoff", "Assemble Buffers One by One");
+    // @description Toggles the ability to assemble buffers one by one (corresponding to <o>ears.assemble~</o>)
+    // instead of loading them all and mixing them (corresponding to <o>ears.mix~</o>).
+    // If set, the result may be less CPU-intensive, but also less optimized for identical samples.
+    // In addition, harmonization of buffer properties across all the buffers is not carried out, and in particular the
+    // first sample rate is used.
     
     
     class_register(CLASS_BOX, c);
@@ -425,7 +431,7 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples, x->use_assembly_line);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

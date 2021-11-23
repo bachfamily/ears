@@ -975,7 +975,7 @@ t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer
 t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long start_sample, long end_sample)
 {
     if (source == dest)
-        ears_buffer_crop_inplace(ob, source, start_sample, end_sample);
+        return ears_buffer_crop_inplace(ob, source, start_sample, end_sample);
     
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
@@ -1080,7 +1080,9 @@ t_ears_err ears_buffer_crop_inplace(t_object *ob, t_buffer_obj *buf, long start_
             sysmem_copyptr(sample + start_sample * channelcount, temp, channelcount * new_dest_frames * sizeof(float));
             
             buffer_unlocksamples(buf);
+            post("foo");
             ears_buffer_set_size_samps(ob, buf, new_dest_frames);
+            post("fee");
             sample = buffer_locksamples(buf);
             
             if (!sample) {
@@ -3560,7 +3562,45 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
     return err;
 }
 
+void ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (!basebuffer)
+        return EARS_ERR_NO_BUFFER;
+    
+    if (length_samps < 0)
+        return EARS_ERR_GENERIC;
+    
+    // Finally, we normalize if needed
+    switch (normalization_mode) {
+        case EARS_NORMALIZE_DO:
+            ears_buffer_normalize_inplace(ob, basebuffer, 1.);
+            break;
+            
+        case EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY:
+        {
+            double maxabs = 0.;
+            t_ears_err err = ears_buffer_get_maxabs(ob, basebuffer, &maxabs);
+            if (err == EARS_ERR_EMPTY_BUFFER)
+                object_warn(ob, EARS_ERROR_BUF_EMPTY_BUFFER);
+            if (err == EARS_ERR_NONE && maxabs > 1.) {
+                object_warn(ob, "Mixdown peak is %.3f, output buffer will be normalized due to overload protection.", maxabs);
+                ears_buffer_normalize_inplace(ob, basebuffer, 1.);
+            }
+        }
+            break;
+            
+        case EARS_NORMALIZE_DONT:
+        default:
+            break;
+    }
+    
+    // and crop the result
+    ears_buffer_set_size_samps_preserve(ob, basebuffer, length_samps);
 
+    return err;
+}
 
 
 
