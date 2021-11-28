@@ -227,7 +227,7 @@
 				Slot Containing File Names Or Buffer Names
 			</digest>
 			<description>
-				Sets the number of slots containing file names or buffer names.
+				Sets the number of the slot containing file names or buffer names.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
@@ -372,7 +372,7 @@
 				Slot Containing Gain
 			</digest>
 			<description>
-				Sets the number of slots containing the gain or gain envelope.
+				Sets the number of the slot containing the gain or gain envelope.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
@@ -427,7 +427,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Normalize Output" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -449,7 +448,7 @@
 				Slot Containing Offset In File
 			</digest>
 			<description>
-				Sets the number of slots containing the offset from the beginning of the file.
+				Sets the number of the slot containing the offset from the beginning of the file.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
@@ -519,7 +518,7 @@
 				Slot Containing Pan
 			</digest>
 			<description>
-				Sets the number of slots containing the file names (0 = none).
+				Sets the number of the slot containing the file names (0 = none).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />

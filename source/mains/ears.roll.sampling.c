@@ -88,7 +88,7 @@ typedef struct _buf_roll_sampling {
     double velrange[2];
     
     char        optimize_for_identical_samples;
-
+    char        use_assembly_line;
 } t_buf_roll_sampling;
 
 
@@ -159,7 +159,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "audioslot", 0, t_buf_roll_sampling, filename_slot);
     CLASS_ATTR_STYLE_LABEL(c,"audioslot",0,"text","Slot Containing File Names Or Buffer Names");
     CLASS_ATTR_BASIC(c, "audioslot", 0);
-    // @description Sets the number of slots containing file names or buffer names.
+    // @description Sets the number of the slot containing file names or buffer names.
 
     CLASS_ATTR_LONG(c, "fileslot", 0, t_buf_roll_sampling, filename_slot);
     CLASS_ATTR_INVISIBLE(c, "fileslot", 0);
@@ -167,19 +167,19 @@ int C74_EXPORT main(void)
     CLASS_ATTR_LONG(c, "offsetslot", 0, t_buf_roll_sampling, offset_slot);
     CLASS_ATTR_STYLE_LABEL(c,"offsetslot",0,"text","Slot Containing Offset In File");
     CLASS_ATTR_BASIC(c, "offsetslot", 0);
-    // @description Sets the number of slots containing the offset from the beginning of the file.
+    // @description Sets the number of the slot containing the offset from the beginning of the file.
 
     CLASS_ATTR_LONG(c, "gainslot", 0, t_buf_roll_sampling, gain_slot);
     CLASS_ATTR_STYLE_LABEL(c,"gainslot",0,"text","Slot Containing Gain");
-    // @description Sets the number of slots containing the gain or gain envelope.
+    // @description Sets the number of the slot containing the gain or gain envelope.
 
     CLASS_ATTR_LONG(c, "panslot", 0, t_buf_roll_sampling, pan_slot);
     CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Pan");
-    // @description Sets the number of slots containing the file names (0 = none).
+    // @description Sets the number of the slot containing the file names (0 = none).
 
     CLASS_ATTR_LONG(c, "rateslot", 0, t_buf_roll_sampling, rate_slot);
     CLASS_ATTR_STYLE_LABEL(c,"rateslot",0,"text","Slot Containing Rate");
-    // @description Sets the number of slots containing the rate (0 = none).
+    // @description Sets the number of the slot containing the rate (0 = none).
 
 //    CLASS_ATTR_LONG(c, "psslot", 0, t_buf_roll_sampling, ps_slot);
 //    CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Pitch Shift");
@@ -321,7 +321,13 @@ int C74_EXPORT main(void)
 
 
     
-    
+    CLASS_ATTR_CHAR(c, "assemble",    0,    t_buf_roll_sampling, use_assembly_line);
+    CLASS_ATTR_STYLE_LABEL(c, "assemble", 0, "onoff", "Assemble Buffers One by One");
+    // @description Toggles the ability to assemble buffers one by one (corresponding to <o>ears.assemble~</o>)
+    // instead of loading them all and mixing them (corresponding to <o>ears.mix~</o>).
+    // If set, the result may be less CPU-intensive, but also less optimized for identical samples.
+    // In addition, harmonization of buffer properties across all the buffers is not carried out, and in particular the
+    // first sample rate is used.
     
     
     class_register(CLASS_BOX, c);
@@ -425,7 +431,7 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples, x->use_assembly_line);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

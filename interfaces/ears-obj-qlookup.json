@@ -77,6 +77,31 @@
       "bach.trans"
     ]
   },
+  "ears.process~": {
+    "digest": "Offline host for patches operating on buffers",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.in~",
+      "ears.mc.in~",
+      "ears.out",
+      "ears.out~",
+      "ears.mc.out~",
+      "ears.processinfo~",
+      "ears.tovector~",
+      "ears.fromvector~"
+    ]
+  },
   "ears.join~": {
     "digest": "Concatenate buffers",
     "module": "ears",
@@ -477,6 +502,24 @@
       "ears.biquad~",
       "ears.onepole~",
       "ears.paulstretch~"
+    ]
+  },
+  "ears.assemble~": {
+    "digest": "Mix buffers one by one",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "assemble",
+      "mix",
+      "superpose",
+      "merge"
+    ],
+    "seealso": [
+      "ears.mix~",
+      "ears.read~"
     ]
   },
   "ears.repeat~": {
@@ -964,6 +1007,7 @@
       "merge"
     ],
     "seealso": [
+      "ears.assemble~",
       "ears.join~",
       "ears.crop~",
       "ears.read~",

@@ -55,7 +55,7 @@
 		</outlet>
 		<outlet id="1" type="INLET_TYPE">
 			<digest>
-				
+				Output buffer names
 			</digest>
 			<description>
 				Name of the output buffer
@@ -430,8 +430,14 @@
 		</attribute>
 	</attributelist>
 
+	<!--DISCUSSION-->
+	<discussion>
+		If memory allocation is a problem, then <o>ears.assemble~</o> should be preferred.
+	</discussion>
+
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.assemble~" />
 		<seealso name="ears.join~" />
 		<seealso name="ears.crop~" />
 		<seealso name="ears.read~" />
@@ -464,8 +470,21 @@
 		</entry>
 		<entry name ="Outlet 2 (symbol/list)">
 			<description>
-				.
+				Output buffer names.
 				Name of the output buffer
+			</description>
+		</entry>
+	</misc>
+
+	<misc name = "Discussion">
+		<entry name ="More details">
+			<description>
+		If memory allocation is a problem, then <o>ears.assemble~</o> should be preferred.
+			</description>
+		</entry>
+		<entry name ="Keywords">
+			<description>
+buffer, mix, superpose, merge.
 			</description>
 		</entry>
 	</misc>

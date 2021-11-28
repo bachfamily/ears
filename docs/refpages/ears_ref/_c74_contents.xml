@@ -4,6 +4,7 @@
 <refpage name='ears.lace~.maxref.xml'/>
 <refpage name='ears.specshow~.maxref.xml'/>
 <refpage name='ears.trans~.maxref.xml'/>
+<refpage name='ears.process~.maxref.xml'/>
 <refpage name='ears.join~.maxref.xml'/>
 <refpage name='ears.playmp3~.maxref.xml'/>
 <refpage name='ears.model.sine.synthesis~.maxref.xml'/>
@@ -26,6 +27,7 @@
 <refpage name='ears.info~.maxref.xml'/>
 <refpage name='ears.channel~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>
+<refpage name='ears.assemble~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>

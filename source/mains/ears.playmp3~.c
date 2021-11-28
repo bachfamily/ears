@@ -71,8 +71,9 @@ typedef struct _playmp3 {
     
     void        *m_clock;
     
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     mpg123_handle*  mh;
-
+#endif
     unsigned char*  buffer;
     size_t          buffer_size;
     size_t          buffer_size_wo_resampling;
@@ -165,6 +166,7 @@ void ext_main(void *r)
 
 void *playmp3_new(t_symbol *s, long argc, t_atom *argv)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
 	t_playmp3 *x = (t_playmp3 *)object_alloc(playmp3_class);
     long true_ac = attr_args_offset(argc, argv);
 
@@ -208,30 +210,37 @@ void *playmp3_new(t_symbol *s, long argc, t_atom *argv)
         }
 	}
 	return (x);
+#else
+    return NULL;
+#endif
 }
 
 
 
 void playmp3_free(t_playmp3 *x)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     object_free(x->m_clock);
     mpg123_delete(x->mh);
 //    mpg123_exit(); // can't call this here, should call it on Max quit... TO DO? Or can't do it, actually?
     systhread_mutex_free(x->c_mutex);
     sysmem_freeptr(x->buffer);
     dsp_free((t_pxobject *)x);
+#endif
 }
 
 
 
 void playmp3_task(t_playmp3 *x)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     if (x->loop) {
         mpg123_seek(x->mh, x->seek_to, SEEK_SET);
         clock_fdelay(x->m_clock, x->loop_ms);
     } else {
         close_file(x);
     }
+#endif
 }
 
 
@@ -240,8 +249,10 @@ void playmp3_task(t_playmp3 *x)
 // doesn't work
 int open_file_new(t_playmp3 *x, const char *path, double start_ms, double end_ms)
 {
+    int err = 0;
     
-    int err = MPG123_OK;
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+    err = MPG123_OK;
     int channels, encoding;
     long srate;
     char paused = x->paused;
@@ -283,7 +294,7 @@ int open_file_new(t_playmp3 *x, const char *path, double start_ms, double end_ms
     
     mpg123_format_none(x->mh);
     mpg123_format(x->mh, srate, channels, MPG123_ENC_FLOAT_32);
-    
+
     x->playing = true;
     x->channels = channels;
     
@@ -366,7 +377,8 @@ end:
     x->paused = paused;
     systhread_mutex_unlock(x->c_mutex);
     
-    
+#endif
+
     return err;
 }
 
@@ -401,8 +413,10 @@ void ears_playmp3_ezlocate_file_char(const char *filename_in, char *filename_out
 // open files, also seeks and schedules end
 int open_file(t_playmp3 *x, const char *path, double start_ms, double end_ms, double play_rate)
 {
+    int err = 0;
     
-    int err = MPG123_OK;
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+    err = MPG123_OK;
     int channels, encoding, orig_channels, orig_encoding;
     long srate, orig_srate;
     char paused = x->paused;
@@ -488,7 +502,7 @@ int open_file(t_playmp3 *x, const char *path, double start_ms, double end_ms, do
     
     x->paused = paused;
     systhread_mutex_unlock(x->c_mutex);
-
+#endif
     
     return err;
 }
@@ -497,6 +511,7 @@ int open_file(t_playmp3 *x, const char *path, double start_ms, double end_ms, do
 
 int close_file(t_playmp3 *x)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     systhread_mutex_lock(x->c_mutex);
     if (x->mh) mpg123_close(x->mh);
     x->playing = x->paused = false;
@@ -507,6 +522,9 @@ int close_file(t_playmp3 *x)
     playmp3_senddonebang(x, NULL, 0, NULL);
 
     return MPG123_OK;
+#else
+    return 0;
+#endif
 }
 
 
@@ -560,6 +578,7 @@ void playmp3_assist(t_playmp3 *x, void *b, long m, long a, char *s)
 // registers a function for the signal chain in Max
 void playmp3_dsp64(t_playmp3 *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     x->samplerate = samplerate;
     mpg123_getformat(x->mh, &x->rate, &x->channels, &x->encoding);
 
@@ -585,6 +604,7 @@ void playmp3_dsp64(t_playmp3 *x, t_object *dsp64, short *count, double samplerat
 	// 6: a generic pointer that you can use to pass any additional data to your perform method
 
 	object_method(dsp64, gensym("dsp_add64"), x, playmp3_perform64, 0, NULL);
+#endif
 }
 
 
@@ -609,6 +629,7 @@ void playmp3_post(t_playmp3 *x, t_symbol *s, long argc, t_atom *argv)
 // this is the 64-bit perform method audio vectors
 void playmp3_perform64(t_playmp3 *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     if (x->play_rate != 1.) {
         playmp3_perform64_interp(x, dsp64, ins, numins, outs, numouts, sampleframes, flags, userparam);
         return;
@@ -737,7 +758,7 @@ void playmp3_perform64(t_playmp3 *x, t_object *dsp64, double **ins, long numins,
                 *outR++ = 0.;
         }
     }
-    
+#endif
 }
 
 
@@ -758,6 +779,7 @@ t_double playmp3_resample(t_playmp3 *x, t_float *buffer, long num_samples_in_buf
 // this is the 64-bit perform method audio vectors
 void playmp3_perform64_interp(t_playmp3 *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     t_double *outL = outs[0];    // we get audio for each outlet of the object from the **outs argument
     t_double *outR = numouts == 1 ? NULL : outs[1];    // we get audio for each outlet of the object from the **outs argument
     size_t done;
@@ -886,5 +908,5 @@ void playmp3_perform64_interp(t_playmp3 *x, t_object *dsp64, double **ins, long 
                 *outR++ = 0.;
         }
     }
-    
+#endif
 }

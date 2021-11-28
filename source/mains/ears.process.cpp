@@ -1,9 +1,43 @@
-//
-//  earsprocess.cpp
-//  ears
-//
-//  Created by andreaagostini on 03/04/2021.
-//
+/**
+ @file
+ ears.process.c
+ 
+ @name
+ ears.process~
+ 
+ @realname
+ ears.process~
+ 
+ @type
+ object
+ 
+ @module
+ ears
+ 
+ @author
+ Andrea Agostini, partly based upon work by Alexander J. Harker
+ 
+ @digest
+ Offline host for patches operating on buffers
+ 
+ @description
+ Loads a DSP patch and runs it in non-realtime
+ reading from and writing to buffers
+
+ @discussion
+ 
+ @category
+ ears process
+ 
+ @keywords
+ buffer, offline, patch, patcher, non-realtime
+ 
+ @seealso
+ ears.in, ears.in~, ears.mc.in~, ears.out, ears.out~, ears.mc.out~, ears.processinfo~, ears.tovector~, ears.fromvector~
+ 
+ @owner
+ Andrea Agostini
+ */
 
 #include <stdio.h>
 
@@ -22,7 +56,7 @@
 
 
 // Fixes a compiler error with object_method_direct when building the code as cpp
-// Shouldn't be necessary with recent version of the Max SDK, but it won't hurt either
+// Shouldn't be necessary with recent versions of the Max SDK, but it won't hurt either
 #define object_method_direct_cpp(rt, sig, x, s, ...) ((rt (*)sig)object_method_direct_getmethod((t_object *)x, s))((t_object*)object_method_direct_getobject((t_object *)x, s), __VA_ARGS__)
 
 t_class *earsprocess_class;
@@ -143,7 +177,7 @@ void earsprocess_inletinfo(t_earsprocess *x, void *b, long a, char *t);
 
 void earsprocess_deletepatch(t_earsprocess *x, t_symbol *msg, long argc, t_atom *argv);
 void earsprocess_clear(t_earsprocess *x);
-void earsprocess_loadpatch(t_earsprocess *x, t_symbol *s, long argc, t_atom *argv);
+void earsprocess_patchername(t_earsprocess *x, t_symbol *s, long argc, t_atom *argv);
 
 
 void earsprocess_bang(t_earsprocess *x);
@@ -209,28 +243,82 @@ int C74_EXPORT main()
         return 1;
     }
     
-    earsprocess_class = class_new("ears.process~", (method)earsprocess_new, (method)earsprocess_free, sizeof(t_earsprocess), NULL, A_GIMME, 0);
+    CLASS_NEW_CHECK_SIZE(earsprocess_class, "ears.process~", (method)earsprocess_new, (method)earsprocess_free, sizeof(t_earsprocess), NULL, A_GIMME, 0);
     
     
     
-    //class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
+    
+    // @method open @digest Open patcher
+    // @description The <m>open</m> message
+    // opens the patcher window loaded in the object, if any.
     class_addmethod(earsprocess_class, (method)earsprocess_open, "open", 0);
+    
+    
+    // @method (doubleclick) @digest Open patcher
+    // @description Double-clicking on the object
+    // opens the patcher window loaded in the object, if any.
     class_addmethod(earsprocess_class, (method)earsprocess_open, "dblclick", A_CANT, 0);
+    
+    // @method wclose @digest Closes patcher
+    // @description The <m>wclose</m> message
+    // closes the patcher window loaded in the object, if any.
     class_addmethod(earsprocess_class, (method)earsprocess_wclose, "wclose", 0);
+    
+
+    // @method bang @digest Run process
+    // @description
+    // A <m>bang</m> in any of the buffer inlets causes the object
+    // to perform the process with the latest received
+    // buffer names and parameters. <br/>
+    // A <m>bang</m> in any other inlet is routed
+    // to the client patch through its <o>ears.in</o> objects.
+    class_addmethod(earsprocess_class, (method)earsprocess_bang, "bang", 0);
+    
+    // @method stop @digest Stop process
+    // @description
+    // The <m>stop</m> message in any of the buffer inlets causes the object
+    // to stop immediately the process it is performing;
+    // in any other inlet, it is routed
+    // to the client patch through its <o>ears.in</o> objects.
+    class_addmethod(earsprocess_class, (method)earsprocess_stop, "stop", 0);
+
+
+    // @method patchername @digest Load patch
+    // @description
+    // The <m>patchername</m> message in any of the buffer inlets causes the object
+    // to stop immediately the process it is performing;
+    // in any other inlet, it is routed
+    // to the client patch through its <o>ears.in</o> objects.
+    class_addmethod(earsprocess_class, (method)earsprocess_patchername, "patchername", A_DEFER, 0);
+    
+    
+    class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_anything, "list", A_GIMME, 0);
+    
+    // @method list/llll @digest Function depends on inlet
+    // @description
+    // If a list or llll with buffer names is passed to one of the buffer inlets,
+    // The contents of the corresponding buffers will be passed
+    // to the loaded patcher through the patcher's
+    // <o>ears.in~</o> and <o>ears.mc.in~</o> objects,
+    // for being processed by the DSP chain of the patcher itself.
+    // The names of the buffers containing the processed audio,
+    // as output by the patcher's <o>ears.out~</o> and <o>ears.mc.out~</o> objects,
+    // will be subsequently output.<br/>
+    // Lists and llll received in non-buffer inlets
+    // will be passed as they are to the loaded patcher,
+    // through its <o>ears.in</o> objects.<br/>
+    // If the list or llll is received in the first inlet,
+    // The processing will be triggered.
+    class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
+
+    
     
     class_addmethod(earsprocess_class, (method)earsprocess_pupdate, "pupdate", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_subpatcher, "subpatcher", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_parentpatcher, "parentpatcher", A_CANT, 0);
-    
-    class_addmethod(earsprocess_class, (method)earsprocess_bang, "bang", 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_stop, "stop", 0);
-
-    class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_anything, "list", A_GIMME, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
-
-    class_addmethod(earsprocess_class, (method)earsprocess_loadpatch, "loadpatch", A_DEFER, 0);
     
     class_addmethod(earsprocess_class, (method)earsprocess_earsintildecreated, "ears.in~_created", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_earsouttildecreated, "ears.out~_created", A_CANT, 0);
@@ -255,47 +343,123 @@ int C74_EXPORT main()
     CLASS_ATTR_ACCESSORS(earsprocess_class, "ownsdspchain", (method) earsprocess_get_ownsdspchain, NULL);
     CLASS_ATTR_INVISIBLE(earsprocess_class, "ownsdspchain", 0);
     
+    
+    
     CLASS_ATTR_LONG(earsprocess_class, "vs", 0, t_earsprocess, vs);
     CLASS_ATTR_ACCESSORS(earsprocess_class, "vs", NULL, (method) earsprocess_set_vs);
     CLASS_ATTR_LABEL(earsprocess_class, "vs", 0, "Vector Size");
+    // @description
+    // The signal vector size of the loaded patcher, expressed in samples.
+    // It must be a power of 2 between 1 and 4096.
+    // The default is 128.
+
 
     CLASS_ATTR_LONG(earsprocess_class, "sr", 0, t_earsprocess, sr);
     CLASS_ATTR_FILTER_MIN(earsprocess_class, "sr", 0);
     CLASS_ATTR_LABEL(earsprocess_class, "sr", 0, "Default Sample Rate");
+    // @description
+    // The default sample rate of the loaded patcher,
+    // only used for generator patches
+    // (i.e., patches with no buffer inlets):
+    // if a patcher has buffer inlets, the sample rate of each run of the patcher
+    // corresponds to the sample rate of the incoming buffers.<br/>
+    // The default is 0, meaning that generator patches will run at the system sample rate.
 
-    /*
-    CLASS_ATTR_LONG(earsprocess_class, "durationpolicy", 0, t_earsprocess, durationpolicy);
-    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "durationpolicy", 0, "enumindex", "Duration Policy");
-    CLASS_ATTR_FILTER_CLIP(earsprocess_class, "durationpolicy", 0, 2);
-    CLASS_ATTR_ENUMINDEX(earsprocess_class, "durationpolicy", 0, "Shortest Longest Fixed");
-     */
     
     
     CLASS_ATTR_ATOM_ARRAY(earsprocess_class, "duration", 0, t_earsprocess, dummydur, 2);
     CLASS_ATTR_ACCESSORS(earsprocess_class, "duration", (method) earsprocess_get_duration, (method) earsprocess_set_duration);
+    // @description
+    // The <m>duration</m> attribute controls the duration
+    // of the resulting buffers with respect to the
+    // durations of the incoming one.
+    // It consists of a single symbol or integer setting the <b>duration policy</b>,
+    // followed by a number setting the <b>tail</b>.<br/><br/>
+    // The <b>duration policy</b> can take one of the following values:<br/>
+    // - <m>0</m> or <m>shortest</m> or <m>s</m>:
+    // the duration of the processed (and therefore resulting) audio
+    // is at most the duration of the shortest incoming buffer
+    // plus the tail. If a list of buffers is passed, to be processed in sequences,
+    // the processing duration refers to the per-iteration shortest buffer.
+    // The <m>shortest</m> policy is the default.<br/>
+    // - <m>1</m> or <m>longest</m> or <m>l</m>:
+    // the duration of the processed audio
+    // is at most the duration of the longest incoming buffer plus the tail.
+    // If the loaded patcher has a single buffer inlet,
+    // the <m>shortest</m> and <m>longest</m> policies are equivalent;
+    // if it has no buffer inlets, no processing will take place.<br/>
+    // - <m>2</m> or <m>fixed</m> or <m>f</m>
+    // or <m>maximum</m> or <m>m</m>:
+    // the duration of the processed audio
+    // is set to the value of the tail.
+    // This is the only meaningful setting when the patcher has no buffer inlets,
+    // typically because the patch generates audio rather than process it.<br/><br/>
+    // The <b>tail</b>, which is always measured in milliseconds,
+    // is optional, and defaults to 0, for the <b>shortest</b> and <b>longest</b> duration policies.
+    // In these cases, it sets an additional processing duration
+    // after the end of the shortest or longest buffer.
+    // For the <b>fixed</b> duration policy, it sets the actual
+    // duration of the processing, and it cannot be 0:
+    // if set to 0, or missing, it is changed to 60000.
+    // The processing can be interrupted at any time by the loaded patcher,
+    // through the <o>ears.processinfo~</o> object.
+    
+    
 
-    //CLASS_ATTR_LONG(earsprocess_class, "durationpolicy", 0, t_earsprocess, durationpolicy);
-    //CLASS_ATTR_STYLE_LABEL(earsprocess_class, "durationpolicy", 0, "enumindex", "Duration Policy");
-    //CLASS_ATTR_FILTER_CLIP(earsprocess_class, "durationpolicy", 0, 2);
-    //CLASS_ATTR_ENUMINDEX(earsprocess_class, "durationpolicy", 0, "Shortest Longest Fixed");
-
-    //CLASS_ATTR_DOUBLE(earsprocess_class, "tail", 0, t_earsprocess, tail);
-    //CLASS_ATTR_LABEL(earsprocess_class, "tail", 0, "Tail or Fixed Duration");
-    //CLASS_ATTR_FILTER_MIN(earsprocess_class, "tail", 0);
+    
     
     CLASS_ATTR_LONG(earsprocess_class, "scalarmode", 0, t_earsprocess, scalarmode);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "scalarmode", 0, "onoff", "Scalar Mode");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "scalarmode", 0, 1);
+    // @description
+    // When set to 1, if a buffer inlet receives a single buffer
+    // while other inlets receive lists of buffers,
+    // then the single buffer will be iterated repeatedly against the list of buffers, until the end of the shortest list.<br/>
+    // When set to 0 (as per the default), if a buffer inlet receives a single buffer
+    // no iterator will be performed, and only the first buffer of each inlet will be processed.
+    
     
     CLASS_ATTR_LONG(earsprocess_class, "reload", 0, t_earsprocess, reload);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "reload", 0, "onoff", "Reload");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "reload", 0, 1);
+    // @description
+    // When set to 1, the patch is reloaded before each run.
+    // In this case, initialisation data received through <o>ears.in</o> objects
+    // have to be sent again after each reloading,
+    // and the time required by the project might increase considerably,
+    // especially for complex patches.
+    // On the other hand, this guarantees that the patch
+    // is always "clean" before running.<br/>
+    // When set to 0 (as per the default), the patch is only loaded
+    // when <o>ears.process</o> is instantiated
+    // or when the <m>patchername</m> message is received.
+
+    
+    
     
     CLASS_ATTR_LONG(earsprocess_class, "autoclock", 0, t_earsprocess, autoclock);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "autoclock", 0, "onoff", "Automatic Clock Message");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "autoclock", 0, 1);
 
     class_register(CLASS_BOX, earsprocess_class);
+    // @description
+    // The <o>ears.process~</o> objects manages an internal <o>clock</o>
+    // to control scheduler-based objects such as
+    // <o>metro</o> and <o>delay</o>, the playback capabilities
+    // of <o>bach.roll</o> and <o>bach.score</o>, and more.
+    // In this way, their timing will be correct with respect to
+    // the non-realtime operation of the loaded patch,
+    // rather than the physical time of the outside world.
+    // The internal clock is synced to the non-realtime signal vector,
+    // as with "Scheduler in Overdrive" and "Scheduler in Audio Interrupt" both on.<br/>
+    // If the <o>autoclock</o> attribute is set to 1 (as per the default),
+    // all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
+    // will automatically have their clock set by <o>ears.process~</o> before each run of the patch
+    //
+    // If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
+    // and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.processinfo~</o>, to the relevant objects.<br/>
+    // Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
+    // There is currently no way to use such objects with correct timing inside <o>ears.process~</o>.
     
     return 0;
 }
@@ -503,6 +667,14 @@ void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
 void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
 {
+    // @arg 0 @name outnames @optional 1 @type symbol
+    // @digest Output buffer names
+    // @description @copy EARS_DOC_OUTNAME_ATTR
+    
+    // @arg 1 @name patcher name @optional 1 @type symbol
+    // @digest Patcher name
+    // @description Sets the name of the patch to be loaded
+    
     t_earsprocess *x = (t_earsprocess *) object_alloc(earsprocess_class);
     t_symbol *patchname = nullptr;
     
@@ -548,7 +720,7 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     x->nBufInlets = 1;
     if (patchname)
-        earsprocess_loadpatch(x, patchname, 0, NULL);
+        earsprocess_patchername(x, patchname, 0, NULL);
     
     // e = buffer; E = buffer list;
 
@@ -617,8 +789,14 @@ void earsprocess_setupOutObjects(t_earsprocess *x)
     }
 }
 
-void earsprocess_loadpatch(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
+void earsprocess_patchername(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
 {
+    long inlet = proxy_getinlet((t_object *) x);
+    
+    if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, patchname, ac, av);
+        return;
+    }
     
     x->theInOutlets->clear();
     x->theOuts->clear();
@@ -724,14 +902,30 @@ void earsprocess_loadpatch(t_earsprocess *x, t_symbol *patchname, long ac, t_ato
 
 void earsprocess_open(t_earsprocess *x)
 {
-    if (x->client_patch)
-        object_method((t_object *) x->client_patch, _sym_front);
+    if (!x->client_patch)
+        return;
+    
+    //long inlet = proxy_getinlet((t_object *) x);
+    
+    //if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, _sym_open, 0, NULL);
+    //} else {
+    //    object_method((t_object *) x->client_patch, _sym_open);
+    //}
 }
 
 void earsprocess_wclose(t_earsprocess *x)
 {
-    if (x->client_patch)
+    if (!x->client_patch)
+        return;
+    
+    long inlet = proxy_getinlet((t_object *) x);
+    
+    if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, _sym_wclose, 0, NULL);
+    } else {
         object_method((t_object *) x->client_patch, _sym_wclose);
+    }
 }
 
 
@@ -780,7 +974,7 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
     long inlet = proxy_getinlet((t_object *) x);
     
     if (inlet > 0 && inlet >= x->nBufInlets) {
-        // TODO: send to ears.in
+        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
         for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_anything(o, s, ac, av);
         }
@@ -805,13 +999,12 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
 
 void earsprocess_bang(t_earsprocess *x)
 {
-    
     if (!x->client_patch)
         return;
     
     long inlet = proxy_getinlet((t_object *) x);
     
-    if (inlet > 0) {
+    if (inlet >= x->nBufInlets) {
         earsprocess_anything(x, _sym_bang, 0, NULL);
     } else {
         defer(x, (method) earsprocess_bang_do, NULL, 0, NULL);
@@ -824,7 +1017,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
     double sr;
     
     if (x->reload)
-        earsprocess_loadpatch((t_earsprocess*) x, x->patch_name, x->client_argc, x->client_argv);
+        earsprocess_patchername((t_earsprocess*) x, x->patch_name, x->client_argc, x->client_argv);
     
     // Get number of buffers on which to iterate
     long num_buffer_to_iter = LONG_MAX;
@@ -968,28 +1161,40 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         object_free(setclock);
     }
     
-    
     for (int i = x->nBufOutlets - 1; i >= 0 ; i--)
         earsbufobj_outlet_buffer((t_earsbufobj *)x, i);
 }
 
+
+
+
 void earsprocess_stop(t_earsprocess *x)
 {
-    x->stopped = true;
+    if (!x->client_patch)
+        return;
+    
+    long inlet = proxy_getinlet((t_object *) x);
+    if (inlet >= x->nBufInlets) {
+        earsprocess_anything(x, _sym_bang, 0, NULL);
+    } else {
+        x->stopped = true;
+    }
 }
 
 
 void earsprocess_autoclock(t_earsprocess *x, t_patcher *p)
 {
+    t_symbol *name = x->clock_name;
     for (t_box *b = jpatcher_get_firstobject(p); b; b = jbox_get_nextobject(b))
     {
         t_object *o = jbox_get_object(b);
         if (object_classname(o) == gensym("ears.process~"))
             continue;
-        method c = zgetfn(o, gensym("clock"));
-        if (c ||
-            object_classname(o) == gensym("pipe"))
-            (c)(o, x->clock_name);
+        method c = zgetfn(o, _sym_clock);
+        if (c)
+            (c)(o, name);
+        else
+            object_attr_setsym(o, _sym_clock, name);
         
         
         t_patcher *subpatch;
@@ -1008,13 +1213,13 @@ void earsprocess_assist(t_earsprocess *x, void *b, long m, long a, char *s)
         if (a < x->nBufInlets) {
             sprintf(s, "symbol/list/llll: Incoming buffer Name"); // @in 0 @loop 1 @type symbol/llll @digest Incoming buffer name
         } else {
-            sprintf(s, "symbol/list/llll: Incoming data"); // @in 1 @loop 1 @type symbol/llll @digest Incoming data
+            sprintf(s, "symbol/list/llll: Incoming data"); // @in 1 @loop 1 @type symbol/llll @digest Incoming data for <o>ears.in</o>.
         }
     } else {
         if (a < x->nBufOutlets) {
             sprintf(s, "symbol/list/llll: Output buffer"); // @out 0 @loop 1 @type symbol/llll @digest Output buffer
         } else {
-            sprintf(s, "symbol/list/llll: Output data"); // @out 1 @loop 1 @type symbol/llll @digest Output data
+            sprintf(s, "symbol/list/llll: Output data"); // @out 1 @loop 1 @type symbol/llll @digest Output data from <o>ears.out</o>.
         }
     }
 }

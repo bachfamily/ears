@@ -5,16 +5,20 @@ bool mpg123_has_been_initialized = false;
 
 void *ears_mpg123_quit(t_symbol *s, short argc, t_atom *argv)
 {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     mpg123_exit();
+#endif
     return NULL;
 }
 
 void ears_mpg123_init()
 {
     if (!mpg123_has_been_initialized) {
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
         if (mpg123_init() != MPG123_OK)
             error("Error while loading mpg123 library.");
         quittask_install((method)ears_mpg123_quit, NULL);
+#endif
         mpg123_has_been_initialized = true;
     }
 }
@@ -24,10 +28,10 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
 {
     long ears_err = EARS_ERR_NONE;
     
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     double start_sample = start;
     double end_sample = end;
     
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
     mpg123_handle *mh;
     int err;
     int res = MPG123_OK;
@@ -95,7 +99,7 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
     
     long num_samples = end_sample - start_sample;
     size_t buffer_size = num_samples * channels * 4;
-    unsigned char *buffer = (unsigned char*) bach_newptr(buffer_size * sizeof(unsigned char));
+    unsigned char *buffer = (unsigned char*) bach_newptrclear(buffer_size * sizeof(unsigned char));
     
     
     mpg123_seek(mh, start_sample, SEEK_SET);
