@@ -1974,7 +1974,7 @@
 		1EDB3A19217D337F007347EF /* ears.write~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.write~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDB3A1B217D33AB007347EF /* ears.write.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.write.c; path = ../mains/ears.write.c; sourceTree = SOURCE_ROOT; };
 		1EDCC426196AE6F900638665 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
-		1EDCC52D196AEC8B00638665 /* commonsyms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = commonsyms.c; path = "../../../max-sdk-7.3.3/source/c74support/max-includes/common/commonsyms.c"; sourceTree = SOURCE_ROOT; };
+		1EDCC52D196AEC8B00638665 /* commonsyms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = commonsyms.c; path = "../../../max-sdk-8.0.3/source/c74support/max-includes/common/commonsyms.c"; sourceTree = SOURCE_ROOT; };
 		1EDF170925273A9A00047C71 /* ears.hoa.mirror~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.hoa.mirror~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDF170B25273AB800047C71 /* ears.hoa.mirror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.hoa.mirror.c; path = ../mains/ears.hoa.mirror.c; sourceTree = "<group>"; };
 		1EF048BF224FA98900A36014 /* ears.split~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.split~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2022,6 +2022,7 @@
 		91319BE9264C16A100364EAB /* ears.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91319BFB264C16D200364EAB /* ears.processinfo~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.processinfo~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91319C0E264C172500364EAB /* ears.tovector.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.tovector.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
+		91C0F762272461D800ADBCBD /* ears.py.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.py.cpp; path = ../mains/ears.py.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3189,6 +3190,7 @@
 				1EFF13141D1D4F3300B7C47A /* ears.playmp3~.c */,
 				91319B56264C027100364EAB /* ears.process.cpp */,
 				91319B4F264C026F00364EAB /* ears.processinfo.cpp */,
+				91C0F762272461D800ADBCBD /* ears.py.cpp */,
 				1E5D94AE1D39B0BD00BFB88E /* ears.read.c */,
 				1E91FAFD1FCB151F0075DB7A /* ears.reg.c */,
 				1E35B8561FE567B8002B2876 /* ears.repeat.c */,
