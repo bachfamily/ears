@@ -56,6 +56,7 @@
 
 typedef struct _buf_read {
     t_earsbufobj       e_ob;
+    char                iter;
     
     char                native_mp3_handling;
     
@@ -147,6 +148,10 @@ int C74_EXPORT main(void)
     CLASS_ATTR_CHAR(c, "nativemp3",	0,	t_buf_read, native_mp3_handling);
     CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
     // @description Toggles native MP3 handling.
+
+    CLASS_ATTR_CHAR(c, "iter",    0,    t_buf_read, iter);
+    CLASS_ATTR_STYLE_LABEL(c, "iter", 0, "onoff", "Iterative reading");
+    // @description Iterate while loading buffers and output them one by one (useful to save memory).
 
     CLASS_ATTR_CHAR(c, "hr",    0,    t_buf_read, human_readable_frame_ids);
     CLASS_ATTR_BASIC(c, "hr", 0);
@@ -282,6 +287,125 @@ void buf_read_addpathsym(t_buf_read *x, t_symbol *path, long position)
         hatom_setsym(&el->l_hatom, path);
 }
 
+void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *tags, t_llll *markers)
+{
+    t_symbol *filepath = NULL;
+    double start = -1, end = -1;
+    
+    if (hatom_gettype(&elem->l_hatom) == H_SYM)
+        filepath = ears_ezlocate_file(hatom_getsym(&elem->l_hatom), NULL);
+    else if (hatom_gettype(&elem->l_hatom) == H_LLLL) {
+        t_llll *ll = hatom_getllll(&elem->l_hatom);
+        if (ll->l_size >= 3 && hatom_gettype(&ll->l_head->l_hatom) == H_SYM && is_hatom_number(&ll->l_head->l_next->l_hatom) && is_hatom_number(&ll->l_head->l_next->l_next->l_hatom)) {
+            filepath = ears_ezlocate_file(hatom_getsym(&ll->l_head->l_hatom), NULL);
+            start = hatom_getdouble(&ll->l_head->l_next->l_hatom);
+            end = hatom_getdouble(&ll->l_head->l_next->l_next->l_hatom);
+        }
+    }
+    
+    if (filepath) {
+        t_symbol *sampleformat = _llllobj_sym_unknown;
+        
+        buf_read_addpathsym(x, filepath, idx);
+        
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+        if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
+            sampleformat = gensym("compressed");
+            long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
+            long endsamp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
+            ears_buffer_read_handle_mp3((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), EARS_TIMEUNIT_SAMPS);
+            // (e_ears_timeunit)x->e_ob.l_timeunit);
+        } else {
+#endif
+            
+            if (ears_symbol_ends_with(filepath, ".wv", true)) { // WavPack files
+                ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, start, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx), &sampleformat, (e_ears_timeunit)x->e_ob.l_timeunit);
+            } else {
+                // trying to load file into input buffer
+                // sample format for wav/aiff/flac will be handled by buf_read_markers_and_spectralannotation()
+                earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx, filepath);
+                
+                if (start > 0 || end > 0) {
+                    double start_samps = start < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, start, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
+                    double end_samps = end < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
+                    ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), start_samps, end_samps);
+                }
+            }
+            
+#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+        }
+#endif
+        
+        // cleaning spectral data
+        ears_spectralbuf_metadata_remove((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx));
+        
+        // READING TAGS
+        llll_appendllll(tags, buf_read_tags(x, filepath));
+        
+        // READING SPECTRAL METADATA AND MARKERS
+        t_ears_spectralbuf_metadata data = spectralbuf_metadata_get_empty();
+        bool has_data = false;
+        double sr = DBL_MIN;
+        llll_appendllll(markers, buf_read_markers_and_spectralannotation(x, filepath, &data, &has_data, &sr, &sampleformat));
+        
+        if (has_data){
+            t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx);
+            ears_spectralbuf_metadata_set((t_object *)x, buf, &data);
+            if (sr != DBL_MIN)
+                ears_buffer_set_sr((t_object *)x, buf, sr);
+            llll_free(data.bins);
+        }
+        
+        
+        x->formatsyms[idx] = sampleformat;
+        
+    } else {
+        // empty buffer will do.
+        // TODO store metadata
+        char *txtbuf = NULL;
+        hatom_to_text_buf(&elem->l_hatom, &txtbuf);
+        object_warn((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
+        buf_read_addpathsym(x, _llllobj_sym_none, idx);
+        earsbufobj_store_empty_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx);
+        bach_freeptr(txtbuf);
+    }
+    
+}
+
+void buf_read_iter(t_buf_read *x, t_llll *files)
+{
+    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
+    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+
+    x->formatsyms = (t_symbol **)bach_resizeptr(x->formatsyms, 1 * sizeof(t_symbol *));
+    
+    if (files && files->l_head) {
+        long count = 0;
+        t_llllelem *elem;
+        
+        for (elem = files->l_head; elem; elem = elem->l_next, count++) {
+            t_llll *tags = llll_get();
+            t_llll *markers = llll_get();
+            
+            buf_read_load_llllelem(x, elem, 0, tags, markers);
+            
+            earsbufobj_gunload_llll((t_earsbufobj *)x, 4, markers);
+            earsbufobj_shoot_llll((t_earsbufobj *)x, 4);
+            
+            earsbufobj_gunload_llll((t_earsbufobj *)x, 3, tags);
+            earsbufobj_shoot_llll((t_earsbufobj *)x, 3);
+            
+            earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 2, 1, x->formatsyms);
+            
+            t_symbol *sym = (hatom_gettype(&elem->l_hatom) == H_SYM) ? hatom_getsym(&elem->l_hatom) : _llllobj_sym_none;
+            earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 1, 1, &sym);
+            
+            earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
+        }
+        
+    }
+}
+
 void buf_read_load(t_buf_read *x, t_llll *files, char append)
 {
     if (files && files->l_head) {
@@ -292,93 +416,15 @@ void buf_read_load(t_buf_read *x, t_llll *files, char append)
         t_llll *tags = llll_get();
         t_llll *markers = llll_get();
         
-        x->formatsyms = (t_symbol **)bach_resizeptr(x->formatsyms, MAX(1, files->l_size) * sizeof(t_symbol *));
-
+        x->formatsyms = (t_symbol **)bach_resizeptr(x->formatsyms, MAX(1, files->l_size+offset) * sizeof(t_symbol *));
+        
         earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
         
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, files->l_size + offset, true);
         for (elem = files->l_head; elem; elem = elem->l_next, count++) {
-            t_symbol *filepath = NULL;
-            double start = -1, end = -1;
-            
-            if (hatom_gettype(&elem->l_hatom) == H_SYM)
-                filepath = ears_ezlocate_file(hatom_getsym(&elem->l_hatom), NULL);
-            else if (hatom_gettype(&elem->l_hatom) == H_LLLL) {
-                t_llll *ll = hatom_getllll(&elem->l_hatom);
-                if (ll->l_size >= 3 && hatom_gettype(&ll->l_head->l_hatom) == H_SYM && is_hatom_number(&ll->l_head->l_next->l_hatom) && is_hatom_number(&ll->l_head->l_next->l_next->l_hatom)) {
-                    filepath = ears_ezlocate_file(hatom_getsym(&ll->l_head->l_hatom), NULL);
-                    start = hatom_getdouble(&ll->l_head->l_next->l_hatom);
-                    end = hatom_getdouble(&ll->l_head->l_next->l_next->l_hatom);
-                }
-            }
-            
-            if (filepath) {
-                t_symbol *sampleformat = _llllobj_sym_unknown;
-
-                buf_read_addpathsym(x, filepath, count+offset);
-                
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
-                if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
-                    sampleformat = gensym("compressed");
-                    long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
-                    long endsamp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset)) : -1;
-                    ears_buffer_read_handle_mp3((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset), (e_ears_timeunit)x->e_ob.l_timeunit);
-                } else {
-#endif
-                    
-                    if (ears_symbol_ends_with(filepath, ".wv", true)) { // WavPack files
-                        ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, start, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset), &sampleformat, (e_ears_timeunit)x->e_ob.l_timeunit);
-                    } else {
-                        // trying to load file into input buffer
-                        // sample format for wav/aiff/flac will be handled by buf_read_markers_and_spectralannotation()
-                        earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset, filepath);
-                        
-                        if (start > 0 || end > 0) {
-                            double start_samps = start < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, start, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset));
-                            double end_samps = end < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset));
-                            ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset), start_samps, end_samps);
-                        }
-                    }
-                    
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
-                }
-#endif
-                
-                // cleaning spectral data
-                ears_spectralbuf_metadata_remove((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset));
-                
-                // READING TAGS
-                llll_appendllll(tags, buf_read_tags(x, filepath));
-                
-                // READING SPECTRAL METADATA AND MARKERS
-                t_ears_spectralbuf_metadata data = spectralbuf_metadata_get_empty();
-                bool has_data = false;
-                double sr = DBL_MIN;
-                llll_appendllll(markers, buf_read_markers_and_spectralannotation(x, filepath, &data, &has_data, &sr, &sampleformat));
-
-                if (has_data){
-                    t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count + offset);
-                    ears_spectralbuf_metadata_set((t_object *)x, buf, &data);
-                    if (sr != DBL_MIN)
-                        ears_buffer_set_sr((t_object *)x, buf, sr);
-                    llll_free(data.bins);
-                }
- 
-
-                x->formatsyms[count] = sampleformat;
-
-            } else {
-                // empty buffer will do.
-                // TODO store metadata
-                char *txtbuf = NULL;
-                hatom_to_text_buf(&elem->l_hatom, &txtbuf);
-                object_warn((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
-                buf_read_addpathsym(x, _llllobj_sym_none, count+offset);
-                earsbufobj_store_empty_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, count + offset);
-                bach_freeptr(txtbuf);
-            }
-            
+            buf_read_load_llllelem(x, elem, count+offset, tags, markers);
         }
+
         if (count > 0) {
             
             earsbufobj_gunload_llll((t_earsbufobj *)x, 4, markers);
@@ -456,8 +502,13 @@ void buf_read_anything(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 
     llll_parseargs_and_attrs((t_object *) x, parsed, "i", _sym_append, &append);
 
-    if (inlet == 0)
-        buf_read_load(x, parsed, append);
+    if (inlet == 0) {
+        if (x->iter) {
+            buf_read_iter(x, parsed);
+        } else {
+            buf_read_load(x, parsed, append);
+        }
+    }
 
     llll_free(parsed);
 }

@@ -57,7 +57,8 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                t_llll *voice_pan, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law,
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
-                               double middleAtuning, long oversampling, long resamplingfiltersize, bool optimize_for_identical_samples);
+                               double middleAtuning, long oversampling, long resamplingfiltersize,
+                               bool optimize_for_identical_samples, bool use_assembly_line);
 
 
 t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_symbol *reaper_header,

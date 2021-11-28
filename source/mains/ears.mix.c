@@ -24,6 +24,7 @@
 	Superposes audio buffers temporally
  
 	@discussion
+    If memory allocation is a problem, then <o>ears.assemble~</o> should be preferred.
  
 	@category
 	ears basic
@@ -32,7 +33,7 @@
 	buffer, mix, superpose, merge
  
 	@seealso
-	ears.join~, ears.crop~, ears.read~, ears.fade~
+	ears.assemble~, ears.join~, ears.crop~, ears.read~, ears.fade~
 	
 	@owner
 	Daniele Ghisi
@@ -154,11 +155,13 @@ void buf_mix_assist(t_buf_mix *x, void *b, long m, long a, char *s)
             sprintf(s, "list: Buffer Names");
         else if (a == 1) // @in 1 @type number @digest Gains
             sprintf(s, "list/float: Gains");
-        else if (a == 2) // @in 2 @type number @digest Offsets
+        else if (a == 2) { // @in 2 @type number @digest Offsets
             sprintf(s, "list/float: Offsets");
+        }
 
     } else {
-        sprintf(s, "Output Buffer Name"); // @out 1 @type symbol/list @description Name of the output buffer
+        sprintf(s, "Output Buffer Name"); // @out 1 @type symbol/list @digest Output buffer names
+                                            // @description Name of the output buffer
     }
 }
 

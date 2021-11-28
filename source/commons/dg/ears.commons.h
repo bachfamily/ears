@@ -23,6 +23,7 @@
 #define EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK 10
 #define EARS_MAX_NUM_CHANNELS 2048 // max num channels per buffer
 #define ears_get_current_Max_sr() (sys_getsr())
+#define EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC 30 // 30 seconds allocation
 
 #define EARS_FROMFILE_NATIVE_MP3_HANDLING
 
@@ -252,6 +253,7 @@ t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_ob
 t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *drive, e_slope_mapping slopemapping); // also work inplace, with source == dest
 t_ears_err ears_buffer_normalize(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double linear_amp_level, double mix); // also work inplace, with source == dest
 t_ears_err ears_buffer_normalize_rms(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double linear_amp_level, double mix); // also work inplace, with source == dest
+t_ears_err ears_buffer_normalize_inplace(t_object *ob, t_buffer_obj *buf, double level);
 t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest, t_llll *gains, long *offset_samps,
                            e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping,
                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
@@ -260,6 +262,12 @@ t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, lo
                                           e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping,
                                           e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize); // version with interpolated offsets, with subsample handling for offsets
 t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+
+// this is a sort of mix-inplace function: adds a newbuffer onto a basebuffer
+t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, long *basebuffer_numframes, long *basebuffer_allocatedframes);
+void ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps);
+
+
 t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type);
 
 /// Panning operations
@@ -366,6 +374,7 @@ t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
 
 // SET properties
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames);
+t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, long num_frames); // preserve content
 t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr);
 t_ears_err ears_buffer_clear(t_object *ob, t_buffer_obj *buf);
 

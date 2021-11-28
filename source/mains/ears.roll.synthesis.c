@@ -53,6 +53,8 @@ typedef struct _buf_roll_synthesis {
     t_symbol    *wavetable;
     long        oversampling;
     
+    char        use_assembly_line;
+    
     char        use_mute_solos;
 
     double      sr;
@@ -311,7 +313,13 @@ int C74_EXPORT main(void)
 
 
     
-    
+    CLASS_ATTR_CHAR(c, "assemble",    0,    t_buf_roll_synthesis, use_assembly_line);
+    CLASS_ATTR_STYLE_LABEL(c, "assemble", 0, "onoff", "Assemble Buffers One by One");
+    // @description Toggles the ability to assemble buffers one by one (corresponding to <o>ears.assemble~</o>)
+    // instead of loading them all and mixing them (corresponding to <o>ears.mix~</o>).
+    // If set, the result may be less CPU-intensive, but also less optimized for identical samples.
+    // In addition, harmonization of buffer properties across all the buffers is not carried out, and in particular the
+    // first sample rate is used.
     
     
     class_register(CLASS_BOX, c);
@@ -427,7 +435,7 @@ void buf_roll_synthesis_bang(t_buf_roll_synthesis *x)
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning, x->oversampling, x->e_ob.l_resamplingfilterwidth, false);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning, x->oversampling, x->e_ob.l_resamplingfilterwidth, false, x->use_assembly_line);
     
     if (wavetable)
         buffer_unlocksamples(buf);

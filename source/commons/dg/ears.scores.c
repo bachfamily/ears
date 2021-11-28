@@ -392,8 +392,11 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                                double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping,
                                e_ears_veltoamp_modes veltoamp_mode, double amp_vel_min, double amp_vel_max,
                                double middleAtuning, long oversampling, long resamplingfiltersize,
-                               bool optimize_for_identical_samples)
+                               bool optimize_for_identical_samples, bool use_assembly_line)
 {
+    if (mode == EARS_SYNTHMODE_SINUSOIDS)
+        oversampling = 1; // no need for oversampling if we just use sinusoids, as we will not filter for antialiasing
+    
     t_ears_err err = EARS_ERR_NONE;
     t_llll *body = llll_clone(roll_gs);
     t_llll *header = ears_sliceheader(body);
@@ -421,9 +424,14 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
         get_range_from_header(header, gain_slot, &gain_min, &gain_max);
     }
     
-    
+    long basebuffer_numframes = 0, basebuffer_allocatedframes = 0;
+    bool first = true;
+
     ears_buffer_set_sr((t_object *)e_ob, dest, sr);
     ears_buffer_set_numchannels((t_object *)e_ob, dest, num_channels);
+    
+    if (use_assembly_line)
+        ears_buffer_clear((t_object *)e_ob, dest);
     
     std::vector<t_ears_note_buffer> noteinfo;
     long buffer_index = 1, voice_num = 1;
@@ -511,11 +519,11 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
 
 
                     // this function optimizes for identical samples (if needed):
-                    this_err = ears_roll_to_buffer_get_buffer(e_ob, noteinfo, &buf, &new_buffer, filename, rate, start, end, NULL, gain_env, pan_env, this_voice_pan, fadein_amount, fadeout_amount, 0, 1., sr_os, &buffer_index, optimize_for_identical_samples);
+                    this_err = ears_roll_to_buffer_get_buffer(e_ob, noteinfo, &buf, &new_buffer, filename, rate, start, end, NULL, gain_env, pan_env, this_voice_pan, fadein_amount, fadeout_amount, 0, 1., sr_os, &buffer_index, use_assembly_line ? false : optimize_for_identical_samples);
                     
                 }
                 
-                if (new_buffer) {
+                if (this_err == EARS_ERR_NONE && new_buffer) {
                     // Now a sequence of in-place operations to modify the buffer
                     // only if the buffer is a new one, and is not exactly the same as a previous one (in sampling mode)
                     
@@ -569,14 +577,27 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 llll_appenddouble(gains, note_gain);
                 
                 llll_appenddouble(offset_samps, ears_ms_to_samps(onset_ms, sr_os));
+                
+                // assembling
+                if (use_assembly_line) {
+                    t_llll *note_gain_ll = llll_get();
+                    llll_appenddouble(note_gain_ll, note_gain);
+                    ears_buffer_assemble_once((t_object *)e_ob, dest, buf, note_gain_ll, ears_ms_to_samps(onset_ms, sr_os), earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth, &basebuffer_numframes, &basebuffer_allocatedframes);
+                    llll_free(note_gain_ll);
+                    object_free(buf);
+                }
+
             }
         }
     }
 
-    
-    // mixing
-    ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode,
-                              earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth);
+    if (use_assembly_line) {
+        ears_buffer_assemble_close((t_object *)e_ob, dest, normalization_mode, basebuffer_numframes);
+    } else {
+        // mixing
+        ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode,
+                                  earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth);
+    }
     
     if (oversampling > 1) {
         ears_buffer_resample((t_object *)e_ob, dest, 1./oversampling, resamplingfiltersize);
@@ -584,13 +605,15 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     }
     
     // freeing buffers
-    if (optimize_for_identical_samples) {
-        for (long i = 0; i < noteinfo.size(); i++)
-            object_free(noteinfo[i].buffer);
-    } else {
-        for (t_llllelem *el = sources->l_head; el; el = el->l_next) {
-            t_buffer_obj *buf = (t_buffer_obj *)hatom_getobj(&el->l_hatom);
-            object_free(buf);
+    if (!use_assembly_line) {
+        if (optimize_for_identical_samples) {
+            for (long i = 0; i < noteinfo.size(); i++)
+                object_free(noteinfo[i].buffer);
+        } else {
+            for (t_llllelem *el = sources->l_head; el; el = el->l_next) {
+                t_buffer_obj *buf = (t_buffer_obj *)hatom_getobj(&el->l_hatom);
+                object_free(buf);
+            }
         }
     }
     
