@@ -1,15 +1,43 @@
-//
-//  ears.processinfo.cpp
-//  ears
-//
-//  Created by andreaagostini on 03/04/2021.
-//
-//
-//  ears_processinfo~.cpp
-//  dynamicdsp~
-//
-//  Created by andreaagostini on 29/03/2021.
-//
+/**
+ @file
+ ears.processinfo.c
+ 
+ @name
+ ears.processinfo~
+ 
+ @realname
+ ears.processinfo~
+ 
+ @type
+ object
+ 
+ @module
+ ears
+ 
+ @author
+ Andrea Agostini, partly based upon work by Alexander J. Harker
+ 
+ @digest
+ Report information about the process running
+ in ears.process~
+ 
+ @description
+ Report information about the current state of the process running in ears.process~
+ 
+ @discussion
+ 
+ @category
+ ears process
+ 
+ @keywords
+ buffer, offline, patch, patcher, non-realtime
+ 
+ @seealso
+ ears.process~, ears.in, ears.in~, ears.mc.in~, ears.out, ears.out~, ears.mc.out~, ears.tovector~, ears.fromvector~
+ 
+ @owner
+ Andrea Agostini
+ */
 
 /*
  outlets (l2r):
@@ -87,6 +115,9 @@ int C74_EXPORT main()
     class_addmethod(this_class, (method)ears_processinfo_start, "start", A_CANT, 0);
     class_addmethod(this_class, (method)ears_processinfo_end, "end", A_CANT, 0);
     
+    // @method stop @digest Stop process
+    // @description The <m>stop</m> message
+    // stops the process, if it is running.
     class_addmethod(this_class, (method)ears_processinfo_stop, "stop", 0);
     class_addmethod(this_class, (method)ears_processinfo_dsp64, "dsp64", A_CANT, 0);
     

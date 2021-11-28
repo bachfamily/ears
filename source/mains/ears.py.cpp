@@ -15,7 +15,7 @@
  ears
  
  @author
- Andrea Agostini, partly based upon work by Alexander J. Harker
+ Francesco Bianchi and Andrea Agostini
  
  @digest
  Offline host for patches operating on buffers
@@ -39,19 +39,11 @@
  Andrea Agostini
  */
 
-#include <stdio.h>
-
 #include <ext.h>
 #include <ext_obex.h>
 #include <ext_wind.h>
 #include <ext_buffer.h>
-#include <jpatcher_api.h>
-
-#include <unordered_set>
-#include <map>
-#include <vector>
-#include <set>
-#include "ears.py_commons.h"
+#include <Python/Python.h>
 
 
 
@@ -62,85 +54,13 @@
 
 t_class *earspy_class;
 
-template <typename T>
-class earspyMultiMap
-{
-public:
-    earspyMultiMap() : maxIdx(0) { }
-    
-    std::map<t_atom_long, std::unordered_set<T>*> theMap;
-    
-    int maxIdx;
-    
-    void insert(t_atom_long idx, T what) {
-        if (theMap.find(idx) == theMap.end()) {
-            std::unordered_set<T>* s = new std::unordered_set<T>;
-            theMap[idx] = s;
-            //.insert(std::pair<t_atom_long, std::unordered_set<T>*>(idx, s));
-        }
-        theMap[idx]->insert(what);
-        if (maxIdx < idx)
-            maxIdx = idx;
-    }
-    
-    void remove(t_atom_long idx, T what) {
-        theMap[idx]->erase(what);
-        if (theMap[idx]->size() == 0) {
-            delete theMap[idx];
-            theMap.erase(idx);
-        }
-    }
-    
-    void clear() {
-        for (auto o: theMap) {
-            delete o.second;
-        }
-        theMap.clear();
-    }
-};
-
-typedef earspyMultiMap<void*> earsInOutlets;
-
-class earsOuts : public earspyMultiMap<t_object *>
-{
-public:
-    using earspyMultiMap::earspyMultiMap;
-    
-    void setOutlets(long nOutlets, void** outlets) {
-        for (auto i: theMap) {
-            t_atom_long index = i.first;
-            auto oSet = i.second;
-            void *out = index <= nOutlets ? outlets[index] : nullptr;
-            for (t_object* o: *oSet)
-                object_method(o, gensym("setoutlet"), index, out);
-        }
-    }
-};
-
-typedef std::unordered_set<t_object*> objectSet;
-
 typedef struct _earspy
 {
     t_earsbufobj e_ob;
     
     t_symbol* inbuf[EARS_PROCESS_MAX_INPUT_BUFFERS];
     
-    t_patcher *parent_patch;
-    
     t_bool running;
-    
-    long vs;
-    double sr;
-    
-    t_atom dummydur[2]; // just in case
-    long durationpolicy;
-    double tail;
-    
-    long scalarmode;
-    long reload;
-    
-    long autoclock;
-    t_symbol *clock_name;
     
     t_symbol *patch_name;
     
@@ -151,20 +71,17 @@ typedef struct _earspy
     t_atom_long nOutBufChans[EARS_PROCESS_MAX_OUTPUT_BUFFERS];
     t_atom_long nDataOutlets;
     
-    earsInOutlets *theInOutlets;
-    //earsOuts *theOuts;
-    std::set<t_object*> *theOuts;
     void *dataOutlets[EARS_PROCESS_MAX_DATA_OUTLETS];
     
-    t_patcher *client_patch;
-    long client_argc;
-    t_atom client_argv[256];
-    
-    objectSet* earsInTildeObjects;
-    objectSet* earsOutTildeObjects;
-    objectSet* earspyinfoObjects;
-    
-    t_bool generator;
+    // python objects
+    t_symbol* scriptPath;
+    t_symbol* envPath;
+    t_symbol* function;
+    t_symbol* home;
+    t_symbol* py_executable;
+    t_symbol* py_path;
+    PyObject* pModule;
+    PyObject* pFuncName;
     
 } t_earspy;
 
@@ -189,43 +106,10 @@ void earspy_int(t_earspy *x, t_atom_long n);
 void earspy_float(t_earspy *x, t_atom_float f);
 void earspy_anything(t_earspy *x, t_symbol *s, t_atom_long argc, t_atom *argv);
 
-void earspy_dsp64(t_earspy *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
 
 void earspy_dblclick(t_earspy *x);
-void earspy_open(t_earspy *x);
-void earspy_pclose(t_earspy *x);
-void earspy_wclose(t_earspy *x);
-
-void earspy_pupdate(t_earspy *x, void *b, t_patcher *p);
-void *earspy_subpatcher(t_earspy *x, long index, void *arg);
-void earspy_parentpatcher(t_earspy *x, t_patcher **parent);
 
 void earspy_setupOutObjects(t_earspy *x);
-
-void earspy_earsintildecreated(t_earspy *x, t_atom_long bufIndex, t_object *in);
-void earspy_earsintildedeleted(t_earspy *x, t_object *in);
-void earspy_earsouttildecreated(t_earspy *x, t_atom_long bufIndex, t_object *out);
-void earspy_earsouttildedeleted(t_earspy *x, t_object *out);
-
-void earspy_earsincreated(t_earspy *x, t_atom_long n, t_atom_long *index, void **outlet);
-void earspy_earsoutcreated(t_earspy *x, long maxindex, t_object *obj);
-void earspy_earsindeleted(t_earspy *x, t_atom_long n, t_atom_long *index, void **outlet);
-void earspy_earsoutdeleted(t_earspy *x, t_object *obj);
-
-void earspy_earspyinfocreated(t_earspy *x, t_object *obj);
-void earspy_earspyinfodeleted(t_earspy *x, t_object *obj);
-
-void earspy_autoclock(t_earspy *x, t_patcher *p);
-
-t_max_err earspy_set_duration(t_earspy *x, t_object *attr, long argc, t_atom *argv);
-t_max_err earspy_get_duration(t_earspy *x, t_object *attr, long *argc, t_atom **argv);
-
-t_max_err earspy_set_vs(t_earspy *x, t_object *attr, long argc, t_atom *argv);
-t_max_err earspy_get_ownsdspchain(t_earspy *x, t_object *attr, long *argc, t_atom **argv);
-
-
-
-
 
 typedef enum {
     eDURPOLICY_SHORTEST = 0,
@@ -247,7 +131,6 @@ int C74_EXPORT main()
     CLASS_NEW_CHECK_SIZE(earspy_class, "ears.py~", (method)earspy_new, (method)earspy_free, sizeof(t_earspy), NULL, A_GIMME, 0);
     
     
-    
     class_addmethod(earspy_class, (method)earspy_assist, "assist", A_CANT, 0);
     
     // @method open @digest Open patcher
@@ -260,12 +143,6 @@ int C74_EXPORT main()
     // @description Double-clicking on the object
     // opens the patcher window loaded in the object, if any.
     class_addmethod(earspy_class, (method)earspy_open, "dblclick", A_CANT, 0);
-    
-    // @method wclose @digest Closes patcher
-    // @description The <m>wclose</m> message
-    // closes the patcher window loaded in the object, if any.
-    class_addmethod(earspy_class, (method)earspy_wclose, "wclose", 0);
-    
     
     // @method bang @digest Run py
     // @description
@@ -316,353 +193,22 @@ int C74_EXPORT main()
     class_addmethod(earspy_class, (method)earspy_anything, "anything", A_GIMME, 0);
     
     
-    
-    class_addmethod(earspy_class, (method)earspy_pupdate, "pupdate", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_subpatcher, "subpatcher", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_parentpatcher, "parentpatcher", A_CANT, 0);
-    
-    class_addmethod(earspy_class, (method)earspy_earsintildecreated, "ears.in~_created", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_earsouttildecreated, "ears.out~_created", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_earsintildedeleted, "ears.in~_deleted", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_earsouttildedeleted, "ears.out~_deleted", A_CANT, 0);
-    
-    class_addmethod(earspy_class, (method)earspy_earsincreated, "ears.in_created", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_earsoutcreated, "ears.out_created", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_earsindeleted, "ears.in_deleted", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_earsoutdeleted, "ears.out_deleted", A_CANT, 0);
-    
-    class_addmethod(earspy_class, (method)earspy_earspyinfocreated, "ears.pyinfo~_created", A_CANT, 0);
-    class_addmethod(earspy_class, (method)earspy_earspyinfodeleted, "ears.pyinfo~_deleted", A_CANT, 0);
+
     
     class_addmethod(earspy_class, (method)earspy_assist, "assist", A_CANT, 0);
     class_addmethod(earspy_class, (method)earspy_inletinfo, "inletinfo", A_CANT, 0);
     
     earsbufobj_class_add_outname_attr(earspy_class);
     earsbufobj_class_add_naming_attr(earspy_class);
-    
-    CLASS_ATTR_OBJ(earspy_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earspy, e_ob);
-    CLASS_ATTR_ACCESSORS(earspy_class, "ownsdspchain", (method) earspy_get_ownsdspchain, NULL);
-    CLASS_ATTR_INVISIBLE(earspy_class, "ownsdspchain", 0);
-    
-    
-    
-    CLASS_ATTR_LONG(earspy_class, "vs", 0, t_earspy, vs);
-    CLASS_ATTR_ACCESSORS(earspy_class, "vs", NULL, (method) earspy_set_vs);
-    CLASS_ATTR_LABEL(earspy_class, "vs", 0, "Vector Size");
-    // @description
-    // The signal vector size of the loaded patcher, expressed in samples.
-    // It must be a power of 2 between 1 and 4096.
-    // The default is 128.
-    
-    
-    CLASS_ATTR_LONG(earspy_class, "sr", 0, t_earspy, sr);
-    CLASS_ATTR_FILTER_MIN(earspy_class, "sr", 0);
-    CLASS_ATTR_LABEL(earspy_class, "sr", 0, "Default Sample Rate");
-    // @description
-    // The default sample rate of the loaded patcher,
-    // only used for generator patches
-    // (i.e., patches with no buffer inlets):
-    // if a patcher has buffer inlets, the sample rate of each run of the patcher
-    // corresponds to the sample rate of the incoming buffers.<br/>
-    // The default is 0, meaning that generator patches will run at the system sample rate.
-    
-    
-    
-    CLASS_ATTR_ATOM_ARRAY(earspy_class, "duration", 0, t_earspy, dummydur, 2);
-    CLASS_ATTR_ACCESSORS(earspy_class, "duration", (method) earspy_get_duration, (method) earspy_set_duration);
-    // @description
-    // The <m>duration</m> attribute controls the duration
-    // of the resulting buffers with respect to the
-    // durations of the incoming one.
-    // It consists of a single symbol or integer setting the <b>duration policy</b>,
-    // followed by a number setting the <b>tail</b>.<br/><br/>
-    // The <b>duration policy</b> can take one of the following values:<br/>
-    // - <m>0</m> or <m>shortest</m> or <m>s</m>:
-    // the duration of the pyed (and therefore resulting) audio
-    // is at most the duration of the shortest incoming buffer
-    // plus the tail. If a list of buffers is passed, to be pyed in sequences,
-    // the pying duration refers to the per-iteration shortest buffer.
-    // The <m>shortest</m> policy is the default.<br/>
-    // - <m>1</m> or <m>longest</m> or <m>l</m>:
-    // the duration of the pyed audio
-    // is at most the duration of the longest incoming buffer plus the tail.
-    // If the loaded patcher has a single buffer inlet,
-    // the <m>shortest</m> and <m>longest</m> policies are equivalent;
-    // if it has no buffer inlets, no pying will take place.<br/>
-    // - <m>2</m> or <m>fixed</m> or <m>f</m>
-    // or <m>maximum</m> or <m>m</m>:
-    // the duration of the pyed audio
-    // is set to the value of the tail.
-    // This is the only meaningful setting when the patcher has no buffer inlets,
-    // typically because the patch generates audio rather than py it.<br/><br/>
-    // The <b>tail</b>, which is always measured in milliseconds,
-    // is optional, and defaults to 0, for the <b>shortest</b> and <b>longest</b> duration policies.
-    // In these cases, it sets an additional pying duration
-    // after the end of the shortest or longest buffer.
-    // For the <b>fixed</b> duration policy, it sets the actual
-    // duration of the pying, and it cannot be 0:
-    // if set to 0, or missing, it is changed to 60000.
-    // The pying can be interrupted at any time by the loaded patcher,
-    // through the <o>ears.pyinfo~</o> object.
-    
-    
-    
-    
-    
-    CLASS_ATTR_LONG(earspy_class, "scalarmode", 0, t_earspy, scalarmode);
-    CLASS_ATTR_STYLE_LABEL(earspy_class, "scalarmode", 0, "onoff", "Scalar Mode");
-    CLASS_ATTR_FILTER_CLIP(earspy_class, "scalarmode", 0, 1);
-    // @description
-    // When set to 1, if a buffer inlet receives a single buffer
-    // while other inlets receive lists of buffers,
-    // then the single buffer will be iterated repeatedly against the list of buffers, until the end of the shortest list.<br/>
-    // When set to 0 (as per the default), if a buffer inlet receives a single buffer
-    // no iterator will be performed, and only the first buffer of each inlet will be pyed.
-    
-    
-    CLASS_ATTR_LONG(earspy_class, "reload", 0, t_earspy, reload);
-    CLASS_ATTR_STYLE_LABEL(earspy_class, "reload", 0, "onoff", "Reload");
-    CLASS_ATTR_FILTER_CLIP(earspy_class, "reload", 0, 1);
-    // @description
-    // When set to 1, the patch is reloaded before each run.
-    // In this case, initialisation data received through <o>ears.in</o> objects
-    // have to be sent again after each reloading,
-    // and the time required by the project might increase considerably,
-    // especially for complex patches.
-    // On the other hand, this guarantees that the patch
-    // is always "clean" before running.<br/>
-    // When set to 0 (as per the default), the patch is only loaded
-    // when <o>ears.py</o> is instantiated
-    // or when the <m>patchername</m> message is received.
-    
-    
-    
-    
-    CLASS_ATTR_LONG(earspy_class, "autoclock", 0, t_earspy, autoclock);
-    CLASS_ATTR_STYLE_LABEL(earspy_class, "autoclock", 0, "onoff", "Automatic Clock Message");
-    CLASS_ATTR_FILTER_CLIP(earspy_class, "autoclock", 0, 1);
-    
+
+    CLASS_ATTR_SYM(c, "envpath", 0, t_earspy, envPath);
+    CLASS_ATTR_SYM(c, "scriptpath", 0, t_earspy, scriptPath);
+    CLASS_ATTR_SYM(c, "function", 0, t_earspy, function);
+
     class_register(CLASS_BOX, earspy_class);
-    // @description
-    // The <o>ears.py~</o> objects manages an internal <o>clock</o>
-    // to control scheduler-based objects such as
-    // <o>metro</o> and <o>delay</o>, the playback capabilities
-    // of <o>bach.roll</o> and <o>bach.score</o>, and more.
-    // In this way, their timing will be correct with respect to
-    // the non-realtime operation of the loaded patch,
-    // rather than the physical time of the outside world.
-    // The internal clock is synced to the non-realtime signal vector,
-    // as with "Scheduler in Overdrive" and "Scheduler in Audio Interrupt" both on.<br/>
-    // If the <o>autoclock</o> attribute is set to 1 (as per the default),
-    // all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
-    // will automatically have their clock set by <o>ears.py~</o> before each run of the patch
-    //
-    // If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
-    // and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.pyinfo~</o>, to the relevant objects.<br/>
-    // Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
-    // There is currently no way to use such objects with correct timing inside <o>ears.py~</o>.
-    
+
     return 0;
 }
-
-
-
-t_max_err earspy_set_vs(t_earspy *x, t_object *attr, long argc, t_atom *argv)
-{
-    if (argc != 1) {
-        object_error((t_object *) x, "vs: wrong number of arguments");
-        return MAX_ERR_GENERIC;
-    }
-    if (atom_gettype(argv) != A_LONG) {
-        object_error((t_object *) x, "vs: wrong argument type");
-        return MAX_ERR_GENERIC;
-    }
-    long new_vs = atom_getlong(argv);
-    long good_vs;
-    for (good_vs = 1; good_vs < new_vs && good_vs < 4096; good_vs *= 2)
-        ;
-    x->vs = good_vs;
-    return MAX_ERR_NONE;
-}
-
-
-
-t_max_err earspy_get_ownsdspchain(t_earspy *x, t_object *attr, long *argc, t_atom **argv)
-{
-    char alloc = false;
-    
-    if (atom_alloc(argc, argv, &alloc))
-        return MAX_ERR_GENERIC;
-    
-    // This prevents getdspchain on child patchers from walking up past this object
-    atom_setlong(*argv,1);
-    return MAX_ERR_NONE;
-}
-
-
-t_max_err earspy_set_duration(t_earspy *x, t_object *attr, long argc, t_atom *argv)
-{
-    t_llll *ll = llll_parse(argc, argv);
-    
-    if (!ll) {
-        object_error((t_object *) x, "duration: bad llll");
-        return MAX_ERR_GENERIC;
-    }
-    
-    if (ll->l_size == 0 || ll->l_size > 2 || ll->l_depth > 1) {
-        object_error((t_object *) x, "duration: wrong llll format");
-        return MAX_ERR_GENERIC;
-    }
-    
-    t_hatom *a = &ll->l_head->l_hatom;
-    
-    switch (hatom_gettype(a)) {
-        case H_LONG: {
-            long v = atom_getlong(argv);
-            CLIP_ASSIGN(v, 0, 2);
-            x->durationpolicy = v;
-            break;
-        }
-        case H_SYM: {
-            t_symbol *s = atom_getsym(argv);
-            if (s == gensym("shortest") || s == gensym("s"))
-                x->durationpolicy = eDURPOLICY_SHORTEST;
-            else if (s == gensym("longest") || s == gensym("l"))
-                x->durationpolicy = eDURPOLICY_LONGEST;
-            else if (s == gensym("fixed") || s == gensym("f") || s == gensym("maximum") || s == gensym("max") || s == gensym("m")) {
-                x->durationpolicy = eDURPOLICY_FIXED;
-                if (x->tail <= 0 && ll->l_size == 1) {
-                    object_warn((t_object *) x, "Setting maximum duration to 60000");
-                    x->tail = 60000;
-                }
-            }
-            else
-                object_error((t_object *) x, "duration: unknown duration policy %s", s->s_name);
-            break;
-        }
-        default: {
-            object_error((t_object *) x, "duration: wrong type for argument 1");
-            return MAX_ERR_GENERIC;
-        }
-    }
-    
-    if (ll->l_size == 1)
-        return MAX_ERR_NONE;
-    
-    a = &ll->l_tail->l_hatom;
-    
-    if (!hatom_is_number(a)) {
-        object_error((t_object *) x, "duration: wrong type for argument 2");
-        if (x->durationpolicy == eDURPOLICY_FIXED) {
-            object_warn((t_object *) x, "Setting maximum duration to 60000");
-            x->tail = 60000;
-        }
-        return MAX_ERR_GENERIC;
-    }
-    
-    x->tail = hatom_getdouble(a);
-    
-    return MAX_ERR_NONE;
-}
-
-
-
-t_max_err earspy_get_duration(t_earspy *x, t_object *attr, long *argc, t_atom **argv)
-{
-    char alloc;
-    atom_alloc_array(2, argc, argv, &alloc);
-    
-    switch(x->durationpolicy) {
-        case eDURPOLICY_LONGEST:
-            atom_setsym(*argv, gensym("shortest"));
-            break;
-        case eDURPOLICY_FIXED:
-            atom_setsym(*argv, gensym("fixed"));
-            break;
-        default:
-            atom_setsym(*argv, gensym("shortest"));
-            break;
-    }
-    
-    atom_setfloat((*argv) + 1, x->tail);
-    
-    return MAX_ERR_NONE;
-}
-
-
-
-// args:
-// 1. patch name
-
-/*
- Gonna work like this:
- - The patch (if any) gets loaded
- - ears.in~, ears.out~, ears.in and ears.out are all created
- - When ears.in is created, it calls the "ears.in_created" method here communicating its own index and outlet address;
- The maximum ears.in number is kept, and the list of addresses of all the outlets associated with each index is kept.
- - When ears.out is created, it calls the "ears.out_created" method here communicating its own address and number;
- The maximum ears.out number is kept, and the list of addresses of all the objects associated with each index is kept.
- - Inlets and outlets are created.
- - The "setoutlet" method of all the ears.out objects is called, and the corresponding outlets and outlet numbers are passed to them.
- - The initialize member functions of both bufferMaps are called, so as to pass to the ears.in~ and ears.out~ objects the audio buffers they'll use
- 
- */
-
-
-void earspy_earsintildecreated(t_earspy *x, t_atom_long bufIndex, t_object *in)
-{
-    x->earsInTildeObjects->insert(in);
-    x->generator = false;
-    if (bufIndex > x->nBufInlets)
-        x->nBufInlets = bufIndex;
-}
-
-void earspy_earsintildedeleted(t_earspy *x, t_object *in)
-{
-    x->earsInTildeObjects->erase(in);
-}
-
-void earspy_earsouttildecreated(t_earspy *x, t_atom_long bufIndex, t_object *out)
-{
-    x->earsOutTildeObjects->insert(out);
-    if (bufIndex > x->nBufOutlets)
-        x->nBufOutlets = bufIndex;
-}
-
-void earspy_earsouttildedeleted(t_earspy *x, t_object *out)
-{
-    x->earsOutTildeObjects->erase(out);
-}
-
-void earspy_earsincreated(t_earspy *x, t_atom_long n, t_atom_long *index, void **outlet) {
-    for (int i = 0; i < n; i++)
-        x->theInOutlets->insert(*(index++), *(outlet++));
-}
-
-void earspy_earsoutcreated(t_earspy *x, long maxindex, t_object *obj) {
-    x->theOuts->insert(obj);
-    if (x->nDataOutlets < maxindex)
-        x->nDataOutlets = maxindex;
-}
-
-void earspy_earsindeleted(t_earspy *x, t_atom_long n, t_atom_long *index, void **outlet) {
-    for (int i = 0; i < n; i++)
-        x->theInOutlets->remove(*(index++), *(outlet++));}
-
-void earspy_earsoutdeleted(t_earspy *x, t_object *obj) {
-    x->theOuts->erase(obj);
-}
-
-void earspy_earspyinfocreated(t_earspy *x, t_object *obj)
-{
-    x->earspyinfoObjects->insert(obj);
-}
-
-void earspy_earspyinfodeleted(t_earspy *x, t_object *obj)
-{
-    x->earspyinfoObjects->erase(obj);
-}
-
 
 // 1 arg: patch name
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
@@ -683,62 +229,35 @@ void *earspy_new(t_symbol *s, long argc, t_atom *argv)
     
     x->autoclock = 1;
     
+    x->function = gensym("process");
     long true_ac = attr_args_offset(argc, argv);
-    attr_args_py(x, argc - true_ac, argv + true_ac);
+    attr_args_process(x, argc - true_ac, argv + true_ac);
     
     t_llll* args = llll_parse(true_ac, argv);
     
-    switch (args->l_size) {
-        case 0:
-            break;
-        case 1:
-            patchname = hatom_getsym(&args->l_head->l_hatom);
-            llll_clear(args);
-            break;
-        case 2:
-            patchname = hatom_getsym(&args->l_tail->l_hatom);
-            llll_betail(args);
-            args = nullptr;
-            break;
-        default:
-            object_error((t_object *) x, "too many arguments");
-            llll_free(args);
-            return nullptr;
-            break;
-    }
-    
-    x->theInOutlets = new earsInOutlets;
-    x->theOuts = new std::set<t_object*>;
-    x->earsInTildeObjects = new objectSet;
-    x->earsOutTildeObjects = new objectSet;
-    x->earspyinfoObjects = new objectSet;
-    
-    // Get parent patcher
-    
-    x->parent_patch = (t_patcher *)gensym("#P")->s_thing;
-    
-    // Load patch
-    
     x->nBufInlets = 1;
-    if (patchname)
-        earspy_patchername(x, patchname, 0, NULL);
+    
     
     // e = buffer; E = buffer list;
-    
     char intypes[2048];
     int i;
     for (i = 0; i < x->nBufInlets; i++) {
         intypes[i] = 'E';
     }
+    /*
     for (i = 0; i < x->theInOutlets->maxIdx; i++) {
         intypes[i + x->nBufInlets] = 'a';
     }
+     */
     intypes[i + x->nBufInlets] = 0;
     
     char outtypes[2048];
+    /*
     for (i = x->nDataOutlets - 1; i >= 0; i--) {
         x->dataOutlets[i] = outlet_new(x, "anything");
     }
+     */
+    x->nBufOutlets = 1;
     for (i = 0; i < x->nBufOutlets; i++) {
         outtypes[i] = 'E';
     }
@@ -746,166 +265,23 @@ void *earspy_new(t_symbol *s, long argc, t_atom *argv)
     
     earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, args);
     llll_free(args);
-    
-    earspy_setupOutObjects(x);
-    
-    if (x->vs == 0)
-        x->vs = 128;
-    
-    x->clock_name = symbol_unique();
+
     x->running = true;
     return x;
 }
 
 void earspy_free(t_earspy *x)
 {
-    earspy_wclose(x);
-    object_free(x->client_patch);
-    
-    delete x->theInOutlets;
-    delete x->theOuts;
-    delete x->earsInTildeObjects;
-    delete x->earsOutTildeObjects;
-    delete x->earspyinfoObjects;
-    
+    if (x->pModule != NULL)
+        Py_DECREF(x->pModule);
+    Py_FinalizeEx();
     earsbufobj_free((t_earsbufobj*) x);
-}
-
-
-int earspy_setSubAssoc(t_patcher *p, t_object *x)
-{
-    t_object *assoc;
-    
-    object_method(p, gensym("getassoc"), &assoc);
-    if (!assoc)
-        object_method(p, gensym("setassoc"), x);
-    
-    return 0;
-}
-
-void earspy_setupOutObjects(t_earspy *x)
-{
-    for (t_object* o: *x->theOuts) {
-        object_method(o, gensym("setoutlets"), x->nDataOutlets, x->dataOutlets);
-    }
-}
-
-void earspy_patchername(t_earspy *x, t_symbol *patchname, long ac, t_atom *av)
-{
-    long inlet = proxy_getinlet((t_object *) x);
-    
-    if (inlet >= x->nBufInlets) {
-        earspy_anything(x, patchname, ac, av);
-        return;
-    }
-    
-    x->theInOutlets->clear();
-    x->theOuts->clear();
-    x->earsInTildeObjects->clear();
-    x->earsOutTildeObjects->clear();
-    x->earspyinfoObjects->clear();
-    
-    x->generator = true;
-    
-    if (ac == 0) {
-        ac = x->client_argc;
-        av = x->client_argv;
-    }
-    
-    t_fourcc validTypes[3];
-    
-    // Set the valid types to test for
-    
-    validTypes[0] = FOUR_CHAR_CODE('maxb');
-    validTypes[1] = FOUR_CHAR_CODE('TEXT');
-    validTypes[2] = FOUR_CHAR_CODE('JSON');
-    
-    char name[2048];
-    strncpy_zero(name, patchname->s_name, 2048);
-    
-    short outvol;
-    t_fourcc outtype;
-    
-    if (locatefile_extended(name, &outvol, &outtype, validTypes, 3)) {
-        object_error((t_object *) x, "Can't find %s", name);
-        return;
-    }
-    
-    if (x->client_patch) {
-        object_free(x->client_patch);
-    }
-    
-    t_symbol *ps_earspy = gensym(EARS_PROCESS_SPECIALSYM);
-    t_symbol *ps_inhibit_subpatcher_vis = gensym("inhibit_subpatcher_vis");
-    t_symbol *ps_PAT = gensym("#P");
-    
-    // Store the old loading symbols
-    
-    t_object *previous = ps_earspy->s_thing;
-    t_object *save_inhibit_state = ps_inhibit_subpatcher_vis->s_thing;
-    t_patcher *saveparent = (t_patcher *)ps_PAT->s_thing;
-    
-    // Bind to the loading symbols
-    
-    ps_earspy->s_thing = (t_object *) x;
-    ps_inhibit_subpatcher_vis->s_thing = (t_object *) -1;
-    ps_PAT->s_thing = x->parent_patch;
-    
-    // Load the patch (don't interrupt dsp and use setclass to allow Modify Read-Only)
-    
-    short savedLoadUpdate = dsp_setloadupdate(false);
-    loadbang_suspend();
-    x->client_patch = (t_patcher *)intload(name, outvol, 0, ac, av, false);
-    //object_method(x->client_patch, gensym("setclass"));
-    
-    // Restore previous loading symbol bindings
-    
-    ps_earspy->s_thing = previous;
-    ps_inhibit_subpatcher_vis->s_thing = save_inhibit_state;
-    ps_PAT->s_thing = (t_object *) saveparent;
-    
-    if (!x->client_patch) {
-        object_error((t_object *) x, "Couldn't load %s", name);
-        loadbang_resume();
-        dsp_setloadupdate(savedLoadUpdate);
-        return;
-    }
-    
-    x->patch_name = patchname;
-    
-    if (!ispatcher((t_object *)x->client_patch)) {
-        object_error((t_object *) x, "%s is not a patch", name);
-        object_free(x->client_patch); // good idea??
-        loadbang_resume();
-        dsp_setloadupdate(savedLoadUpdate);
-        return;
-    }
-    
-    // connect ears.in~ / .out~ / .in / .out here?
-    
-    long result = 0;
-    
-    // this apparently associates the patcher to the objects it contains
-    // what is the difference wrt the "iterate" method?
-    object_method(x->client_patch, _sym_traverse, earspy_setSubAssoc, x, &result);
-    
-    loadbang_resume();
-    dsp_setloadupdate(savedLoadUpdate);
-    
-    if (x->running) {
-        earspy_setupOutObjects(x);
-    }
-    
-    return;
 }
 
 
 
 void earspy_open(t_earspy *x)
 {
-    if (!x->client_patch)
-        return;
-    
     //long inlet = proxy_getinlet((t_object *) x);
     
     //if (inlet >= x->nBufInlets) {
@@ -915,46 +291,8 @@ void earspy_open(t_earspy *x)
     //}
 }
 
-void earspy_wclose(t_earspy *x)
-{
-    if (!x->client_patch)
-        return;
-    
-    long inlet = proxy_getinlet((t_object *) x);
-    
-    if (inlet >= x->nBufInlets) {
-        earspy_anything(x, _sym_wclose, 0, NULL);
-    } else {
-        object_method((t_object *) x->client_patch, _sym_wclose);
-    }
-}
 
 
-// never called apparently
-void earspy_pupdate(t_earspy *x, void *b, t_patcher *p)
-{
-    //
-}
-
-void *earspy_subpatcher(t_earspy *x, long index, void *arg)
-{
-    // Report subpatchers if requested by an object that is not a dspchain
-    
-    if ((t_ptr_uint) arg > 1)
-        if (!NOGOOD(arg))
-            if (ob_sym(arg) == gensym("dspchain"))
-                return nullptr;
-    
-    if (index == 0)
-        return (void*) x->client_patch;
-    else
-        return nullptr;
-}
-
-void earspy_parentpatcher(t_earspy *x, t_patcher **parent)
-{
-    *parent = x->parent_patch;
-}
 
 void earspy_int(t_earspy *x, t_atom_long i)
 {
@@ -1169,43 +507,6 @@ void earspy_bang_do(t_earspy *x, t_symbol *s, t_atom_long ac, t_atom *av)
 
 
 
-void earspy_stop(t_earspy *x)
-{
-    if (!x->client_patch)
-        return;
-    
-    long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets) {
-        earspy_anything(x, _sym_bang, 0, NULL);
-    } else {
-        x->stopped = true;
-    }
-}
-
-
-void earspy_autoclock(t_earspy *x, t_patcher *p)
-{
-    t_symbol *name = x->clock_name;
-    for (t_box *b = jpatcher_get_firstobject(p); b; b = jbox_get_nextobject(b))
-    {
-        t_object *o = jbox_get_object(b);
-        if (object_classname(o) == gensym("ears.py~"))
-            continue;
-        method c = zgetfn(o, _sym_clock);
-        if (c)
-            (c)(o, name);
-        else
-            object_attr_setsym(o, _sym_clock, name);
-        
-        
-        t_patcher *subpatch;
-        long index = 0;
-        
-        while (b && (subpatch = (t_patcher *)object_subpatcher(o, &index, x))) {
-            earspy_autoclock(x, subpatch);
-        }
-    }
-}
 
 
 void earspy_assist(t_earspy *x, void *b, long m, long a, char *s)
