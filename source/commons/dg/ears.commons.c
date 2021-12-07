@@ -5090,3 +5090,116 @@ t_llll *ears_ezarithmser(double from, double step, long numitems)
 
 
 
+
+
+
+t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj *sidechain, t_buffer_obj *dest,
+                                double threshold_dB, double ratio, double kneewidth_dB,
+                                double attack_time_samps, double release_time_samps,
+                                double makeup_dB)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    double half_kneewidth_dB = kneewidth_dB / 2.;
+    float *source_sample = buffer_locksamples(source);
+    bool inplace = false;
+    
+    if (!source_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        
+        t_atom_long    source_channelcount = buffer_getchannelcount(source);
+        t_atom_long    source_framecount   = buffer_getframecount(source);
+        t_atom_long    sidechain_channelcount, sidechain_framecount;
+
+        float *dest_sample = NULL;
+        if (source != dest) {
+            inplace = false;
+            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_set_size_samps(ob, dest, source_framecount);
+            dest_sample = buffer_locksamples(dest);
+        } else {
+            inplace = true;
+            dest_sample = source_sample;
+        }
+        
+        float *sidechain_sample;
+        if (sidechain == source || !sidechain) {
+            sidechain_sample = source_sample;
+            sidechain_channelcount = source_channelcount;
+            sidechain_framecount = source_framecount;
+        } else {
+            sidechain_channelcount = buffer_getchannelcount(sidechain);
+            sidechain_framecount = buffer_getframecount(sidechain);
+            sidechain_sample = buffer_locksamples(sidechain);
+        }
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
+            t_atom_long    dest_framecount   = buffer_getframecount(dest);
+            t_atom_long    max_framecount = MAX(dest_framecount, source_framecount);
+
+            double yL = 0, yL_prev = 0;
+            for (long i = 0; i < max_framecount; i++) {
+
+                // we use the page https://github.com/p-hlp/CTAGDRC as a tutorial
+                
+                // 1) level detection: it's the maximum across the channel of the sidechain signal
+                float input = 0;
+                if (i < sidechain_framecount) {
+                    for (long c = 0; c < sidechain_channelcount; c++)
+                        input = MAX(input, std::abs(sidechain_sample[i * sidechain_channelcount + c]));
+                }
+                
+                // 2) dB conversion
+                float input_db = ears_linear_to_db(input);
+                float output_gain_db;
+
+                // 3) gain computation
+                if (input_db - threshold_dB < -half_kneewidth_dB) {
+                    // nothing to do: copy
+                    output_gain_db = 0;
+                } else if (input_db - threshold_dB <= half_kneewidth_dB) {
+                    float temp = input_db - threshold_dB + half_kneewidth_dB;
+                    output_gain_db = (1./ratio - 1) * temp * temp / (2 * kneewidth_dB);
+                } else {
+                    output_gain_db = threshold_dB + (input_db-threshold_dB)/ratio - input_db;
+                }
+                
+                // 4) ballistics
+                double alpha_attack = exp(-1./attack_time_samps);
+                double alpha_release = exp(-1./release_time_samps);
+                
+                // smooth branching peek detector
+                if (output_gain_db > yL_prev) {
+                    yL = alpha_attack * yL_prev + (1 - alpha_attack) * output_gain_db;
+                } else {
+                    yL = alpha_release * yL_prev + (1 - alpha_release) * output_gain_db;
+                }
+                
+                yL_prev = yL;
+                
+                // 5) linear conversion
+                double gain_to_apply_linear = ears_db_to_linear(yL + makeup_dB);
+                
+                for (long c = 0; c < dest_channelcount; c++)
+                    dest_sample[i * dest_channelcount + c] = source_sample[i * dest_channelcount + c] * gain_to_apply_linear;
+            }
+            if (!inplace)
+                buffer_unlocksamples(dest);
+        }
+        
+        buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
+
+
+

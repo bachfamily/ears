@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 98.0, 105.0, 636.0, 466.0 ],
+		"rect" : [ 98.0, 100.0, 636.0, 466.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 98.0, 131.0, 636.0, 440.0 ],
+						"rect" : [ 98.0, 126.0, 636.0, 440.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -121,7 +121,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 77.0, 407.0, 21.0 ],
-									"presentation_linecount" : 6,
 									"style" : "helpfile_label",
 									"text" : "Here is a quick way of getting all the buffers out of a polybuffer name."
 								}
@@ -129,6 +128,7 @@
 							}
 , 							{
 								"box" : 								{
+									"dontreplace" : 1,
 									"id" : "obj-6",
 									"linecount" : 6,
 									"maxclass" : "message",
@@ -136,7 +136,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 29.0, 217.0, 303.0, 96.0 ],
-									"presentation_linecount" : 22,
 									"text" : "earsPolybufferHelp.1 earsPolybufferHelp.2 earsPolybufferHelp.3 earsPolybufferHelp.4 earsPolybufferHelp.5 earsPolybufferHelp.6 earsPolybufferHelp.7 earsPolybufferHelp.8 earsPolybufferHelp.9 earsPolybufferHelp.10 earsPolybufferHelp.11"
 								}
 
@@ -232,7 +231,6 @@
 					}
 ,
 					"patching_rect" : [ 33.0, 130.0, 77.0, 22.0 ],
-					"presentation_linecount" : 3,
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",

@@ -433,6 +433,26 @@
       "ears.read~"
     ]
   },
+  "ears.in~": {
+    "digest": "Signal input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.mc.in~",
+      "ears.out~",
+      "ears.tovector~"
+    ]
+  },
   "ears.tosamps~": {
     "digest": "Get buffer samples as llll",
     "module": "ears",
@@ -573,6 +593,23 @@
       "ears.gain~"
     ]
   },
+  "ears.paulfreeze~": {
+    "digest": "Paulstretch freeze",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "stretch",
+      "freeze",
+      "eternal",
+      "expand"
+    ],
+    "seealso": [
+      "ears.paulstretch~"
+    ]
+  },
   "ears.cqt~": {
     "digest": "Constant-Q Transform",
     "module": "ears",
@@ -591,6 +628,24 @@
     "seealso": [
       "ears.window~",
       "ears.stft~"
+    ]
+  },
+  "ears.dynamics~": {
+    "digest": "Dynamics processing",
+    "module": "ears",
+    "category": [
+      "ears dynamics"
+    ],
+    "keywords": [
+      "buffer",
+      "compress",
+      "expand",
+      "dynamics",
+      "limit",
+      "limiter"
+    ],
+    "seealso": [
+      "ears.gain~"
     ]
   },
   "ears.envelope~": {
@@ -801,7 +856,26 @@
       "compress"
     ],
     "seealso": [
-      "ears.freeverb~"
+      "ears.freeverb~",
+      "ears.paulfreeze~"
+    ]
+  },
+  "ears.clicks~": {
+    "digest": "Put clicks at time points",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "click",
+      "clicks",
+      "collect"
+    ],
+    "seealso": [
+      "ears.fromsamps~",
+      "ears.mix~",
+      "ears.assemble~"
     ]
   },
   "ears.fft~": {
@@ -1047,6 +1121,7 @@
       "factor"
     ],
     "seealso": [
+      "ears.dynamics~",
       "ears.normalize~",
       "ears.envelope~"
     ]

@@ -32,7 +32,7 @@
 	buffer, gain, scale, multiply, factor
  
 	@seealso
-	ears.normalize~, ears.envelope~
+	ears.dynamics~, ears.normalize~, ears.envelope~
 	
 	@owner
 	Daniele Ghisi

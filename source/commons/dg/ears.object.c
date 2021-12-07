@@ -585,9 +585,11 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                 } else if (in_types[i] == 'E') {
                     e_ob->l_instore[j].max_num_stored_bufs = 0; // no limit
                 }
-                earsbufobj_resize_store(e_ob, EARSBUFOBJ_IN, j, 1, false);
-                e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
+//                earsbufobj_resize_store(e_ob, EARSBUFOBJ_IN, j, 1, false);
+//                e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
                 if (e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS) {
+                    earsbufobj_resize_store(e_ob, EARSBUFOBJ_IN, j, 1, false);
+                    e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
                     e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
                     earsbufobj_buffer_link(e_ob, EARSBUFOBJ_IN, j, 0, symbol_unique());
                 }
