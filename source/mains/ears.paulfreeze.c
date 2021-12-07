@@ -169,11 +169,11 @@ t_buf_paulfreeze *buf_paulfreeze_new(t_symbol *s, short argc, t_atom *argv)
 
         x->e_duration = llll_from_text_buf("1000");
         x->e_onset = llll_from_text_buf("0");
-        x->e_ob.a_framesize = 8192; // 8192 samples as default
         x->e_spectral = true;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
-        
+        x->e_ob.a_framesize = 8192; // 8192 samples as default
+
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         

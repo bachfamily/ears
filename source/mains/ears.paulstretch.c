@@ -168,11 +168,11 @@ t_buf_paulstretch *buf_paulstretch_new(t_symbol *s, short argc, t_atom *argv)
         // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
 
         x->e_factor = llll_from_text_buf("1.");
-        x->e_ob.a_framesize = 8192; // 8192 samples as default
         x->e_spectral = true;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
-        
+        x->e_ob.a_framesize = 8192; // 8192 samples as default
+
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
