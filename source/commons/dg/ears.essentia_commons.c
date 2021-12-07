@@ -1151,7 +1151,7 @@ const char *get_threshold_desc(long i)
 }
 
 
-t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params)
+t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, bool silent)
 {
     t_ears_err err = EARS_ERR_NONE;
     long spectrumsize = 1 + (params->framesize_samps/2);
@@ -2187,6 +2187,28 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     break;
                     
                     // TODO: ONSETS
+                    /*
+                case EARS_FEATURE_ONSETS:
+                {
+                    double alpha = 0.1, silenceThreshold = 0.02;
+                    long delay = 5;
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "did",
+                                    gensym("alpha"), &alpha, gensym("delay"), &delay, gensym("silencethreshold"), &silenceThreshold);
+                    convert_ampunit(lib, i, silenceThreshold, NULL, EARS_AMPUNIT_LINEAR);
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("Onset",
+                                                                            "alpha", alpha,
+                                                                            "delay", (int)delay,
+                                                                            "frameRate", sr / params->hopsize_samps,
+                                                                            "silenceThreshold", silenceThreshold
+                                                                            );
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_ONSET _INPUT_AUDIO, "signal");
+                    set_input2(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_ONSETDETECTIOS_AND_WEIGHTS, "detections", "weights");
+                    set_essentia_outputs(lib, i, "v", "onsets");
+                    set_custom_outputs(lib, i, "v", "onset times");
+
+                }
+                    break; */
+                    
 
                 case EARS_FEATURE_PERCIVALBPMESTIMATOR:
                 {
@@ -2237,7 +2259,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS, "ddd",
                                     gensym("combine"), &combine,
                                     gensym("ratioThreshold"), &ratioThreshold,
-                                    gensym("threshold"), threshold);
+                                    gensym("threshold"), &threshold);
                     convert_timeunit(lib, i, combine, NULL, EARS_TIMEUNIT_MS);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("SuperFluxExtractor",
                                                                             "combine", combine,
@@ -3434,7 +3456,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
         }
         lib->num_extractors = num_features;
     } catch (essentia::EssentiaException e) {
-        object_error((t_object *)e_ob, e.what());
+        if (!silent)
+            object_error((t_object *)e_ob, e.what());
         err = EARS_ERR_ESSENTIA;
         lib->num_extractors = 0;
     }
@@ -3480,6 +3503,7 @@ e_ears_essentia_framemode ears_essentia_feature_to_framemode(t_object *x, e_ears
         case EARS_FEATURE_RHYTHMEXTRACTOR:
         case EARS_FEATURE_SINGLEBEATLOUDNESS:
         case EARS_FEATURE_BEATSLOUDNESS:
+        case EARS_FEATURE_ONSETS:
             return EARS_ESSENTIA_FRAMEMODE_GLOBALONLY;
             break;
             
@@ -3606,6 +3630,11 @@ void ears_essentia_feature_to_default_framesizes_and_hopsize(t_object *x, e_ears
             *hopsize = 512;
             break;
 
+        case EARS_FEATURE_ONSETS:
+            *framesize = 512;
+            *hopsize = 512;
+            break;
+            
         case EARS_FEATURE_SUPERFLUXEXTRACTOR:
             *framesize = 2048;
             *hopsize = 256;

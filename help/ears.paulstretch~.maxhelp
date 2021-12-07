@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -53,7 +53,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -667,7 +667,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -814,7 +814,7 @@
 							}
 , 							{
 								"box" : 								{
-									"attr" : "winsize",
+									"attr" : "framesize",
 									"id" : "obj-10",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
@@ -860,7 +860,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u590000636",
+									"buffername" : "u619001255",
 									"id" : "obj-13",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -952,7 +952,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u838000569",
+									"buffername" : "u665001217",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1229,7 +1229,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}

@@ -73,6 +73,7 @@ typedef enum {
     EARS_FEATURE_ONSETDETECTION,
     EARS_FEATURE_ONSETDETECTIONGLOBAL,
     EARS_FEATURE_ONSETRATE,
+    EARS_FEATURE_ONSETS,
     EARS_FEATURE_PERCIVALBPMESTIMATOR,
     EARS_FEATURE_RHYTHMDESCRIPTORS,
     EARS_FEATURE_RHYTHMEXTRACTOR,
@@ -401,7 +402,7 @@ long ears_essentia_feature_to_numouts(e_ears_feature feat);
 e_ears_essentia_framemode ears_essentia_feature_to_framemode(t_object *x, e_ears_feature feat);
 void ears_essentia_feature_to_default_framesizes_and_hopsize(t_object *x, e_ears_feature feat, double *framesize, double *hopsize, e_ears_timeunit *analysis_unit);
 void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *lib);
-t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params);
+t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, bool silent = false);
 t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer_obj *buf, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, long buffer_output_interpolation_mode);
 
 #endif // _EARS_BUF_RUBBERBAND_COMMONS_H_

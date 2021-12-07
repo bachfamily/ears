@@ -405,6 +405,10 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             return "Onset rate";
             break;
 
+        case EARS_FEATURE_ONSETS:
+            return "Onsets";
+            break;
+            
         case EARS_FEATURE_PERCIVALBPMESTIMATOR:
             return "Percival BPM estimator";
             break;
@@ -824,6 +828,8 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
         return EARS_FEATURE_ONSETDETECTIONGLOBAL;
     if (s == gensym("onsetrate"))
         return EARS_FEATURE_ONSETRATE;
+    if (s == gensym("onsets"))
+        return EARS_FEATURE_ONSETS;
     if (s == gensym("percivalbpmestimator"))
         return EARS_FEATURE_PERCIVALBPMESTIMATOR;
     if (s == gensym("rhythmdescriptors"))
@@ -1303,7 +1309,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
             t_ears_essentia_analysis_params params = buf_features_get_default_params(x);
             if (x->extractors_lib.num_extractors > 0)
                 ears_essentia_extractors_library_free(&x->extractors_lib);
-            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params);
+            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params, true);
             x->must_recreate_extractors = true; //still will have to re-create them
         }
         

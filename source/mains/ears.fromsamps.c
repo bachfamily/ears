@@ -98,7 +98,9 @@ int C74_EXPORT main(void)
     // If the llll has depth 2, each levels of parentheses is considered to be a channel.
     // The buffer name will be then output.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(fromsamps)
-    
+
+    earsbufobj_class_add_outname_attr(c);
+
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_fromsamps, sr);
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");
     CLASS_ATTR_BASIC(c, "sr", 0);

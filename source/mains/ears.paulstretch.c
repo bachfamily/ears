@@ -33,7 +33,7 @@
 	buffer, stretch, timestretch, expand, compress
  
 	@seealso
-	ears.freeverb~
+	ears.freeverb~, ears.paulfreeze~
 	
 	@owner
 	Daniele Ghisi
@@ -52,7 +52,6 @@ typedef struct _buf_paulstretch {
     t_earsbufobj       e_ob;
     
     t_llll             *e_factor;
-    double             e_framesize;
     char               e_spectral;
 } t_buf_paulstretch;
 
@@ -169,7 +168,7 @@ t_buf_paulstretch *buf_paulstretch_new(t_symbol *s, short argc, t_atom *argv)
         // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
 
         x->e_factor = llll_from_text_buf("1.");
-        x->e_framesize = 8192; // 8192 samples as default
+        x->e_ob.a_framesize = 8192; // 8192 samples as default
         x->e_spectral = true;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
@@ -223,9 +222,9 @@ void buf_paulstretch_bang(t_buf_paulstretch *x)
             if (in != out)
                 ears_buffer_clone((t_object *)x, in, out);
         } if (env->l_depth == 1 && env->l_head) {
-            ears_buffer_paulstretch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, hatom_getdouble(&env->l_head->l_hatom), in), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_framesize, in, false, true), x->e_spectral);
+            ears_buffer_paulstretch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, hatom_getdouble(&env->l_head->l_hatom), in), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, false, true), x->e_spectral);
         } else {
-            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_framesize, in, false, true), x->e_spectral, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_timeunit)x->e_ob.l_timeunit);
+            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, false, true), x->e_spectral, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_timeunit)x->e_ob.l_timeunit);
         }
         
         llll_free(env);

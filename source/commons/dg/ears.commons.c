@@ -2468,6 +2468,65 @@ t_ears_err ears_buffer_from_llll(t_object *ob, t_buffer_obj *buf, t_llll *ll, ch
 }
 
 
+
+t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onsets_samps, t_buffer_obj *impulse)
+{
+    if (!buf)
+        return EARS_ERR_NO_BUFFER;
+
+    if (!onsets_samps)
+        return EARS_ERR_GENERIC;
+    
+    long num_channels = onsets_samps->l_size;
+    if (num_channels < 1)
+        return EARS_ERR_GENERIC;
+    
+    t_buffer_obj **chans = (t_buffer_obj **)bach_newptr(MAX(num_channels, 1) * sizeof(t_buffer_obj *));
+    
+    if (num_channels == 1) {
+        chans[0] = buf;
+    } else if (num_channels > 1) {
+        for (long i = 0; i < num_channels; i++) {
+            chans[i] = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
+            ears_buffer_copy_format(ob, impulse, chans[i]);
+        }
+    }
+    for (t_llllelem *onset_el = onsets_samps->l_head; onset_el; onset_el = onset_el->l_next) {
+        t_llll *these_onsets = hatom_getllll(&onset_el->l_hatom);
+        if (these_onsets) {
+            long num_onsets = these_onsets->l_size;
+            t_llll *gains = llll_get();
+            long *offset_samps = (long *)bach_newptr(MAX(num_onsets, 1) * sizeof(long));
+            t_buffer_obj **sources = (t_buffer_obj **)bach_newptr(MAX(num_onsets, 1) * sizeof(t_buffer_obj *));
+            for (long i = 0; i < num_onsets; i++) {
+                llll_appenddouble(gains, 1.);
+                sources[i] = impulse;
+            }
+            long j = 0;
+            for (t_llllelem *el = these_onsets->l_head; el; el = el->l_next) {
+                offset_samps[j] = hatom_getdouble(&el->l_hatom);
+                j++;
+            }
+            ears_buffer_mix(ob, sources, num_onsets, buf, gains, offset_samps, EARS_NORMALIZE_DONT, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, 10);
+            
+            bach_freeptr(offset_samps);
+            bach_freeptr(sources);
+        }
+    }
+    
+    if (num_channels > 1) {
+        ears_buffer_pack(ob, num_channels, chans, buf, EARS_RESAMPLINGPOLICY_DONT, 10);
+        for (long i = 0; i < num_channels; i++)
+            object_free(chans[i]);
+    }
+    
+    bach_freeptr(chans);
+
+    return EARS_ERR_NONE;
+}
+
+
+
 t_pts elem_to_pts(t_llllelem *incoming_el)
 {
     t_pts out;
