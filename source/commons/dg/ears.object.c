@@ -2060,14 +2060,20 @@ void earsbufobj_importreplace_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out typ
 }
 
 
-
+long earsbufobj_get_instore_size(t_earsbufobj *e_ob, long store_idx)
+{
+    if (store_idx >= 0 && store_idx < e_ob->l_numbufins)
+        return e_ob->l_instore[store_idx].num_stored_bufs;
+    return 0;
+}
 
 void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *buffername)
 {
     if (buffername) {
         switch (type) {
             case EARSBUFOBJ_IN:
-                if (store_idx >= 0 && store_idx < e_ob->l_numbufins && buffer_idx >= 0 && buffer_idx < e_ob->l_instore[store_idx].num_stored_bufs) {
+                if (store_idx >= 0 && store_idx < e_ob->l_numbufins &&
+                    buffer_idx >= 0 && buffer_idx < earsbufobj_get_instore_size(e_ob, store_idx)) {
                     t_earsbufobj_store *store = &e_ob->l_instore[store_idx];
                     if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS)) {
                         store->stored_buf[buffer_idx].l_name = buffername;
@@ -2088,9 +2094,25 @@ void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                     }
                     
                     if (!store->stored_buf[buffer_idx].l_buf) {
-                        object_error((t_object *)e_ob, EARS_ERROR_BUF_NO_BUFFER_NAMED, buffername ? buffername->s_name : "???");
+                        t_max_err err = object_free(store->stored_buf[buffer_idx].l_ref); // CHECK!!!
                         store->stored_buf[buffer_idx].l_ref = NULL;
                         store->stored_buf[buffer_idx].l_name = NULL;
+                        object_error((t_object *)e_ob, EARS_ERROR_BUF_NO_BUFFER_NAMED, buffername ? buffername->s_name : "???");
+/*
+                        // in some rare occasions this is NULL although it should not be.
+                        // It's a bit weird, and it's empirical. In any case, we give it another chance.
+                        if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS)) {
+                            store->stored_buf[buffer_idx].l_ref = buffer_ref_new((t_object *)e_ob, buffername);
+                            store->stored_buf[buffer_idx].l_buf = buffer_ref_getobject(store->stored_buf[buffer_idx].l_ref);
+                        }
+
+                        if (!store->stored_buf[buffer_idx].l_buf) {
+                            object_error((t_object *)e_ob, EARS_ERROR_BUF_NO_BUFFER_NAMED, buffername ? buffername->s_name : "???");
+                            object_free(store->stored_buf[buffer_idx].l_ref); // CHECK!!!
+                            store->stored_buf[buffer_idx].l_ref = NULL;
+                            store->stored_buf[buffer_idx].l_name = NULL;
+                        } */
+                        
 //                        earsbufobj_buffer_link(e_ob, type, store_idx, buffer_idx, symbol_unique()); // storing an empty buffer instead
                     }
                 }

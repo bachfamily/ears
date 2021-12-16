@@ -258,7 +258,7 @@ void buf_assemble_bang(t_buf_assemble *x)
 
 void buf_assemble_once(t_buf_assemble *x)
 {
-    if (((t_earsbufobj *)x)->l_instore[0].num_stored_bufs < 1)
+    if (earsbufobj_get_instore_size((t_earsbufobj *)x, 0) < 1)
         return;
     
     t_llll *gains = llll_clone(x->gains);

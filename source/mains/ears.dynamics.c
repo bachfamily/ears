@@ -40,6 +40,11 @@
 	Daniele Ghisi
  */
 
+// TO DO: ADD LOOKAHEAD for LIMITER
+// perhaps change this module to a ears.comp~ and an ears.limiter~  both calling the same function?
+// but in the limiter case with ratio = inf and attack time = 0 ?
+
+
 #include "ext.h"
 #include "ext_obex.h"
 #include "llllobj.h"
@@ -216,8 +221,8 @@ void buf_dynamics_free(t_buf_dynamics *x)
 
 void buf_dynamics_bang(t_buf_dynamics *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
-    long num_buffers_sidechain = ((t_earsbufobj *)x)->l_instore[1].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
+    long num_buffers_sidechain = earsbufobj_get_instore_size((t_earsbufobj *)x, 1);
 
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);

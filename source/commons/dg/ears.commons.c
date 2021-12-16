@@ -2917,8 +2917,9 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         long actual_fade_out_samples = CLAMP(fade_out_samples, 0, framecount);
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
-        float *dest_sample = buffer_locksamples(dest);
+        ears_buffer_copy_format(ob, source, dest);
         
+        float *dest_sample = buffer_locksamples(dest);
         t_atom_long dest_channelcount = buffer_getchannelcount(dest);
         
         if (!dest_sample) {
@@ -5104,7 +5105,7 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
     t_ears_err err = EARS_ERR_NONE;
     double half_kneewidth_dB = kneewidth_dB / 2.;
     float *source_sample = buffer_locksamples(source);
-    bool inplace = false;
+    bool inplace = false, separate_sidechain = false;
     
     if (!source_sample) {
         err = EARS_ERR_CANT_READ;
@@ -5128,10 +5129,12 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
         
         float *sidechain_sample;
         if (sidechain == source || !sidechain) {
+            separate_sidechain = false;
             sidechain_sample = source_sample;
             sidechain_channelcount = source_channelcount;
             sidechain_framecount = source_framecount;
         } else {
+            separate_sidechain = true;
             sidechain_channelcount = buffer_getchannelcount(sidechain);
             sidechain_framecount = buffer_getframecount(sidechain);
             sidechain_sample = buffer_locksamples(sidechain);
@@ -5194,6 +5197,9 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
             if (!inplace)
                 buffer_unlocksamples(dest);
         }
+        
+        if (separate_sidechain)
+            buffer_unlocksamples(sidechain);
         
         buffer_unlocksamples(source);
     }

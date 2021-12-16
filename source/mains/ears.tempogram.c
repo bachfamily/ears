@@ -233,7 +233,7 @@ t_ears_essentia_analysis_params buf_tempogram_get_params(t_buf_tempogram *x, t_b
 
 void buf_tempogram_bang(t_buf_tempogram *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     long downmix = x->downmix;
     std::vector<essentia::Real> frequencyBands = {0, 50, 100, 150, 200, 300, 400, 510, 630, 770, 920, 1080, 1270, 1480, 1720, 2000, 2320, 2700, 3150, 3700, 4400, 5300, 6400, 7700, 9500, 12000, 15500, 20500, 27000};
     

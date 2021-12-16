@@ -216,7 +216,7 @@ t_ears_essentia_analysis_params buf_istft_get_params(t_buf_istft *x, t_buffer_ob
 
 void buf_istft_bang(t_buf_istft *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     

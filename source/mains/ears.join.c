@@ -215,7 +215,7 @@ void buf_join_free(t_buf_join *x)
 
 void buf_join_bang(t_buf_join *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     
     t_buffer_obj **inbufs = (t_buffer_obj **)bach_newptrclear(num_buffers * sizeof(t_buffer_obj *));
     long *xfade_samps = (long *)bach_newptrclear(num_buffers * sizeof(long));
@@ -248,12 +248,13 @@ void buf_join_anything(t_buf_join *x, t_symbol *msg, long ac, t_atom *av)
     
     if (parsed && parsed->l_head) {
         if (inlet == 0) {
-            long count = 0, num_buffers = parsed->l_size;
+            long count = 0;
+            long num_bufs = llll_get_num_symbols_root(parsed);
             
 //            earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
             
-            for (t_llllelem *elem = parsed->l_head; elem; elem = elem->l_next, count++) {
+            for (t_llllelem *elem = parsed->l_head; elem; elem = elem->l_next) {
                 if (hatom_gettype(&elem->l_hatom) == H_SYM) {
                     t_symbol *buf = hatom_getsym(&elem->l_hatom);
 
@@ -262,7 +263,7 @@ void buf_join_anything(t_buf_join *x, t_symbol *msg, long ac, t_atom *av)
                     
                     if (count == 0)
                         earsbufobj_store_copy_format((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, EARSBUFOBJ_OUT, 0, 0);
-                    
+                    count++;
                 }
             }
             

@@ -169,8 +169,10 @@ void buf_tosamps_anything(t_buf_tosamps *x, t_symbol *msg, long ac, t_atom *av)
     
     if (parsed && parsed->l_head) {
         if (inlet == 0) {
-            if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM)
+            if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 1, true);
                 earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, hatom_getsym(&parsed->l_head->l_hatom));
+            }
             
             buf_tosamps_bang(x);
         }

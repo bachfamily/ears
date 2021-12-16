@@ -184,7 +184,7 @@ void buf_onepole_free(t_buf_onepole *x)
 
 void buf_onepole_bang(t_buf_onepole *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     long highpass = x->highpass;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);

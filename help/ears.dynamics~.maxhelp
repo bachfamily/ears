@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 79.0, 819.0, 497.0 ],
+		"rect" : [ 384.0, 79.0, 819.0, 497.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 819.0, 471.0 ],
+						"rect" : [ 384.0, 105.0, 819.0, 471.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -95,8 +95,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 335.0, 328.5, 172.0, 23.0 ],
-									"text" : "ears.pan~ @numchannels 2"
+									"patching_rect" : [ 428.0, 328.5, 99.0, 23.0 ],
+									"text" : "ears.pan~ 2 0.5"
 								}
 
 							}
@@ -130,14 +130,10 @@
 									"id" : "obj-30",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 266.0, 366.5, 88.0, 23.0 ],
-									"saved_object_attributes" : 									{
-										"versionnumber" : 80104
-									}
-,
-									"text" : "bach.join"
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 266.0, 366.5, 181.0, 23.0 ],
+									"text" : "zl.join"
 								}
 
 							}
@@ -163,7 +159,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 120.0, 170.994669000000044, 176.0, 25.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Reference buffers for gain"
 								}
 
@@ -312,7 +307,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u416004495",
+									"buffername" : "u905006850",
 									"id" : "obj-31",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -344,7 +339,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 88.795989990234375, 123.0, 171.0, 25.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Buffer(s) to be processed"
 								}
 
@@ -370,8 +364,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 328.5, 313.0, 23.0 ],
-									"text" : "ears.dynamics~ @thresh -40 @ratio 30 @release 50"
+									"patching_rect" : [ 10.0, 328.5, 398.0, 23.0 ],
+									"text" : "ears.dynamics~ @thresh -40 @ratio 30 @release 50 @makeup -12"
 								}
 
 							}
@@ -674,7 +668,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 105.0, 819.0, 471.0 ],
+						"rect" : [ 0.0, 26.0, 819.0, 471.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -902,7 +896,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u426000576",
+									"buffername" : "u395000595",
 									"id" : "obj-31",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1003,8 +997,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 294.5, 100.0, 23.0 ],
-									"text" : "ears.dynamics~"
+									"patching_rect" : [ 17.0, 294.5, 175.0, 23.0 ],
+									"text" : "ears.dynamics~ @thresh -50"
 								}
 
 							}
@@ -1284,10 +1278,6 @@
 			}
 , 			{
 				"name" : "ears.mix~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.join.mxo",
 				"type" : "iLaX"
 			}
 , 			{

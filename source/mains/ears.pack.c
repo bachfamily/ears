@@ -270,7 +270,7 @@ void buf_pack_bang(t_buf_pack *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
     
     for (long i = 0; i < x->e_ob.l_numins; i++) {
-        long num_buffers = ((t_earsbufobj *)x)->l_instore[i].num_stored_bufs;
+        long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, i);
         for (long count = 0; count < num_buffers; count++) {
             llll_appendobj(buffers, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, count));
         }

@@ -211,7 +211,11 @@ void buf_unpack_bang(t_buf_unpack *x)
         for (long i = 0; i < numoutbufs; i++, el = el ? el->l_next : NULL) {
             t_object *thisout = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, i, 0);
             long this_num_channels = el ? hatom_getlong(&el->l_hatom) : MAX(0, num_orig_channels - offset);
-            ears_buffer_extractchannels((t_object *)x, orig, thisout, this_num_channels, channels + offset);
+            if (this_num_channels == 0) {
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, i, 0, false);
+            } else {
+                ears_buffer_extractchannels((t_object *)x, orig, thisout, this_num_channels, channels + offset);
+            }
             offset += this_num_channels;
         }
     }
@@ -227,8 +231,10 @@ void buf_unpack_anything(t_buf_unpack *x, t_symbol *msg, long ac, t_atom *av)
     if (!parsed) return;
     
     if (parsed && parsed->l_head) {
-        if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM)
+        if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 1, true);
             earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, hatom_getsym(&parsed->l_head->l_hatom));
+        }
         
         buf_unpack_bang(x);
     }

@@ -585,10 +585,24 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     int indexOfDataChunk = getIndexOfChunk (fileData, "data", 12);
     int indexOfFormatChunk = getIndexOfChunk (fileData, "fmt ", 12);
     int indexOfCueChunk = getIndexOfChunk (fileData, "cue ", 12);
+    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12);
+
     int indexOfListChunk = getIndexOfChunk (fileData, "list", 12);
     if (indexOfListChunk == -1)
         indexOfListChunk = getIndexOfChunk (fileData, "LIST", 12); // apparently software support a bit of both
-    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12);
+    // HOWEVER, LIST chunks can be used for many things, what we need is an "adtl" spec
+    while (indexOfListChunk > -1) {
+        int f = indexOfListChunk;
+        std::string listTypeID (fileData.begin() + f + 8, fileData.begin() + f + 12);
+        if (listTypeID == "adtl" || listTypeID == "ADTL") {
+            break; // ok, that's our chunk
+        } else {
+            // "LIST" chunk contains othe information, such as software INFO
+            indexOfListChunk = getIndexOfChunk (fileData, "list", f + 12);
+            if (indexOfListChunk == -1) // apparently software support a bit of both
+                indexOfListChunk = getIndexOfChunk (fileData, "LIST", f + 12);
+        }
+    }
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
     // then it is unlikely we'll able to read this file, so abort

@@ -987,7 +987,8 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
         return;
     
     if (parsed->l_head) {
-        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, parsed->l_size, true);
+        long num_bufs = llll_get_num_symbols_root(parsed);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, num_bufs, true);
         earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
     }
     
