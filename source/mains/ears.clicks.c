@@ -202,9 +202,9 @@ void buf_clicks_anything(t_buf_clicks *x, t_symbol *msg, long ac, t_atom *av)
     if (parsed) {
         if (inlet == 1) {
             t_llll *temp = llll_clone(parsed);
-            llll_behead(temp);
+            llll_wrap_once(&temp);
             ears_buffer_set_sr((t_object *)x, x->impulse, x->sr > 0 ? x->sr : ears_get_current_Max_sr());
-            ears_buffer_from_llll((t_object *)x, x->impulse, temp, 0);
+            ears_buffer_from_llll((t_object *)x, x->impulse, temp, 1);
             llll_free(temp);
         } else if (inlet == 0){
             if (parsed->l_depth == 1) // flat llll = 1 channel only

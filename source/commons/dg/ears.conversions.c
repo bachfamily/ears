@@ -163,6 +163,8 @@ e_ears_ampunit ears_ampunit_from_symbol(t_symbol *s)
     return EARS_AMPUNIT_UNKNOWN;
 }
 
+
+
 double ears_ms_to_fsamps(double ms, double sr)
 {
     return ms * sr / 1000.;

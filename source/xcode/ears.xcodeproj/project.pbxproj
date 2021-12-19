@@ -1776,7 +1776,6 @@
 		1E1249C521777AE40040B2EA /* ears.rot~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.rot~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E1249C721777B090040B2EA /* ears.rot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.rot.c; path = ../mains/ears.rot.c; sourceTree = SOURCE_ROOT; };
 		1E12D0F827600A8900DBA8B6 /* ears.dynamics~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.dynamics~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E12D0F927600A8900DBA8B6 /* ears.paulstretch~ copy2-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.paulstretch~ copy2-Info.plist"; path = "/Users/danieleghisi/Documents/Max 7/Packages/ears/source/xcode/ears.paulstretch~ copy2-Info.plist"; sourceTree = "<absolute>"; };
 		1E12D0FA27600AC600DBA8B6 /* ears.dynamics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.dynamics.c; path = ../mains/ears.dynamics.c; sourceTree = "<group>"; };
 		1E143BC524F6ADE3002EF253 /* ears.clip~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.clip~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E143BC724F6AE09002EF253 /* ears.clip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.clip.c; path = ../mains/ears.clip.c; sourceTree = "<group>"; };
@@ -1901,7 +1900,6 @@
 		1E5D94B41D39B2D800BFB88E /* ears.utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.utils.c; path = ../commons/dg/ears.utils.c; sourceTree = "<group>"; };
 		1E5D94B51D39B2D800BFB88E /* ears.utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.utils.h; path = ../commons/dg/ears.utils.h; sourceTree = "<group>"; };
 		1E5E1909275E58DA00C3E0C3 /* ears.clicks~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.clicks~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E5E190A275E58DA00C3E0C3 /* ears.fromsamps~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.fromsamps~ copy-Info.plist"; path = "/Users/danieleghisi/Documents/Max 7/Packages/ears/source/xcode/ears.fromsamps~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		1E5E190B275E58F700C3E0C3 /* ears.clicks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.clicks.c; path = ../mains/ears.clicks.c; sourceTree = "<group>"; };
 		1E5F485824FC25C8004275F3 /* ears.hoa.encode~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.hoa.encode~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E5F485C24FC25F5004275F3 /* ears.hoa.encode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.hoa.encode.c; path = ../mains/ears.hoa.encode.c; sourceTree = "<group>"; };
@@ -2009,7 +2007,6 @@
 		1E9FEB6B26147D5A00D64CE9 /* ears.cqt~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.cqt~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9FEB6D26147D8600D64CE9 /* ears.cqt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.cqt.c; path = ../mains/ears.cqt.c; sourceTree = "<group>"; };
 		1EA11BA0273BF1BE00DA8E4C /* ears.assemble~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.assemble~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1EA11BA1273BF1BF00DA8E4C /* ears.mix~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.mix~ copy-Info.plist"; path = "/Users/danieleghisi/Documents/Max 7/Packages/ears/source/xcode/ears.mix~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		1EA11BA2273BF1D800DA8E4C /* ears.assemble.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.assemble.c; path = ../mains/ears.assemble.c; sourceTree = "<group>"; };
 		1EAD878926135E2100D8DD59 /* ears.stft~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.stft~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EB26937261EF75A000F48B4 /* ears.model.sine.analysis~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.model.sine.analysis~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2035,7 +2032,6 @@
 		1EBE3E4D1D368FB1009B7392 /* ears.object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.object.c; path = ../commons/dg/ears.object.c; sourceTree = "<group>"; };
 		1EBE3E4E1D368FB1009B7392 /* ears.object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.object.h; path = ../commons/dg/ears.object.h; sourceTree = "<group>"; };
 		1EBEAA68275F67D400EFB2CF /* ears.paulfreeze~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.paulfreeze~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1EBEAA69275F67D400EFB2CF /* ears.paulstretch~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.paulstretch~ copy-Info.plist"; path = "/Users/danieleghisi/Documents/Max 7/Packages/ears/source/xcode/ears.paulstretch~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		1EBEAA6C275F680B00EFB2CF /* ears.paulfreeze.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.paulfreeze.c; path = ../mains/ears.paulfreeze.c; sourceTree = "<group>"; };
 		1EC43EA024F7BC58006658C4 /* ears.window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.window.c; path = ../mains/ears.window.c; sourceTree = "<group>"; };
 		1EC43EA224F7BF42006658C4 /* ears.windows.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.windows.c; path = ../commons/dg/ears.windows.c; sourceTree = "<group>"; };
@@ -2810,10 +2806,6 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
-				1EA11BA1273BF1BF00DA8E4C /* ears.mix~ copy-Info.plist */,
-				1E5E190A275E58DA00C3E0C3 /* ears.fromsamps~ copy-Info.plist */,
-				1EBEAA69275F67D400EFB2CF /* ears.paulstretch~ copy-Info.plist */,
-				1E12D0F927600A8900DBA8B6 /* ears.paulstretch~ copy2-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
@@ -8888,7 +8880,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.paulstretch~ copy2-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -8925,7 +8916,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.paulstretch~ copy2-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -10236,7 +10226,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.fromsamps~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -10273,7 +10262,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.fromsamps~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -11499,7 +11487,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.mix~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -11536,7 +11523,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.mix~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -12170,7 +12156,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.paulstretch~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -12207,7 +12192,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.paulstretch~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

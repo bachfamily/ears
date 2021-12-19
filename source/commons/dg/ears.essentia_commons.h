@@ -170,11 +170,12 @@ typedef enum {
 } e_ears_essentia_temporalmode;
 
 typedef enum {
+    EARS_ESSENTIA_SUMMARIZATION_UNKNOWN = -1,
     EARS_ESSENTIA_SUMMARIZATION_FIRST = 0,
     EARS_ESSENTIA_SUMMARIZATION_LAST,
     EARS_ESSENTIA_SUMMARIZATION_MIDDLE,
     EARS_ESSENTIA_SUMMARIZATION_MEAN,
-    EARS_ESSENTIA_SUMMARIZATION_MEANOFPOSITIVES,
+    EARS_ESSENTIA_SUMMARIZATION_MEDIAN,
     EARS_ESSENTIA_SUMMARIZATION_MODE,
 } e_ears_essentia_summarization;
 
@@ -200,6 +201,7 @@ typedef enum {
     EARS_ESSENTIA_EXTRACTOR_INPUT_LOUDNESS,
     EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE,
     EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILEBATCH,
+    EARS_ESSENTIA_EXTRACTOR_INPUT_ONSETDETECTION_AND_WEIGHTS,
 } e_ears_essentia_extractor_input_type;
 
 typedef enum {
@@ -253,8 +255,14 @@ typedef struct _ears_essentia_extractor
     const char  *output_desc[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // actual description used
     char        output_type[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS]; // actual type used when outputting
     int         output_map[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
-    e_ears_essentia_summarization         summarization[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     bool        prevent_flattening[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS][3];
+    bool        keep_singleton_as_lists[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    
+    // Summarization
+    e_ears_essentia_summarization       summarization[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    e_ears_essentia_summarizationweight summarizationweight[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    bool                                summarizationpositiveonly[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+
 
     e_ears_essentia_temporalmode          temporalmode;
 
@@ -296,6 +304,7 @@ typedef struct _ears_essentia_extractors_library
     Algorithm *alg_SpectralPeaks;
     Algorithm *alg_HPCP;
     Algorithm *alg_Pitch; // potentially could be chosen, currently it's YinFFT
+    Algorithm *alg_OnsetDetection;
 } t_ears_essentia_extractors_library;
 
 
@@ -366,6 +375,7 @@ typedef struct _ears_essentia_analysis_params
     // Summarization mode
     e_ears_essentia_summarization summarization;
     e_ears_essentia_summarizationweight summarizationweight;
+    bool summarizationpositiveonly;
     
     // Griffin Lim
     int     numGriffinLimIterations;

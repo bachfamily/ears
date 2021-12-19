@@ -1011,6 +1011,8 @@ t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             
             long new_dest_frames = end_sample - start_sample;
             ears_buffer_set_size_and_numchannels(ob, dest, new_dest_frames, channelcount);
+            ears_buffer_copy_format(ob, source, dest);
+
             t_atom_long dest_channelcount = buffer_getchannelcount(dest);
             float *dest_sample = buffer_locksamples(dest);
             
@@ -1473,8 +1475,7 @@ t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **sourc
 
     ears_buffer_preprocess_sr_policies_dry(ob, source, num_sources, resamplingpolicy, resamplingfiltersize, &sr, &must_resample);
 
-    if (must_resample && sr > 0)
-        ears_buffer_set_sr(ob, dest, sr);
+    ears_buffer_set_sr(ob, dest, sr);
     
     long num_channels = 0;
     long max_num_frames = 0;
@@ -3090,7 +3091,7 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
     float *dest_sample = NULL;
     double sr = ears_buffer_get_sr(ob, source[0]);
     
-    channelcount = buffer_getchannelcount(source[0]);		// number of floats in a frame
+    channelcount = buffer_getchannelcount(source[0]);
     for (i = 0, num_locked = 0; i < num_sources; i++, num_locked++) {
         if (source_first_unique_idx[i] == i) {
             samples[i] = buffer_locksamples(source[i]);
@@ -3108,6 +3109,8 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
     for (i = 0; i < num_sources; i++) {
         num_samples[i] = samples[i] ? buffer_getframecount(source[i]) : 0;
         num_channels[i] = samples[i] ? buffer_getchannelcount(source[i]) : 1;
+        if (num_channels[i] > channelcount)
+            channelcount = num_channels[i]; // using as number of channels the maximum number of channels in the input data
     }
 
     ears_buffer_preprocess_sr_policies(ob, source, num_sources, resamplingpolicy, resamplingfiltersize, &sr, &resampled, samples, num_samples, must_free_samples, source_first_unique_idx);

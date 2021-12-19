@@ -153,30 +153,41 @@ t_buf_crop *buf_crop_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         t_llllelem *cur = args ? args->l_head : NULL;
 
-        // @arg 1 @name start @optional 1 @type number
-        // @digest Starting point
-        // @description Starting point for cropping (unit depends on the <m>timeunit</m> attribute).
-        if (cur) {
-            if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
-                llll_free(x->from);
-                x->from = llll_clone(hatom_getllll(&cur->l_hatom));
-            } else {
-                llll_clear(x->from);
-                llll_appendhatom_clone(x->from, &cur->l_hatom);
+        // @arg 1 @name options @optional 1 @type list
+        // @digest Start and end options
+        // @description If a single number is provided, it is considered to be the ending point of the cropping
+        // (which would start at zero). If two numbers are provided, then they are the starting and ending point
+        // for cropping. Units always depend on the <m>timeunit</m> attribute.
+        if (args->l_size == 1) {
+            if (cur) {
+                if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
+                    llll_free(x->to);
+                    x->to = llll_clone(hatom_getllll(&cur->l_hatom));
+                } else {
+                    llll_clear(x->to);
+                    llll_appendhatom_clone(x->to, &cur->l_hatom);
+                }
             }
-            cur = cur ? cur->l_next : NULL;
-        }
-
-        // @arg 2 @name end @optional 1 @type number
-        // @digest Ending point
-        // @description Ending point for cropping (unit depends on the <m>timeunit</m> attribute).
-        if (cur) {
-            if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
-                llll_free(x->to);
-                x->to = llll_clone(hatom_getllll(&cur->l_hatom));
-            } else {
-                llll_clear(x->to);
-                llll_appendhatom_clone(x->to, &cur->l_hatom);
+        } else {
+            if (cur) {
+                if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
+                    llll_free(x->from);
+                    x->from = llll_clone(hatom_getllll(&cur->l_hatom));
+                } else {
+                    llll_clear(x->from);
+                    llll_appendhatom_clone(x->from, &cur->l_hatom);
+                }
+                cur = cur ? cur->l_next : NULL;
+            }
+            
+            if (cur) {
+                if (hatom_gettype(&cur->l_hatom) == H_LLLL) {
+                    llll_free(x->to);
+                    x->to = llll_clone(hatom_getllll(&cur->l_hatom));
+                } else {
+                    llll_clear(x->to);
+                    llll_appendhatom_clone(x->to, &cur->l_hatom);
+                }
             }
         }
         

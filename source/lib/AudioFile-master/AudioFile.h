@@ -1072,10 +1072,12 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath, WavAudioFormat audioEnc
     
     int32_t dataChunkSize = getNumSamplesPerChannel() * (getNumChannels() * bitDepth / 8);
 //    int16_t audioFormat = bitDepth == 32 ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
-    int16_t audioFormat = audioEncoding;
+    int16_t audioFormat = (int)audioEncoding;
     
     // see https://stackoverflow.com/questions/31739143/when-to-use-wave-extensible-format
-    if (audioFormat == WavAudioFormat::PCM && (getNumChannels() > 2 || bitDepth > 16 || sampleRate > 44100))
+    // However, if we save files with samplerate, say, 48000 as "extensible", most pieces of software won't open them.
+    //
+    if (audioFormat == WavAudioFormat::PCM && (getNumChannels() > 2 || bitDepth > 16)) // || sampleRate > 44100))
         audioFormat = WavAudioFormat::Extensible;
         
     int32_t formatChunkSize = audioFormat == WavAudioFormat::PCM ? 16 : 18;
@@ -1085,24 +1087,27 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath, WavAudioFormat audioEnc
     // HEADER CHUNK
     addStringToFileData (fileData, "RIFF");
     
-    // The file size in bytes is the header chunk size (4, not counting RIFF and WAVE) + the format
-    // chunk size (24) + the metadata part of the data chunk plus the actual data chunk size
-    int32_t fileSizeInBytes = 4 + formatChunkSize + 8 + 8 + dataChunkSize;
+    // The file size in bytes is the header chunk size (8, counting RIFF and WAVE) + the format
+    // chunk size (16 or 18 + other 8) + the metadata part of the data chunk plus the actual data chunk size
+    int32_t fileSizeInBytes = 4 + 8 + formatChunkSize + 8 + 8 + dataChunkSize;
     if (iXMLChunkSize > 0)
     {
         fileSizeInBytes += (8 + iXMLChunkSize);
     }
     
     // cue chunks change the fileSizeInBytes
-    fileSizeInBytes += 12 + cues.size() * 24;
-    
-    long size_listchunk = 4;
-    for (long c = 0; c < cues.size(); c++) {
-        long l = strlen(cues[c].label.c_str());
-        size_listchunk += 4 + 4 + 4 + ((l+1) % 2 == 0 ? l+1 : l+2);
+    long size_listchunk = 0;
+    if (cues.size() > 0) {
+        fileSizeInBytes += 12 + cues.size() * 24;
+        
+        size_listchunk = 4;
+        for (long c = 0; c < cues.size(); c++) {
+            long l = strlen(cues[c].label.c_str());
+            size_listchunk += 4 + 4 + 4 + ((l+1) % 2 == 0 ? l+1 : l+2);
+        }
+        
+        fileSizeInBytes += 8 + size_listchunk;
     }
-    
-    fileSizeInBytes += 4+4+size_listchunk;
 
     addInt32ToFileData (fileData, fileSizeInBytes);
     
@@ -1124,7 +1129,8 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath, WavAudioFormat audioEnc
     
     addInt16ToFileData (fileData, (int16_t)bitDepth);
     
-    if (audioFormat == WavAudioFormat::IEEEFloat)
+    if (formatChunkSize == 18)
+//    if (audioFormat == WavAudioFormat::IEEEFloat)
         addInt16ToFileData (fileData, 0); // extension size
     
     // -----------------------------------------------------------
@@ -1220,9 +1226,9 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath, WavAudioFormat audioEnc
     }
     
     // check that the various sizes we put in the metadata are correct
-    if (fileSizeInBytes != static_cast<int32_t> (fileData.size() - 8) || dataChunkSize != (getNumSamplesPerChannel() * getNumChannels() * (bitDepth / 8)))
+    if (fileSizeInBytes != static_cast<int32_t> (fileData.size()) || dataChunkSize != (getNumSamplesPerChannel() * getNumChannels() * (bitDepth / 8)))
     {
-        reportError ("ERROR: couldn't save file to " + filePath);
+        reportError ("ERROR: file size mismatch, couldn't save file to " + filePath);
         return false;
     }
     
