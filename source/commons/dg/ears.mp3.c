@@ -108,8 +108,8 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
     res = mpg123_read(mh, buffer, buffer_size, &done);
     
     if (done > 0) { // we have something to write
-        ears_buffer_set_size_and_numchannels(ob, buf, num_samples, channels);
         ears_buffer_set_sr(ob, buf, rate);
+        ears_buffer_set_size_and_numchannels(ob, buf, num_samples, channels);
         
         
         long numsamps = ears_buffer_get_size_samps(ob, buf);

@@ -283,7 +283,7 @@ void buf_format_free(t_buf_format *x)
 
 void buf_format_bang(t_buf_format *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     double sr = x->sr;
     double duration = x->duration;
     long numchannels = x->numchannels;

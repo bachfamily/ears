@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 197.0, 212.0, 671.0, 439.0 ],
+		"rect" : [ 100.0, 100.0, 671.0, 439.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 671.0, 413.0 ],
+						"rect" : [ 100.0, 126.0, 671.0, 413.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -134,7 +134,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 273.0, 71.0, 23.0 ],
+									"patching_rect" : [ 10.0, 293.0, 71.0, 23.0 ],
 									"text" : "print Paths"
 								}
 
@@ -173,7 +173,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 10.0, 234.5, 315.0, 23.0 ],
+									"patching_rect" : [ 10.0, 254.5, 315.0, 23.0 ],
 									"text" : "ears.write~"
 								}
 
@@ -334,7 +334,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 398.0, 255.0, 204.0, 25.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Create an mp3 with ID3v2 tags"
 								}
 
@@ -360,7 +359,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 472.0, 304.5, 178.0, 38.0 ],
-									"presentation_linecount" : 3,
 									"text" : "[ [ ID3v2 [ TPE1 You ] [ TALB MyALbum ] [ TDRC 2018 ] ] ]"
 								}
 
@@ -373,7 +371,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 361.0, 304.5, 108.0, 23.0 ],
-									"presentation_linecount" : 2,
 									"text" : "/tmp/sample.mp3"
 								}
 
@@ -490,7 +487,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 73.0, 640.0, 36.0 ],
+									"patching_rect" : [ 10.0, 73.0, 641.0, 36.0 ],
 									"text" : "Use fourth inlet to assign metadata tags. Tags are supported for all files, but depending on the file type  only a subportion of tags will be available (see ears.read~ to have a table of the supported tags for each file type).",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ],
 									"varname" : "u360001384"
@@ -697,7 +694,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 197.0, 238.0, 671.0, 413.0 ],
+						"rect" : [ 0.0, 26.0, 671.0, 413.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1633,7 +1630,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 138.0, 275.0, 200.0, 25.0 ],
-									"presentation_linecount" : 2,
 									"text" : "...also can be set via third inlet"
 								}
 

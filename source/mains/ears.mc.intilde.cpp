@@ -61,7 +61,7 @@ typedef struct _ears_mcintilde
 } t_ears_mcintilde;
 
 
-void *ears_mcintilde_new(long buf, long offset);
+t_ears_mcintilde *ears_mcintilde_new(t_symbol *s, long ac, t_atom* av);
 void ears_mcintilde_assist(t_ears_mcintilde *x, void *b, long m, long a, char *s);
 
 void ears_mcintilde_bang(t_ears_mcintilde *x);

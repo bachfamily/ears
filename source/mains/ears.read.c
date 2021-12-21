@@ -871,16 +871,16 @@ t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *fi
                 }
             }
             
+            char *annotation = NULL;
+            annotation = AIFF_GetAttribute(ref, AIFF_ANNO);
+            if (annotation) {
+                parse_annotation(annotation, has_data, sr, data);
+                free(annotation);
+            }
+            
             while (true) {
                 int id;
                 uint64_t position;
-                
-                char *annotation = NULL;
-                annotation = AIFF_GetAttribute(ref, AIFF_ANNO);
-                if (annotation) {
-                    parse_annotation(annotation, has_data, sr, data);
-                    free(annotation);
-                }
                 
                 char* name = NULL;
                 if (AIFF_ReadMarker(ref, &id, &position, &name) < 1)

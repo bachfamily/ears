@@ -203,7 +203,7 @@ void llll_to_coefficients(t_llll *ll, double *a0, double *a1, double *a2, double
 
 void buf_biquad_bang(t_buf_biquad *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     double a0 = 1, a1 = -2, a2 = 1, b1 = -2, b2 = 1;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);

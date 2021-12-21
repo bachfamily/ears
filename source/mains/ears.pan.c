@@ -345,7 +345,7 @@ void buf_pan_free(t_buf_pan *x)
 
 void buf_pan_bang(t_buf_pan *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     long num_out_channels = x->num_out_channels;
     e_ears_pan_modes pan_mode = (e_ears_pan_modes)x->pan_mode;
     e_ears_pan_laws pan_law = (e_ears_pan_laws)x->pan_law;

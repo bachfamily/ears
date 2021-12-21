@@ -75,11 +75,33 @@ typedef struct _buf_features {
     
     char               summarization;
     char               summarizationweight;
+    char               summarizationpositiveonly;
 
     double             a_envattacktime;
     double             a_envreleasetime;
 
-    long                buffer_output_interpolation_mode;
+    
+    // Specific parameters for transforms:
+    long               CQT_binsPerOctave;
+    double             CQT_minPitch;
+    long               CQT_numBins;
+    double             CQT_threshold;
+    long               CQT_minimumKernelSize;
+    double             CQT_scale;
+    
+    double             YIN_minFrequency;
+    double             YIN_maxFrequency;
+    double             YIN_tolerance;
+
+    double             PEAKS_magnitudeThreshold;
+    double             PEAKS_maxFrequency;
+    double             PEAKS_minFrequency;
+    long               PEAKS_maxPeaks;
+    t_symbol           *PEAKS_orderBy;
+    
+    t_symbol           *onsetDetectionMethod;
+    
+    long               buffer_output_interpolation_mode;
     
 } t_buf_features;
 
@@ -197,28 +219,131 @@ int C74_EXPORT main(void)
 
     
     CLASS_ATTR_CHAR(c, "summary", 0, t_buf_features, summarization);
-    CLASS_ATTR_STYLE_LABEL(c,"summary",0,"text","Summarization Mode");
-    CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean");
+    CLASS_ATTR_STYLE_LABEL(c,"summary",0,"enumindex","Summarization Mode");
+    CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean Median Mode");
     CLASS_ATTR_BASIC(c, "summary", 0);
-    CLASS_ATTR_FILTER_CLIP(c, "summary", 0, 4);
+    CLASS_ATTR_FILTER_CLIP(c, "summary", 0, 5);
+    CLASS_ATTR_CATEGORY(c, "summary", 0, "Summarization");
     // @description Sets the summarization mode, for features that are requested as static but needs to be computed on a frame-by-frame basis.
     // Available modes are:
     // <b>First</b>: take first frame; <br />
     // <b>Last</b>: last last frame; <br />
     // <b>Middle</b>: take middle frame; <br />
     // <b>Mean</b>: average through frames; <br />
-    // <b>Loudness-weighted Mean</b>: average through frames, weighting by frame loudness (default)<br />
+    // <b>Median</b>: median through frames (for use with single-valued features); <br />
+    // <b>Mode</b>: mode through frames (for use with discrete features). <br />
 
     
     CLASS_ATTR_CHAR(c, "summaryweight", 0, t_buf_features, summarizationweight);
-    CLASS_ATTR_STYLE_LABEL(c,"summaryweight",0,"text","Summarization Weight");
+    CLASS_ATTR_STYLE_LABEL(c,"summaryweight",0,"enumindex","Summarization Weight");
     CLASS_ATTR_ENUMINDEX(c, "summaryweight", 0, "None RMS Loudness");
     CLASS_ATTR_BASIC(c, "summaryweight", 0);
     CLASS_ATTR_FILTER_CLIP(c, "summaryweight", 0, 3);
+    CLASS_ATTR_CATEGORY(c, "summaryweight", 0, "Summarization");
     // @description Sets the summarization weight (only applicable when <m>summary</m> is set to "Mean"): None, RMS, Loudness.
 
     
+    CLASS_ATTR_CHAR(c, "summarypositive", 0, t_buf_features, summarizationpositiveonly);
+    CLASS_ATTR_STYLE_LABEL(c,"summarypositive",0,"onoff","Summarize Positive Values Only");
+    CLASS_ATTR_FILTER_CLIP(c, "summarypositive", 0, 1);
+    CLASS_ATTR_CATEGORY(c, "summarypositive", 0, "Summarization");
+    // @description Toggles the ability to only summarize the features with positive values (i.e. ignore negative or zero features),
+    // if any positive feature is found (otherwise, the summarization happens with all the values).
+    // When a feature is a vector or a matrix, it is enough for a single value in the vector or matrix to be positive in order for
+    // the whole vector to be accounted for.
+
     
+    
+    
+    // CQT attributes
+    CLASS_ATTR_LONG(c, "cqtbinsperoctave", 0, t_buf_features, CQT_binsPerOctave);
+    CLASS_ATTR_STYLE_LABEL(c,"cqtbinsperoctave",0,"text","CQT Bins Per Octave");
+    CLASS_ATTR_CATEGORY(c, "cqtbinsperoctave", 0, "Constant-Q Transform");
+    // @description Sets the number of bins per octave of the Constant-Q Transform.
+    
+    CLASS_ATTR_LONG(c, "cqtnumbins", 0, t_buf_features, CQT_numBins);
+    CLASS_ATTR_STYLE_LABEL(c,"cqtnumbins",0,"text","CQT Total Number of Bins");
+    CLASS_ATTR_CATEGORY(c, "cqtnumbins", 0, "Constant-Q Transform");
+    // @description Sets the total number of bins of the Constant-Q Transform.
+    
+    CLASS_ATTR_DOUBLE(c, "cqtminpitch", 0, t_buf_features, CQT_minPitch);
+    CLASS_ATTR_STYLE_LABEL(c,"cqtminpitch",0,"text","CQT Minimum Pitch");
+    CLASS_ATTR_CATEGORY(c, "cqtminpitch", 0, "Constant-Q Transform");
+    // @description Sets the minimum pitch (in the <m>pitchunit</m>) of the Constant-Q Transform.
+    
+    CLASS_ATTR_DOUBLE(c, "cqtthresh", 0, t_buf_features, CQT_threshold);
+    CLASS_ATTR_STYLE_LABEL(c,"cqtthresh",0,"text","CQT Threshold");
+    CLASS_ATTR_CATEGORY(c, "cqtthresh", 0, "Constant-Q Transform");
+    // @description Bins whose magnitude is below this quantile are discarded of the Constant-Q Transform.
+    
+    CLASS_ATTR_DOUBLE(c, "cqtscale", 0, t_buf_features, CQT_scale);
+    CLASS_ATTR_STYLE_LABEL(c,"cqtscale",0,"text","CQT Filters Scale");
+    CLASS_ATTR_CATEGORY(c, "cqtscale", 0, "Constant-Q Transform");
+    // @description Filters scale (larger values use longer windows) of the Constant-Q Transform.
+    
+    CLASS_ATTR_LONG(c, "cqtminkernelsize", 0, t_buf_features, CQT_minimumKernelSize);
+    CLASS_ATTR_STYLE_LABEL(c,"cqtminkernelsize",0,"text","CQT Minimum Kernel Size");
+    CLASS_ATTR_CATEGORY(c, "cqtminkernelsize", 0, "Constant-Q Transform");
+    // @description Sets the minimum size allowed for frequency kernels of the Constant-Q Transform.
+    
+    
+    // YIN attributes
+    CLASS_ATTR_DOUBLE(c, "yinminfreq", 0, t_buf_features, YIN_minFrequency);
+    CLASS_ATTR_STYLE_LABEL(c,"yinminfreq",0,"text","YIN Minimum Frequency");
+    CLASS_ATTR_CATEGORY(c, "yinminfreq", 0, "YIN");
+    // @description Sets the minimum frequency for the YIN analyis (in the <m>frequnit</m> attribute).
+
+    CLASS_ATTR_DOUBLE(c, "yinmaxfreq", 0, t_buf_features, YIN_maxFrequency);
+    CLASS_ATTR_STYLE_LABEL(c,"yinmaxfreq",0,"text","YIN Maximum Frequency");
+    CLASS_ATTR_CATEGORY(c, "yinmaxfreq", 0, "YIN");
+    // @description Sets the maximum frequency for the YIN analyis (in the <m>frequnit</m> attribute).
+
+    CLASS_ATTR_DOUBLE(c, "yintolerance", 0, t_buf_features, YIN_tolerance);
+    CLASS_ATTR_STYLE_LABEL(c,"yintolerance",0,"text","YIN Tolerance");
+    CLASS_ATTR_CATEGORY(c, "yintolerance", 0, "YIN");
+    // @description Sets the tolerance for the YIN analyis.
+
+    
+    // PEAKS attributes
+    CLASS_ATTR_DOUBLE(c, "peaksmagthresh", 0, t_buf_features, PEAKS_magnitudeThreshold);
+    CLASS_ATTR_STYLE_LABEL(c,"peaksmagthresh",0,"text","Peaks Magnitude Threshold");
+    CLASS_ATTR_CATEGORY(c, "peaksmagthresh", 0, "Peaks");
+    // @description Sets the magnitude threshold for the Peaks analyis (in the <m>ampunit</m> attribute).
+
+    CLASS_ATTR_DOUBLE(c, "peaksminfreq", 0, t_buf_features, PEAKS_minFrequency);
+    CLASS_ATTR_STYLE_LABEL(c,"peaksminfreq",0,"text","Peaks Minimum Frequency");
+    CLASS_ATTR_CATEGORY(c, "peaksminfreq", 0, "Peaks");
+    // @description Sets the minimum frequency for the Peaks analyis (in the <m>frequnit</m> attribute).
+
+    CLASS_ATTR_DOUBLE(c, "peaksmaxfreq", 0, t_buf_features, PEAKS_maxFrequency);
+    CLASS_ATTR_STYLE_LABEL(c,"peaksmaxfreq",0,"text","Peaks Maximum Frequency");
+    CLASS_ATTR_CATEGORY(c, "peaksmaxfreq", 0, "Peaks");
+    // @description Sets the maximum frequency for the Peaks analyis (in the <m>frequnit</m> attribute).
+
+    CLASS_ATTR_LONG(c, "peaksmaxnum", 0, t_buf_features, PEAKS_maxPeaks);
+    CLASS_ATTR_STYLE_LABEL(c,"peaksmaxnum",0,"text","Maximum Number Of Peaks");
+    CLASS_ATTR_CATEGORY(c, "peaksmaxnum", 0, "Peaks");
+    // @description Sets the maximum number of peaks for the Peaks analyis.
+
+    CLASS_ATTR_SYM(c, "peaksorderby", 0, t_buf_features, onsetDetectionMethod);
+    CLASS_ATTR_STYLE_LABEL(c,"peaksorderby",0,"enum","Order Peaks By");
+    CLASS_ATTR_ENUM(c, "peaksorderby", 0, "frequency magnitude");
+    CLASS_ATTR_CATEGORY(c, "peaksorderby", 0, "Peaks");
+    // @description Sets the ordering method of the peaks in the Peaks analysis.
+    
+    
+    CLASS_ATTR_SYM(c, "onsetdetectionmethod", 0, t_buf_features, onsetDetectionMethod);
+    CLASS_ATTR_STYLE_LABEL(c,"onsetdetectionmethod",0,"enum","Onset Detection Method");
+    CLASS_ATTR_ENUM(c, "onsetdetectionmethod", 0, "hfc complex complex_phase flux melflux rms");
+    CLASS_ATTR_CATEGORY(c, "onsetdetectionmethod", 0, "Onset Detection");
+    // @description Sets the method used for the onset detection: "hfc" (high frequency content),
+    // "complex" (the complex-domain spectral difference function), "complex_phase", (the simplified complex-domain
+    // spectral difference function taking into account phase changes, weighted by magnitude), "flux" (spectral flux),
+    // "melflux" (similar to spectral flux, but using half-rectified energy changes in Mel-frequency bands),
+    // "rms" (the difference function, measuring the half-rectified change of the RMS of the magnitude spectrum).
+    // Refer to the Essentia documentation for the "OnsetDetection" algorithm to know more.
+    
+
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -405,6 +530,10 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
             return "Onset rate";
             break;
 
+        case EARS_FEATURE_ONSETS:
+            return "Onsets";
+            break;
+            
         case EARS_FEATURE_PERCIVALBPMESTIMATOR:
             return "Percival BPM estimator";
             break;
@@ -824,6 +953,8 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode
         return EARS_FEATURE_ONSETDETECTIONGLOBAL;
     if (s == gensym("onsetrate"))
         return EARS_FEATURE_ONSETRATE;
+    if (s == gensym("onsets"))
+        return EARS_FEATURE_ONSETS;
     if (s == gensym("percivalbpmestimator"))
         return EARS_FEATURE_PERCIVALBPMESTIMATOR;
     if (s == gensym("rhythmdescriptors"))
@@ -989,6 +1120,11 @@ void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
     if (m == ASSIST_INLET) {
         if (a == 0)
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
+        else {
+            const char *feat_desc = ears_features_feature_to_description((e_ears_feature)x->features[a-1]);
+            sprintf(s, "list/llll: Parameters for feature No. %d (%s)", a, feat_desc);
+            // @in 1 @loop 1 @type llll @digest Parameters for each of the features (one inlet per feature).
+        }
     } else {
         long featidx = x->outlet_featureidx[a];
         long outidx = x->outlet_featureoutputidx[a];
@@ -1024,7 +1160,7 @@ void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
             sprintf(s, "Unused outlet");
         }
         // @out 0 @loop 1 @type llll/buffer @digest Feature for the corresponding key
-        // @descritpion Feature for one of the introduced key; some features require multiple outlets (see outlet assistance).
+        // @description Feature for one of the introduced key; some features require multiple outlets (see outlet assistance).
     }
 }
 
@@ -1226,6 +1362,30 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
         
         x->summarization = EARS_ESSENTIA_SUMMARIZATION_MEAN;
         x->summarizationweight = EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS;
+        x->summarizationpositiveonly = false;
+        
+        //CQT defaults
+        x->CQT_binsPerOctave = 12;
+        x->CQT_minPitch = 2400;
+        x->CQT_minimumKernelSize = 4;
+        x->CQT_numBins = 84;
+        x->CQT_threshold = 0.01;
+        x->CQT_scale = 1;
+        
+        // YIN defaults
+        x->YIN_minFrequency = 20;
+        x->YIN_maxFrequency = 22050;
+        x->YIN_tolerance = 1;
+        
+        // PEAKS defaults
+        x->PEAKS_magnitudeThreshold = 0;
+        x->PEAKS_maxFrequency = 5000;
+        x->PEAKS_minFrequency = 0;
+        x->PEAKS_maxPeaks = 100;
+        x->PEAKS_orderBy = gensym("frequency");
+        
+        // Onset detection method
+        x->onsetDetectionMethod = gensym("complex");
 
         // default analysis parameters
         x->a_envattacktime = 10;
@@ -1303,7 +1463,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
             t_ears_essentia_analysis_params params = buf_features_get_default_params(x);
             if (x->extractors_lib.num_extractors > 0)
                 ears_essentia_extractors_library_free(&x->extractors_lib);
-            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params);
+            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params, true);
             x->must_recreate_extractors = true; //still will have to re-create them
         }
         
@@ -1315,7 +1475,14 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
             outtypes[numoutlets-o-1] = (x->temporalmodes[feature_idx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER ? 'E' : '4');
         }
         outtypes[numoutlets] = 0;
-        earsbufobj_setup((t_earsbufobj *)x, "E", outtypes, NULL);
+        
+        char intypes[LLLL_MAX_INLETS];
+        intypes[0] = 'E';
+        for (long i = 0; i < x->num_features && i < LLLL_MAX_INLETS - 2; i++) {
+            intypes[i+1] = '4';
+        }
+        intypes[CLAMP(x->num_features + 1, 0, LLLL_MAX_INLETS-1)] = 0;
+        earsbufobj_setup((t_earsbufobj *)x, intypes, outtypes, NULL);
         llll_free(args);
     }
     return x;
@@ -1365,6 +1532,7 @@ t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *
     params.envelope_attack_time_samps = 441;
     params.envelope_release_time_samps = 4410;
     params.envelope_rectify = 1;
+    
     // CQT
     params.CQT_binsPerOctave = 12;
     params.CQT_minFrequency = ears_cents_to_hz(2400, EARS_MIDDLE_A_TUNING);
@@ -1373,7 +1541,7 @@ t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *
     params.CQT_minimumKernelSize = 4;
     params.CQT_scale = 1;
     
-    params.onsetDetectionMethod = "";
+    params.onsetDetectionMethod = "complex";
     
     params.HPCP_bandPreset = true;
     params.HPCP_bandSplitFrequency = 500;
@@ -1401,6 +1569,7 @@ t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *
     
     params.summarization = EARS_ESSENTIA_SUMMARIZATION_MEAN;
     params.summarizationweight = EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS;
+    params.summarizationpositiveonly = false;
 
     params.numGriffinLimIterations = 10;
     params.verbose = false;
@@ -1418,16 +1587,18 @@ t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buf
     
     params.summarization = (e_ears_essentia_summarization) x->summarization;
     params.summarizationweight = (e_ears_essentia_summarizationweight) x->summarizationweight;
+    params.summarizationpositiveonly = x->summarizationpositiveonly;
 
-    // TO DO: Expose these
-    params.CQT_binsPerOctave = 12;
-    params.CQT_minFrequency = ears_cents_to_hz(2400, EARS_MIDDLE_A_TUNING);
-    params.CQT_numberBins = 84;
-    params.CQT_threshold = 0.01;
-    params.CQT_minimumKernelSize = 4;
-    params.CQT_scale = 1;
+    params.CQT_binsPerOctave = x->CQT_binsPerOctave;
+    params.CQT_minFrequency = earsbufobj_pitch_to_hz((t_earsbufobj *)x, x->CQT_minPitch);
+    params.CQT_numberBins = x->CQT_binsPerOctave;
+    params.CQT_threshold = x->CQT_threshold;
+    params.CQT_minimumKernelSize = x->CQT_minimumKernelSize;
+    params.CQT_scale = x->CQT_scale;
 
-    
+    params.onsetDetectionMethod = x->onsetDetectionMethod->s_name; // "complex"; // to do: expose this
+
+    // TO DO: Expose HPCP stuff
     params.HPCP_bandPreset = true;
     params.HPCP_bandSplitFrequency = 500;
     params.HPCP_harmonics = 0;
@@ -1441,22 +1612,22 @@ t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buf
     params.HPCP_weightType = "squaredCosine";
     params.HPCP_windowSize = 1;
 
-    params.PEAKS_magnitudeThreshold = 0;
-    params.PEAKS_maxFrequency = 5000;
-    params.PEAKS_minFrequency = 0;
-    params.PEAKS_maxPeaks = 100;
-    params.PEAKS_orderBy = "frequency";
+    params.PEAKS_magnitudeThreshold = earsbufobj_amplitude_to_linear((t_earsbufobj *)x, x->PEAKS_magnitudeThreshold);
+    params.PEAKS_maxFrequency = earsbufobj_freq_to_hz((t_earsbufobj *)x, x->PEAKS_maxFrequency);
+    params.PEAKS_minFrequency = earsbufobj_freq_to_hz((t_earsbufobj *)x, x->PEAKS_minFrequency);
+    params.PEAKS_maxPeaks = x->PEAKS_maxPeaks;
+    params.PEAKS_orderBy = x->PEAKS_orderBy->s_name;
 
-    params.YIN_minFrequency = 20;
-    params.YIN_maxFrequency = 22050;
-    params.YIN_tolerance = 1;
+    params.YIN_minFrequency = earsbufobj_freq_to_hz((t_earsbufobj *)x, x->YIN_minFrequency);
+    params.YIN_maxFrequency = earsbufobj_freq_to_hz((t_earsbufobj *)x, x->YIN_maxFrequency);
+    params.YIN_tolerance = x->YIN_tolerance;
     params.verbose = true;
     return params;
 }
 
 void buf_features_bang(t_buf_features *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
@@ -1524,7 +1695,9 @@ void buf_features_bang(t_buf_features *x)
             long feat_outidx = x->outlet_featureoutputidx[o];
             long map = x->extractors_lib.extractors[feat_idx].output_map[feat_outidx];
             if (map >= 0 && x->extractors_lib.extractors[feat_idx].result[map]) {
-                if (x->extractors_lib.extractors[feat_idx].result[map]->l_size == 1 && x->extractors_lib.extractors[feat_idx].result[map]->l_depth == 1)
+                if (x->extractors_lib.extractors[feat_idx].result[map]->l_size == 1 &&
+                    x->extractors_lib.extractors[feat_idx].result[map]->l_depth == 1 &&
+                    !x->extractors_lib.extractors[feat_idx].keep_singleton_as_lists[map])
                     llll_chain_clone(res[o], x->extractors_lib.extractors[feat_idx].result[map]);
                 else
                     llll_appendllll_clone(res[o], x->extractors_lib.extractors[feat_idx].result[map]);
@@ -1566,6 +1739,60 @@ void buf_features_anything(t_buf_features *x, t_symbol *msg, long ac, t_atom *av
             
 //        } else if (inlet == 1) {
 //            buf_features_set_features(x, parsed);
+        } else {
+            // new arguments for specific feature
+
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            
+            long featidx = inlet - 1;
+            if (x->algorithm_args[featidx]) {
+                if (parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
+                    t_symbol *argname = hatom_getsym(&parsed->l_head->l_hatom);
+                    
+                    if (argname && argname->s_name) {
+                        
+                        bool found = false;
+                        for (t_llllelem *el = x->algorithm_args[featidx]->l_head; el; el = el->l_next) {
+                            if (hatom_gettype(&el->l_hatom) == H_SYM) {
+                                t_symbol *this_sym = hatom_getsym(&el->l_hatom);
+                                if (this_sym && this_sym->s_name && this_sym->s_name[0] == '@' &&
+                                    (strcmp(this_sym->s_name+1, argname->s_name) == 0 || strcmp(this_sym->s_name, argname->s_name) == 0)) {
+                                    found = true;
+                                    // finding next attribute
+                                    t_llllelem *temp = el->l_next;
+                                    while (temp) {
+                                        t_llllelem *next = temp->l_next;
+                                        if (hatom_gettype(&el->l_hatom) == H_SYM) {
+                                            t_symbol *this_other_sym = hatom_getsym(&temp->l_hatom);
+                                            if (this_other_sym && this_other_sym->s_name && this_other_sym->s_name[0] == '@') {
+                                                break;
+                                            }
+                                        }
+                                        llll_destroyelem(temp);
+                                        temp = next;
+                                    }
+                                    for (t_llllelem *insertel = parsed->l_tail; insertel && insertel != parsed->l_head; insertel = insertel->l_prev) {
+                                        llll_inserthatom_after_clone(&insertel->l_hatom, el);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (!found) {
+                            char temp[2000];
+                            snprintf_zero(temp, 2000, "@%s", argname->s_name);
+                            llll_appendsym(x->algorithm_args[featidx], gensym(temp));
+                            for (t_llllelem *insertel = parsed->l_head->l_next; insertel; insertel = insertel->l_next) {
+                                llll_appendhatom_clone(x->algorithm_args[featidx], &insertel->l_hatom);
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
         }
     }
     llll_free(parsed);

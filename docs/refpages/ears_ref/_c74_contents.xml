@@ -23,6 +23,7 @@
 <refpage name='ears.onepole~.maxref.xml'/>
 <refpage name='ears.rot~.maxref.xml'/>
 <refpage name='ears.write~.maxref.xml'/>
+<refpage name='ears.in~.maxref.xml'/>
 <refpage name='ears.tosamps~.maxref.xml'/>
 <refpage name='ears.info~.maxref.xml'/>
 <refpage name='ears.channel~.maxref.xml'/>
@@ -31,7 +32,9 @@
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
+<refpage name='ears.paulfreeze~.maxref.xml'/>
 <refpage name='ears.cqt~.maxref.xml'/>
+<refpage name='ears.dynamics~.maxref.xml'/>
 <refpage name='ears.envelope~.maxref.xml'/>
 <refpage name='ears.fade~.maxref.xml'/>
 <refpage name='ears.hoa.decode~.maxref.xml'/>
@@ -43,6 +46,7 @@
 <refpage name='ears.expr~.maxref.xml'/>
 <refpage name='ears.model.sps.synthesis~.maxref.xml'/>
 <refpage name='ears.paulstretch~.maxref.xml'/>
+<refpage name='ears.clicks~.maxref.xml'/>
 <refpage name='ears.fft~.maxref.xml'/>
 <refpage name='ears.peaks~.maxref.xml'/>
 <refpage name='ears.trim~.maxref.xml'/>

@@ -365,7 +365,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Amount" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -411,6 +410,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Fade Amount" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -530,14 +530,14 @@
 		</attribute>
 		<attribute name="timestretchslot" get="1" set="1" type="int" size="1">
 			<digest>
-				Slot Containing Transposition Amount
+				Slot Containing Timestretch Ratio
 			</digest>
 			<description>
 				Sets the number of slots containing the timestretch ratio (0 = none).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Transposition Amount" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Timestretch Ratio" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

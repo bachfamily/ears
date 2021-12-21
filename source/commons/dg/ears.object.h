@@ -311,6 +311,7 @@ t_object *earsbufobj_get_outlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, l
 t_symbol *earsbufobj_get_outlet_buffer_name(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 long earsbufobj_outlet_to_bufstore(t_earsbufobj *e_ob, long outlet);
 
+long earsbufobj_get_instore_size(t_earsbufobj *e_ob, long store_idx);
 void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *buffername);
 void earsbufobj_store_empty_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx);
 void earsbufobj_importreplace_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *filename);

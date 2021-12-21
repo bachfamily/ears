@@ -292,6 +292,7 @@ t_ears_err ears_buffer_from_llll(t_object *ob, t_buffer_obj *buf, t_llll *ll, ch
 t_atom_long ears_buffer_channel_to_array(t_object *ob, t_buffer_obj *buf, long channel, float **outsamples);
 t_atom_long ears_buffer_channel_to_double_array(t_object *ob, t_buffer_obj *buf, long channel, double **outsamples);
 
+t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onsets, t_buffer_obj *impulse);
 
 // Basic operations
 t_ears_err ears_buffer_setempty(t_object *ob, t_buffer_obj *buf, long num_channels);
@@ -340,7 +341,11 @@ t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj
 // Transposition
 t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
 
-
+// Compression
+t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj *sidechain, t_buffer_obj *dest,
+                                double threshold_dB, double ratio, double kneewidth_dB,
+                                double attack_time_samps, double release_time_samps,
+                                double makeup_dB);
 
 // GET properties
 t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf);

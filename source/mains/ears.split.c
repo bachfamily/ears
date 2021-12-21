@@ -339,11 +339,12 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
                 double prev_samp = 0;
                 double this_samp = 0;
                 for (t_llllelem *el = x->params->l_head; el; el = el->l_next) {
+                    double overlap_samps = earsbufobj_time_to_fsamps(e_ob, x->e_overlap, buf);
                     this_samp = earsbufobj_time_to_fsamps(e_ob, hatom_getdouble(&el->l_hatom), buf);
                     if (this_samp < size_samps) {
                         if (this_samp > prev_samp) {
                             llll_appendlong(*start, prev_samp);
-                            llll_appendlong(*end, this_samp);
+                            llll_appendlong(*end, MIN(this_samp + overlap_samps, size_samps));
                         }
                     } else {
                         llll_appendlong(*start, prev_samp);

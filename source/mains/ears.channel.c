@@ -183,7 +183,7 @@ void buf_channel_free(t_buf_channel *x)
 
 void buf_channel_bang(t_buf_channel *x)
 {
-    long num_buffers = ((t_earsbufobj *)x)->l_instore[0].num_stored_bufs;
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     t_llll *channel = NULL;
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);

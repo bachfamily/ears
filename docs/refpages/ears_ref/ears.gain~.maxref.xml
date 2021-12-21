@@ -371,6 +371,7 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.dynamics~" />
 		<seealso name="ears.normalize~" />
 		<seealso name="ears.envelope~" />
 	</seealsolist>

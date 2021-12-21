@@ -270,7 +270,7 @@ void buf_pack_bang(t_buf_pack *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
     
     for (long i = 0; i < x->e_ob.l_numins; i++) {
-        long num_buffers = ((t_earsbufobj *)x)->l_instore[i].num_stored_bufs;
+        long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, i);
         for (long count = 0; count < num_buffers; count++) {
             llll_appendobj(buffers, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, count));
         }
@@ -294,7 +294,7 @@ void buf_pack_anything(t_buf_pack *x, t_symbol *msg, long ac, t_atom *av)
     if (parsed && parsed->l_head) {
         long ishot = buf_pack_ishot(x, inlet);
         long num_bufs = llll_get_num_symbols_root(parsed);
-        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, num_bufs, true);
         earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
         
         if (ishot)

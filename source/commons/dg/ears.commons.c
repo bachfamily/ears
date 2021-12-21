@@ -390,7 +390,7 @@ t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long num
 }
 
 
-// ONE NEEDS TO BE SURE that this function is called when the samples of buf ARE NOT LOCKED!!!!
+// ONE NEEDS TO MAKE SURE that this function is called when the samples of buf ARE NOT LOCKED!!!!
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels)
 {
     t_atom a[2];
@@ -1011,6 +1011,8 @@ t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             
             long new_dest_frames = end_sample - start_sample;
             ears_buffer_set_size_and_numchannels(ob, dest, new_dest_frames, channelcount);
+            ears_buffer_copy_format(ob, source, dest);
+
             t_atom_long dest_channelcount = buffer_getchannelcount(dest);
             float *dest_sample = buffer_locksamples(dest);
             
@@ -1473,8 +1475,7 @@ t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **sourc
 
     ears_buffer_preprocess_sr_policies_dry(ob, source, num_sources, resamplingpolicy, resamplingfiltersize, &sr, &must_resample);
 
-    if (must_resample && sr > 0)
-        ears_buffer_set_sr(ob, dest, sr);
+    ears_buffer_set_sr(ob, dest, sr);
     
     long num_channels = 0;
     long max_num_frames = 0;
@@ -2468,6 +2469,65 @@ t_ears_err ears_buffer_from_llll(t_object *ob, t_buffer_obj *buf, t_llll *ll, ch
 }
 
 
+
+t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onsets_samps, t_buffer_obj *impulse)
+{
+    if (!buf)
+        return EARS_ERR_NO_BUFFER;
+
+    if (!onsets_samps)
+        return EARS_ERR_GENERIC;
+    
+    long num_channels = onsets_samps->l_size;
+    if (num_channels < 1)
+        return EARS_ERR_GENERIC;
+    
+    t_buffer_obj **chans = (t_buffer_obj **)bach_newptr(MAX(num_channels, 1) * sizeof(t_buffer_obj *));
+    
+    if (num_channels == 1) {
+        chans[0] = buf;
+    } else if (num_channels > 1) {
+        for (long i = 0; i < num_channels; i++) {
+            chans[i] = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
+            ears_buffer_copy_format(ob, impulse, chans[i]);
+        }
+    }
+    for (t_llllelem *onset_el = onsets_samps->l_head; onset_el; onset_el = onset_el->l_next) {
+        t_llll *these_onsets = hatom_getllll(&onset_el->l_hatom);
+        if (these_onsets) {
+            long num_onsets = these_onsets->l_size;
+            t_llll *gains = llll_get();
+            long *offset_samps = (long *)bach_newptr(MAX(num_onsets, 1) * sizeof(long));
+            t_buffer_obj **sources = (t_buffer_obj **)bach_newptr(MAX(num_onsets, 1) * sizeof(t_buffer_obj *));
+            for (long i = 0; i < num_onsets; i++) {
+                llll_appenddouble(gains, 1.);
+                sources[i] = impulse;
+            }
+            long j = 0;
+            for (t_llllelem *el = these_onsets->l_head; el; el = el->l_next) {
+                offset_samps[j] = hatom_getdouble(&el->l_hatom);
+                j++;
+            }
+            ears_buffer_mix(ob, sources, num_onsets, buf, gains, offset_samps, EARS_NORMALIZE_DONT, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, 10);
+            
+            bach_freeptr(offset_samps);
+            bach_freeptr(sources);
+        }
+    }
+    
+    if (num_channels > 1) {
+        ears_buffer_pack(ob, num_channels, chans, buf, EARS_RESAMPLINGPOLICY_DONT, 10);
+        for (long i = 0; i < num_channels; i++)
+            object_free(chans[i]);
+    }
+    
+    bach_freeptr(chans);
+
+    return EARS_ERR_NONE;
+}
+
+
+
 t_pts elem_to_pts(t_llllelem *incoming_el)
 {
     t_pts out;
@@ -2858,8 +2918,9 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         long actual_fade_out_samples = CLAMP(fade_out_samples, 0, framecount);
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
-        float *dest_sample = buffer_locksamples(dest);
+        ears_buffer_copy_format(ob, source, dest);
         
+        float *dest_sample = buffer_locksamples(dest);
         t_atom_long dest_channelcount = buffer_getchannelcount(dest);
         
         if (!dest_sample) {
@@ -3030,7 +3091,7 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
     float *dest_sample = NULL;
     double sr = ears_buffer_get_sr(ob, source[0]);
     
-    channelcount = buffer_getchannelcount(source[0]);		// number of floats in a frame
+    channelcount = buffer_getchannelcount(source[0]);
     for (i = 0, num_locked = 0; i < num_sources; i++, num_locked++) {
         if (source_first_unique_idx[i] == i) {
             samples[i] = buffer_locksamples(source[i]);
@@ -3048,6 +3109,8 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
     for (i = 0; i < num_sources; i++) {
         num_samples[i] = samples[i] ? buffer_getframecount(source[i]) : 0;
         num_channels[i] = samples[i] ? buffer_getchannelcount(source[i]) : 1;
+        if (num_channels[i] > channelcount)
+            channelcount = num_channels[i]; // using as number of channels the maximum number of channels in the input data
     }
 
     ears_buffer_preprocess_sr_policies(ob, source, num_sources, resamplingpolicy, resamplingfiltersize, &sr, &resampled, samples, num_samples, must_free_samples, source_first_unique_idx);
@@ -5028,6 +5091,124 @@ t_llll *ears_ezarithmser(double from, double step, long numitems)
     return out;
 }
 
+
+
+
+
+
+
+t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj *sidechain, t_buffer_obj *dest,
+                                double threshold_dB, double ratio, double kneewidth_dB,
+                                double attack_time_samps, double release_time_samps,
+                                double makeup_dB)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    double half_kneewidth_dB = kneewidth_dB / 2.;
+    float *source_sample = buffer_locksamples(source);
+    bool inplace = false, separate_sidechain = false;
+    
+    if (!source_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        
+        t_atom_long    source_channelcount = buffer_getchannelcount(source);
+        t_atom_long    source_framecount   = buffer_getframecount(source);
+        t_atom_long    sidechain_channelcount, sidechain_framecount;
+
+        float *dest_sample = NULL;
+        if (source != dest) {
+            inplace = false;
+            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_set_size_samps(ob, dest, source_framecount);
+            dest_sample = buffer_locksamples(dest);
+        } else {
+            inplace = true;
+            dest_sample = source_sample;
+        }
+        
+        float *sidechain_sample;
+        if (sidechain == source || !sidechain) {
+            separate_sidechain = false;
+            sidechain_sample = source_sample;
+            sidechain_channelcount = source_channelcount;
+            sidechain_framecount = source_framecount;
+        } else {
+            separate_sidechain = true;
+            sidechain_channelcount = buffer_getchannelcount(sidechain);
+            sidechain_framecount = buffer_getframecount(sidechain);
+            sidechain_sample = buffer_locksamples(sidechain);
+        }
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
+            t_atom_long    dest_framecount   = buffer_getframecount(dest);
+            t_atom_long    max_framecount = MAX(dest_framecount, source_framecount);
+
+            double yL = 0, yL_prev = 0;
+            for (long i = 0; i < max_framecount; i++) {
+
+                // we use the page https://github.com/p-hlp/CTAGDRC as a tutorial
+                
+                // 1) level detection: it's the maximum across the channel of the sidechain signal
+                float input = 0;
+                if (i < sidechain_framecount) {
+                    for (long c = 0; c < sidechain_channelcount; c++)
+                        input = MAX(input, std::abs(sidechain_sample[i * sidechain_channelcount + c]));
+                }
+                
+                // 2) dB conversion
+                float input_db = ears_linear_to_db(input);
+                float output_gain_db;
+
+                // 3) gain computation
+                if (input_db - threshold_dB < -half_kneewidth_dB) {
+                    // nothing to do: copy
+                    output_gain_db = 0;
+                } else if (input_db - threshold_dB <= half_kneewidth_dB) {
+                    float temp = input_db - threshold_dB + half_kneewidth_dB;
+                    output_gain_db = (1./ratio - 1) * temp * temp / (2 * kneewidth_dB);
+                } else {
+                    output_gain_db = threshold_dB + (input_db-threshold_dB)/ratio - input_db;
+                }
+                
+                // 4) ballistics
+                double alpha_attack = exp(-1./attack_time_samps);
+                double alpha_release = exp(-1./release_time_samps);
+                
+                // smooth branching peek detector
+                if (output_gain_db > yL_prev) {
+                    yL = alpha_attack * yL_prev + (1 - alpha_attack) * output_gain_db;
+                } else {
+                    yL = alpha_release * yL_prev + (1 - alpha_release) * output_gain_db;
+                }
+                
+                yL_prev = yL;
+                
+                // 5) linear conversion
+                double gain_to_apply_linear = ears_db_to_linear(yL + makeup_dB);
+                
+                for (long c = 0; c < dest_channelcount; c++)
+                    dest_sample[i * dest_channelcount + c] = source_sample[i * dest_channelcount + c] * gain_to_apply_linear;
+            }
+            if (!inplace)
+                buffer_unlocksamples(dest);
+        }
+        
+        if (separate_sidechain)
+            buffer_unlocksamples(sidechain);
+        
+        buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
 
 
 

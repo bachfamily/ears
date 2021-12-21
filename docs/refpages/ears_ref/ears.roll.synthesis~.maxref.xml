@@ -222,6 +222,23 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="assemble" get="1" set="1" type="int" size="1">
+			<digest>
+				Assemble Buffers One by One
+			</digest>
+			<description>
+				Toggles the ability to assemble buffers one by one (corresponding to <o>ears.assemble~</o>)
+				instead of loading them all and mixing them (corresponding to <o>ears.mix~</o>).
+				If set, the result may be less CPU-intensive, but also less optimized for identical samples.
+				In addition, harmonization of buffer properties across all the buffers is not carried out, and in particular the
+				first sample rate is used.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Assemble Buffers One by One" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="compensate" get="1" set="1" type="int" size="1">
 			<digest>
 				Reduce Multichannel Gain To Avoid Clipping
@@ -275,6 +292,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade In Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -479,7 +497,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Per-Voice Panning" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

@@ -232,6 +232,20 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="outname" get="1" set="1" type="llll" size="1">
+			<digest>
+				Output Buffer Names
+			</digest>
+			<description>
+				Sets the name for each one of the buffer outlets. Leave blank to auto-assign
+				unique names.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="sr" get="1" set="1" type="float" size="1">
 			<digest>
 				Output Sample Rate

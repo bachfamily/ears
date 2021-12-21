@@ -384,6 +384,7 @@
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ears.freeverb~" />
+		<seealso name="ears.paulfreeze~" />
 	</seealsolist>
 
 	<misc name = "Input">
