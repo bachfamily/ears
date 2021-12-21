@@ -217,17 +217,25 @@ void ears_processinfo_assist(t_ears_processinfo *x, void *b, long m, long a, cha
     {
         switch (a)
         {
-            case 0: sprintf(s, "signal: position (ms)");        break;
-            case 1: sprintf(s, "float: position (ms)");         break;
-            case 2: sprintf(s, "int: on/off");                  break;
-            case 3: sprintf(s, "float: sampling rate");         break;
-            case 4: sprintf(s, "int: vector size");             break;
-            case 5: sprintf(s, "list: in/out durations (ms)");  break;
-            case 6: sprintf(s, "clock message");                break;
+            case 0:
+                sprintf(s, "signal: position (ms)"); // @out 0 @type signal @digest Position as signal (ms)
+                break;
+            case 1: sprintf(s, "float: position (ms)"); // @out 1 @type float @digest Position as float (ms)
+                break;
+            case 2: sprintf(s, "int: on/off"); // @out 2 @type int @digest 1 If process is running, 0 if it is not
+                break;
+            case 3: sprintf(s, "float: sampling rate"); // @out 3 @type float @digest Sampling rate
+                break;
+            case 4: sprintf(s, "int: vector size"); // @out 4 @type int @digest Vector size
+                break;
+            case 5: sprintf(s, "list: input durations (ms)"); // @out 5 @type list @digest Durations of the input buffers
+                break;
+            case 6: sprintf(s, "clock message"); // @out 6 @type clock @digest Message for objects supporting <b>setclock</b>
+                break;
         }
     }
     else
     {
-        sprintf(s, "stop");
+        sprintf(s, "stop"); // @in 0 @type stop @digest Stop the process
     }
 }
