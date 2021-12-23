@@ -32,7 +32,7 @@
 	buffer, features, feature, descriptor
  
 	@seealso
-	ears.spectrogram~
+	ears.info~, ears.spectrogram~
 	
 	@owner
 	Daniele Ghisi

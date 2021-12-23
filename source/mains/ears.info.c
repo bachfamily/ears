@@ -32,7 +32,7 @@
 	buffer, info, get, retrieve, rms, amplitude, peak
  
 	@seealso
-	info~
+	info~, ears.features~
 	
 	@owner
 	Daniele Ghisi
@@ -52,7 +52,7 @@ enum {
     EARS_BUF_INFO_MAX,
     EARS_BUF_INFO_MAXABS,
     EARS_BUF_INFO_RMS,
-    EARS_BUF_INFO_LENGTH,
+    EARS_BUF_INFO_DURATION,
     EARS_BUF_INFO_NUMCHANNELS,
     EARS_BUF_INFO_SR,
     EARS_BUF_INFO_NUMSAMPLES,
@@ -144,8 +144,8 @@ long sym2info(t_symbol *s)
     if (s == gensym("rms"))
         return EARS_BUF_INFO_RMS;
 
-    if (s == gensym("length"))
-        return EARS_BUF_INFO_LENGTH;
+    if (s == gensym("length") || s == gensym("duration"))
+        return EARS_BUF_INFO_DURATION;
 
     if (s == gensym("numchannels"))
         return EARS_BUF_INFO_NUMCHANNELS;
@@ -184,7 +184,7 @@ t_symbol *info2sym(long info)
         case EARS_BUF_INFO_MAX: return gensym("max");
         case EARS_BUF_INFO_MAXABS: return gensym("maxabs");
         case EARS_BUF_INFO_RMS: return gensym("rms");
-        case EARS_BUF_INFO_LENGTH: return gensym("length");
+        case EARS_BUF_INFO_DURATION: return gensym("duration");
         case EARS_BUF_INFO_NUMCHANNELS: return gensym("numchannels");
         case EARS_BUF_INFO_SR: return gensym("sr");
         case EARS_BUF_INFO_NUMSAMPLES: return gensym("numsamples");
@@ -209,7 +209,7 @@ t_symbol *info2type(t_buf_info *x, long info)
         case EARS_BUF_INFO_RMS:
             return _sym_float;
             
-        case EARS_BUF_INFO_LENGTH:
+        case EARS_BUF_INFO_DURATION:
             switch (x->e_ob.l_timeunit) {
                 case EARS_TIMEUNIT_MS: return _sym_float;
                 case EARS_TIMEUNIT_SECONDS: return _sym_float;
@@ -270,7 +270,7 @@ t_ears_err buf_info_get_analysis(t_buf_info *x, t_buffer_obj *buf, long info, t_
             atom_setfloat(res, val);
             break;
             
-        case EARS_BUF_INFO_LENGTH:
+        case EARS_BUF_INFO_DURATION:
             switch (x->e_ob.l_timeunit) {
                 case EARS_TIMEUNIT_MS:
                     atom_setfloat(res, ears_buffer_get_size_ms((t_object *)x, buf));
@@ -364,7 +364,7 @@ t_buf_info *buf_info_new(t_symbol *s, short argc, t_atom *argv)
         
         // @arg 0 @name tags @optional 0 @type symbol/list
         // @digest Required buffer information tags
-        // @description A list of symbols among the following ones: "min", "max", "maxabs", "rms", "length"
+        // @description A list of symbols among the following ones: "min", "max", "maxabs", "rms", "length" (or "duration"),
         // "numchannels", "sr", "numsamples". Plus, for spectral buffers: "spectral", "audiosr", "binsize", "binoffset",
         // "spectype", "binunit". For every symbol an outlet is created, which
         // will output the corresponding information.

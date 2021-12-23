@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 11,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -53,13 +53,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 88.0, 126.0, 737.0, 322.0 ],
+						"rect" : [ 0.0, 26.0, 737.0, 322.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -588,13 +588,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 737.0, 322.0 ],
+						"rect" : [ 88.0, 126.0, 737.0, 322.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -631,7 +631,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 237.571428571428584, 200.0, 52.0, 23.0 ]
+									"patching_rect" : [ 243.857142857142861, 200.0, 52.0, 23.0 ]
 								}
 
 							}
@@ -643,7 +643,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 292.714285714285722, 200.0, 50.0, 23.0 ]
+									"patching_rect" : [ 300.571428571428555, 200.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -656,7 +656,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 347.857142857142833, 200.0, 50.0, 23.0 ]
+									"patching_rect" : [ 357.285714285714278, 200.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -668,7 +668,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 403.0, 200.0, 118.0, 23.0 ]
+									"patching_rect" : [ 414.0, 200.0, 118.0, 23.0 ]
 								}
 
 							}
@@ -681,7 +681,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 182.428571428571416, 200.0, 50.0, 23.0 ]
+									"patching_rect" : [ 187.142857142857139, 200.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -694,7 +694,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 127.285714285714278, 200.0, 50.0, 23.0 ]
+									"patching_rect" : [ 130.428571428571445, 200.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -707,7 +707,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 72.142857142857139, 200.0, 50.0, 23.0 ]
+									"patching_rect" : [ 73.714285714285722, 200.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -733,8 +733,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 17.0, 230.0, 689.0, 36.0 ],
-									"text" : "Avaliable keywords are: min, max, maxabs, rms, length, numchannels, sr, numsamples\nAdditional keywords for spectral buffers (see next tab) are: spectral, audiosr, spectype, binsize, binoffset, specpitchunit",
+									"patching_rect" : [ 17.0, 230.0, 676.0, 36.0 ],
+									"text" : "Avaliable keywords are: \"min\", \"max\", \"maxabs\", \"rms\", \"duration\" (or \"length\"), \"numchannels\", \"sr\", \"numsamples\".\nAdditionally, for spectral buffers (see next tab): \"spectral\", \"audiosr\", \"spectype\", \"binsize\", \"binoffset\", \"specpitchunit\"",
 									"textcolor" : [ 0.5, 0.5, 0.5, 1.0 ]
 								}
 
@@ -842,9 +842,9 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 8,
-									"outlettype" : [ "list", "list", "list", "list", "list", "list", "list", "list" ],
-									"patching_rect" : [ 17.0, 160.5, 405.0, 23.0 ],
-									"text" : "ears.info~ min max maxabs rms sr numchannels length numsamples"
+									"outlettype" : [ "", "", "", "", "", "", "", "" ],
+									"patching_rect" : [ 17.0, 160.5, 416.0, 23.0 ],
+									"text" : "ears.info~ min max maxabs rms sr numchannels duration numsamples"
 								}
 
 							}
@@ -990,7 +990,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 11,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1064,15 +1064,15 @@
 				"implicit" : 1
 			}
 , 			{
-				"name" : "ears.info~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
 				"name" : "bach.hypercomment.mxo",
 				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ears.stft~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.info~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
