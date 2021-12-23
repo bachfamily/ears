@@ -829,17 +829,27 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
     }
 }
 
-e_ears_feature ears_features_feature_from_symbol(t_symbol *s, long *temporalmode, t_ears_err *err)
+e_ears_feature ears_features_feature_from_symbol(t_symbol *sym, long *temporalmode, t_ears_err *err)
 {
+    if (!sym || !sym->s_name)
+        return EARS_FEATURE_NONE;
+    
+    
+    // convert to lower case
+    char buf[2048];
+    long len = strlen(sym->s_name);
+    for (long i = 0; i <= len; i++) { // including trailing 0
+        buf[i] = tolower(sym->s_name[i]);
+    }
+    t_symbol *s = gensym(buf);
+    
     long tm = EARS_ESSENTIA_TEMPORALMODE_WHOLE;
     if (ears_symbol_ends_with(s, "...", false)) {
-        char buf[2048];
         snprintf_zero(buf, 2048, "%s", s->s_name);
         buf[strlen(s->s_name)-3] = 0;
         s = gensym(buf);
         tm = EARS_ESSENTIA_TEMPORALMODE_TIMESERIES;
     } else if (ears_symbol_ends_with(s, "~", false)) {
-        char buf[2048];
         snprintf_zero(buf, 2048, "%s", s->s_name);
         buf[strlen(s->s_name)-1] = 0;
         s = gensym(buf);

@@ -64,7 +64,7 @@ void *ears_hashtab_spectrograms_retrieve(t_symbol *buffername)
 
 void ears_hashtabs_setup()
 {
-    if (!gensym("ears")->s_thing) {
+    if (!gensym("ears")->s_thing || gensym("ears")->s_thing == WHITENULL) {
         t_hashtab *h_main = hashtab_new(0);
         t_hashtab *h_spectrograms = hashtab_new(0);
         t_hashtab **h = (t_hashtab **)bach_newptr(2 * sizeof(t_hashtab *));
@@ -1157,15 +1157,19 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
             
         } else if (msg == gensym("writewavpack") || msg == gensym("writewv")) {
             t_fourcc outtype;
-            t_fourcc filetype = 'WAVE';
+//            t_fourcc filetype = 'WAVE';
             t_symbol *outfilepath = NULL;
             if (parsed && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM)
                 outfilepath = ears_ezresolve_file(hatom_getsym(&parsed->l_head->l_hatom), true, ".wv");
             else
-                ears_saveasdialog((t_object *)e_ob, "Untitled.wv", &filetype, 1, &outtype, &outfilepath, true);
+                ears_saveasdialog((t_object *)e_ob, "Untitled.wv", NULL, 0, &outtype, &outfilepath, true);
+//                ears_saveasdialog((t_object *)e_ob, "Untitled.wv", &filetype, 1, &outtype, &outfilepath, true);
             
-            if (outfilepath)
+            if (outfilepath) {
+                if (!settings.format)
+                    settings.format = EARS_DEFAULT_WRITE_FORMAT;
                 ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
+            }
             
         } else {
             // all other cases are handled natively via Max API
