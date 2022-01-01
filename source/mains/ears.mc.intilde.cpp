@@ -70,7 +70,7 @@ void ears_mcintilde_int(t_ears_mcintilde *x, t_atom_long i);
 void ears_mcintilde_anything(t_ears_mcintilde *x, t_symbol *s, long ac, t_atom *av);
 
 void ears_mcintilde_setbuffers(t_ears_mcintilde *x, bufferData* bufs);
-long myobject_multichanneloutputs(t_ears_mcintilde *x, long outletindex);
+long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex);
 
 void ears_mcintilde_dsp64(t_ears_mcintilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
 void ears_mcintilde_perform64(t_ears_mcintilde *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam);
@@ -124,7 +124,7 @@ int C74_EXPORT main()
     CLASS_ATTR_FILTER_MIN(ears_mcintilde_class, "chans", 0);
     
     class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_setbuffers, "setbuffers", A_CANT, 0);
-    class_addmethod(ears_mcintilde_class, (method)myobject_multichanneloutputs, "multichanneloutputs", A_CANT, 0);
+    class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_multichanneloutputs, "multichanneloutputs", A_CANT, 0);
     
     class_dspinit(ears_mcintilde_class);
     
@@ -246,7 +246,7 @@ void ears_mcintilde_setbuffers(t_ears_mcintilde *x, bufferData* bufs)
     x->bufs = bufs;
 }
 
-long myobject_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
+long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
 {
     x->bufIndexOk = x->bufIndexOk;
     x->firstChanOk = x->firstChan;

@@ -131,8 +131,7 @@ typedef struct _earsprocess
     long vs;
     double sr;
 
-    t_atom dummydur[2]; // just in case
-    long durationpolicy;
+    long policy;
     double tail;
     
     long scalarmode;
@@ -366,45 +365,37 @@ int C74_EXPORT main()
     // The default is 0, meaning that generator patches will run at the system sample rate.
 
     
-    
-    CLASS_ATTR_ATOM_ARRAY(earsprocess_class, "duration", 0, t_earsprocess, dummydur, 2);
-    CLASS_ATTR_ACCESSORS(earsprocess_class, "duration", (method) earsprocess_get_duration, (method) earsprocess_set_duration);
+    CLASS_ATTR_DOUBLE(earsprocess_class, "tail", 0, t_earsprocess, tail);
+    CLASS_ATTR_LABEL(earsprocess_class, "tail", 0, "Tail Duration");
+    CLASS_ATTR_FILTER_MIN(earsprocess_class, "tail", 0);
     // @description
-    // The <m>duration</m> attribute controls the duration
-    // of the resulting buffers with respect to the
-    // durations of the incoming one.
-    // It consists of a single symbol or integer setting the <b>duration policy</b>,
-    // followed by a number setting the <b>tail</b>.<br/><br/>
-    // The <b>duration policy</b> can take one of the following values:<br/>
-    // - <m>0</m> or <m>shortest</m> or <m>s</m>:
+    // The <m>tail</m> attribute adds a duration (always measured in milliseconds)
+    // to the processing duration as established by the <m>policy</m> attribute.
+    // It defaults to 0.
+    // If the loaded patch has no buffer inlets and the tail is not set to a value higher than 0 ms,
+    // no processing will take place.
+    
+    
+    CLASS_ATTR_LONG(earsprocess_class, "policy", 0, t_earsprocess, policy);
+    CLASS_ATTR_ENUMINDEX(earsprocess_class,"policy", 0, "Shortest Longest Fixed");
+    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "policy", 0, "enumindex", "Duration Policy");
+    // @description
+    // The <m>policy</m> attribute controls how the duration of the incoming buffers
+    // affects the duration of the resulting ones.<br/>
+    // If the duration policy is set to <m>0</m> (<b>shortest</b>), as per the default,
     // the duration of the processed (and therefore resulting) audio
-    // is at most the duration of the shortest incoming buffer
-    // plus the tail. If a list of buffers is passed, to be processed in sequences,
-    // the processing duration refers to the per-iteration shortest buffer.
-    // The <m>shortest</m> policy is the default.<br/>
-    // - <m>1</m> or <m>longest</m> or <m>l</m>:
+    // is the duration of the shortest incoming buffer
+    // plus the tail. If a list of buffers is passed, to be processed in sequence,
+    // the processing duration refers to the shortest buffer in each iteration.<br/>
+    // If the duration policy is set to <m>1</m> (<b>longest</b>),
     // the duration of the processed audio
-    // is at most the duration of the longest incoming buffer plus the tail.
+    // is the duration of the longest incoming buffer plus the tail.<br/>
+    // If the duration policy is set to <m>2</m> (<b>fixed</b>),
+    // the duration of the processed audio is set to the value of the tail,
+    // regardless of the duration of the incoming buffers.<br/>
     // If the loaded patcher has a single buffer inlet,
-    // the <m>shortest</m> and <m>longest</m> policies are equivalent;
-    // if it has no buffer inlets, no processing will take place.<br/>
-    // - <m>2</m> or <m>fixed</m> or <m>f</m>
-    // or <m>maximum</m> or <m>m</m>:
-    // the duration of the processed audio
-    // is set to the value of the tail.
-    // This is the only meaningful setting when the patcher has no buffer inlets,
-    // typically because the patch generates audio rather than process it.<br/><br/>
-    // The <b>tail</b>, which is always measured in milliseconds,
-    // is optional, and defaults to 0, for the <b>shortest</b> and <b>longest</b> duration policies.
-    // In these cases, it sets an additional processing duration
-    // after the end of the shortest or longest buffer.
-    // For the <b>fixed</b> duration policy, it sets the actual
-    // duration of the processing, and it cannot be 0:
-    // if set to 0, or missing, it is changed to 60000.
-    // The processing can be interrupted at any time by the loaded patcher,
-    // through the <o>ears.processinfo~</o> object.
-    
-    
+    // the <m>shortest</m> and <m>longest</m> policies are equivalent. If it has no buffer inlets, all three are equivalent
+    // and the duration will anyway correspond to the value of the <m>tail</m> attribute.<br/>
 
     
     
@@ -498,95 +489,6 @@ t_max_err earsprocess_get_ownsdspchain(t_earsprocess *x, t_object *attr, long *a
     return MAX_ERR_NONE;
 }
 
-
-t_max_err earsprocess_set_duration(t_earsprocess *x, t_object *attr, long argc, t_atom *argv)
-{
-    t_llll *ll = llll_parse(argc, argv);
-    
-    if (!ll) {
-        object_error((t_object *) x, "duration: bad llll");
-        return MAX_ERR_GENERIC;
-    }
-    
-    if (ll->l_size == 0 || ll->l_size > 2 || ll->l_depth > 1) {
-        object_error((t_object *) x, "duration: wrong llll format");
-        return MAX_ERR_GENERIC;
-    }
-    
-    t_hatom *a = &ll->l_head->l_hatom;
-    
-    switch (hatom_gettype(a)) {
-        case H_LONG: {
-            long v = atom_getlong(argv);
-            CLIP_ASSIGN(v, 0, 2);
-            x->durationpolicy = v;
-            break;
-        }
-        case H_SYM: {
-            t_symbol *s = atom_getsym(argv);
-            if (s == gensym("shortest") || s == gensym("s"))
-                x->durationpolicy = eDURPOLICY_SHORTEST;
-            else if (s == gensym("longest") || s == gensym("l"))
-                x->durationpolicy = eDURPOLICY_LONGEST;
-            else if (s == gensym("fixed") || s == gensym("f") || s == gensym("maximum") || s == gensym("max") || s == gensym("m")) {
-                x->durationpolicy = eDURPOLICY_FIXED;
-                if (x->tail <= 0 && ll->l_size == 1) {
-                    object_warn((t_object *) x, "Setting maximum duration to 60000");
-                    x->tail = 60000;
-                }
-            }
-            else
-                object_error((t_object *) x, "duration: unknown duration policy %s", s->s_name);
-            break;
-        }
-        default: {
-            object_error((t_object *) x, "duration: wrong type for argument 1");
-            return MAX_ERR_GENERIC;
-        }
-    }
-    
-    if (ll->l_size == 1)
-        return MAX_ERR_NONE;
-    
-    a = &ll->l_tail->l_hatom;
-    
-    if (!hatom_is_number(a)) {
-        object_error((t_object *) x, "duration: wrong type for argument 2");
-        if (x->durationpolicy == eDURPOLICY_FIXED) {
-            object_warn((t_object *) x, "Setting maximum duration to 60000");
-            x->tail = 60000;
-        }
-        return MAX_ERR_GENERIC;
-    }
-    
-    x->tail = hatom_getdouble(a);
-
-    return MAX_ERR_NONE;
-}
-
-
-
-t_max_err earsprocess_get_duration(t_earsprocess *x, t_object *attr, long *argc, t_atom **argv)
-{
-    char alloc;
-    atom_alloc_array(2, argc, argv, &alloc);
-    
-    switch(x->durationpolicy) {
-        case eDURPOLICY_LONGEST:
-            atom_setsym(*argv, gensym("shortest"));
-            break;
-        case eDURPOLICY_FIXED:
-            atom_setsym(*argv, gensym("fixed"));
-            break;
-        default:
-            atom_setsym(*argv, gensym("shortest"));
-            break;
-    }
-    
-    atom_setfloat((*argv) + 1, x->tail);
-
-    return MAX_ERR_NONE;
-}
 
 
 
@@ -1076,7 +978,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         
         t_atom_long duration = x->tail * mssr;
         
-        switch (x->durationpolicy) {
+        switch (x->policy) {
             case eDURPOLICY_SHORTEST: duration += minDur; break;
             case eDURPOLICY_LONGEST: duration += maxDur; break;
             default: break;
