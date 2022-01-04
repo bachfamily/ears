@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 671.0, 413.0 ],
+						"rect" : [ 0.0, 26.0, 671.0, 413.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -725,13 +725,49 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 36.75, 224.0, 139.0, 23.0 ],
+									"text" : "/tmp/temp_lossless.wv"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-4",
+									"maxclass" : "newobj",
+									"numinlets" : 5,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 10.0, 326.0, 126.0, 23.0 ],
+									"text" : "ears.write~"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-1",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 10.0, 160.0, 114.0, 23.0 ],
+									"text" : "earsBufDrumLoop"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"attr" : "bitrate",
 									"id" : "obj-8",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 261.0, 256.0, 150.0, 23.0 ]
+									"patching_rect" : [ 482.0, 259.0, 150.0, 23.0 ]
 								}
 
 							}
@@ -743,7 +779,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 261.0, 221.0, 150.0, 23.0 ]
+									"patching_rect" : [ 482.0, 224.0, 150.0, 23.0 ]
 								}
 
 							}
@@ -754,8 +790,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 150.0, 226.0, 86.0, 23.0 ],
-									"text" : "/tmp/temp.wv"
+									"patching_rect" : [ 348.0, 224.0, 122.0, 23.0 ],
+									"text" : "/tmp/temp_lossy.wv"
 								}
 
 							}
@@ -766,7 +802,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 16.0, 328.0, 235.0, 23.0 ],
+									"patching_rect" : [ 294.0, 331.0, 235.0, 23.0 ],
 									"text" : "ears.write~ @correction 1 @bitrate 320"
 								}
 
@@ -778,7 +814,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 16.0, 157.0, 114.0, 23.0 ],
+									"patching_rect" : [ 294.0, 160.0, 114.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -818,6 +854,22 @@
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
+									"destination" : [ "obj-4", 0 ],
+									"order" : 1,
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-6", 0 ],
+									"order" : 0,
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-3", 1 ],
 									"source" : [ "obj-11", 0 ]
 								}
@@ -827,6 +879,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-3", 0 ],
 									"source" : [ "obj-5", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-4", 1 ],
+									"source" : [ "obj-6", 0 ]
 								}
 
 							}
@@ -1552,7 +1611,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 671.0, 413.0 ],
+						"rect" : [ 100.0, 126.0, 671.0, 413.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
