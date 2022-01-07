@@ -703,7 +703,14 @@
 		91319C08264C172500364EAB /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		91319C09264C172500364EAB /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319C10264C173800364EAB /* ears.tovector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B58264C027200364EAB /* ears.tovector.cpp */; };
+		9148046D2753F2C600D2A0EA /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9148046C2753F2C600D2A0EA /* Python.framework */; };
 		9157D0B4266E2AE900AAAFDE /* ears.intilde.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B51264C026F00364EAB /* ears.intilde.cpp */; };
+		91ACB3562753EE4400EB3D95 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
+		91ACB35A2753EE4400EB3D95 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
+		91ACB35B2753EE4400EB3D95 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
+		91ACB3622753EE6600EB3D95 /* ears.py.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C0F762272461D800ADBCBD /* ears.py.cpp */; };
+		91ACB3662753F03A00EB3D95 /* cwalk.c in Sources */ = {isa = PBXBuildFile; fileRef = 91ACB3642753F03A00EB3D95 /* cwalk.c */; };
+		91ACB3672753F03A00EB3D95 /* cwalk.h in Headers */ = {isa = PBXBuildFile; fileRef = 91ACB3652753F03A00EB3D95 /* cwalk.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1757,6 +1764,13 @@
 			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
 			remoteInfo = lib_dada;
 		};
+		91ACB3532753EE4400EB3D95 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
+			remoteInfo = lib_dada;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -2058,7 +2072,7 @@
 		1EDB3A19217D337F007347EF /* ears.write~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.write~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDB3A1B217D33AB007347EF /* ears.write.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.write.c; path = ../mains/ears.write.c; sourceTree = SOURCE_ROOT; };
 		1EDCC426196AE6F900638665 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
-		1EDCC52D196AEC8B00638665 /* commonsyms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = commonsyms.c; path = "../../../max-sdk-7.3.3/source/c74support/max-includes/common/commonsyms.c"; sourceTree = SOURCE_ROOT; };
+		1EDCC52D196AEC8B00638665 /* commonsyms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = commonsyms.c; path = "../../../max-sdk-8.0.3/source/c74support/max-includes/common/commonsyms.c"; sourceTree = SOURCE_ROOT; };
 		1EDF170925273A9A00047C71 /* ears.hoa.mirror~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.hoa.mirror~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EDF170B25273AB800047C71 /* ears.hoa.mirror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.hoa.mirror.c; path = ../mains/ears.hoa.mirror.c; sourceTree = "<group>"; };
 		1EF048BF224FA98900A36014 /* ears.split~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.split~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2106,6 +2120,12 @@
 		91319BE9264C16A100364EAB /* ears.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91319BFB264C16D200364EAB /* ears.processinfo~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.processinfo~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91319C0E264C172500364EAB /* ears.tovector.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.tovector.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
+		9148046C2753F2C600D2A0EA /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = "../../../../../../../../usr/local/Cellar/python@3.9/3.9.4/Frameworks/Python.framework"; sourceTree = "<group>"; };
+		91ACB3602753EE4400EB3D95 /* ears.py~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.py~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
+		91ACB3612753EE4400EB3D95 /* ears.process~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.process~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.process~ copy-Info.plist"; sourceTree = "<absolute>"; };
+		91ACB3642753F03A00EB3D95 /* cwalk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cwalk.c; sourceTree = "<group>"; };
+		91ACB3652753F03A00EB3D95 /* cwalk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cwalk.h; sourceTree = "<group>"; };
+		91C0F762272461D800ADBCBD /* ears.py.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.py.cpp; path = ../mains/ears.py.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2793,6 +2813,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		91ACB3592753EE4400EB3D95 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91ACB35A2753EE4400EB3D95 /* lib_ears.a in Frameworks */,
+				91ACB35B2753EE4400EB3D95 /* MaxAudioAPI.framework in Frameworks */,
+				9148046D2753F2C600D2A0EA /* Python.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -2889,6 +2919,7 @@
 				1E5E1909275E58DA00C3E0C3 /* ears.clicks~.mxo */,
 				1EBEAA68275F67D400EFB2CF /* ears.paulfreeze~.mxo */,
 				1E12D0F827600A8900DBA8B6 /* ears.dynamics~.mxo */,
+				91ACB3602753EE4400EB3D95 /* ears.py~.mxo */,
 			);
 			name = Products;
 			sourceTree = SOURCE_ROOT;
@@ -3128,6 +3159,7 @@
 		1E794F8922F1A2EE009FA0CC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9148046C2753F2C600D2A0EA /* Python.framework */,
 				1E794F8A22F1A2EE009FA0CC /* Accelerate.framework */,
 			);
 			name = Frameworks;
@@ -3317,6 +3349,7 @@
 				1EFF13141D1D4F3300B7C47A /* ears.playmp3~.c */,
 				91319B56264C027100364EAB /* ears.process.cpp */,
 				91319B4F264C026F00364EAB /* ears.processinfo.cpp */,
+				91C0F762272461D800ADBCBD /* ears.py.cpp */,
 				1E5D94AE1D39B0BD00BFB88E /* ears.read.c */,
 				1E91FAFD1FCB151F0075DB7A /* ears.reg.c */,
 				1E35B8561FE567B8002B2876 /* ears.repeat.c */,
@@ -3346,6 +3379,7 @@
 		1EFC4354196AEEA4000BDFBF /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				91ACB3632753F03A00EB3D95 /* cwalk */,
 				1ECE21D7262A2C3E00C1AFDD /* AudioFile */,
 				1EF19B6526234338007B55BF /* libaiff */,
 				1E9E8B3425F2AAD200F54BC3 /* WavPack */,
@@ -3360,6 +3394,16 @@
 			);
 			name = libraries;
 			sourceTree = SOURCE_ROOT;
+		};
+		91ACB3632753F03A00EB3D95 /* cwalk */ = {
+			isa = PBXGroup;
+			children = (
+				91ACB3642753F03A00EB3D95 /* cwalk.c */,
+				91ACB3652753F03A00EB3D95 /* cwalk.h */,
+			);
+			name = cwalk;
+			path = ../lib/cwalk;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -4103,6 +4147,14 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91ACB3542753EE4400EB3D95 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91ACB3672753F03A00EB3D95 /* cwalk.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5626,6 +5678,26 @@
 			productReference = 91319C0E264C172500364EAB /* ears.tovector.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
+		91ACB3512753EE4400EB3D95 /* ears.py~ */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91ACB35D2753EE4400EB3D95 /* Build configuration list for PBXNativeTarget "ears.py~" */;
+			buildPhases = (
+				91ACB3542753EE4400EB3D95 /* Headers */,
+				91ACB3552753EE4400EB3D95 /* Resources */,
+				91ACB3572753EE4400EB3D95 /* Sources */,
+				91ACB3592753EE4400EB3D95 /* Frameworks */,
+				91ACB35C2753EE4400EB3D95 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				91ACB3522753EE4400EB3D95 /* PBXTargetDependency */,
+			);
+			name = "ears.py~";
+			productName = iterator;
+			productReference = 91ACB3602753EE4400EB3D95 /* ears.py~.mxo */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -5699,6 +5771,7 @@
 				1EFF13151D1D4F5900B7C47A /* ears.playmp3~ */,
 				91319B59264C02A700364EAB /* ears.process~ */,
 				91319BEC264C16D200364EAB /* ears.processinfo~ */,
+				91ACB3512753EE4400EB3D95 /* ears.py~ */,
 				1E5D949D1D39B0A800BFB88E /* ears.read~ */,
 				1E91FAEC1FCB15060075DB7A /* ears.reg~ */,
 				1E35B8451FE56798002B2876 /* ears.repeat~ */,
@@ -6328,6 +6401,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		91ACB3552753EE4400EB3D95 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91ACB3562753EE4400EB3D95 /* ears.xcconfig in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXRezBuildPhase section */
@@ -6850,6 +6931,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		91319C0A264C172500364EAB /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91ACB35C2753EE4400EB3D95 /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -7558,6 +7646,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				91319C10264C173800364EAB /* ears.tovector.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91ACB3572753EE4400EB3D95 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91ACB3662753F03A00EB3D95 /* cwalk.c in Sources */,
+				91ACB3622753EE6600EB3D95 /* ears.py.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8313,6 +8410,11 @@
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
 			targetProxy = 91319C01264C172500364EAB /* PBXContainerItemProxy */;
+		};
+		91ACB3522753EE4400EB3D95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
+			targetProxy = 91ACB3532753EE4400EB3D95 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -14070,6 +14172,87 @@
 			};
 			name = Deployment;
 		};
+		91ACB35E2753EE4400EB3D95 /* Development */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"/usr/local/Cellar/python@3.9/3.9.4/Frameworks",
+				);
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
+					/usr/local/include/,
+					"\"$(SRCROOT)/../lib/cwalk\"",
+					"/usr/local/Cellar/python@3.9/3.9.4/Frameworks/Python.framework/Versions/3.9/include/python3.9",
+				);
+				INFOPLIST_FILE = "ears.process~ copy-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				OTHER_CFLAGS = (
+					"-DU_HAVE_GCC_ATOMICS=0",
+					"-fvisibility=hidden",
+				);
+				OTHER_LDFLAGS = (
+					"$(C74_SYM_LINKER_FLAGS)",
+					/usr/local/lib/libmpg123.a,
+					/usr/local/lib/libmp3lame.a,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REZ_SEARCH_PATHS = "";
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+			};
+			name = Development;
+		};
+		91ACB35F2753EE4400EB3D95 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"/usr/local/Cellar/python@3.9/3.9.4/Frameworks",
+				);
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				HEADER_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
+					/usr/local/include/,
+					"\"$(SRCROOT)/../lib/cwalk\"",
+					"/usr/local/Cellar/python@3.9/3.9.4/Frameworks/Python.framework/Versions/3.9/include/python3.9",
+				);
+				INFOPLIST_FILE = "ears.process~ copy-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				OTHER_CFLAGS = (
+					"-DU_HAVE_GCC_ATOMICS=0",
+					"-fvisibility=hidden",
+				);
+				OTHER_LDFLAGS = (
+					"$(C74_SYM_LINKER_FLAGS)",
+					/usr/local/lib/libmpg123.a,
+					/usr/local/lib/libmp3lame.a,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REZ_SEARCH_PATHS = "";
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+			};
+			name = Deployment;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -14771,6 +14954,15 @@
 			buildConfigurations = (
 				91319C0C264C172500364EAB /* Development */,
 				91319C0D264C172500364EAB /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		91ACB35D2753EE4400EB3D95 /* Build configuration list for PBXNativeTarget "ears.py~" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91ACB35E2753EE4400EB3D95 /* Development */,
+				91ACB35F2753EE4400EB3D95 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;

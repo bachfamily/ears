@@ -1,0 +1,35 @@
+/Users/andreaagostini/Documents/Max 8/Packages/ears/source/mains
+/Users/andreaagostini/Documents/Max 8/Packages/ears/source/abstractions
+
+
+/Users/andreaagostini/Documents/Max 8/Packages/bach/source/commons/doc/bach_doc_commons.h
+/Users/andreaagostini/Documents/Max 8/Packages/ears/source/commons/ears_doc_commons.h
+/Users/andreaagostini/Documents/Max 8/Packages/ears/docs/refpages/ears_ref
+/Users/andreaagostini/Documents/Max 8/Packages/ears/init
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+ears
+1
+1
+1
+0
+0
+/Users/andreaagostini/Documents/Max 8/Packages/ears/source/commons/ears_doc_substitutions.h
+/Users/andreaagostini/Documents/Max 8/Packages/ears/interfaces
+1
+ears math
+0
+/Users/andreaagostini/Documents/Max 8/Packages/ears/help
+0
+ears.help
+/Users/andreaagostini/Documents/Max 8/Packages/ears/help/dada.help.json
+ears.help.home.maxpat, ears.help.search.maxpat, ears.help.searchtag.maxpat
+

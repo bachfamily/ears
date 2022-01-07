@@ -40,10 +40,48 @@
 
 	<!--ARGUMENTS-->
 	<objarglist>
+		<objarg name="bufchans" optional="1" type="int/list">
+			<digest>
+				Buffer and channel indices
+			</digest>
+			<description>
+				The first (or only) value
+				sets the inlet of <o>ears.process~</o> whose buffer data
+				will be passed to the object, defaulting to 1.<br/>
+				The subsequent values set the channel numbers
+				whose samples will be output from each outlet.
+				If none is provided, only the first channel will be output.
+			</description>
+		</objarg>
 	</objarglist>
 
 	<!--MESSAGES-->
 	<methodlist>
+		<method name="int">
+			<arglist />
+			<digest>
+				Set input buffer
+			</digest>
+			<description>
+				An integer sets the inlet of
+				<o>ears.process~</o> whose data will be passed
+				to the <o>ears.in~</o> object.<br/>
+				The output channels are not changed.
+			</description>
+		</method>
+		<method name="list">
+			<arglist />
+			<digest>
+				Set input buffers and channels
+			</digest>
+			<description>
+				The first element of the list sets
+				the inlet of <o>ears.process~</o> whose buffer data
+				will be passed to the <o>ears.in~</o> object.<br/>
+				Each subsequent element sets a buffer channel
+				whose samples will be output from the corresponding outlet.
+			</description>
+		</method>
 	</methodlist>
 
 	<!--ATTRIBUTES-->

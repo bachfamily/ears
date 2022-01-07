@@ -89,7 +89,24 @@ int C74_EXPORT main()
                               0);
     
     class_addmethod(ears_intilde_class, (method)ears_intilde_dsp64, "dsp64", A_CANT, 0);
+    
+    
+    // @method list @digest Set input buffers and channels
+    // @description The first element of the list sets
+    // the inlet of <o>ears.process~</o> whose buffer data
+    // will be passed to the <o>ears.in~</o> object.<br/>
+    // Each subsequent element sets a buffer channel
+    // whose samples will be output from the corresponding outlet.
     class_addmethod(ears_intilde_class, (method)ears_intilde_list, "list", A_GIMME, 0);
+    
+    // @method int @digest Set input buffer
+    // @description An integer sets the inlet of
+    // <o>ears.process~</o> whose data will be passed
+    // to the <o>ears.in~</o> object.<br/>
+    // The output channels are not changed.
+    class_addmethod(ears_intilde_class, (method)ears_intilde_int, "int", A_GIMME, 0);
+
+    
     class_addmethod(ears_intilde_class, (method)ears_intilde_setbuffers, "setbuffers", A_CANT, 0);
     
     class_addmethod(ears_intilde_class, (method)ears_intilde_assist, "assist", A_CANT, 0);
@@ -105,10 +122,10 @@ int C74_EXPORT main()
 void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av)
 {
     t_atom_long bufIdx;
-    bach_assert_objerror_goto(x, ac >= 2, "Wrong format", ears_intilde_error);
+    bach_assert_objerror_goto(x, ac >= 2, "Wrong format", ears_intilde_list_error);
     bufIdx = atom_getlong(av++);
     
-    bach_assert_objerror_goto(x, bufIdx > 0, "Bad starting channel", ears_intilde_error);
+    bach_assert_objerror_goto(x, bufIdx > 0, "Bad buffer index", ears_intilde_list_error);
 
     x->bufIndex = bufIdx;
     ac--;
@@ -121,24 +138,47 @@ void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av)
         }
         x->chan[i] = v;
     }
-ears_intilde_error:
+ears_intilde_list_error:
     return;
 }
 
+void ears_intilde_int(t_ears_intilde *x, t_atom_long i)
+{
+    bach_assert_objerror_goto(x, i > 0, "Bad buffer index", ears_intilde_int_error);
+    
+    x->bufIndex = i;
+
+ears_intilde_int_error:
+    return;
+}
+
+
 void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
 {
+ 
+    // @arg 0 @name bufchans @optional 1 @type int/list
+    // @digest Buffer and channel indices
+    // @description The first (or only) value
+    // sets the inlet of <o>ears.process~</o> whose buffer data
+    // will be passed to the object, defaulting to 1.<br/>
+    // The subsequent values set the channel numbers
+    // whose samples will be output from each outlet.
+    // If none is provided, only the first channel will be output.
+    
+    
     t_ears_intilde *x = (t_ears_intilde*) object_alloc(ears_intilde_class);
     x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
     dsp_setup((t_pxobject *) x, 0);
     
+    x->bufIndex = 1;
+
     if (ac > 0) {
         t_atom_long v = atom_getlong(av);
         if (v > 0 && v <= EARS_PROCESS_MAX_INPUT_BUFFERS)
             x->bufIndex = v;
         else {
             object_error((t_object *) x, "Bad input buffer number, setting to 1");
-            x->bufIndex = 1;
         }
         
         ac--; av++;
