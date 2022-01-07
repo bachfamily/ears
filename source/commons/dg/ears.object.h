@@ -100,8 +100,9 @@ class_addmethod(c, (method)buf_ ## NAME ## _inletinfo,            "inletinfo",  
 earsbufobj_add_common_methods(c); \
 
 
-#define EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH (11)  /// < Should we increase this?
-
+#define EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH (11)   ///< Default resampling window size. Should we increase this?
+#define EARS_DEFAULT_WRITE_FORMAT (_sym_int16)      ///< Default output write format for saving files.
+                                                    ///  This is coherent with Max's default
 
 typedef enum _earsbufobj_in_out
 {

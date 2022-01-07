@@ -425,7 +425,7 @@ t_buf_roll_toreaper *buf_roll_toreaper_new(t_symbol *s, short argc, t_atom *argv
         
         x->copy_media = false;
         x->media_folder_name = gensym("audio");
-        x->buffer_format = gensym("float32");
+        x->buffer_format = _sym_float32;
         x->buffer_filetype = gensym("aiff");
         
         x->base_pitch_mc = 6000;

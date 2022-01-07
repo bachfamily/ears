@@ -447,7 +447,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
+						"rect" : [ 42.0, 125.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -904,7 +904,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 207.0, 332.5, 101.0, 54.0 ],
+									"patching_rect" : [ 207.0, 342.5, 101.0, 54.0 ],
 									"text" : "Change a parameter dynamically"
 								}
 
@@ -917,7 +917,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 114.0, 393.0, 24.0, 24.0 ]
+									"patching_rect" : [ 114.0, 403.0, 24.0, 24.0 ]
 								}
 
 							}
@@ -932,7 +932,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 155.0, 348.0, 50.0, 23.0 ]
+									"patching_rect" : [ 155.0, 358.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -943,7 +943,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 210.0, 393.0, 58.0, 23.0 ],
+									"patching_rect" : [ 210.0, 403.0, 58.0, 23.0 ],
 									"text" : "alpha $1"
 								}
 
@@ -954,7 +954,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 473.0, 66.0, 23.0 ],
+									"patching_rect" : [ 10.0, 483.0, 66.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80104
 									}
@@ -970,7 +970,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 352.5, 114.0, 23.0 ],
+									"patching_rect" : [ 10.0, 362.5, 114.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -982,7 +982,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 427.0, 219.0, 23.0 ],
+									"patching_rect" : [ 10.0, 437.0, 219.0, 23.0 ],
 									"text" : "ears.features~ [onsets @alpha 0.05]"
 								}
 
@@ -994,7 +994,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 358.0, 207.0, 94.0, 23.0 ],
+									"patching_rect" : [ 358.0, 217.0, 94.0, 23.0 ],
 									"text" : "maxtempo 120"
 								}
 
@@ -1008,7 +1008,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 522.0, 497.0, 146.0, 25.0 ],
+									"patching_rect" : [ 522.0, 507.0, 146.0, 25.0 ],
 									"text" : "Ticks in samples"
 								}
 
@@ -1021,7 +1021,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 32.0, 216.0, 251.0, 23.0 ]
+									"patching_rect" : [ 32.0, 226.0, 251.0, 23.0 ]
 								}
 
 							}
@@ -1032,7 +1032,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 338.0, 358.0, 114.0, 23.0 ],
+									"patching_rect" : [ 338.0, 368.0, 114.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -1044,7 +1044,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 276.5, 497.0, 251.0, 23.0 ]
+									"patching_rect" : [ 276.5, 507.0, 251.0, 23.0 ]
 								}
 
 							}
@@ -1055,7 +1055,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 82.0, 297.0, 251.0, 23.0 ],
+									"patching_rect" : [ 82.0, 307.0, 251.0, 23.0 ],
 									"text" : "[ 882.358253 1753.106594 2623.854876 ]"
 								}
 
@@ -1067,7 +1067,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 615.0, 405.5, 229.0, 50.0 ],
+									"patching_rect" : [ 615.0, 415.5, 229.0, 50.0 ],
 									"text" : "...however, individual features can override the global parameter by setting the relevant unit attribute:"
 								}
 
@@ -1080,7 +1080,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 539.0, 300.5, 251.0, 23.0 ]
+									"patching_rect" : [ 539.0, 310.5, 251.0, 23.0 ]
 								}
 
 							}
@@ -1092,7 +1092,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 539.0, 274.5, 251.0, 23.0 ]
+									"patching_rect" : [ 539.0, 284.5, 251.0, 23.0 ]
 								}
 
 							}
@@ -1104,7 +1104,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 539.0, 377.5, 251.0, 23.0 ]
+									"patching_rect" : [ 539.0, 387.5, 251.0, 23.0 ]
 								}
 
 							}
@@ -1116,7 +1116,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 539.0, 352.5, 251.0, 23.0 ]
+									"patching_rect" : [ 539.0, 362.5, 251.0, 23.0 ]
 								}
 
 							}
@@ -1128,7 +1128,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 539.0, 325.5, 251.0, 23.0 ]
+									"patching_rect" : [ 539.0, 335.5, 251.0, 23.0 ]
 								}
 
 							}
@@ -1140,7 +1140,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 539.0, 249.5, 251.0, 23.0 ]
+									"patching_rect" : [ 539.0, 259.5, 251.0, 23.0 ]
 								}
 
 							}
@@ -1153,7 +1153,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 393.0, 457.5, 481.0, 23.0 ],
+									"patching_rect" : [ 393.0, 467.5, 481.0, 23.0 ],
 									"text" : "ears.features~ [rhythmextractor2013 @maxtempo 90 @timeunit samples] @out m"
 								}
 
@@ -1165,7 +1165,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 539.0, 198.0, 229.0, 50.0 ],
+									"patching_rect" : [ 539.0, 208.0, 229.0, 50.0 ],
 									"text" : "Each object comes with a set of global units of measurement, both for input and for output..."
 								}
 
@@ -1177,8 +1177,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 132.0, 546.0, 36.0 ],
-									"text" : "Parameters are added to the descriptors by encapsulating them inside a level of parenthesis, or by using the corresponding inlets"
+									"patching_rect" : [ 10.0, 150.0, 546.0, 36.0 ],
+									"text" : "Parameters are added to the descriptors by encapsulating them inside a level of parenthesis, or by using the corresponding inlets."
 								}
 
 							}
@@ -1189,7 +1189,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 181.0, 114.0, 23.0 ],
+									"patching_rect" : [ 10.0, 191.0, 114.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -1203,7 +1203,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 297.0, 50.0, 23.0 ]
+									"patching_rect" : [ 10.0, 307.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -1216,7 +1216,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 10.0, 257.5, 367.0, 23.0 ],
+									"patching_rect" : [ 10.0, 267.5, 367.0, 23.0 ],
 									"text" : "ears.features~ [rhythmextractor2013 @maxtempo 90] @out m"
 								}
 
@@ -1234,7 +1234,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 420.0, 98.599853515625, 297.0, 21.0 ],
+									"patching_rect" : [ 320.5, 118.599853515625, 297.0, 21.0 ],
 									"text" : "https://essentia.upf.edu/algorithms_reference.html",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
@@ -1251,7 +1251,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 581.0, 50.0, 165.0, 62.0 ],
+									"patching_rect" : [ 320.5, 157.0, 165.0, 62.0 ],
 									"text" : ";\rmax launchbrowser https://essentia.upf.edu/algorithms_reference.html"
 								}
 
@@ -1264,7 +1264,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 69.599853515625, 918.0, 50.0 ],
-									"text" : "The parameters you can pass to the feature exatractor are the same as the ones documented in Essentia, except that they are written in all lower-case letters (e.g. \"startattackthreshold\" instead of \"startAttackThreshold\"). For every other aspect, the binding is faithful, so refer to the Essentia documentation to know more about the names and the properties of the algorithm parameters:"
+									"text" : "The parameters you can pass to the feature exatractor are the same as the ones documented in Essentia. You can use the naming convention you prefer, since parameters are case insensitive (e.g.: \"startattackthreshold\", in Max-style, or \"startAttackThreshold\" in Essentia-style). \nThe binding is faithful, so refer to the Essentia documentation to know more about the names and the properties of the algorithm parameters:"
 								}
 
 							}
@@ -1288,7 +1288,7 @@
 						"lines" : [ 							{
 								"patchline" : 								{
 									"destination" : [ "obj-27", 0 ],
-									"midpoints" : [ 19.5, 452.0 ],
+									"midpoints" : [ 19.5, 462.0 ],
 									"source" : [ "obj-1", 0 ]
 								}
 
@@ -1465,7 +1465,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 42.0, 125.0, 932.0, 553.0 ],
+						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1496,6 +1496,19 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-1",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 103.5, 911.0, 36.0 ],
+									"presentation_linecount" : 2,
+									"text" : "Both the feature names and their parameters are case insensitive in ears.features~, so you can use whichever naming convention you prefer (e.g. LogAttackTime, in Essentia-style, vs. logattacktime, in Max-style)"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -1507,7 +1520,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 627.0, 69.599853515625, 297.0, 21.0 ],
+									"patching_rect" : [ 280.0, 86.599853515625, 297.0, 21.0 ],
 									"text" : "https://essentia.upf.edu/algorithms_reference.html",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
@@ -1524,19 +1537,20 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 752.5, 144.0, 165.0, 62.0 ],
+									"patching_rect" : [ 752.5, 179.0, 165.0, 62.0 ],
 									"text" : ";\rmax launchbrowser https://essentia.upf.edu/algorithms_reference.html"
 								}
 
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-23",
 									"linecount" : 5,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 350.0, 117.5, 167.0, 79.0 ],
+									"patching_rect" : [ 350.0, 157.5, 79.0, 74.0 ],
 									"text" : "envelope\nlogattacktime\nenvmaxtime\nenvmintime\nstrongdecay"
 								}
 
@@ -1549,7 +1563,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 350.0, 101.5, 102.0, 20.0 ],
+									"patching_rect" : [ 350.0, 141.5, 102.0, 20.0 ],
 									"text" : "Envelopes",
 									"underline" : 1
 								}
@@ -1557,12 +1571,13 @@
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-21",
 									"linecount" : 27,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 117.5, 167.0, 399.0 ],
+									"patching_rect" : [ 10.0, 157.5, 155.0, 368.0 ],
 									"text" : "min\nmax\nwelch\nflux\nzerocrossingrate\nenergy\nenergyband\nenergybandratio\nmfcc\nbfcc\nbarkbands\nerbbands\nfrequencybands\ngfcc\nhfc\nlpc\nmaxmagfreq\nrolloff\ntimedomainspectralcentroid\nspectralcomplexity\nspectralcontrast\nstrongpeak\ntriangularbands\ntriangularbarkbands\nspectrum\npowerspectrum\nderivative"
 								}
 
@@ -1575,7 +1590,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 101.5, 62.0, 20.0 ],
+									"patching_rect" : [ 10.0, 141.5, 62.0, 20.0 ],
 									"text" : "Standard",
 									"underline" : 1
 								}
@@ -1589,7 +1604,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 519.0, 277.5, 124.0, 20.0 ],
+									"patching_rect" : [ 519.0, 312.5, 124.0, 20.0 ],
 									"text" : "Pitch",
 									"underline" : 1
 								}
@@ -1597,12 +1612,13 @@
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-19",
 									"linecount" : 10,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 519.0, 292.5, 157.0, 152.0 ],
+									"patching_rect" : [ 519.0, 327.5, 143.0, 141.0 ],
 									"text" : "multipitchklapuri\nmultipitchmelodia\npitchsaliencefunction\npitchmelodia\npredominantpitchmelodia\npitchyin\npitchyinfft\npitchyinprobabilistic\npitchyinprobabilities\nvibrato"
 								}
 
@@ -1615,7 +1631,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 680.0, 101.5, 124.0, 20.0 ],
+									"patching_rect" : [ 680.0, 141.5, 124.0, 20.0 ],
 									"text" : "Loudness/dynamics",
 									"underline" : 1
 								}
@@ -1623,12 +1639,13 @@
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-16",
 									"linecount" : 9,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 680.0, 116.5, 152.0, 137.0 ],
+									"patching_rect" : [ 680.0, 156.5, 110.0, 127.0 ],
 									"text" : "duration\neffectiveduration\nsilencerate\ndynamiccomplexity\nlarm\nleq\nloudness\nloudnessvickers\nreplaygain"
 								}
 
@@ -1641,7 +1658,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 519.0, 101.5, 102.0, 20.0 ],
+									"patching_rect" : [ 519.0, 141.5, 102.0, 20.0 ],
 									"text" : "Duration/silence",
 									"underline" : 1
 								}
@@ -1649,24 +1666,26 @@
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-15",
 									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 519.0, 116.5, 150.0, 65.0 ],
+									"patching_rect" : [ 519.0, 156.5, 96.0, 60.0 ],
 									"text" : "duration\neffectiveduration\nsilencerate\nsnr"
 								}
 
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-13",
 									"linecount" : 13,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 680.0, 292.5, 188.0, 195.0 ],
+									"patching_rect" : [ 680.0, 327.5, 174.0, 181.0 ],
 									"text" : "chordsdetection\ndissonance\nhpcp\nharmonicpeaks\nhighresolutionfeatures\ninharmonicity\nkey\nkeyextractor\noddtoevenharmonicenergyratio\npitchsalience\nspectrumcq\ntristimulus\ntuningfrequency"
 								}
 
@@ -1679,7 +1698,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 680.0, 277.5, 53.0, 20.0 ],
+									"patching_rect" : [ 680.0, 312.5, 53.0, 20.0 ],
 									"text" : "Tonal",
 									"underline" : 1
 								}
@@ -1691,8 +1710,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 69.599853515625, 619.0, 21.0 ],
-									"text" : "Here's the full list of implemented Essentia algorithms. Refer to the Essentia documentation to know more:"
+									"patching_rect" : [ 10.0, 69.599853515625, 911.0, 21.0 ],
+									"text" : "Here's the full list of implemented Essentia algorithms. Refer to the Essentia documentation to know more about them and their parameters. "
 								}
 
 							}
@@ -1704,7 +1723,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 182.0, 101.5, 62.0, 20.0 ],
+									"patching_rect" : [ 182.0, 141.5, 62.0, 20.0 ],
 									"text" : "Statistics",
 									"underline" : 1
 								}
@@ -1712,12 +1731,13 @@
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-9",
 									"linecount" : 29,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 182.0, 117.5, 157.0, 428.0 ],
+									"patching_rect" : [ 182.0, 157.5, 146.0, 395.0 ],
 									"text" : "temporalcentralmoments\nspectralcentralmoments\ntemporalrawmoments\nspectralrawmoments\ntemporalcentroid\nspectralcentroid\ntemporalcrest\nspectralcrest\ntemporaldecrease\nspectraldecrease\ntemporaldistributionshape\nspectraldistributionshape\ntemporalspread\nspectralspread\ntemporalskewness\nspectralskewness\ntemporalkurtosis\nspectralkurtosis\nspectralenergy\nspectralentropy\ntemporalflatness\nspectralflatness\nspectralgeometricmean\ninstantpower\nspectralmean\nspectralmedian\nspectralrms\ntemporalvariance\nspectralvariance"
 								}
 
@@ -1730,7 +1750,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 350.0, 277.5, 53.0, 20.0 ],
+									"patching_rect" : [ 350.0, 312.5, 53.0, 20.0 ],
 									"text" : "Rhythm",
 									"underline" : 1
 								}
@@ -1738,12 +1758,13 @@
 							}
 , 							{
 								"box" : 								{
+									"fontsize" : 12.0,
 									"id" : "obj-5",
 									"linecount" : 15,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 350.0, 292.5, 150.0, 224.0 ],
+									"patching_rect" : [ 350.0, 327.5, 131.0, 208.0 ],
 									"text" : "beattrackerdegara\nbeattrackermultifeature\nbeatsloudness\ndanceability\nloopbpmestimator\nonsetdetection\nonsetdetectionglobal\nonsetrate\nonsets\npercivalbpmestimator\nrhythmdescriptors\nrhythmextractor\nrhythmextractor2013\nsinglebeatloudness\nsuperfluxextractor"
 								}
 

@@ -259,7 +259,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_write*)object_alloc_debug(s_tag_class);
     if (x) {
         x->mp3_vbrmode = gensym("VBR");
-        x->sampleformat = _sym_int16;
+        x->sampleformat = EARS_DEFAULT_WRITE_FORMAT;
         x->write_spectral_annotations = true;
         
         // @arg 0 @name filenames @optional 1 @type symbol

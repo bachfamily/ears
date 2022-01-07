@@ -3851,14 +3851,14 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
             ears_llll_to_env_samples(pitchenv, duration_samps, sr_os, EARS_TIMEUNIT_DURATION_RATIO);
             
             bool has_no_velocity = false;
-            for (t_llllelem *el = pitchenv->l_head; el; el = el->l_next) {
+            for (t_llllelem *el = velocityenv->l_head; el; el = el->l_next) {
                 if (hatom_gettype(&el->l_hatom) == H_LLLL) {
                     t_llll *ll = hatom_getllll(&el->l_hatom);
-                    if (ll->l_size <= 4) {
+                    if (ll->l_size < 4) {
                         has_no_velocity = true;
                         break;
                     } else if (ll->l_size == 4) {
-                        llll_swapelems(ll->l_head, ll->l_tail);
+                        llll_swapelems(ll->l_head->l_next, ll->l_tail);
                         llll_destroyelem(ll->l_tail);
                     }
                 }

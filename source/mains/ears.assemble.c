@@ -147,7 +147,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_CHAR(c, "delta", 0, t_buf_assemble, use_delta_offsets);
     CLASS_ATTR_STYLE_LABEL(c,"delta",0,"onoff","Use Inter-Onset Intervals");
     // @description Toggles the ability to use inter-onset intervals instead of onsets to define
-    // the position of the buffers to be assembled
+    // the position of the buffers to be assembled.
 
     
     CLASS_ATTR_CHAR(c, "interp", 0, t_buf_assemble, interp_offsets);
@@ -197,7 +197,7 @@ t_buf_assemble *buf_assemble_new(t_symbol *s, short argc, t_atom *argv)
         x->xfade_left = x->xfade_right = 0;
         x->xfade_amount_mode = EARS_assemble_XFADE_AMOUNT_MS;
 */
-        x->use_delta_offsets = 1;
+        x->use_delta_offsets = 0;
         x->gains = llll_get();
         x->offsets = llll_get();
         x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
