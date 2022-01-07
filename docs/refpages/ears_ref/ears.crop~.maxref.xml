@@ -69,20 +69,14 @@
 				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
-		<objarg name="start" optional="1" type="number">
+		<objarg name="options" optional="1" type="list">
 			<digest>
-				Starting point
+				Start and end options
 			</digest>
 			<description>
-				Starting point for cropping (unit depends on the <m>timeunit</m> attribute).
-			</description>
-		</objarg>
-		<objarg name="end" optional="1" type="number">
-			<digest>
-				Ending point
-			</digest>
-			<description>
-				Ending point for cropping (unit depends on the <m>timeunit</m> attribute).
+				If a single number is provided, it is considered to be the ending point of the cropping
+				(which would start at zero). If two numbers are provided, then they are the starting and ending point
+				for cropping. Units always depend on the <m>timeunit</m> attribute.
 			</description>
 		</objarg>
 	</objarglist>

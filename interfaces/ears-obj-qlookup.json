@@ -232,6 +232,27 @@
       "ears.model.stochastic.synthesis~"
     ]
   },
+  "ears.mc.in~": {
+    "digest": "Signal input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime",
+      "multichannel"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.in~",
+      "ears.out~",
+      "ears.tovector~"
+    ]
+  },
   "ears.read~": {
     "digest": "Store files in buffers",
     "module": "ears",
@@ -319,6 +340,31 @@
     "seealso": [
       "ears.pack~",
       "ears.channel~"
+    ]
+  },
+  "ears.processinfo~": {
+    "digest": "Report information about the process running",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.process~",
+      "ears.in",
+      "ears.in~",
+      "ears.mc.in~",
+      "ears.out",
+      "ears.out~",
+      "ears.mc.out~",
+      "ears.tovector~",
+      "ears.fromvector~"
     ]
   },
   "ears.hoa.mirror~": {
@@ -765,6 +811,31 @@
     "seealso": [
       "ears.unpack~",
       "ears.channel~"
+    ]
+  },
+  "ears.py~": {
+    "digest": "Offline host for patches operating on buffers",
+    "module": "ears",
+    "category": [
+      "ears py"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.in~",
+      "ears.mc.in~",
+      "ears.out",
+      "ears.out~",
+      "ears.mc.out~",
+      "ears.pyinfo~",
+      "ears.tovector~",
+      "ears.fromvector~"
     ]
   },
   "ears.rev~": {

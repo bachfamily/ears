@@ -575,7 +575,7 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     // @arg 1 @name patcher name @optional 1 @type symbol
     // @digest Patcher name
-    // @description Sets the name of the patch to be loaded
+    // @description Sets the name of the patch to be loaded   
     
     t_earsprocess *x = (t_earsprocess *) object_alloc(earsprocess_class);
     t_symbol *patchname = nullptr;
@@ -638,7 +638,7 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     char outtypes[2048];
     for (i = x->nDataOutlets - 1; i >= 0; i--) {
-        x->dataOutlets[i] = outlet_new(x, "anything");
+        x->dataOutlets[i] = outlet_new(x, NULL);
     }
     for (i = 0; i < x->nBufOutlets; i++) {
         outtypes[i] = 'E';
@@ -975,7 +975,6 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         }
         
         double mssr = sr / 1000.;
-        
         t_atom_long duration = x->tail * mssr;
         
         switch (x->policy) {

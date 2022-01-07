@@ -195,50 +195,6 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
-		<attribute name="duration" get="1" set="1" type="atom_array" size="0">
-			<digest>
-				
-			</digest>
-			<description>
-				The <m>duration</m> attribute controls the duration
-				of the resulting buffers with respect to the
-				durations of the incoming one.
-				It consists of a single symbol or integer setting the <b>duration policy</b>,
-				followed by a number setting the <b>tail</b>.<br/><br/>
-				The <b>duration policy</b> can take one of the following values:<br/>
-				- <m>0</m> or <m>shortest</m> or <m>s</m>:
-				the duration of the processed (and therefore resulting) audio
-				is at most the duration of the shortest incoming buffer
-				plus the tail. If a list of buffers is passed, to be processed in sequences,
-				the processing duration refers to the per-iteration shortest buffer.
-				The <m>shortest</m> policy is the default.<br/>
-				- <m>1</m> or <m>longest</m> or <m>l</m>:
-				the duration of the processed audio
-				is at most the duration of the longest incoming buffer plus the tail.
-				If the loaded patcher has a single buffer inlet,
-				the <m>shortest</m> and <m>longest</m> policies are equivalent;
-				if it has no buffer inlets, no processing will take place.<br/>
-				- <m>2</m> or <m>fixed</m> or <m>f</m>
-				or <m>maximum</m> or <m>m</m>:
-				the duration of the processed audio
-				is set to the value of the tail.
-				This is the only meaningful setting when the patcher has no buffer inlets,
-				typically because the patch generates audio rather than process it.<br/><br/>
-				The <b>tail</b>, which is always measured in milliseconds,
-				is optional, and defaults to 0, for the <b>shortest</b> and <b>longest</b> duration policies.
-				In these cases, it sets an additional processing duration
-				after the end of the shortest or longest buffer.
-				For the <b>fixed</b> duration policy, it sets the actual
-				duration of the processing, and it cannot be 0:
-				if set to 0, or missing, it is changed to 60000.
-				The processing can be interrupted at any time by the loaded patcher,
-				through the <o>ears.processinfo~</o> object.
-			</description>
-			<attributelist>
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -283,6 +239,34 @@
 			<attributelist>
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="policy" get="1" set="1" type="int" size="1">
+			<digest>
+				Duration Policy
+			</digest>
+			<description>
+				The <m>policy</m> attribute controls how the duration of the incoming buffers
+				affects the duration of the resulting ones.<br/>
+				If the duration policy is set to <m>0</m> (<b>shortest</b>), as per the default,
+				the duration of the processed (and therefore resulting) audio
+				is the duration of the shortest incoming buffer
+				plus the tail. If a list of buffers is passed, to be processed in sequence,
+				the processing duration refers to the shortest buffer in each iteration.<br/>
+				If the duration policy is set to <m>1</m> (<b>longest</b>),
+				the duration of the processed audio
+				is the duration of the longest incoming buffer plus the tail.<br/>
+				If the duration policy is set to <m>2</m> (<b>fixed</b>),
+				the duration of the processed audio is set to the value of the tail,
+				regardless of the duration of the incoming buffers.<br/>
+				If the loaded patcher has a single buffer inlet,
+				the <m>shortest</m> and <m>longest</m> policies are equivalent. If it has no buffer inlets, all three are equivalent
+				and the duration will anyway correspond to the value of the <m>tail</m> attribute.<br/>
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Duration Policy" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="reload" get="1" set="1" type="int" size="1">
@@ -338,6 +322,23 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Default Sample Rate" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="tail" get="1" set="1" type="float" size="1">
+			<digest>
+				Tail Duration
+			</digest>
+			<description>
+				The <m>tail</m> attribute adds a duration (always measured in milliseconds)
+				to the processing duration as established by the <m>policy</m> attribute.
+				It defaults to 0.
+				If the loaded patch has no buffer inlets and the tail is not set to a value higher than 0 ms,
+				no processing will take place.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Tail Duration" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>

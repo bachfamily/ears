@@ -12,11 +12,13 @@
 <refpage name='ears.clip~.maxref.xml'/>
 <refpage name='ears.rubberband~.maxref.xml'/>
 <refpage name='ears.model.stochastic.analysis~.maxref.xml'/>
+<refpage name='ears.mc.in~.maxref.xml'/>
 <refpage name='ears.read~.maxref.xml'/>
 <refpage name='ears.slice~.maxref.xml'/>
 <refpage name='ears.format~.maxref.xml'/>
 <refpage name='ears.features~.maxref.xml'/>
 <refpage name='ears.unpack~.maxref.xml'/>
+<refpage name='ears.processinfo~.maxref.xml'/>
 <refpage name='ears.hoa.mirror~.maxref.xml'/>
 <refpage name='ears.fromsamps~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
@@ -41,6 +43,7 @@
 <refpage name='ears.biquad~.maxref.xml'/>
 <refpage name='ears.filterempty~.maxref.xml'/>
 <refpage name='ears.pack~.maxref.xml'/>
+<refpage name='ears.py~.maxref.xml'/>
 <refpage name='ears.rev~.maxref.xml'/>
 <refpage name='ears.hoa.encode~.maxref.xml'/>
 <refpage name='ears.expr~.maxref.xml'/>

@@ -28,6 +28,13 @@
 			<description>
 			</description>
 		</inlet>
+		<inlet id="1" type="INLET_TYPE">
+			<digest>
+				Parameters for each of the features (one inlet per feature).
+			</digest>
+			<description>
+			</description>
+		</inlet>
 	</inletlist>
 
 	<!--OUTLETS-->
@@ -37,6 +44,7 @@
 				Feature for the corresponding key
 			</digest>
 			<description>
+				Feature for one of the introduced key; some features require multiple outlets (see outlet assistance).
 			</description>
 		</outlet>
 	</outletlist>
@@ -285,6 +293,88 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="cqtbinsperoctave" get="1" set="1" type="int" size="1">
+			<digest>
+				CQT Bins Per Octave
+			</digest>
+			<description>
+				Sets the number of bins per octave of the Constant-Q Transform.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Bins Per Octave" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="cqtminkernelsize" get="1" set="1" type="int" size="1">
+			<digest>
+				CQT Minimum Kernel Size
+			</digest>
+			<description>
+				Sets the minimum size allowed for frequency kernels of the Constant-Q Transform.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Minimum Kernel Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="cqtminpitch" get="1" set="1" type="float" size="1">
+			<digest>
+				CQT Minimum Pitch
+			</digest>
+			<description>
+				Sets the minimum pitch (in the <m>pitchunit</m>) of the Constant-Q Transform.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Minimum Pitch" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="cqtnumbins" get="1" set="1" type="int" size="1">
+			<digest>
+				CQT Total Number of Bins
+			</digest>
+			<description>
+				Sets the total number of bins of the Constant-Q Transform.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Total Number of Bins" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="cqtscale" get="1" set="1" type="float" size="1">
+			<digest>
+				CQT Filters Scale
+			</digest>
+			<description>
+				Filters scale (larger values use longer windows) of the Constant-Q Transform.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Filters Scale" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="cqtthresh" get="1" set="1" type="float" size="1">
+			<digest>
+				CQT Threshold
+			</digest>
+			<description>
+				Bins whose magnitude is below this quantile are discarded of the Constant-Q Transform.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Threshold" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="envattack" get="1" set="1" type="float" size="1">
 			<digest>
 				Envelope Attack Time
@@ -408,6 +498,24 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="onsetdetectionmethod" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Onset Detection Method
+			</digest>
+			<description>
+				Sets the method used for the onset detection: "hfc" (high frequency content),
+				"complex" (the complex-domain spectral difference function), "complex_phase", (the simplified complex-domain
+				spectral difference function taking into account phase changes, weighted by magnitude), "flux" (spectral flux),
+				"melflux" (similar to spectral flux, but using half-rectified energy changes in Mel-frequency bands),
+				"rms" (the difference function, measuring the half-rectified change of the RMS of the magnitude spectrum).
+				Refer to the Essentia documentation for the "OnsetDetection" algorithm to know more.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Onset Detection" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Onset Detection Method" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
+			</attributelist>
+		</attribute>
 		<attribute name="out" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Outlet Types
@@ -467,6 +575,75 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="peaksmagthresh" get="1" set="1" type="float" size="1">
+			<digest>
+				Peaks Magnitude Threshold
+			</digest>
+			<description>
+				Sets the magnitude threshold for the Peaks analyis (in the <m>ampunit</m> attribute).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Peaks Magnitude Threshold" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="peaksmaxfreq" get="1" set="1" type="float" size="1">
+			<digest>
+				Peaks Maximum Frequency
+			</digest>
+			<description>
+				Sets the maximum frequency for the Peaks analyis (in the <m>frequnit</m> attribute).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Peaks Maximum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="peaksmaxnum" get="1" set="1" type="int" size="1">
+			<digest>
+				Maximum Number Of Peaks
+			</digest>
+			<description>
+				Sets the maximum number of peaks for the Peaks analyis.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Number Of Peaks" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="peaksminfreq" get="1" set="1" type="float" size="1">
+			<digest>
+				Peaks Minimum Frequency
+			</digest>
+			<description>
+				Sets the minimum frequency for the Peaks analyis (in the <m>frequnit</m> attribute).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Peaks Minimum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="peaksorderby" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Order Peaks By
+			</digest>
+			<description>
+				Sets the ordering method of the peaks in the Peaks analysis.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Order Peaks By" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
+			</attributelist>
+		</attribute>
 		<attribute name="pitchunit" get="1" set="1" type="int" size="1">
 			<digest>
 				Pitch Values Are In
@@ -491,11 +668,31 @@
 				<b>Last</b>: last last frame; <br />
 				<b>Middle</b>: take middle frame; <br />
 				<b>Mean</b>: average through frames; <br />
-				<b>Loudness-weighted Mean</b>: average through frames, weighting by frame loudness (default)<br />
+				<b>Median</b>: median through frames (for use with single-valued features); <br />
+				<b>Mode</b>: mode through frames (for use with discrete features). <br />
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="summarypositive" get="1" set="1" type="int" size="1">
+			<digest>
+				Summarize Positive Values Only
+			</digest>
+			<description>
+				Toggles the ability to only summarize the features with positive values (i.e. ignore negative or zero features),
+				if any positive feature is found (otherwise, the summarization happens with all the values).
+				When a feature is a vector or a matrix, it is enough for a single value in the vector or matrix to be positive in order for
+				the whole vector to be accounted for.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarize Positive Values Only" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="summaryweight" get="1" set="1" type="int" size="1">
@@ -506,6 +703,7 @@
 				Sets the summarization weight (only applicable when <m>summary</m> is set to "Mean"): None, RMS, Loudness.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Weight" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
@@ -567,6 +765,46 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="yinmaxfreq" get="1" set="1" type="float" size="1">
+			<digest>
+				YIN Maximum Frequency
+			</digest>
+			<description>
+				Sets the maximum frequency for the YIN analyis (in the <m>frequnit</m> attribute).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="YIN" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="YIN Maximum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="yinminfreq" get="1" set="1" type="float" size="1">
+			<digest>
+				YIN Minimum Frequency
+			</digest>
+			<description>
+				Sets the minimum frequency for the YIN analyis (in the <m>frequnit</m> attribute).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="YIN" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="YIN Minimum Frequency" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="yintolerance" get="1" set="1" type="float" size="1">
+			<digest>
+				YIN Tolerance
+			</digest>
+			<description>
+				Sets the tolerance for the YIN analyis.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="YIN" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="YIN Tolerance" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 	</attributelist>
 
 	<!--SEEALSO-->
@@ -580,12 +818,18 @@
 				Incoming buffer names.
 			</description>
 		</entry>
+		<entry name ="Inlets 2, 3, 4... (llll)">
+			<description>
+				Parameters for each of the features (one inlet per feature)..
+			</description>
+		</entry>
 	</misc>
 
 	<misc name = "Output">
 		<entry name ="Outlets 1, 2, 3... (llll/buffer)">
 			<description>
 				Feature for the corresponding key.
+				Feature for one of the introduced key; some features require multiple outlets (see outlet assistance).
 			</description>
 		</entry>
 	</misc>
