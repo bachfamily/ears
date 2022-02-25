@@ -59,7 +59,9 @@ typedef struct _buf_read {
     char                iter;
     
     char                native_mp3_handling;
-    
+    char                native_aiff_handling;
+    char                native_wav_handling;
+
     t_llll              *filenames;
     t_symbol            **formatsyms;
     
@@ -83,6 +85,11 @@ long            buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *vi
 t_llll *buf_read_tags(t_buf_read *x, t_symbol *filename);
 t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filename, t_ears_spectralbuf_metadata *data,
                                                 bool *has_data, double *sr, t_symbol **sampleformat);
+t_max_err buf_read_AIFF_native(t_buf_read *x, t_buffer_obj *outbuf, const char *filepath, double start, double end);
+t_max_err buf_read_WAV_native(t_buf_read *x, t_buffer_obj *outbuf, const char *filepath, double start, double end,
+                              t_llll **markers, t_symbol **sampleformat);
+t_llll *AudioCues_to_llll(t_buf_read *x, AudioFile<float> &audioFile);
+t_symbol *encoding_to_sample_format(AudioEncoding enc, int numbits);
 
 void buf_read_assist(t_buf_read *x, void *b, long m, long a, char *s);
 void buf_read_inletinfo(t_buf_read *x, void *b, long a, char *t);
@@ -148,6 +155,23 @@ int C74_EXPORT main(void)
     CLASS_ATTR_CHAR(c, "nativemp3",	0,	t_buf_read, native_mp3_handling);
     CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
     // @description Toggles native MP3 handling.
+
+    CLASS_ATTR_CHAR(c, "nativeaiff",    0,    t_buf_read, native_aiff_handling);
+    CLASS_ATTR_STYLE_LABEL(c, "nativeaiff", 0, "onoff", "Native AIFF Handling");
+    // @description Toggles native AIFF handling. This is convenient especially
+    // if you need to only load a portion of the sound file (without this
+    // attribute the object will rely on Max capability to load all the content
+    // and then crop it)
+
+    CLASS_ATTR_CHAR(c, "nativewav",    0,    t_buf_read, native_wav_handling);
+    CLASS_ATTR_STYLE_LABEL(c, "nativewav", 0, "onoff", "Native WAV Handling");
+    // @description Toggles native WAV handling. This is convenient especially
+    // if you need to only load a portion of the sound file (without this
+    // attribute the object will rely on Max capability to load all the content
+    // and then crop it).
+    // Currently this attribute is not active by default because the WAV library
+    // ears rely upon is relatively slow, so that in most cases the native
+    // Max loading would be more convenient. It may become default in the future.
 
     CLASS_ATTR_CHAR(c, "iter",    0,    t_buf_read, iter);
     CLASS_ATTR_STYLE_LABEL(c, "iter", 0, "onoff", "Iterative reading");
@@ -218,6 +242,8 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_read*)object_alloc_debug(s_tag_class);
     if (x) {
         x->native_mp3_handling = 1;
+        x->native_aiff_handling = 1; // libAIFF is fast to load even little portions of audio files
+        x->native_wav_handling = 0; // only because the AudioFile dependency is pretty slow at loading stuff. This may change in the future.
         x->filenames = llll_make();
         x->formatsyms = (t_symbol **)bach_newptr(1 * sizeof(t_symbol *));
         
@@ -321,14 +347,41 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
             if (ears_symbol_ends_with(filepath, ".wv", true)) { // WavPack files
                 ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, start, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx), &sampleformat, (e_ears_timeunit)x->e_ob.l_timeunit);
             } else {
-                // trying to load file into input buffer
-                // sample format for wav/aiff/flac will be handled by buf_read_markers_and_spectralannotation()
-                earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx, filepath);
+                // THIS IS NOT A SMART MOVE, THOUGH. FOR SIMPLE FILES, THAT REQUIRES TOO MUCH TIME
                 
-                if (start > 0 || end > 0) {
-                    double start_samps = start < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, start, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
-                    double end_samps = end < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
-                    ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), start_samps, end_samps);
+                bool handled_natively = false;
+                // the advantage of native handling is especially when you need to load a portion of the soundfile,
+                // to avoid loading ALL the samples and then cropping
+
+                if (x->native_aiff_handling &&
+                    (ears_symbol_ends_with(filepath, ".aif", true) || ears_symbol_ends_with(filepath, ".aiff", true))) {
+                    if (buf_read_AIFF_native(x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), filepath->s_name, start, end) == MAX_ERR_NONE) {
+                        handled_natively = true;
+                    }
+                }
+
+                if (x->native_wav_handling && ears_symbol_ends_with(filepath, ".wav", true)) {
+                    t_llll *these_markers = NULL;
+                    if (buf_read_WAV_native(x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), filepath->s_name, start, end, &these_markers, &sampleformat) == MAX_ERR_NONE) {
+                        if (these_markers)
+                            llll_appendllll(markers, these_markers);
+                        handled_natively = true;
+                    } else {
+                        llll_free(these_markers);
+                    }
+                }
+                
+                
+                if (!handled_natively) {
+                    // trying to load file into input buffer
+                    // sample format for wav/aiff/flac will be handled by buf_read_markers_and_spectralannotation()
+                    earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx, filepath);
+                    
+                    if (start > 0 || end > 0) {
+                        double start_samps = start < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, start, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
+                        double end_samps = end < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
+                        ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), start_samps, end_samps);
+                    }
                 }
             }
             
@@ -346,7 +399,9 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         t_ears_spectralbuf_metadata data = spectralbuf_metadata_get_empty();
         bool has_data = false;
         double sr = DBL_MIN;
-        llll_appendllll(markers, buf_read_markers_and_spectralannotation(x, filepath, &data, &has_data, &sr, &sampleformat));
+        t_llll *l = buf_read_markers_and_spectralannotation(x, filepath, &data, &has_data, &sr, &sampleformat);
+        if (l)
+            llll_appendllll(markers, l);
         
         if (has_data){
             t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx);
@@ -838,6 +893,91 @@ void buf_read_llll_append_position(t_buf_read *x, t_llll *this_marker_ll, uint64
     }
 }
 
+t_max_err buf_read_WAV_native(t_buf_read *x, t_buffer_obj *outbuf, const char *filepath, double start, double end,
+                              t_llll **markers, t_symbol **sampleformat)
+{
+    // TO DO: AudioFile is NOT a very optimized library. This is problematic for native handling
+    // It loads all the file in a vector, although it's not really needed
+    // AIFF handling is much more quick. In the future we may need to migrate to a different WAV library
+    
+    AudioFile<float> audioFile;
+    
+    if (!audioFile.load(filepath, start, end, x->e_ob.l_timeunit == EARS_TIMEUNIT_SAMPS)) {
+        return MAX_ERR_GENERIC;
+    } else {
+        double samplingRate = audioFile.getSampleRate();
+        long channels = audioFile.getNumChannels();
+        long nSamples = audioFile.getNumSamplesPerChannel();
+        
+        if (nSamples <= 0 || channels <= 0)
+            return MAX_ERR_GENERIC;
+
+        ears_buffer_set_sr((t_object *)x, outbuf, samplingRate);
+        ears_buffer_set_numchannels((t_object *)x, outbuf, channels);
+        ears_buffer_set_size_samps((t_object *)x, outbuf, nSamples);
+        
+        t_float *bufsamps = buffer_locksamples(outbuf);
+        for (long c = 0; c < channels; c++) {
+            for (long i = 0; i < nSamples; i++)
+                bufsamps[i*channels + c] = audioFile.samples[c][i];
+        }
+        buffer_unlocksamples(outbuf);
+    }
+    
+    *markers = AudioCues_to_llll(x, audioFile);
+    
+    *sampleformat = encoding_to_sample_format(audioFile.getEncoding(), audioFile.getBitDepth());
+
+    return MAX_ERR_NONE;
+}
+
+t_max_err buf_read_AIFF_native(t_buf_read *x, t_buffer_obj *outbuf, const char *filepath, double start, double end)
+{
+    AIFF_Ref ref = AIFF_OpenFile(filepath, F_RDONLY) ;
+    if (ref)
+    {
+        // getting sampling rate
+        uint64_t nSamples ;
+        int channels ;
+        double samplingRate ;
+        int bitsPerSample ;
+        int segmentSize ;
+        
+        if (AIFF_GetAudioFormat(ref,&nSamples,&channels,
+                                &samplingRate,&bitsPerSample,
+                                &segmentSize) < 1 ) {
+            return MAX_ERR_GENERIC;
+        } else {
+            ears_buffer_set_sr((t_object *)x, outbuf, samplingRate);
+
+            long start_samp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start, outbuf) : 0;
+            long end_samp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, outbuf) : nSamples;
+            long num_samps = end_samp - start_samp;
+            
+            if (num_samps <= 0 || channels <= 0)
+                return MAX_ERR_GENERIC;
+            
+            ears_buffer_set_numchannels((t_object *)x, outbuf, channels);
+            ears_buffer_set_size_samps((t_object *)x, outbuf, num_samps);
+            
+            if (start_samp > 0)
+                AIFF_Seek(ref, start_samp);
+            
+            t_float *bufsamps = buffer_locksamples(outbuf);
+            if (AIFF_ReadSamplesFloat(ref, bufsamps, num_samps * channels) >= 0) {
+                buffer_unlocksamples(outbuf);
+            } else {
+                // error
+                buffer_unlocksamples(outbuf);
+                return MAX_ERR_GENERIC;
+            }
+        }
+        AIFF_CloseFile(ref);
+    }
+    
+    return MAX_ERR_NONE;
+}
+
 t_llll *buf_read_markers_and_spectralannotation_AIFF(t_buf_read *x, t_symbol *filename,
                                                      t_ears_spectralbuf_metadata *data, bool *has_data, double *sr,
                                                      t_symbol **sampleformat)
@@ -995,11 +1135,13 @@ t_llll *buf_read_markers_and_spectralannotation(t_buf_read *x, t_symbol *filenam
         }
         
         // MARKERS:
-        AudioFile<float> audioFile;
-        audioFile.load(filename->s_name);
-        out = AudioCues_to_llll(x, audioFile);
-        
-        *sampleformat = encoding_to_sample_format(audioFile.getEncoding(), audioFile.getBitDepth());
+        if (!x->native_wav_handling) { // this is only done here for non-native handling of WAV, otherwise it's already done while loading samples
+            AudioFile<float> audioFile;
+            audioFile.load(filename->s_name, 0, 0, true); // don't need to load any sample, just cues!
+            out = AudioCues_to_llll(x, audioFile);
+            
+            *sampleformat = encoding_to_sample_format(audioFile.getEncoding(), audioFile.getBitDepth());
+        }
         
     } else if (ears_symbol_ends_with(filename, ".wv", true)){
         // sample format already handled before, nothing to do

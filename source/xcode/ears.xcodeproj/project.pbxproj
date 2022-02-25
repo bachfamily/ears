@@ -2122,7 +2122,6 @@
 		91319C0E264C172500364EAB /* ears.tovector.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.tovector.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
 		9148046C2753F2C600D2A0EA /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = "../../../../../../../../usr/local/Cellar/python@3.9/3.9.4/Frameworks/Python.framework"; sourceTree = "<group>"; };
 		91ACB3602753EE4400EB3D95 /* ears.py~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.py~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91ACB3612753EE4400EB3D95 /* ears.process~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.process~ copy-Info.plist"; path = "/Users/andreaagostini/Documents/Max 8/Packages/ears/source/xcode/ears.process~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		91ACB3642753F03A00EB3D95 /* cwalk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cwalk.c; sourceTree = "<group>"; };
 		91ACB3652753F03A00EB3D95 /* cwalk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cwalk.h; sourceTree = "<group>"; };
 		91C0F762272461D800ADBCBD /* ears.py.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ears.py.cpp; path = ../mains/ears.py.cpp; sourceTree = "<group>"; };
@@ -13405,7 +13404,6 @@
 		2FBBEAD008F335010078DB84 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = NO;
@@ -13418,14 +13416,13 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
+				VALID_ARCHS = "x86_64 arm64";
 			};
 			name = Development;
 		};
 		2FBBEAD108F335010078DB84 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = NO;
@@ -13438,7 +13435,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
+				VALID_ARCHS = "x86_64 arm64";
 			};
 			name = Deployment;
 		};

@@ -121,12 +121,16 @@ public:
     
     /** Constructor, using a given file path to load a file */
     AudioFile (std::string filePath);
-        
+
+    /** Constructor, using a given file path to load a file and start/end points */
+    AudioFile (std::string filePath, int start, int end, bool start_end_are_samples);
+
     //=============================================================
     /** Loads an audio file from a given file path.
      * @Returns true if the file was successfully loaded
      */
     bool load (std::string filePath);
+    bool load (std::string filePath, int start, int end, bool start_end_are_samples);
     
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
@@ -228,9 +232,9 @@ private:
     
     //=============================================================
     AudioFileFormat determineAudioFileFormat (std::vector<uint8_t>& fileData);
-    bool decodeWaveFile (std::vector<uint8_t>& fileData);
+    bool decodeWaveFile (std::vector<uint8_t>& fileData, int start, int end, bool start_end_are_samples);
     bool decodeWaveFileCues (std::vector<uint8_t>& fileData, std::vector<uint64_t> &cueSamples, std::vector<std::string> &cueLabels);
-    bool decodeAiffFile (std::vector<uint8_t>& fileData);
+    bool decodeAiffFile (std::vector<uint8_t>& fileData, int start, int end, bool start_end_are_samples);
     
     //=============================================================
     bool saveToWaveFile (std::string filePath, WavAudioFormat audioEncoding);
@@ -327,6 +331,13 @@ AudioFile<T>::AudioFile (std::string filePath)
  :  AudioFile<T>()
 {
     load (filePath);
+}
+
+template <class T>
+AudioFile<T>::AudioFile (std::string filePath, int start, int end, bool start_end_are_samples)
+:  AudioFile<T>()
+{
+    load (filePath, start, end, start_end_are_samples);
 }
 
 //=============================================================
@@ -520,7 +531,7 @@ void AudioFile<T>::shouldLogErrorsToConsole (bool logErrors)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::load (std::string filePath)
+bool AudioFile<T>::load (std::string filePath, int start, int end, bool start_end_are_samples)
 {
     std::ifstream file (filePath, std::ios::binary);
     
@@ -539,7 +550,8 @@ bool AudioFile<T>::load (std::string filePath)
 	size_t length = file.tellg();
 	file.seekg (0, std::ios::beg);
 
-	// allocate
+	// allocate ///< this allocation is very slow. is this really needed? can't we operate on the file directly?
+                ///  it would mean to rewrite the whole library, perhaps...
 	fileData.resize (length);
 
 	file.read(reinterpret_cast<char*> (fileData.data()), length);
@@ -556,11 +568,11 @@ bool AudioFile<T>::load (std::string filePath)
     
     if (audioFileFormat == AudioFileFormat::Wave)
     {
-        return decodeWaveFile (fileData);
+        return decodeWaveFile (fileData, start, end, start_end_are_samples);
     }
     else if (audioFileFormat == AudioFileFormat::Aiff)
     {
-        return decodeAiffFile (fileData);
+        return decodeAiffFile (fileData, start, end, start_end_are_samples);
     }
     else
     {
@@ -569,10 +581,20 @@ bool AudioFile<T>::load (std::string filePath)
     }
 }
 
+template <class T>
+bool AudioFile<T>::load (std::string filePath)
+{
+    return load(filePath, -1, -1, true);
+}
+
+long ms_to_samps(double ms, double sr)
+{
+    return round(ms * sr / 1000.);
+}
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
+bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData, int start, int end, bool start_end_are_samples)
 {
     // -----------------------------------------------------------
     // HEADER CHUNK
@@ -778,7 +800,10 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     clearAudioBuffer();
     samples.resize (numChannels);
     
-    for (int i = 0; i < numSamples; i++)
+    int start_s = start >= 0 ? (start_end_are_samples ? start : ms_to_samps(start, sampleRate) ) : 0;
+    int end_s = end >= 0 ? (start_end_are_samples ? end : ms_to_samps(end, sampleRate) ) : numSamples;
+
+    for (int i = start_s; i < end_s; i++)
     {
         for (int channel = 0; channel < numChannels; channel++)
         {
@@ -844,7 +869,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
+bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData, int start, int end, bool start_end_are_samples)
 {
     cues.clear(); // Cues are unsupported for AIFF files for now
 
@@ -939,7 +964,10 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     clearAudioBuffer();
     samples.resize (numChannels);
     
-    for (int i = 0; i < numSamplesPerChannel; i++)
+    int start_s = start >= 0 ? (start_end_are_samples ? start : ms_to_samps(start, sampleRate) ) : 0;
+    int end_s = end >= 0 ? (start_end_are_samples ? end : ms_to_samps(end, sampleRate) ) : numSamplesPerChannel;
+
+    for (int i = start_s; i < end_s; i++)
     {
         for (int channel = 0; channel < numChannels; channel++)
         {
