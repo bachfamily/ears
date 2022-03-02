@@ -1714,7 +1714,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("norm"), norm);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Flux",
                                                                             "halfRectify", (bool)halfRectify,
-                                                                            "norm", norm);
+                                                                            "norm", norm->s_name);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
                     set_essentia_outputs(lib, i, "f", "flux");
                     set_custom_outputs(lib, i, "f", "flux");
@@ -1810,7 +1810,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     double magnitudeThreshold = 0.005;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "d",
                                     gensym("magnitudethreshold"), &magnitudeThreshold);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("SpectralCentroidTime",
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("SpectralComplexity",
                                                                             "sampleRate", sr,
                                                                             "magnitudeThreshold", (Real)magnitudeThreshold);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
@@ -2822,8 +2822,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "highBoundary", highBoundary,
                                                                             "sampleRate", sr);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
-                    set_essentia_outputs(lib, i, "f", "oddToEvenHarmonicEnergyRatio");
-                    set_custom_outputs(lib, i, "f", "odd-to-even harmonic energy ratio");
+                    set_essentia_outputs(lib, i, "f", "pitchSalience");
+                    set_custom_outputs(lib, i, "f", "pitch salience normalized from 0 to 1");
                 }
                     break;
 

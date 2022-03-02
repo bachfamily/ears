@@ -5,6 +5,7 @@
 // This code is public domain
 
 #include "revmodel.hpp"
+#include "stdlib.h"
 
 void revmodel::initstuff(bool from_scratch)
 {
