@@ -8,7 +8,7 @@
 #ifndef ears_process_h
 #define ears_process_h
 
-#include <ears.commons.h>
+#include "ears.commons.h"
 #include <ext_buffer.h>
 #include <vector>
 #include <unordered_map>
