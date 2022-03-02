@@ -102,9 +102,7 @@ Now the file that previously contained the x86 version contains the fat binary, 
 
 • for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2)
 
-• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2); a slightly modified version of commit f42a369 is included in the repository; the resampler used is libsamplerate (released under BSD license), which you must install from Homebrew on Apple Silicon, following the same steps as for 
-
-
+• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2); a slightly modified version of commit f42a369 is included in the repository; the resampler used is libsamplerate (released under BSD license), which you must install from Homebrew on Apple Silicon, following the same steps provided for the lame library (download separately the arm64 and x86 version, and combine them with lipo).
 
 • for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 

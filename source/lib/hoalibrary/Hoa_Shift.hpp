@@ -14,6 +14,8 @@
 #include <Eigen/Geometry>
 #include <boost/math/special_functions/bessel.hpp>
 
+#include <iostream>
+
 #define HOA_SHIFT_FFT_SIZE 512
 #define HOA_SOUND_SPEED 343
 using namespace Eigen;
