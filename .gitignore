@@ -28,7 +28,8 @@ Thumbs.db
 *.xcworkspace
 **/xcuserdata/*
 *.pbxuser
-*.mode*
+*.mode1v3
+*.mode2v3
 
 # Visual Studio User Data #
 ###########################
