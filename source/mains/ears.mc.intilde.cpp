@@ -249,6 +249,8 @@ void ears_mcintilde_setbuffers(t_ears_mcintilde *x, bufferData* bufs)
 
 long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
 {
+    if (!x->earsProcessParent)
+        return 1;
     x->bufIndexOk = x->bufIndexOk;
     x->firstChanOk = x->firstChan;
     x->chansOk = x->chans;
