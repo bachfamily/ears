@@ -23,6 +23,7 @@ typedef struct _ears_in
 
 
 t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av);
+void ears_in_free(t_ears_in *x);
 void ears_in_assist(t_ears_in *x, void *b, long m, long a, char *s);
 
 void ears_in_bang(t_ears_in *x);
@@ -37,12 +38,12 @@ int C74_EXPORT main()
     llllobj_common_symbols_init();
     
     ears_in_class = class_new("ears.in",
-                           (method)ears_in_new,
-                           NULL,
-                           sizeof(t_ears_in),
-                           NULL,
-                           A_GIMME,
-                           0);
+                              (method)ears_in_new,
+                              (method)ears_in_free,
+                              sizeof(t_ears_in),
+                              NULL,
+                              A_GIMME,
+                              0);
     
     class_register(CLASS_BOX, ears_in_class);
     

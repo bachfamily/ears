@@ -25,6 +25,7 @@ typedef struct _ears_out
 
 
 void *ears_out_new(t_symbol *s, t_atom_long ac, t_atom* av);
+void ears_out_free(t_ears_out *x);
 void ears_out_assist(t_ears_out *x, void *b, long m, long a, char *s);
 
 void ears_out_bang(t_ears_out *x);
@@ -41,13 +42,12 @@ int C74_EXPORT main()
     llllobj_common_symbols_init();
     
     ears_out_class = class_new("ears.out",
-                           (method)ears_out_new,
-                           NULL,
-                           sizeof(t_ears_out),
-                           NULL,
-                           A_GIMME,
-                           0);
-    
+                               (method)ears_out_new,
+                               (method)ears_out_free,
+                               sizeof(t_ears_out),
+                               NULL,
+                               A_GIMME,
+                               0);
     
     class_addmethod(ears_out_class, (method) ears_out_bang, "bang", 0);
     class_addmethod(ears_out_class, (method) ears_out_int, "int", A_LONG, 0);

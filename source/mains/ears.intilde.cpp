@@ -61,6 +61,7 @@ typedef struct _ears_intilde
 
 
 void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av);
+void ears_intilde_free(t_ears_intilde *x);
 void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s);
 void ears_intilde_inletinfo(t_ears_intilde *x, void *b, long a, char *t);
 
@@ -82,7 +83,7 @@ int C74_EXPORT main()
     
     ears_intilde_class = class_new("ears.in~",
                               (method)ears_intilde_new,
-                              NULL,
+                              (method)ears_intilde_free,
                               sizeof(t_ears_intilde),
                               NULL,
                               A_GIMME,
@@ -238,7 +239,7 @@ void ears_intilde_perform64(t_ears_intilde *x, t_dspchain *dsp64, double **ins, 
             for (s = 0; s < vec_size; s++)
                 *(out++) = 0;
         } else {
-            float *tab = buf->samps + (pos * bufchans) + i;
+            float *tab = buf->samps + (pos * bufchans) + chan;
             t_atom_long frames = buf->frames;
             
             for (s = 0; s < vec_size && pos < frames; s++, pos++) {

@@ -62,6 +62,7 @@ typedef struct _ears_mcintilde
 
 
 t_ears_mcintilde *ears_mcintilde_new(t_symbol *s, long ac, t_atom* av);
+void ears_mcintilde_free(t_ears_mcintilde *x);
 void ears_mcintilde_assist(t_ears_mcintilde *x, void *b, long m, long a, char *s);
 
 void ears_mcintilde_bang(t_ears_mcintilde *x);
@@ -85,7 +86,7 @@ int C74_EXPORT main()
     
     ears_mcintilde_class = class_new("ears.mc.in~",
                                    (method)ears_mcintilde_new,
-                                   NULL,
+                                   (method)ears_mcintilde_free,
                                    sizeof(t_ears_mcintilde),
                                    NULL,
                                    A_GIMME,
