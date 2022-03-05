@@ -812,8 +812,8 @@ void earsprocess_open(t_earsprocess *x)
     if (inlet >= x->nBufInlets) {
         earsprocess_anything(x, _sym_open, 0, NULL);
     } else {
-        method m = zgetfn((t_object *) x->client_patch, _sym_vis);
-        post("%p", m);
+        //method m = zgetfn((t_object *) x->client_patch, _sym_vis);
+        //post("%p", m);
         object_method((t_object *) x->client_patch, _sym_vis);
     }
 }
