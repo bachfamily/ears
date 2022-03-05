@@ -135,9 +135,9 @@ void ears_intilde_list(t_ears_intilde *x, t_symbol *s, long ac, t_atom *av)
         t_atom_long v = atom_getlong(av++);
         if (v < 1) {
             object_error((t_object *) x, "Wrong channel index, setting to 1");
-            v = 1;
+            v = 0;
         }
-        x->chan[i] = v;
+        x->chan[i] = v - 1;
     }
 ears_intilde_list_error:
     return;
@@ -196,14 +196,14 @@ void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
             t_atom_long v = atom_getlong(av++);
             if (v < 1) {
                 object_error((t_object *) x, "Invalid channel number at position %d, setting to 1", i + 1);
-                v = 1;
+                v = 0;
             }
-            x->chan[i] = v;
+            x->chan[i] = v - 1;
             outlet_new((t_object *) x, "signal");
         }
     } else {
         x->nChans = 1;
-        x->chan[0] = 1;
+        x->chan[0] = 0;
         outlet_new((t_object *) x, "signal");
     }
 
