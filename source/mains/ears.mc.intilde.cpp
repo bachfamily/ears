@@ -62,6 +62,7 @@ typedef struct _ears_mcintilde
 
 
 t_ears_mcintilde *ears_mcintilde_new(t_symbol *s, long ac, t_atom* av);
+void ears_mcintilde_free(t_ears_mcintilde *x);
 void ears_mcintilde_assist(t_ears_mcintilde *x, void *b, long m, long a, char *s);
 
 void ears_mcintilde_bang(t_ears_mcintilde *x);
@@ -85,7 +86,7 @@ int C74_EXPORT main()
     
     ears_mcintilde_class = class_new("ears.mc.in~",
                                    (method)ears_mcintilde_new,
-                                   NULL,
+                                   (method)ears_mcintilde_free,
                                    sizeof(t_ears_mcintilde),
                                    NULL,
                                    A_GIMME,
@@ -143,22 +144,26 @@ t_ears_mcintilde *ears_mcintilde_new(t_symbol *s, long ac, t_atom* av)
     x->bufIndex = 1;
     x->firstChan = 1;
     
-    if (ac > 0) {
+    long true_ac = attr_args_offset(ac, av);
+    
+    if (true_ac > 0) {
         long b = atom_getlong(av);
         if (b > 0 && b <= EARS_PROCESS_MAX_INPUT_BUFFERS)
             x->bufIndex = b;
         else
             object_error((t_object *) x, "Bad buffer index");
+        true_ac--;
         ac--;
         av++;
     }
     
-    if (ac > 0) {
+    if (true_ac > 0) {
         long f = atom_getlong(av);
         if (f > 0)
             x->firstChan = f;
         else
             object_error((t_object *) x, "Bad first channel");
+        true_ac--;
         ac--;
         av++;
     }
@@ -203,18 +208,19 @@ void ears_mcintilde_perform64(t_ears_mcintilde *x, t_dspchain *dsp64, double **i
         return;
     }
     
-    long startChan = offset + 1;
-    long endChan = MAX(buf->chans, startChan + numouts - 1);
-    long bufchans = endChan - startChan - 1;
+    long startChan = offset;
+    long bufchans = buf->chans;
+    long endChan = MIN(bufchans, startChan + numouts);
     t_atom_long pos = x->position;
 
     int chan, outNum;
-    for (chan = startChan, outNum = 0; chan <= endChan; chan++, outNum++) {
+    for (chan = startChan, outNum = 0; chan < endChan; chan++, outNum++) {
         t_sample *out = outs[outNum];
         float *tab = buf->samps + (pos * bufchans) + chan;
         t_atom_long frames = buf->frames;
         
-        for (s = 0; s < vec_size && pos < frames; s++, pos++) {
+        t_atom_long leeway = MIN(vec_size, frames - pos);
+        for (s = 0; s < leeway; s++) {
             *(out++) = *tab;
             tab += bufchans;
         }
@@ -248,14 +254,16 @@ void ears_mcintilde_setbuffers(t_ears_mcintilde *x, bufferData* bufs)
 
 long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
 {
-    x->bufIndexOk = x->bufIndexOk;
+    if (!x->earsProcessParent)
+        return 1;
+    x->bufIndexOk = x->bufIndex;
     x->firstChanOk = x->firstChan;
     x->chansOk = x->chans;
     if (auto b = &x->bufs[x->bufIndexOk - 1]) {
         if (x->chansOk != 0)
             return x->chansOk;
         else {
-            return MIN(MIN(b->chans - x->firstChan, 0) + 1, 1024);
+            return MIN(MAX(b->chans - x->firstChan, 0) + 1, 1024);
         }
     } else {
         object_error((t_object *) x, "Invalid buffer");
