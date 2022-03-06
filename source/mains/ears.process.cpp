@@ -1097,6 +1097,7 @@ void earsprocess_autoclock(t_earsprocess *x, t_patcher *p)
         method c = zgetfn(o, _sym_clock);
         if (c) {
             CALL_METHOD_SAFE(void, (t_object*, t_symbol*), c, o, name);
+            // was:            (c)(o, name);
         } else
             object_attr_setsym(o, _sym_clock, name);
         
