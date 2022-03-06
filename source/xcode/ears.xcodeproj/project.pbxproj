@@ -1960,6 +1960,7 @@
 		1E79C2AA1FCAFBBA0088E580 /* ears.mix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.mix.c; path = ../mains/ears.mix.c; sourceTree = SOURCE_ROOT; };
 		1E7E34FC261F171C0068FB3B /* ears.model.sine.synthesis~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.model.sine.synthesis~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E7E34FE261F17520068FB3B /* ears.model.sine.synthesis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.model.sine.synthesis.c; path = ../mains/ears.model.sine.synthesis.c; sourceTree = "<group>"; };
+		1E82F01327D55C0300582250 /* ears.reg~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.reg~ copy-Info.plist"; path = "/Users/danieleghisi/Documents/Max 7/Packages/ears/source/xcode/ears.reg~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		1E8422D41FCAEAEA00EAE983 /* ears.filterempty~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.filterempty~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E8422D61FCAEB1800EAE983 /* ears.filterempty.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.filterempty.c; path = ../mains/ears.filterempty.c; sourceTree = SOURCE_ROOT; };
 		1E88A4EB2615D44700D1D20E /* ears.peaks~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.peaks~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2834,6 +2835,7 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
+				1E82F01327D55C0300582250 /* ears.reg~ copy-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
