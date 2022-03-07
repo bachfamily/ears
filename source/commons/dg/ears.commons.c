@@ -4735,6 +4735,7 @@ t_symbol *get_conformed_resolved_path(t_symbol *filename)
     if (path_absolutepath(&resolved_path, filename, NULL, 0) != MAX_ERR_NONE) {
         resolved_path = filename; // let's start from the old filename, if there was an issue
     }
+
     char conformed_path[MAX_PATH_CHARS];
     path_nameconform(resolved_path->s_name, conformed_path, PATH_STYLE_MAX, PATH_TYPE_BOOT);
     

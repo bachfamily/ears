@@ -812,8 +812,8 @@ void earsprocess_open(t_earsprocess *x)
     if (inlet >= x->nBufInlets) {
         earsprocess_anything(x, _sym_open, 0, NULL);
     } else {
-        method m = zgetfn((t_object *) x->client_patch, _sym_vis);
-        post("%p", m);
+        //method m = zgetfn((t_object *) x->client_patch, _sym_vis);
+        //post("%p", m);
         object_method((t_object *) x->client_patch, _sym_vis);
     }
 }
@@ -1095,9 +1095,9 @@ void earsprocess_autoclock(t_earsprocess *x, t_patcher *p)
         if (object_classname(o) == gensym("ears.process~"))
             continue;
         method c = zgetfn(o, _sym_clock);
-        if (c)
-            (c)(o, name);
-        else
+        if (c) {
+            CALL_METHOD_SAFE(void, (t_object*, t_symbol*), c, o, name);
+        } else
             object_attr_setsym(o, _sym_clock, name);
         
         
