@@ -3806,7 +3806,8 @@ void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *l
     delete lib->alg_FrameCutter;
     delete lib->alg_SpectrumCentralMoments;
     delete lib->alg_EnvelopeCentralMoments;
-    delete lib->alg_EqualLoudness;
+    if (lib->alg_EqualLoudness)
+        delete lib->alg_EqualLoudness;
     delete lib->alg_Loudness;
     delete lib->alg_RMS;
     delete lib->alg_SpectralPeaks;
@@ -4651,7 +4652,7 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
         lib->alg_Loudness->input("signal").set(wframedata);
         lib->alg_Loudness->output("loudness").set(frameloudness);
 
-        if (sr == 8000 || sr == 32000 || sr == 44100 || sr == 48000) {
+        if (lib->alg_EqualLoudness && (sr == 8000 || sr == 32000 || sr == 44100 || sr == 48000)) {
             lib->alg_EqualLoudness->input("signal").set(data);
             lib->alg_EqualLoudness->output("signal").set(dataeql);
         } else {
@@ -4780,7 +4781,8 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
             lib->alg_FFT->reset();
             lib->alg_Car2pol->reset();
             lib->alg_Loudness->reset();
-            lib->alg_EqualLoudness->reset();
+            if (lib->alg_EqualLoudness)
+                lib->alg_EqualLoudness->reset();
             lib->alg_RMS->reset();
             lib->alg_EnvelopeCentralMoments->reset();
             lib->alg_SpectrumCentralMoments->reset();
