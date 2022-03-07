@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 11,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 42.0, 99.0, 932.0, 579.0 ],
+		"rect" : [ 100.0, 79.0, 932.0, 579.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -52,8 +52,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -90,11 +90,68 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 569.0, 228.0, 66.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"versionnumber" : 80105
+									}
+,
+									"text" : "bach.print"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbleside" : 2,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"hidden" : 1,
+									"id" : "obj-5",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 724.0, 130.400146484375, 115.0, 40.0 ],
+									"text" : "Compare with this"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-3",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 569.0, 139.599853515625, 87.0, 23.0 ],
+									"text" : "earsBufAnton"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-1",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 569.0, 187.400146484375, 311.0, 23.0 ],
+									"text" : "ears.essentia~ [spectralcentroid::: @timeunit samps]"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-25",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 605.0, 472.400146484375, 34.0, 23.0 ],
+									"patching_rect" : [ 569.0, 501.400146484375, 34.0, 23.0 ],
 									"text" : "print"
 								}
 
@@ -106,7 +163,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 605.0, 437.400146484375, 264.0, 23.0 ],
+									"patching_rect" : [ 569.0, 466.400146484375, 264.0, 23.0 ],
 									"text" : "sprintf At time %.3fms the centroid is %.0fHz"
 								}
 
@@ -118,7 +175,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 605.0, 400.400146484375, 263.0, 23.0 ],
+									"patching_rect" : [ 569.0, 429.400146484375, 263.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80104
 									}
@@ -134,7 +191,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 605.0, 370.400146484375, 69.0, 23.0 ],
+									"patching_rect" : [ 569.0, 399.400146484375, 69.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80104
 									}
@@ -150,7 +207,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 605.0, 337.400146484375, 274.0, 23.0 ],
+									"patching_rect" : [ 569.0, 366.400146484375, 274.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80104
 									}
@@ -166,7 +223,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 605.0, 263.0, 87.0, 23.0 ],
+									"patching_rect" : [ 569.0, 292.0, 87.0, 23.0 ],
 									"text" : "earsBufAnton"
 								}
 
@@ -180,8 +237,8 @@
 									"numinlets" : 3,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 605.0, 301.400146484375, 274.0, 23.0 ],
-									"text" : "ears.features~ frametime... spectralcentroid..."
+									"patching_rect" : [ 569.0, 330.400146484375, 274.0, 23.0 ],
+									"text" : "ears.essentia~ frametime... spectralcentroid..."
 								}
 
 							}
@@ -295,18 +352,19 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 10.0, 213.0, 472.0, 23.0 ],
-									"text" : "ears.features~ spectralcentroid... frametime... [frametime... @timeunit samps]"
+									"text" : "ears.essentia~ spectralcentroid... frametime... [frametime... @timeunit samps]"
 								}
 
 							}
 , 							{
 								"box" : 								{
 									"id" : "obj-11",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 69.599853515625, 619.0, 21.0 ],
-									"text" : "Use \"frametime...\" as feature in order to retrieve all the time position of the center of the analysis windows."
+									"patching_rect" : [ 10.0, 69.599853515625, 622.0, 36.0 ],
+									"text" : "Use \"frametime...\" as feature in order to retrieve all the time position of the center of the analysis windows, if you don't want to use the time-tagged time series temporal mode."
 								}
 
 							}
@@ -316,18 +374,25 @@
 									"filename" : "helpname.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.features~" ],
+									"jsarguments" : [ "ears.essentia~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 303.1519775390625, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 302.912017822265625, 57.599853515625 ]
 								}
 
 							}
  ],
 						"lines" : [ 							{
+								"patchline" : 								{
+									"destination" : [ "obj-6", 0 ],
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
 									"source" : [ "obj-12", 0 ]
@@ -406,6 +471,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-1", 0 ],
+									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
 									"source" : [ "obj-4", 0 ]
 								}
@@ -440,14 +512,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 42.0, 125.0, 932.0, 553.0 ],
+						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -605,8 +677,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 393.0, 353.400146484375, 273.0, 23.0 ],
-									"text" : "ears.features~ spectralcentroid~ @bufinterp 2"
+									"patching_rect" : [ 393.0, 353.400146484375, 275.0, 23.0 ],
+									"text" : "ears.essentia~ spectralcentroid~ @bufinterp 2"
 								}
 
 							}
@@ -692,8 +764,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 37.0, 153.0, 195.0, 23.0 ],
-									"text" : "ears.features~ spectralcentroid~"
+									"patching_rect" : [ 37.0, 153.0, 196.0, 23.0 ],
+									"text" : "ears.essentia~ spectralcentroid~"
 								}
 
 							}
@@ -714,13 +786,13 @@
 									"filename" : "helpname.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.features~" ],
+									"jsarguments" : [ "ears.essentia~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 303.1519775390625, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 302.912017822265625, 57.599853515625 ]
 								}
 
 							}
@@ -858,8 +930,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -982,8 +1054,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 437.0, 219.0, 23.0 ],
-									"text" : "ears.features~ [onsets @alpha 0.05]"
+									"patching_rect" : [ 10.0, 437.0, 220.0, 23.0 ],
+									"text" : "ears.essentia~ [onsets @alpha 0.05]"
 								}
 
 							}
@@ -1153,8 +1225,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 393.0, 467.5, 481.0, 23.0 ],
-									"text" : "ears.features~ [rhythmextractor2013 @maxtempo 90 @timeunit samples] @out m"
+									"patching_rect" : [ 393.0, 467.5, 483.0, 23.0 ],
+									"text" : "ears.essentia~ [rhythmextractor2013 @maxtempo 90 @timeunit samples] @out m"
 								}
 
 							}
@@ -1216,8 +1288,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 10.0, 267.5, 367.0, 23.0 ],
-									"text" : "ears.features~ [rhythmextractor2013 @maxtempo 90] @out m"
+									"patching_rect" : [ 10.0, 267.5, 368.0, 23.0 ],
+									"text" : "ears.essentia~ [rhythmextractor2013 @maxtempo 90] @out m"
 								}
 
 							}
@@ -1274,13 +1346,13 @@
 									"filename" : "helpname.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.features~" ],
+									"jsarguments" : [ "ears.essentia~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 303.1519775390625, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 302.912017822265625, 57.599853515625 ]
 								}
 
 							}
@@ -1458,8 +1530,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1502,7 +1574,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 103.5, 911.0, 36.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Both the feature names and their parameters are case insensitive in ears.features~, so you can use whichever naming convention you prefer (e.g. LogAttackTime, in Essentia-style, vs. logattacktime, in Max-style)"
 								}
 
@@ -1775,13 +1846,13 @@
 									"filename" : "helpname.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.features~" ],
+									"jsarguments" : [ "ears.essentia~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 303.1519775390625, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 302.912017822265625, 57.599853515625 ]
 								}
 
 							}
@@ -1820,13 +1891,13 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 311.0, 205.0, 169.0, 22.0 ],
+					"patching_rect" : [ 311.0, 205.0, 170.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"filename" : "helpstarter.js",
 						"parameter_enable" : 0
 					}
 ,
-					"text" : "js helpstarter.js ears.features~"
+					"text" : "js helpstarter.js ears.essentia~"
 				}
 
 			}
@@ -1842,14 +1913,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 932.0, 553.0 ],
+						"rect" : [ 100.0, 105.0, 932.0, 553.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1880,6 +1951,38 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-37",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 431.0, 318.0, 184.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"versionnumber" : 80105
+									}
+,
+									"text" : "bach.print LabelledTimeSeries"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubblepoint" : 0.6,
+									"bubbleside" : 2,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-34",
+									"linecount" : 5,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 319.25, 182.5, 132.60653700000023, 98.0 ],
+									"text" : "3) TIME-TAGGED TIME-SERIES \n(one value per \nanalysis frame): append three colons"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-32",
 									"maxclass" : "message",
 									"numinlets" : 2,
@@ -1896,7 +1999,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 73.0, 444.5, 37.0, 21.0 ],
+									"patching_rect" : [ 73.0, 464.5, 37.0, 21.0 ],
 									"text" : "BPM"
 								}
 
@@ -1907,7 +2010,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 130.0, 440.5, 131.0, 23.0 ],
+									"patching_rect" : [ 130.0, 460.5, 131.0, 23.0 ],
 									"text" : "print Ticks @popup 1"
 								}
 
@@ -1933,7 +2036,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 21.0, 440.5, 50.0, 23.0 ]
+									"patching_rect" : [ 21.0, 460.5, 50.0, 23.0 ]
 								}
 
 							}
@@ -1947,7 +2050,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 284.000000000000057, 394.5, 123.0, 54.0 ],
+									"patching_rect" : [ 284.000000000000057, 414.5, 123.0, 54.0 ],
 									"text" : "Descriptors may span more than one outlet"
 								}
 
@@ -2035,8 +2138,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 617.75, 462.0, 162.0, 38.0 ],
-									"text" : "ears.features~ loudness... @numframes 128"
+									"patching_rect" : [ 617.75, 462.0, 164.0, 38.0 ],
+									"text" : "ears.essentia~ loudness... @numframes 128"
 								}
 
 							}
@@ -2061,7 +2164,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 15.0, 288.0, 73.0, 23.0 ]
+									"patching_rect" : [ 15.0, 318.0, 73.0, 23.0 ]
 								}
 
 							}
@@ -2071,7 +2174,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 266.5, 288.0, 134.0, 23.0 ],
+									"patching_rect" : [ 223.0, 318.0, 134.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80104
 									}
@@ -2087,20 +2190,20 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 518.0, 312.0, 44.0, 23.0 ],
+									"patching_rect" : [ 639.0, 340.0, 44.0, 23.0 ],
 									"text" : "set $1"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u848003292",
+									"buffername" : "u502000828",
 									"id" : "obj-16",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 518.0, 342.0, 182.5, 39.0 ]
+									"patching_rect" : [ 639.0, 370.0, 182.5, 39.0 ]
 								}
 
 							}
@@ -2111,7 +2214,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 518.0, 282.0, 101.0, 23.0 ],
+									"patching_rect" : [ 639.0, 310.0, 101.0, 23.0 ],
 									"text" : "ears.normalize~"
 								}
 
@@ -2123,7 +2226,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 485.250000000000114, 202.0, 331.0, 36.0 ],
+									"patching_rect" : [ 577.696731499999942, 225.5, 331.0, 36.0 ],
 									"text" : "(Not all descriptors support all the modes, if a mode is unsupported an error appears in the Max console)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -2135,8 +2238,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 153.575281181818241, 162.5, 331.0, 21.0 ],
-									"text" : "Three temporal modes are available:"
+									"patching_rect" : [ 48.0, 179.5, 331.0, 21.0 ],
+									"text" : "Four temporal modes are available:"
 								}
 
 							}
@@ -2152,8 +2255,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 365.181818181818244, 197.5, 119.393462999999997, 55.0 ],
-									"text" : "3) BUFFER output: append ~"
+									"patching_rect" : [ 456.303268499999945, 225.5, 119.393462999999997, 55.0 ],
+									"text" : "4) BUFFER output: append ~"
 								}
 
 							}
@@ -2165,11 +2268,11 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-9",
-									"linecount" : 3,
+									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 204.181818181818244, 185.5, 163.0, 69.0 ],
+									"patching_rect" : [ 192.625, 198.5, 120.0, 84.0 ],
 									"text" : "2) TIME-SERIES (one value per analysis frame): append three dots"
 								}
 
@@ -2182,11 +2285,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-7",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 55.0, 205.0, 146.0, 40.0 ],
-									"text" : "1) GLOBAL AVERAGE"
+									"patching_rect" : [ 48.0, 225.5, 125.0, 55.0 ],
+									"text" : "1) GLOBAL SUMMARIZATION"
 								}
 
 							}
@@ -2197,7 +2301,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 364.0, 114.0, 23.0 ],
+									"patching_rect" : [ 21.0, 384.0, 114.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -2211,8 +2315,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 21.0, 400.5, 264.0, 23.0 ],
-									"text" : "ears.features~ rhythmextractor2013 @out m"
+									"patching_rect" : [ 21.0, 420.5, 266.0, 23.0 ],
+									"text" : "ears.essentia~ rhythmextractor2013 @out m"
 								}
 
 							}
@@ -2340,11 +2444,11 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 4,
-									"numoutlets" : 3,
-									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 15.0, 249.0, 522.0, 23.0 ],
-									"text" : "ears.features~ spectralcentroid spectralcentroid... spectralcentroid~ @out mn"
+									"numinlets" : 5,
+									"numoutlets" : 4,
+									"outlettype" : [ "", "", "", "" ],
+									"patching_rect" : [ 15.0, 279.0, 643.0, 23.0 ],
+									"text" : "ears.essentia~ spectralcentroid spectralcentroid... spectralcentroid::: spectralcentroid~ @out mn"
 								}
 
 							}
@@ -2354,7 +2458,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.features~", 90 ],
+									"jsarguments" : [ "ears.essentia~", 90 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
@@ -2375,7 +2479,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-15", 0 ],
-									"source" : [ "obj-14", 2 ]
+									"source" : [ "obj-14", 3 ]
 								}
 
 							}
@@ -2383,6 +2487,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-20", 0 ],
 									"source" : [ "obj-14", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-37", 0 ],
+									"source" : [ "obj-14", 2 ]
 								}
 
 							}
@@ -2512,13 +2623,13 @@
 					"filename" : "helpname.js",
 					"id" : "obj-4",
 					"ignoreclick" : 1,
-					"jsarguments" : [ "ears.features~" ],
+					"jsarguments" : [ "ears.essentia~" ],
 					"maxclass" : "jsui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 10.0, 10.0, 303.1519775390625, 57.599853515625 ]
+					"patching_rect" : [ 10.0, 10.0, 302.912017822265625, 57.599853515625 ]
 				}
 
 			}
@@ -2534,8 +2645,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2591,13 +2702,53 @@
  ],
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
-				"name" : "helpname.js",
+				"name" : "bach.flat.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.iter.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.join.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.length.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.print.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.trans.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.essentia~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.info~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.normalize~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
-				"name" : "helpdetails.js",
+				"name" : "helpname.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
@@ -2607,46 +2758,6 @@
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.features~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.normalize~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.print.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.flat.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.length.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.info~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.join.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.trans.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.iter.mxo",
-				"type" : "iLaX"
 			}
  ],
 		"autosave" : 0

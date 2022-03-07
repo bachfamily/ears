@@ -32,7 +32,7 @@
 	buffer, tempogram, spectrogram, tempo, rhythm, transform, spectrum
  
 	@seealso
-	ears.spectrogram~, ears.features~
+	ears.spectrogram~, ears.essentia~
 	
 	@owner
 	Daniele Ghisi

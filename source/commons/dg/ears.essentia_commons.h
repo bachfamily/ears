@@ -164,30 +164,6 @@ typedef enum {
 
 
 typedef enum {
-    EARS_ESSENTIA_TEMPORALMODE_WHOLE = 0,
-    EARS_ESSENTIA_TEMPORALMODE_TIMESERIES,
-    EARS_ESSENTIA_TEMPORALMODE_BUFFER,
-} e_ears_essentia_temporalmode;
-
-typedef enum {
-    EARS_ESSENTIA_SUMMARIZATION_UNKNOWN = -1,
-    EARS_ESSENTIA_SUMMARIZATION_FIRST = 0,
-    EARS_ESSENTIA_SUMMARIZATION_LAST,
-    EARS_ESSENTIA_SUMMARIZATION_MIDDLE,
-    EARS_ESSENTIA_SUMMARIZATION_MEAN,
-    EARS_ESSENTIA_SUMMARIZATION_MEDIAN,
-    EARS_ESSENTIA_SUMMARIZATION_MODE,
-} e_ears_essentia_summarization;
-
-
-typedef enum {
-    EARS_ESSENTIA_SUMMARIZATIONWEIGHT_NONE = 0,
-    EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS,
-    EARS_ESSENTIA_SUMMARIZATIONWEIGHT_LOUDNESS,
-} e_ears_essentia_summarizationweight;
-
-
-typedef enum {
     EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO = 0,
     EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME,
     EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM,
@@ -259,12 +235,12 @@ typedef struct _ears_essentia_extractor
     bool        keep_singleton_as_lists[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     
     // Summarization
-    e_ears_essentia_summarization       summarization[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
-    e_ears_essentia_summarizationweight summarizationweight[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    e_ears_analysis_summarization       summarization[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
+    e_ears_analysis_summarizationweight summarizationweight[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     bool                                summarizationpositiveonly[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
 
 
-    e_ears_essentia_temporalmode          temporalmode;
+    e_ears_analysis_temporalmode          temporalmode;
 
     e_ears_timeunit     essentia_output_timeunit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
     e_ears_ampunit      essentia_output_ampunit[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
@@ -373,8 +349,8 @@ typedef struct _ears_essentia_analysis_params
     Real TEMPO_maxPeaks;
 
     // Summarization mode
-    e_ears_essentia_summarization summarization;
-    e_ears_essentia_summarizationweight summarizationweight;
+    e_ears_analysis_summarization summarization;
+    e_ears_analysis_summarizationweight summarizationweight;
     bool summarizationpositiveonly;
     
     // Griffin Lim

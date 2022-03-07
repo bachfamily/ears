@@ -16,7 +16,7 @@
 <refpage name='ears.read~.maxref.xml'/>
 <refpage name='ears.slice~.maxref.xml'/>
 <refpage name='ears.format~.maxref.xml'/>
-<refpage name='ears.features~.maxref.xml'/>
+<refpage name='ears.essentia~.maxref.xml'/>
 <refpage name='ears.unpack~.maxref.xml'/>
 <refpage name='ears.processinfo~.maxref.xml'/>
 <refpage name='ears.hoa.mirror~.maxref.xml'/>
@@ -55,6 +55,7 @@
 <refpage name='ears.trim~.maxref.xml'/>
 <refpage name='ears.normalize~.maxref.xml'/>
 <refpage name='ears.offset~.maxref.xml'/>
+<refpage name='ears.vamp~.maxref.xml'/>
 <refpage name='ears.istft~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
 <refpage name='ears.model.stochastic.synthesis~.maxref.xml'/>

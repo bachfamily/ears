@@ -109,7 +109,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -128,7 +128,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -147,7 +147,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -169,7 +169,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional message attributes specify the encoding properties (variable bitrate mode, bitrates). <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -188,7 +188,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -207,7 +207,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -230,7 +230,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Optional message attributes specify the encoding properties (correction, bitrate, sample ). <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -248,6 +248,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Angle Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -262,6 +263,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -275,6 +277,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Downmix to Mono" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -288,6 +291,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frame Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -300,6 +304,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Full Spectrum" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -314,6 +319,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Hop Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -334,6 +340,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -349,6 +356,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number of Analysis Frames" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -362,6 +370,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -375,6 +384,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Overlap" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -388,6 +398,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Output" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -402,6 +413,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -415,6 +427,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="First Window Starts At Zero" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -430,6 +443,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

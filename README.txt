@@ -38,7 +38,7 @@ If you're on an Apple Silicon machine, in principle by running the line above yo
     ./waf
     ./waf install
     mv /usr/local/lib/libessentia.a /usr/local/lib/libessentia_arm64.a
-3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.features~ in the Xcode project. If you want to build both architecture instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure. 
+3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.essentia~ in the Xcode project. If you want to build both architecture instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure. 
 4) Re-enter the library folder, and then
     arch -x64_64 zsh
     ./waf configure --build-static --fft='KISS' --lightweight=""
@@ -106,6 +106,8 @@ Now the file that previously contained the x86 version contains the fat binary, 
 
 • for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 
+• for the [ears.vamp~] module: the VAMP Plugin and host SDK. It's located inside the repository, to compile it follow the system-specific instructions inside the build folder (e.g. build/README.osx), e.g. on OSX: 
+make -f build/Makefile.osx
 
 
 In turn, bach depends on

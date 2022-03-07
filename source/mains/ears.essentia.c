@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.features.c
+	ears.essentia.c
  
 	@name
-	ears.features~
+	ears.essentia~
  
 	@realname
-	ears.features~
+	ears.essentia~
  
 	@type
 	object
@@ -18,7 +18,7 @@
 	Daniele Ghisi
  
 	@digest
-	Extract buffer features
+	Extract buffer features via the Essentia library
  
 	@description
 	Perform descriptor analysis on the incoming buffer via the Essentia library
@@ -26,13 +26,13 @@
 	@discussion
  
 	@category
-	ears distorsion
+	ears analysis
  
 	@keywords
-	buffer, features, feature, descriptor
+	buffer, essentia, feature, descriptor
  
 	@seealso
-	ears.info~, ears.spectrogram~
+	ears.info~, ears.vamp~, ears.spectrogram~
 	
 	@owner
 	Daniele Ghisi
@@ -55,7 +55,7 @@ using namespace standard;
 
 #define EARS_ESSENTIA_MAX_NUM_FEATURES 1024
 
-typedef struct _buf_features {
+typedef struct _buf_essentia {
     t_earsbufobj       e_ob;
     
     long               num_features;
@@ -103,26 +103,26 @@ typedef struct _buf_features {
     
     long               buffer_output_interpolation_mode;
     
-} t_buf_features;
+} t_buf_essentia;
 
 
 
 // Prototypes
-t_buf_features*         buf_features_new(t_symbol *s, short argc, t_atom *argv);
-void			buf_features_free(t_buf_features *x);
-void			buf_features_bang(t_buf_features *x);
-void			buf_features_anything(t_buf_features *x, t_symbol *msg, long ac, t_atom *av);
+t_buf_essentia*         buf_essentia_new(t_symbol *s, short argc, t_atom *argv);
+void			buf_essentia_free(t_buf_essentia *x);
+void			buf_essentia_bang(t_buf_essentia *x);
+void			buf_essentia_anything(t_buf_essentia *x, t_symbol *msg, long ac, t_atom *av);
 
-void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s);
-void buf_features_inletinfo(t_buf_features *x, void *b, long a, char *t);
+void buf_essentia_assist(t_buf_essentia *x, void *b, long m, long a, char *s);
+void buf_essentia_inletinfo(t_buf_essentia *x, void *b, long a, char *t);
 
-t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *x);
+t_ears_essentia_analysis_params buf_essentia_get_default_params(t_buf_essentia *x);
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
-EARSBUFOBJ_ADD_IO_METHODS(features)
+EARSBUFOBJ_ADD_IO_METHODS(essentia)
 
 
 /**********************************************************************/
@@ -131,7 +131,7 @@ EARSBUFOBJ_ADD_IO_METHODS(features)
 
 
 
-t_max_err buf_features_notify(t_buf_features *x, t_symbol *s, t_symbol *msg, void *sender, void *data)
+t_max_err buf_essentia_notify(t_buf_essentia *x, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
     if (msg == _sym_attr_modified) {
         x->must_recreate_extractors = true;
@@ -154,10 +154,10 @@ int C74_EXPORT main(void)
     
     t_class *c;
     
-    CLASS_NEW_CHECK_SIZE(c, "ears.features~",
-                         (method)buf_features_new,
-                         (method)buf_features_free,
-                         sizeof(t_buf_features),
+    CLASS_NEW_CHECK_SIZE(c, "ears.essentia~",
+                         (method)buf_essentia_new,
+                         (method)buf_essentia_free,
+                         sizeof(t_buf_essentia),
                          (method)NULL,
                          A_GIMME,
                          0L);
@@ -165,15 +165,15 @@ int C74_EXPORT main(void)
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
-    // A number or an llll in the second inlet is expected to contain a features threshold (depending on the <m>ampunit</m>) or
+    // A number or an llll in the second inlet is expected to contain a essentia threshold (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(features)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(essentia)
     
     
-    class_addmethod(c, (method)buf_features_notify,        "bachnotify",        A_CANT,        0);
+    class_addmethod(c, (method)buf_essentia_notify,        "bachnotify",        A_CANT,        0);
 
-    // @method number @digest Set features
-    // @description A number in the second inlet sets the features parameter (depending on the <m>ampunit</m>).
+    // @method number @digest Set essentia
+    // @description A number in the second inlet sets the essentia parameter (depending on the <m>ampunit</m>).
 
     llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
 
@@ -194,20 +194,20 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_winstartfromzero_attr(c);
     earsbufobj_class_add_winnormalized_attr(c);
 
-    CLASS_ATTR_DOUBLE(c, "envattack", 0, t_buf_features, a_envattacktime);
+    CLASS_ATTR_DOUBLE(c, "envattack", 0, t_buf_essentia, a_envattacktime);
     CLASS_ATTR_STYLE_LABEL(c,"envattack",0,"text","Envelope Attack Time");
     CLASS_ATTR_CATEGORY(c, "envattack", 0, "Envelopes");
     // @description Sets the attack time for computing envelopes (the unit depends on the <m>envtimeunit</m> attribute)
     // Floating point values are allowed.
 
-    CLASS_ATTR_DOUBLE(c, "envrelease", 0, t_buf_features, a_envreleasetime);
+    CLASS_ATTR_DOUBLE(c, "envrelease", 0, t_buf_essentia, a_envreleasetime);
     CLASS_ATTR_STYLE_LABEL(c,"envrelease",0,"text","Envelope Release Time");
     CLASS_ATTR_CATEGORY(c, "envrelease", 0, "Envelopes");
     // @description Sets the attack time for computing envelopes (the unit depends on the <m>envtimeunit</m> attribute)
     // Floating point values are allowed.
 
     
-    CLASS_ATTR_LONG(c, "bufinterp", 0, t_buf_features, buffer_output_interpolation_mode);
+    CLASS_ATTR_LONG(c, "bufinterp", 0, t_buf_essentia, buffer_output_interpolation_mode);
     CLASS_ATTR_STYLE_LABEL(c,"bufinterp",0,"text","Output Buffer Frame Interpolation Mode");
     CLASS_ATTR_ENUMINDEX(c, "bufinterp", 0, "Don't Resample Lower Neighbor Linear")
     CLASS_ATTR_BASIC(c, "bufinterp", 0);
@@ -218,7 +218,7 @@ int C74_EXPORT main(void)
     // 2 (linear): same as the previous one, and the samples are interpolated linearly.
 
     
-    CLASS_ATTR_CHAR(c, "summary", 0, t_buf_features, summarization);
+    CLASS_ATTR_CHAR(c, "summary", 0, t_buf_essentia, summarization);
     CLASS_ATTR_STYLE_LABEL(c,"summary",0,"enumindex","Summarization Mode");
     CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean Median Mode");
     CLASS_ATTR_BASIC(c, "summary", 0);
@@ -230,11 +230,11 @@ int C74_EXPORT main(void)
     // <b>Last</b>: last last frame; <br />
     // <b>Middle</b>: take middle frame; <br />
     // <b>Mean</b>: average through frames; <br />
-    // <b>Median</b>: median through frames (for use with single-valued features); <br />
-    // <b>Mode</b>: mode through frames (for use with discrete features). <br />
+    // <b>Median</b>: median through frames (for use with single-valued essentia); <br />
+    // <b>Mode</b>: mode through frames (for use with discrete essentia). <br />
 
     
-    CLASS_ATTR_CHAR(c, "summaryweight", 0, t_buf_features, summarizationweight);
+    CLASS_ATTR_CHAR(c, "summaryweight", 0, t_buf_essentia, summarizationweight);
     CLASS_ATTR_STYLE_LABEL(c,"summaryweight",0,"enumindex","Summarization Weight");
     CLASS_ATTR_ENUMINDEX(c, "summaryweight", 0, "None RMS Loudness");
     CLASS_ATTR_BASIC(c, "summaryweight", 0);
@@ -243,11 +243,11 @@ int C74_EXPORT main(void)
     // @description Sets the summarization weight (only applicable when <m>summary</m> is set to "Mean"): None, RMS, Loudness.
 
     
-    CLASS_ATTR_CHAR(c, "summarypositive", 0, t_buf_features, summarizationpositiveonly);
+    CLASS_ATTR_CHAR(c, "summarypositive", 0, t_buf_essentia, summarizationpositiveonly);
     CLASS_ATTR_STYLE_LABEL(c,"summarypositive",0,"onoff","Summarize Positive Values Only");
     CLASS_ATTR_FILTER_CLIP(c, "summarypositive", 0, 1);
     CLASS_ATTR_CATEGORY(c, "summarypositive", 0, "Summarization");
-    // @description Toggles the ability to only summarize the features with positive values (i.e. ignore negative or zero features),
+    // @description Toggles the ability to only summarize the essentia with positive values (i.e. ignore negative or zero essentia),
     // if any positive feature is found (otherwise, the summarization happens with all the values).
     // When a feature is a vector or a matrix, it is enough for a single value in the vector or matrix to be positive in order for
     // the whole vector to be accounted for.
@@ -256,83 +256,83 @@ int C74_EXPORT main(void)
     
     
     // CQT attributes
-    CLASS_ATTR_LONG(c, "cqtbinsperoctave", 0, t_buf_features, CQT_binsPerOctave);
+    CLASS_ATTR_LONG(c, "cqtbinsperoctave", 0, t_buf_essentia, CQT_binsPerOctave);
     CLASS_ATTR_STYLE_LABEL(c,"cqtbinsperoctave",0,"text","CQT Bins Per Octave");
     CLASS_ATTR_CATEGORY(c, "cqtbinsperoctave", 0, "Constant-Q Transform");
     // @description Sets the number of bins per octave of the Constant-Q Transform.
     
-    CLASS_ATTR_LONG(c, "cqtnumbins", 0, t_buf_features, CQT_numBins);
+    CLASS_ATTR_LONG(c, "cqtnumbins", 0, t_buf_essentia, CQT_numBins);
     CLASS_ATTR_STYLE_LABEL(c,"cqtnumbins",0,"text","CQT Total Number of Bins");
     CLASS_ATTR_CATEGORY(c, "cqtnumbins", 0, "Constant-Q Transform");
     // @description Sets the total number of bins of the Constant-Q Transform.
     
-    CLASS_ATTR_DOUBLE(c, "cqtminpitch", 0, t_buf_features, CQT_minPitch);
+    CLASS_ATTR_DOUBLE(c, "cqtminpitch", 0, t_buf_essentia, CQT_minPitch);
     CLASS_ATTR_STYLE_LABEL(c,"cqtminpitch",0,"text","CQT Minimum Pitch");
     CLASS_ATTR_CATEGORY(c, "cqtminpitch", 0, "Constant-Q Transform");
     // @description Sets the minimum pitch (in the <m>pitchunit</m>) of the Constant-Q Transform.
     
-    CLASS_ATTR_DOUBLE(c, "cqtthresh", 0, t_buf_features, CQT_threshold);
+    CLASS_ATTR_DOUBLE(c, "cqtthresh", 0, t_buf_essentia, CQT_threshold);
     CLASS_ATTR_STYLE_LABEL(c,"cqtthresh",0,"text","CQT Threshold");
     CLASS_ATTR_CATEGORY(c, "cqtthresh", 0, "Constant-Q Transform");
     // @description Bins whose magnitude is below this quantile are discarded of the Constant-Q Transform.
     
-    CLASS_ATTR_DOUBLE(c, "cqtscale", 0, t_buf_features, CQT_scale);
+    CLASS_ATTR_DOUBLE(c, "cqtscale", 0, t_buf_essentia, CQT_scale);
     CLASS_ATTR_STYLE_LABEL(c,"cqtscale",0,"text","CQT Filters Scale");
     CLASS_ATTR_CATEGORY(c, "cqtscale", 0, "Constant-Q Transform");
     // @description Filters scale (larger values use longer windows) of the Constant-Q Transform.
     
-    CLASS_ATTR_LONG(c, "cqtminkernelsize", 0, t_buf_features, CQT_minimumKernelSize);
+    CLASS_ATTR_LONG(c, "cqtminkernelsize", 0, t_buf_essentia, CQT_minimumKernelSize);
     CLASS_ATTR_STYLE_LABEL(c,"cqtminkernelsize",0,"text","CQT Minimum Kernel Size");
     CLASS_ATTR_CATEGORY(c, "cqtminkernelsize", 0, "Constant-Q Transform");
     // @description Sets the minimum size allowed for frequency kernels of the Constant-Q Transform.
     
     
     // YIN attributes
-    CLASS_ATTR_DOUBLE(c, "yinminfreq", 0, t_buf_features, YIN_minFrequency);
+    CLASS_ATTR_DOUBLE(c, "yinminfreq", 0, t_buf_essentia, YIN_minFrequency);
     CLASS_ATTR_STYLE_LABEL(c,"yinminfreq",0,"text","YIN Minimum Frequency");
     CLASS_ATTR_CATEGORY(c, "yinminfreq", 0, "YIN");
     // @description Sets the minimum frequency for the YIN analyis (in the <m>frequnit</m> attribute).
 
-    CLASS_ATTR_DOUBLE(c, "yinmaxfreq", 0, t_buf_features, YIN_maxFrequency);
+    CLASS_ATTR_DOUBLE(c, "yinmaxfreq", 0, t_buf_essentia, YIN_maxFrequency);
     CLASS_ATTR_STYLE_LABEL(c,"yinmaxfreq",0,"text","YIN Maximum Frequency");
     CLASS_ATTR_CATEGORY(c, "yinmaxfreq", 0, "YIN");
     // @description Sets the maximum frequency for the YIN analyis (in the <m>frequnit</m> attribute).
 
-    CLASS_ATTR_DOUBLE(c, "yintolerance", 0, t_buf_features, YIN_tolerance);
+    CLASS_ATTR_DOUBLE(c, "yintolerance", 0, t_buf_essentia, YIN_tolerance);
     CLASS_ATTR_STYLE_LABEL(c,"yintolerance",0,"text","YIN Tolerance");
     CLASS_ATTR_CATEGORY(c, "yintolerance", 0, "YIN");
     // @description Sets the tolerance for the YIN analyis.
 
     
     // PEAKS attributes
-    CLASS_ATTR_DOUBLE(c, "peaksmagthresh", 0, t_buf_features, PEAKS_magnitudeThreshold);
+    CLASS_ATTR_DOUBLE(c, "peaksmagthresh", 0, t_buf_essentia, PEAKS_magnitudeThreshold);
     CLASS_ATTR_STYLE_LABEL(c,"peaksmagthresh",0,"text","Peaks Magnitude Threshold");
     CLASS_ATTR_CATEGORY(c, "peaksmagthresh", 0, "Peaks");
     // @description Sets the magnitude threshold for the Peaks analyis (in the <m>ampunit</m> attribute).
 
-    CLASS_ATTR_DOUBLE(c, "peaksminfreq", 0, t_buf_features, PEAKS_minFrequency);
+    CLASS_ATTR_DOUBLE(c, "peaksminfreq", 0, t_buf_essentia, PEAKS_minFrequency);
     CLASS_ATTR_STYLE_LABEL(c,"peaksminfreq",0,"text","Peaks Minimum Frequency");
     CLASS_ATTR_CATEGORY(c, "peaksminfreq", 0, "Peaks");
     // @description Sets the minimum frequency for the Peaks analyis (in the <m>frequnit</m> attribute).
 
-    CLASS_ATTR_DOUBLE(c, "peaksmaxfreq", 0, t_buf_features, PEAKS_maxFrequency);
+    CLASS_ATTR_DOUBLE(c, "peaksmaxfreq", 0, t_buf_essentia, PEAKS_maxFrequency);
     CLASS_ATTR_STYLE_LABEL(c,"peaksmaxfreq",0,"text","Peaks Maximum Frequency");
     CLASS_ATTR_CATEGORY(c, "peaksmaxfreq", 0, "Peaks");
     // @description Sets the maximum frequency for the Peaks analyis (in the <m>frequnit</m> attribute).
 
-    CLASS_ATTR_LONG(c, "peaksmaxnum", 0, t_buf_features, PEAKS_maxPeaks);
+    CLASS_ATTR_LONG(c, "peaksmaxnum", 0, t_buf_essentia, PEAKS_maxPeaks);
     CLASS_ATTR_STYLE_LABEL(c,"peaksmaxnum",0,"text","Maximum Number Of Peaks");
     CLASS_ATTR_CATEGORY(c, "peaksmaxnum", 0, "Peaks");
     // @description Sets the maximum number of peaks for the Peaks analyis.
 
-    CLASS_ATTR_SYM(c, "peaksorderby", 0, t_buf_features, onsetDetectionMethod);
+    CLASS_ATTR_SYM(c, "peaksorderby", 0, t_buf_essentia, onsetDetectionMethod);
     CLASS_ATTR_STYLE_LABEL(c,"peaksorderby",0,"enum","Order Peaks By");
     CLASS_ATTR_ENUM(c, "peaksorderby", 0, "frequency magnitude");
     CLASS_ATTR_CATEGORY(c, "peaksorderby", 0, "Peaks");
     // @description Sets the ordering method of the peaks in the Peaks analysis.
     
     
-    CLASS_ATTR_SYM(c, "onsetdetectionmethod", 0, t_buf_features, onsetDetectionMethod);
+    CLASS_ATTR_SYM(c, "onsetdetectionmethod", 0, t_buf_essentia, onsetDetectionMethod);
     CLASS_ATTR_STYLE_LABEL(c,"onsetdetectionmethod",0,"enum","Onset Detection Method");
     CLASS_ATTR_ENUM(c, "onsetdetectionmethod", 0, "hfc complex complex_phase flux melflux rms");
     CLASS_ATTR_CATEGORY(c, "onsetdetectionmethod", 0, "Onset Detection");
@@ -352,7 +352,7 @@ int C74_EXPORT main(void)
 }
 
 
-const char *ears_features_feature_to_description(e_ears_feature feature)
+const char *ears_essentia_feature_to_description(e_ears_feature feature)
 {
     switch (feature) {
 
@@ -829,7 +829,7 @@ const char *ears_features_feature_to_description(e_ears_feature feature)
     }
 }
 
-e_ears_feature ears_features_feature_from_symbol(t_symbol *sym, long *temporalmode, t_ears_err *err)
+e_ears_feature ears_essentia_feature_from_symbol(t_symbol *sym, long *temporalmode, t_ears_err *err)
 {
     if (!sym || !sym->s_name)
         return EARS_FEATURE_NONE;
@@ -843,19 +843,24 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *sym, long *temporalmo
     }
     t_symbol *s = gensym(buf);
     
-    long tm = EARS_ESSENTIA_TEMPORALMODE_WHOLE;
+    long tm = EARS_ANALYSIS_TEMPORALMODE_WHOLE;
     if (ears_symbol_ends_with(s, "...", false)) {
         snprintf_zero(buf, 2048, "%s", s->s_name);
         buf[strlen(s->s_name)-3] = 0;
         s = gensym(buf);
-        tm = EARS_ESSENTIA_TEMPORALMODE_TIMESERIES;
+        tm = EARS_ANALYSIS_TEMPORALMODE_TIMESERIES;
+    } else if (ears_symbol_ends_with(s, ":::", false)) {
+        snprintf_zero(buf, 2048, "%s", s->s_name);
+        buf[strlen(s->s_name)-3] = 0;
+        s = gensym(buf);
+        tm = EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES;
     } else if (ears_symbol_ends_with(s, "~", false)) {
         snprintf_zero(buf, 2048, "%s", s->s_name);
         buf[strlen(s->s_name)-1] = 0;
         s = gensym(buf);
-        tm = EARS_ESSENTIA_TEMPORALMODE_BUFFER;
+        tm = EARS_ANALYSIS_TEMPORALMODE_BUFFER;
     } else {
-        tm = EARS_ESSENTIA_TEMPORALMODE_WHOLE;
+        tm = EARS_ANALYSIS_TEMPORALMODE_WHOLE;
     }
     
     if (err)
@@ -889,7 +894,7 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *sym, long *temporalmo
     
     // Standard
     if (s == gensym("derivative")) {
-        if (tm != EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+        if (tm != EARS_ANALYSIS_TEMPORALMODE_BUFFER)
             *err = EARS_ERR_INVALID_MODE;
         return EARS_FEATURE_DERIVATIVE;
     }
@@ -1125,20 +1130,20 @@ e_ears_feature ears_features_feature_from_symbol(t_symbol *sym, long *temporalmo
     return EARS_FEATURE_UNKNOWN;
 }
 
-void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
+void buf_essentia_assist(t_buf_essentia *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0)
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
         else {
-            const char *feat_desc = ears_features_feature_to_description((e_ears_feature)x->features[a-1]);
-            sprintf(s, "list/llll: Parameters for feature No. %d (%s)", a, feat_desc);
+            const char *feat_desc = ears_essentia_feature_to_description((e_ears_feature)x->features[a-1]);
+            sprintf(s, "list/llll: Parameters for feature No. %ld (%s)", a, feat_desc);
             // @in 1 @loop 1 @type llll @digest Parameters for each of the features (one inlet per feature).
         }
     } else {
         long featidx = x->outlet_featureidx[a];
         long outidx = x->outlet_featureoutputidx[a];
-        const char *feat_desc = ears_features_feature_to_description((e_ears_feature)x->features[featidx]);
+        const char *feat_desc = ears_essentia_feature_to_description((e_ears_feature)x->features[featidx]);
         if (featidx < x->num_features) {
             char *type = NULL;
             const char *unit = NULL;
@@ -1160,11 +1165,13 @@ void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
                 }
             }
 
-            if (x->temporalmodes[featidx] == EARS_ESSENTIA_TEMPORALMODE_WHOLE)
-                sprintf(s, "llll (%s): %s - %s%s%s (static)", type, feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
-            else if (x->temporalmodes[featidx] == EARS_ESSENTIA_TEMPORALMODE_TIMESERIES)
+            if (x->temporalmodes[featidx] == EARS_ANALYSIS_TEMPORALMODE_WHOLE)
+                sprintf(s, "llll (%s): %s - %s%s%s (global)", type, feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
+            else if (x->temporalmodes[featidx] == EARS_ANALYSIS_TEMPORALMODE_TIMESERIES)
                 sprintf(s, "llll (%s): %s - %s%s%s (time series)", type, feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
-            else if (x->temporalmodes[featidx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            else if (x->temporalmodes[featidx] == EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES)
+                sprintf(s, "llll (%s): %s - %s%s%s (time-tagged time series)", type, feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
+            else if (x->temporalmodes[featidx] == EARS_ANALYSIS_TEMPORALMODE_BUFFER)
                 sprintf(s, "buffer: %s - %s%s%s", feat_desc, feat_out_desc, unit ? " " : "", unit ? unit : "");
         } else {
             sprintf(s, "Unused outlet");
@@ -1174,33 +1181,37 @@ void buf_features_assist(t_buf_features *x, void *b, long m, long a, char *s)
     }
 }
 
-void buf_features_inletinfo(t_buf_features *x, void *b, long a, char *t)
+void buf_essentia_inletinfo(t_buf_essentia *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
-e_ears_errorcodes check_temporal_mode(t_buf_features *x, e_ears_feature feat, e_ears_essentia_temporalmode temporalmode)
+e_ears_errorcodes check_temporal_mode(t_buf_essentia *x, e_ears_feature feat, e_ears_analysis_temporalmode temporalmode)
 {
     e_ears_errorcodes temporalmode_err = EARS_ERR_NONE;
     e_ears_essentia_framemode framemode = ears_essentia_feature_to_framemode((t_object *)x, feat);
+    
+    if (feat == EARS_FEATURE_FRAMETIME && temporalmode == EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES)
+        temporalmode_err = EARS_ERR_INVALID_MODE;
+
     switch (framemode) {
         case EARS_ESSENTIA_FRAMEMODE_GLOBALONLY:
-            if (temporalmode != EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            if (temporalmode != EARS_ANALYSIS_TEMPORALMODE_WHOLE)
                 temporalmode_err = EARS_ERR_INVALID_MODE;
             break;
         case EARS_ESSENTIA_FRAMEMODE_FRAMEWISEONLY:
         case EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLY:
-            if (temporalmode == EARS_ESSENTIA_TEMPORALMODE_WHOLE)
+            if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_WHOLE)
                 temporalmode_err = EARS_ERR_INVALID_MODE;
             break;
         case EARS_ESSENTIA_FRAMEMODE_GLOBALRETURNINGFRAMESONLYNOBUFFERS:
-            if (temporalmode != EARS_ESSENTIA_TEMPORALMODE_TIMESERIES)
+            if (temporalmode != EARS_ANALYSIS_TEMPORALMODE_TIMESERIES && temporalmode != EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES)
                 temporalmode_err = EARS_ERR_INVALID_MODE;
             break;
         case EARS_ESSENTIA_FRAMEMODE_GLOBALNOBUFFERS:
         case EARS_ESSENTIA_FRAMEMODE_FRAMEWISENOBUFFERS:
-            if (temporalmode == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+            if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_BUFFER)
                 temporalmode_err = EARS_ERR_INVALID_MODE;
             break;
         default:
@@ -1209,18 +1220,22 @@ e_ears_errorcodes check_temporal_mode(t_buf_features *x, e_ears_feature feat, e_
     return temporalmode_err;
 }
 
-const char *ears_temporalmode_to_desc(e_ears_essentia_temporalmode temporalmode)
+const char *ears_temporalmode_to_desc(e_ears_analysis_temporalmode temporalmode)
 {
     switch (temporalmode) {
-        case EARS_ESSENTIA_TEMPORALMODE_WHOLE:
+        case EARS_ANALYSIS_TEMPORALMODE_WHOLE:
             return "global";
             break;
             
-        case EARS_ESSENTIA_TEMPORALMODE_TIMESERIES:
-            return "timeseries";
+        case EARS_ANALYSIS_TEMPORALMODE_TIMESERIES:
+            return "time series";
             break;
-            
-        case EARS_ESSENTIA_TEMPORALMODE_BUFFER:
+
+        case EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES:
+            return "time-tagged time series";
+            break;
+
+        case EARS_ANALYSIS_TEMPORALMODE_BUFFER:
             return "buffer";
             break;
             
@@ -1230,7 +1245,7 @@ const char *ears_temporalmode_to_desc(e_ears_essentia_temporalmode temporalmode)
     }
 }
 
-t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
+t_ears_err buf_essentia_set_essentia(t_buf_essentia *x, t_llll *args)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -1260,9 +1275,9 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
     for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
         e_ears_feature feat = EARS_FEATURE_UNKNOWN;
         if (hatom_gettype(&el->l_hatom) == H_SYM)
-            feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
+            feat = ears_essentia_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
         else if (hatom_gettype(&el->l_hatom) == H_LLLL && hatom_getllll(&el->l_hatom)->l_head)
-            feat = ears_features_feature_from_symbol(hatom_getsym(&hatom_getllll(&el->l_hatom)->l_head->l_hatom), &temporalmode, &temporalmode_err);
+            feat = ears_essentia_feature_from_symbol(hatom_getsym(&hatom_getllll(&el->l_hatom)->l_head->l_hatom), &temporalmode, &temporalmode_err);
         x->features_numoutputs[i] = ears_essentia_feature_to_numouts(feat);
         tot_num_outlets += x->features_numoutputs[i];
     }
@@ -1277,9 +1292,9 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
     for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
         e_ears_feature feat = EARS_FEATURE_UNKNOWN;
         if (hatom_gettype(&el->l_hatom) == H_SYM)
-            feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
+            feat = ears_essentia_feature_from_symbol(hatom_getsym(&el->l_hatom), &temporalmode, &temporalmode_err);
         else if (hatom_gettype(&el->l_hatom) == H_LLLL && hatom_getllll(&el->l_hatom)->l_head)
-            feat = ears_features_feature_from_symbol(hatom_getsym(&hatom_getllll(&el->l_hatom)->l_head->l_hatom), &temporalmode, &temporalmode_err);
+            feat = ears_essentia_feature_from_symbol(hatom_getsym(&hatom_getllll(&el->l_hatom)->l_head->l_hatom), &temporalmode, &temporalmode_err);
         long this_num_outputs = ears_essentia_feature_to_numouts(feat);
         for (long o = 0; o < this_num_outputs; o++) {
             x->outlet_featureidx[o_offset+o] = i;
@@ -1293,33 +1308,33 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
     temporalmode_err = EARS_ERR_NONE;
     for (t_llllelem *el = args->l_head; el; el = el->l_next, i++) {
         x->features[i] = EARS_FEATURE_UNKNOWN;
-        x->temporalmodes[i] = EARS_ESSENTIA_TEMPORALMODE_WHOLE;
+        x->temporalmodes[i] = EARS_ANALYSIS_TEMPORALMODE_WHOLE;
         if (hatom_gettype(&el->l_hatom) == H_SYM) {
-            e_ears_feature feat = ears_features_feature_from_symbol(hatom_getsym(&el->l_hatom), &x->temporalmodes[i], &temporalmode_err);
+            e_ears_feature feat = ears_essentia_feature_from_symbol(hatom_getsym(&el->l_hatom), &x->temporalmodes[i], &temporalmode_err);
             x->features[i] = feat;
             if (temporalmode_err == EARS_ERR_NONE)
-                temporalmode_err = check_temporal_mode(x, feat, (e_ears_essentia_temporalmode)x->temporalmodes[i]);
+                temporalmode_err = check_temporal_mode(x, feat, (e_ears_analysis_temporalmode)x->temporalmodes[i]);
             if (feat == EARS_FEATURE_UNKNOWN) {
                 object_error((t_object *)x, "Unknown feature at index %d", i+1);
                 err = EARS_ERR_GENERIC;
             } else if (temporalmode_err == EARS_ERR_INVALID_MODE) {
-                object_error((t_object *)x, "Unsupported temporal mode '%s' for feature '%s'", ears_temporalmode_to_desc((e_ears_essentia_temporalmode)x->temporalmodes[i]), ears_features_feature_to_description(feat));
+                object_error((t_object *)x, "Unsupported temporal mode '%s' for feature '%s'", ears_temporalmode_to_desc((e_ears_analysis_temporalmode)x->temporalmodes[i]), ears_essentia_feature_to_description(feat));
                 err = EARS_ERR_GENERIC;
             }
         } else if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             t_llll *subll = hatom_getllll(&el->l_hatom);
             if (subll && subll->l_head && hatom_gettype(&subll->l_head->l_hatom) == H_SYM) {
-                e_ears_feature feat = ears_features_feature_from_symbol(hatom_getsym(&subll->l_head->l_hatom), &x->temporalmodes[i], &temporalmode_err);
+                e_ears_feature feat = ears_essentia_feature_from_symbol(hatom_getsym(&subll->l_head->l_hatom), &x->temporalmodes[i], &temporalmode_err);
                 x->features[i] = feat;
 
                 if (temporalmode_err == EARS_ERR_NONE)
-                    temporalmode_err = check_temporal_mode(x, feat, (e_ears_essentia_temporalmode)x->temporalmodes[i]);
+                    temporalmode_err = check_temporal_mode(x, feat, (e_ears_analysis_temporalmode)x->temporalmodes[i]);
                 
                 if (feat == EARS_FEATURE_UNKNOWN) {
                     object_error((t_object *)x, "Unknown feature at index %d", i+1);
                     err = EARS_ERR_GENERIC;
                 } else if (temporalmode_err == EARS_ERR_INVALID_MODE) {
-                    object_error((t_object *)x, "Unsupported temporal mode '%s' for feature '%s'", ears_temporalmode_to_desc((e_ears_essentia_temporalmode)x->temporalmodes[i]), ears_features_feature_to_description(feat));
+                    object_error((t_object *)x, "Unsupported temporal mode '%s' for feature '%s'", ears_temporalmode_to_desc((e_ears_analysis_temporalmode)x->temporalmodes[i]), ears_essentia_feature_to_description(feat));
                     err = EARS_ERR_GENERIC;
                 }
                 llll_free(x->algorithm_args[i]);
@@ -1339,9 +1354,9 @@ t_ears_err buf_features_set_features(t_buf_features *x, t_llll *args)
     return err;
 }
 
-t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
+t_buf_essentia *buf_essentia_new(t_symbol *s, short argc, t_atom *argv)
 {
-    t_buf_features *x;
+    t_buf_essentia *x;
 //    long true_ac = attr_args_offset(argc, argv);
 
     // Since we can insert attribute-argument manually inside lllls in the object box, we need to parse the true_ac manually
@@ -1359,7 +1374,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
     }
     
     
-    x = (t_buf_features*)object_alloc_debug(s_tag_class);
+    x = (t_buf_essentia*)object_alloc_debug(s_tag_class);
     if (x) {
         x->num_features = 1;
         x->features = (long *)bach_newptrclear(1 * sizeof(long));
@@ -1370,8 +1385,8 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
         x->algorithm_args = (t_llll **)bach_newptrclear(1 * sizeof(t_llll *));
         x->algorithm_args[0] = llll_get();
         
-        x->summarization = EARS_ESSENTIA_SUMMARIZATION_MEAN;
-        x->summarizationweight = EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS;
+        x->summarization = EARS_ANALYSIS_SUMMARIZATION_MEAN;
+        x->summarizationweight = EARS_ANALYSIS_SUMMARIZATIONWEIGHT_RMS;
         x->summarizationpositiveonly = false;
         
         //CQT defaults
@@ -1399,8 +1414,8 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
 
         // default analysis parameters
         x->a_envattacktime = 10;
-        x->a_envreleasetime = 100;  //< Beware: this is different from features's default
-                                    // But I think that features's default was WAY too long.
+        x->a_envreleasetime = 100;  //< Beware: this is different from essentia's default
+                                    // But I think that essentia's default was WAY too long.
         
         x->buffer_output_interpolation_mode = 0;
         
@@ -1411,7 +1426,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
         // @description A list of symbols, each associated with a feature to be computed
         
         t_llll *args = llll_parse(true_ac, argv);
-        if (buf_features_set_features(x, args) != EARS_ERR_NONE) {
+        if (buf_essentia_set_essentia(x, args) != EARS_ERR_NONE) {
             llll_free(args);
             object_free_debug(x); // unlike freeobject(), this works even if the argument is NULL
             return NULL;
@@ -1455,8 +1470,8 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
         }
         
         if (warn_for_feature_default) {
-            object_warn((t_object *)x, "Different features have different defaults for analysis parameters.");
-            object_warn((t_object *)x, "A global default of 2048/1024 samples is used, consider using separate ears.features~ objects if results are not satisfactory.");
+            object_warn((t_object *)x, "Different essentia have different defaults for analysis parameters.");
+            object_warn((t_object *)x, "A global default of 2048/1024 samples is used, consider using separate ears.essentia~ objects if results are not satisfactory.");
         }
 
         // processing attributes
@@ -1470,7 +1485,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
 
         // creating dummy extractors, just to have descriptions for the outlets
         {
-            t_ears_essentia_analysis_params params = buf_features_get_default_params(x);
+            t_ears_essentia_analysis_params params = buf_essentia_get_default_params(x);
             if (x->extractors_lib.num_extractors > 0)
                 ears_essentia_extractors_library_free(&x->extractors_lib);
             ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params, true);
@@ -1482,7 +1497,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
         char outtypes[LLLL_MAX_OUTLETS];
         for (long o = 0; o < numoutlets; o++) {
             long feature_idx = x->outlet_featureidx[o];
-            outtypes[numoutlets-o-1] = (x->temporalmodes[feature_idx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER ? 'E' : '4');
+            outtypes[numoutlets-o-1] = (x->temporalmodes[feature_idx] == EARS_ANALYSIS_TEMPORALMODE_BUFFER ? 'E' : '4');
         }
         outtypes[numoutlets] = 0;
         
@@ -1499,7 +1514,7 @@ t_buf_features *buf_features_new(t_symbol *s, short argc, t_atom *argv)
 }
 
 
-void buf_features_free(t_buf_features *x)
+void buf_essentia_free(t_buf_essentia *x)
 {
     ears_essentia_extractors_library_free(&x->extractors_lib);
     bach_freeptr(x->features);
@@ -1527,7 +1542,7 @@ void setExtractorDefaultOptions(essentia::Pool &options) {
 }
 
 
-t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *x)
+t_ears_essentia_analysis_params buf_essentia_get_default_params(t_buf_essentia *x)
 {
     t_ears_essentia_analysis_params params;
     // windowing
@@ -1577,8 +1592,8 @@ t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *
     params.YIN_tolerance = 1;
 
     
-    params.summarization = EARS_ESSENTIA_SUMMARIZATION_MEAN;
-    params.summarizationweight = EARS_ESSENTIA_SUMMARIZATIONWEIGHT_RMS;
+    params.summarization = EARS_ANALYSIS_SUMMARIZATION_MEAN;
+    params.summarizationweight = EARS_ANALYSIS_SUMMARIZATIONWEIGHT_RMS;
     params.summarizationpositiveonly = false;
 
     params.numGriffinLimIterations = 10;
@@ -1587,7 +1602,7 @@ t_ears_essentia_analysis_params buf_features_get_default_params(t_buf_features *
 }
 
 
-t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buffer_obj *buf)
+t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buffer_obj *buf)
 {
     t_ears_essentia_analysis_params params = earsbufobj_get_essentia_analysis_params((t_earsbufobj *)x, buf);
 
@@ -1595,8 +1610,8 @@ t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buf
     params.envelope_attack_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envattacktime, buf, true, false);
     params.envelope_release_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envreleasetime, buf, true, false);
     
-    params.summarization = (e_ears_essentia_summarization) x->summarization;
-    params.summarizationweight = (e_ears_essentia_summarizationweight) x->summarizationweight;
+    params.summarization = (e_ears_analysis_summarization) x->summarization;
+    params.summarizationweight = (e_ears_analysis_summarizationweight) x->summarizationweight;
     params.summarizationpositiveonly = x->summarizationpositiveonly;
 
     params.CQT_binsPerOctave = x->CQT_binsPerOctave;
@@ -1635,7 +1650,7 @@ t_ears_essentia_analysis_params buf_features_get_params(t_buf_features *x, t_buf
     return params;
 }
 
-void buf_features_bang(t_buf_features *x)
+void buf_essentia_bang(t_buf_essentia *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     
@@ -1643,7 +1658,7 @@ void buf_features_bang(t_buf_features *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     for (long i = 0; i < x->num_features; i++) {
-        if (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+        if (x->temporalmodes[i] == EARS_ANALYSIS_TEMPORALMODE_BUFFER)
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, earsbufobj_outlet_to_bufstore((t_earsbufobj *)x, i), num_buffers, true);
     }
     
@@ -1661,7 +1676,7 @@ void buf_features_bang(t_buf_features *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         long o = 0;
         for (long i = 0; i < x->num_features; i++) {
-            if (x->temporalmodes[i] == EARS_ESSENTIA_TEMPORALMODE_BUFFER) {
+            if (x->temporalmodes[i] == EARS_ANALYSIS_TEMPORALMODE_BUFFER) {
                 for (long t = 0; t < x->features_numoutputs[i]; t++) {
                     res_buf[o] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, earsbufobj_outlet_to_bufstore((t_earsbufobj *)x, o), count);
                     o++;
@@ -1678,7 +1693,7 @@ void buf_features_bang(t_buf_features *x)
             x->curr_sr = sr;
         }
 
-        t_ears_essentia_analysis_params params = buf_features_get_params(x, in);
+        t_ears_essentia_analysis_params params = buf_essentia_get_params(x, in);
         
 //        if (x->must_recreate_extractors) { // potentially we may need to do this all the time, as parameters may also depend on the buffers
             if (x->extractors_lib.num_extractors > 0)
@@ -1718,7 +1733,7 @@ void buf_features_bang(t_buf_features *x)
     
     for (long o = x->num_outlets - 1; o >= 0; o--) {
         long feat_idx = x->outlet_featureidx[o];
-        if (x->temporalmodes[feat_idx] == EARS_ESSENTIA_TEMPORALMODE_BUFFER)
+        if (x->temporalmodes[feat_idx] == EARS_ANALYSIS_TEMPORALMODE_BUFFER)
             earsbufobj_outlet_buffer((t_earsbufobj *)x, o);
         else
             earsbufobj_outlet_llll((t_earsbufobj *)x, o, res[o]);
@@ -1731,7 +1746,7 @@ void buf_features_bang(t_buf_features *x)
 }
 
 
-void buf_features_anything(t_buf_features *x, t_symbol *msg, long ac, t_atom *av)
+void buf_essentia_anything(t_buf_essentia *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
 
@@ -1745,10 +1760,10 @@ void buf_features_anything(t_buf_features *x, t_symbol *msg, long ac, t_atom *av
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_bufs, true);
             earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
             
-            buf_features_bang(x);
+            buf_essentia_bang(x);
             
 //        } else if (inlet == 1) {
-//            buf_features_set_features(x, parsed);
+//            buf_essentia_set_essentia(x, parsed);
         } else {
             // new arguments for specific feature
 
