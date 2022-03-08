@@ -11,12 +11,6 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 
-long ears_vamp_plugin_from_name()
-{
-    
-}
-
-
 t_llll *ears_vamp_enumerate_libraries(t_object *x)
 {
     t_llll *out_ll = llll_get();
@@ -34,7 +28,7 @@ t_llll *ears_vamp_enumerate_libraries(t_object *x)
     int libindex = vhGetLibraryIndex("qm-vamp-plugins");
     vhLibrary lib = vhLoadLibrary(libindex);
     if (!lib) {
-        object_error((t_object *)x, "Error while enumerating VAMP libraries.");
+        object_error((t_object *)x, "Error while enumerating Vamp libraries.");
         return out_ll;
     }
     vhUnloadLibrary(lib);
@@ -115,7 +109,102 @@ t_llll *ears_vamp_enumerate_plugins(t_object *x, bool enumerate_outlets)
     return out_ll;
 }
 
-t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x)
+t_llll *ears_vamp_enumerate_plugin_parameters(t_object *x, t_symbol *fullkey)
+{
+    PluginLoader *loader = PluginLoader::getInstance();
+    
+    vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
+    typedef multimap<string, PluginLoader::PluginKey>
+    LibraryMap;
+    LibraryMap libraryMap;
+    
+    for (size_t i = 0; i < plugins.size(); ++i) {
+        string path = loader->getLibraryPathForPlugin(plugins[i]);
+        libraryMap.insert(LibraryMap::value_type(path, plugins[i]));
+    }
+    
+    string prevPath = "";
+    int index = 0;
+    
+    t_llll *out_ll = llll_get();
+    
+    string library;
+    for (LibraryMap::iterator i = libraryMap.begin();
+         i != libraryMap.end(); ++i) {
+        
+        string path = i->first;
+        PluginLoader::PluginKey key = i->second;
+        
+        PluginLoader::PluginCategoryHierarchy category = loader->getPluginCategory(key);
+        
+        if (path != prevPath) {
+            prevPath = path;
+            index = 0;
+            string::size_type ki = i->second.find(':');
+            library = i->second.substr(0, ki).c_str();
+        }
+        
+        Plugin *plugin = loader->loadPlugin(key, 48000);
+        if (plugin) {
+            
+            char c = char('A' + index);
+            if (c > 'Z') c = char('a' + (index - 26));
+            
+            PluginLoader::PluginCategoryHierarchy category =
+            loader->getPluginCategory(key);
+            string catstr;
+            if (!category.empty()) {
+                for (size_t ci = 0; ci < category.size(); ++ci) {
+                    if (ci > 0) catstr += " > ";
+                    catstr += category[ci];
+                }
+            }
+            
+            string thispluginfullkey = library + ':' + plugin->getIdentifier();
+            if ( thispluginfullkey == fullkey->s_name ) {
+                Plugin::ParameterList params = plugin->getParameterDescriptors();
+                for (size_t j = 0; j < params.size(); ++j) {
+                    Plugin::ParameterDescriptor &pd(params[j]);
+                    t_llll *this_param_ll = llll_get();
+                    llll_appendllll(this_param_ll, symbol_and_long_to_llll(gensym("index"), j+1));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("name"), pd.name.c_str() ? gensym(pd.name.c_str()) : gensym("")));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("identifier"), pd.identifier.c_str() ? gensym(pd.identifier.c_str()) : gensym("")));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("description"), pd.description.c_str() ? gensym(pd.description.c_str()) : gensym("")));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("unit"), pd.unit.c_str() ? gensym(pd.unit.c_str()) : gensym("")));
+                    
+                    t_llll *range_ll = llll_get();
+                    llll_appendsym(range_ll, gensym("range"));
+                    llll_appenddouble(range_ll, pd.minValue);
+                    llll_appenddouble(range_ll, pd.maxValue);
+                    llll_appendllll(this_param_ll, range_ll);
+                    
+                    llll_appendllll(this_param_ll, symbol_and_double_to_llll(gensym("default"), pd.defaultValue));
+                    llll_appendllll(this_param_ll, symbol_and_long_to_llll(gensym("isquantized"), pd.isQuantized));
+                    llll_appendllll(this_param_ll, symbol_and_double_to_llll(gensym("quantizestep"), pd.isQuantized ? pd.quantizeStep : 0));
+                    
+                    t_llll *value_names_ll = llll_get();
+                    llll_appendsym(value_names_ll, gensym("valuenames"));
+                    if (!pd.valueNames.empty()) {
+                        for (size_t k = 0; k < pd.valueNames.size(); ++k) {
+                            llll_appendsym(value_names_ll, pd.valueNames[k].c_str() ? gensym(pd.valueNames[k].c_str()) : gensym(""));
+                        }
+                    }
+                    llll_appendllll(this_param_ll, value_names_ll);
+                    
+                    llll_appendllll(out_ll, this_param_ll);
+                }
+            }
+            ++index;
+            
+            delete plugin;
+        }
+    }
+    
+    return out_ll;
+}
+
+
+t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x, t_symbol *fullkey)
 {
     PluginLoader *loader = PluginLoader::getInstance();
     
@@ -135,6 +224,7 @@ t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x)
     t_llll *out_ll = llll_get();
     
     t_symbol *library = gensym("");
+    string library_str;
     for (LibraryMap::iterator i = libraryMap.begin();
          i != libraryMap.end(); ++i) {
         
@@ -147,13 +237,13 @@ t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x)
             prevPath = path;
             index = 0;
             string::size_type ki = i->second.find(':');
-            library = gensym(i->second.substr(0, ki).c_str());
+            library_str = i->second.substr(0, ki);
+            library = gensym(library_str.c_str());
         }
         
         Plugin *plugin = loader->loadPlugin(key, 48000);
         if (plugin) {
             
-            t_llll *plugin_ll = llll_get();
             
             char c = char('A' + index);
             if (c > 'Z') c = char('a' + (index - 26));
@@ -168,129 +258,134 @@ t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x)
                 }
             }
             
-            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("name"), plugin->getName().c_str() ? gensym(plugin->getName().c_str()) : gensym("")));
+            string thisfullkey = library_str + ":" + plugin->getIdentifier();
             
-            // category
-            t_llll *category_ll = llll_get();
-            llll_appendsym(category_ll, gensym("category"));
-            if (!category.empty()) {
-                for (size_t j = 0; j < category.size(); ++j) {
-                    llll_appendsym(category_ll, gensym(category[j].c_str()));
-                }
-            }
-            llll_appendllll(plugin_ll, category_ll);
-            
-            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("library"), library));
-            //            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("identifier"), key ? gensym(key.c_str()) : gensym("")));
-            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("identifier"), plugin->getIdentifier().c_str() ? gensym(plugin->getIdentifier().c_str()) : gensym("")));
-            llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("pluginversion"), plugin->getPluginVersion()));
-            llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("vampapiversion"), plugin->getVampApiVersion()));
-            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("maker"), plugin->getMaker().c_str() ? gensym(plugin->getMaker().c_str()) : gensym("")));
-            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("copyright"), plugin->getCopyright().c_str() ? gensym(plugin->getCopyright().c_str()) : gensym("")));
-            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("description"), plugin->getDescription().c_str() ? gensym(plugin->getDescription().c_str()) : gensym("")));
-            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("inputdomain"), (plugin->getInputDomain() == Vamp::Plugin::TimeDomain ?
-                                                                                         gensym("time") : gensym("frequency"))));
-            llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("preferredstepsize"), plugin->getPreferredStepSize()));
-            llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("preferredblocksize"), plugin->getPreferredBlockSize()));
-            llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("minchannelcount"), plugin->getMinChannelCount()));
-            llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("maxchannelcount"), plugin->getMaxChannelCount()));
-            
-            t_llll *parameters_ll = llll_get();
-            Plugin::ParameterList params = plugin->getParameterDescriptors();
-            llll_appendsym(parameters_ll, gensym("parameters"));
-            for (size_t j = 0; j < params.size(); ++j) {
-                Plugin::ParameterDescriptor &pd(params[j]);
-                t_llll *this_param_ll = llll_get();
-                llll_appendllll(this_param_ll, symbol_and_long_to_llll(gensym("index"), j+1));
-                llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("name"), pd.name.c_str() ? gensym(pd.name.c_str()) : gensym("")));
-                llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("identifier"), pd.identifier.c_str() ? gensym(pd.identifier.c_str()) : gensym("")));
-                llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("description"), pd.description.c_str() ? gensym(pd.description.c_str()) : gensym("")));
-                llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("unit"), pd.unit.c_str() ? gensym(pd.unit.c_str()) : gensym("")));
+            if (!fullkey || (thisfullkey == fullkey->s_name)) {
+                t_llll *plugin_ll = llll_get();
+                llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("name"), plugin->getName().c_str() ? gensym(plugin->getName().c_str()) : gensym("")));
                 
-                t_llll *range_ll = llll_get();
-                llll_appendsym(range_ll, gensym("range"));
-                llll_appenddouble(range_ll, pd.minValue);
-                llll_appenddouble(range_ll, pd.maxValue);
-                llll_appendllll(this_param_ll, range_ll);
-                
-                llll_appendllll(this_param_ll, symbol_and_double_to_llll(gensym("default"), pd.defaultValue));
-                llll_appendllll(this_param_ll, symbol_and_long_to_llll(gensym("isquantized"), pd.isQuantized));
-                llll_appendllll(this_param_ll, symbol_and_double_to_llll(gensym("quantizestep"), pd.isQuantized ? pd.quantizeStep : 0));
-                
-                t_llll *value_names_ll = llll_get();
-                llll_appendsym(value_names_ll, gensym("valuenames"));
-                if (!pd.valueNames.empty()) {
-                    for (size_t k = 0; k < pd.valueNames.size(); ++k) {
-                        llll_appendsym(value_names_ll, pd.valueNames[k].c_str() ? gensym(pd.valueNames[k].c_str()) : gensym(""));
+                // category
+                t_llll *category_ll = llll_get();
+                llll_appendsym(category_ll, gensym("category"));
+                if (!category.empty()) {
+                    for (size_t j = 0; j < category.size(); ++j) {
+                        llll_appendsym(category_ll, gensym(category[j].c_str()));
                     }
                 }
-                llll_appendllll(this_param_ll, value_names_ll);
+                llll_appendllll(plugin_ll, category_ll);
                 
-                llll_appendllll(parameters_ll, this_param_ll);
-            }
-            llll_appendllll(plugin_ll, parameters_ll);
-            
-            
-            t_llll *outputs_ll = llll_get();
-            Plugin::OutputList outputs = plugin->getOutputDescriptors();
-            llll_appendsym(parameters_ll, gensym("outputs"));
-            for (size_t j = 0; j < outputs.size(); ++j) {
-                Plugin::OutputDescriptor &od(outputs[j]);
-                t_llll *this_output_ll = llll_get();
-                llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("index"), j+1));
-                llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("name"), od.name.c_str() ? gensym(od.name.c_str()) : gensym("")));
-                llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("identifier"), od.identifier.c_str() ? gensym(od.identifier.c_str()) : gensym("")));
-                llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("description"), od.description.c_str() ? gensym(od.description.c_str()) : gensym("")));
-                llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("unit"), od.unit.c_str() ? gensym(od.unit.c_str()) : gensym("")));
-                llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("bincount"), od.hasFixedBinCount ? od.binCount : 0));
+                llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("library"), library));
+                //            llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("identifier"), key ? gensym(key.c_str()) : gensym("")));
+                llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("identifier"), plugin->getIdentifier().c_str() ? gensym(plugin->getIdentifier().c_str()) : gensym("")));
+                llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("pluginversion"), plugin->getPluginVersion()));
+                llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("vampapiversion"), plugin->getVampApiVersion()));
+                llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("maker"), plugin->getMaker().c_str() ? gensym(plugin->getMaker().c_str()) : gensym("")));
+                llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("copyright"), plugin->getCopyright().c_str() ? gensym(plugin->getCopyright().c_str()) : gensym("")));
+                llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("description"), plugin->getDescription().c_str() ? gensym(plugin->getDescription().c_str()) : gensym("")));
+                llll_appendllll(plugin_ll, symbol_and_symbol_to_llll(gensym("inputdomain"), (plugin->getInputDomain() == Vamp::Plugin::TimeDomain ?
+                                                                                             gensym("time") : gensym("frequency"))));
+                llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("preferredstepsize"), plugin->getPreferredStepSize()));
+                llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("preferredblocksize"), plugin->getPreferredBlockSize()));
+                llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("minchannelcount"), plugin->getMinChannelCount()));
+                llll_appendllll(plugin_ll, symbol_and_long_to_llll(gensym("maxchannelcount"), plugin->getMaxChannelCount()));
                 
-                t_llll *bin_names_ll = llll_get();
-                llll_appendsym(bin_names_ll, gensym("binnames"));
-                if (!od.binNames.empty()) {
-                    bool have = false;
-                    for (size_t k = 0; k < od.binNames.size(); ++k) {
-                        if (od.binNames[k] != "") {
-                            have = true; break;
+                t_llll *parameters_ll = llll_get();
+                Plugin::ParameterList params = plugin->getParameterDescriptors();
+                llll_appendsym(parameters_ll, gensym("parameters"));
+                for (size_t j = 0; j < params.size(); ++j) {
+                    Plugin::ParameterDescriptor &pd(params[j]);
+                    t_llll *this_param_ll = llll_get();
+                    llll_appendllll(this_param_ll, symbol_and_long_to_llll(gensym("index"), j+1));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("name"), pd.name.c_str() ? gensym(pd.name.c_str()) : gensym("")));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("identifier"), pd.identifier.c_str() ? gensym(pd.identifier.c_str()) : gensym("")));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("description"), pd.description.c_str() ? gensym(pd.description.c_str()) : gensym("")));
+                    llll_appendllll(this_param_ll, symbol_and_symbol_to_llll(gensym("unit"), pd.unit.c_str() ? gensym(pd.unit.c_str()) : gensym("")));
+                    
+                    t_llll *range_ll = llll_get();
+                    llll_appendsym(range_ll, gensym("range"));
+                    llll_appenddouble(range_ll, pd.minValue);
+                    llll_appenddouble(range_ll, pd.maxValue);
+                    llll_appendllll(this_param_ll, range_ll);
+                    
+                    llll_appendllll(this_param_ll, symbol_and_double_to_llll(gensym("default"), pd.defaultValue));
+                    llll_appendllll(this_param_ll, symbol_and_long_to_llll(gensym("isquantized"), pd.isQuantized));
+                    llll_appendllll(this_param_ll, symbol_and_double_to_llll(gensym("quantizestep"), pd.isQuantized ? pd.quantizeStep : 0));
+                    
+                    t_llll *value_names_ll = llll_get();
+                    llll_appendsym(value_names_ll, gensym("valuenames"));
+                    if (!pd.valueNames.empty()) {
+                        for (size_t k = 0; k < pd.valueNames.size(); ++k) {
+                            llll_appendsym(value_names_ll, pd.valueNames[k].c_str() ? gensym(pd.valueNames[k].c_str()) : gensym(""));
                         }
                     }
-                    if (have) {
+                    llll_appendllll(this_param_ll, value_names_ll);
+                    
+                    llll_appendllll(parameters_ll, this_param_ll);
+                }
+                llll_appendllll(plugin_ll, parameters_ll);
+                
+                
+                t_llll *outputs_ll = llll_get();
+                Plugin::OutputList outputs = plugin->getOutputDescriptors();
+                llll_appendsym(parameters_ll, gensym("outputs"));
+                for (size_t j = 0; j < outputs.size(); ++j) {
+                    Plugin::OutputDescriptor &od(outputs[j]);
+                    t_llll *this_output_ll = llll_get();
+                    llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("index"), j+1));
+                    llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("name"), od.name.c_str() ? gensym(od.name.c_str()) : gensym("")));
+                    llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("identifier"), od.identifier.c_str() ? gensym(od.identifier.c_str()) : gensym("")));
+                    llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("description"), od.description.c_str() ? gensym(od.description.c_str()) : gensym("")));
+                    llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("unit"), od.unit.c_str() ? gensym(od.unit.c_str()) : gensym("")));
+                    llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("bincount"), od.hasFixedBinCount ? od.binCount : 0));
+                    
+                    t_llll *bin_names_ll = llll_get();
+                    llll_appendsym(bin_names_ll, gensym("binnames"));
+                    if (!od.binNames.empty()) {
+                        bool have = false;
                         for (size_t k = 0; k < od.binNames.size(); ++k) {
-                            llll_appendsym(bin_names_ll, od.binNames[k].c_str() ? gensym(od.binNames[k].c_str()) : gensym(""));
+                            if (od.binNames[k] != "") {
+                                have = true; break;
+                            }
+                        }
+                        if (have) {
+                            for (size_t k = 0; k < od.binNames.size(); ++k) {
+                                llll_appendsym(bin_names_ll, od.binNames[k].c_str() ? gensym(od.binNames[k].c_str()) : gensym(""));
+                            }
                         }
                     }
+                    llll_appendllll(this_output_ll, bin_names_ll);
+                    
+                    llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("hasknownextents"), od.hasKnownExtents));
+                    
+                    t_llll *default_extents_ll = llll_get();
+                    llll_appendsym(default_extents_ll, gensym("defaultextents"));
+                    if (od.hasKnownExtents) {
+                        llll_appenddouble(default_extents_ll, od.minValue);
+                        llll_appenddouble(default_extents_ll, od.maxValue);
+                    }
+                    llll_appendllll(this_output_ll, default_extents_ll);
+                    
+                    llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("isquantized"), od.isQuantized));
+                    llll_appendllll(this_output_ll, symbol_and_double_to_llll(gensym("quantizestep"), od.isQuantized ? od.quantizeStep : 0));
+                    
+                    llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("sampletype"),
+                                                                              (od.sampleType ==
+                                                                               Plugin::OutputDescriptor::OneSamplePerStep ?
+                                                                               gensym("onesampleperstep") :
+                                                                               od.sampleType ==
+                                                                               Plugin::OutputDescriptor::FixedSampleRate ?
+                                                                               gensym("fixedsamplerate") :
+                                                                               gensym("variablesamplerate"))
+                                                                              ));
+                    
+                    llll_appendllll(this_output_ll, symbol_and_double_to_llll(gensym("defaultrate"), od.sampleRate));
+                    llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("hasduration"), od.hasDuration));
+                    
+                    llll_appendllll(outputs_ll, this_output_ll);
                 }
-                llll_appendllll(this_output_ll, bin_names_ll);
-                
-                llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("hasknownextents"), od.hasKnownExtents));
-                
-                t_llll *default_extents_ll = llll_get();
-                llll_appendsym(default_extents_ll, gensym("defaultextents"));
-                if (od.hasKnownExtents) {
-                    llll_appenddouble(default_extents_ll, od.minValue);
-                    llll_appenddouble(default_extents_ll, od.maxValue);
-                }
-                llll_appendllll(this_output_ll, default_extents_ll);
-                
-                llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("isquantized"), od.isQuantized));
-                llll_appendllll(this_output_ll, symbol_and_double_to_llll(gensym("quantizestep"), od.isQuantized ? od.quantizeStep : 0));
-                
-                llll_appendllll(this_output_ll, symbol_and_symbol_to_llll(gensym("sampletype"),
-                                                                          (od.sampleType ==
-                                                                           Plugin::OutputDescriptor::OneSamplePerStep ?
-                                                                           gensym("onesampleperstep") :
-                                                                           od.sampleType ==
-                                                                           Plugin::OutputDescriptor::FixedSampleRate ?
-                                                                           gensym("fixedsamplerate") :
-                                                                           gensym("variablesamplerate"))
-                                                                          ));
-                
-                llll_appendllll(this_output_ll, symbol_and_double_to_llll(gensym("defaultrate"), od.sampleRate));
-                llll_appendllll(this_output_ll, symbol_and_long_to_llll(gensym("hasduration"), od.hasDuration));
-                
-                llll_appendllll(outputs_ll, this_output_ll);
+                llll_appendllll(plugin_ll, outputs_ll);
+                llll_appendllll(out_ll, plugin_ll);
             }
-            llll_appendllll(plugin_ll, outputs_ll);
-            
             /*
              if (outputs.size() > 1 || verbosity == PluginOutputIds) {
              for (size_t j = 0; j < outputs.size(); ++j) {
@@ -310,7 +405,6 @@ t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x)
             
             ++index;
             
-            llll_appendllll(out_ll, plugin_ll);
             delete plugin;
         }
     }
@@ -330,7 +424,7 @@ long wrap_once_fn(void *data, t_hatom *a, const t_llll *address){
 }
 
 t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string soname, string identifier, int outputNo,
-                        t_llll **out_features, e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit, e_ears_analysis_summarization summarization, long framesize_samps, long hopsize_samps, t_llll *params)
+                        t_llll **out_features, t_buffer_obj *featuresbuf, e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit, e_ears_analysis_summarization summarization, long framesize_samps, long hopsize_samps, t_llll *params)
 {
     t_ears_err err = EARS_ERR_NONE;
     bool useFrames = (e_ob->l_timeunit == EARS_TIMEUNIT_SAMPS);
@@ -353,6 +447,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
     
     //    cerr << "Running plugin: \"" << plugin->getIdentifier() << "\"..." << endl;
     
+    // FOLLOWING VAMP SDK:
     // Note that the following would be much simpler if we used a
     // PluginBufferingAdapter as well -- i.e. if we had passed
     // PluginLoader::ADAPT_ALL to loader->loadPlugin() above, instead
@@ -425,7 +520,8 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
     
     int returnValue = 1;
     //    int progress = 0;
-    
+    t_llll *timetags_ll = llll_get();
+
     RealTime rt;
     PluginWrapper *wrapper = 0;
     RealTime adjustment = RealTime::zeroTime;
@@ -453,6 +549,20 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
     od = outputs[outputNo];
     //    cerr << "Output is: \"" << od.identifier << "\"" << endl;
     
+    // parameters
+    if (params) {
+        for (t_llllelem *el = params->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                t_llll *ll = hatom_getllll(&el->l_hatom);
+                if (ll->l_size >= 2 && hatom_gettype(&ll->l_head->l_hatom) == H_SYM && is_hatom_number(&ll->l_head->l_next->l_hatom)) {
+                    t_symbol *parameter = hatom_getsym(&ll->l_head->l_hatom);
+                    double value = hatom_getdouble(&ll->l_head->l_next->l_hatom);
+                    plugin->setParameter(parameter->s_name, value); // does this even work?
+                }
+            }
+        }
+    }
+    
     if (!plugin->initialise(channels, stepSize, blockSize)) {
         char error_msg[2048];
         snprintf_zero(error_msg, 2048, "Error in plugin initialization for plugin '%s' from library '%s'.", identifier.c_str(), soname.c_str(), outputs.size());
@@ -464,19 +574,6 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
         goto done;
     }
     
-    // parameters
-    if (params) {
-        for (t_llllelem *el = params->l_head; el; el = el->l_next) {
-            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
-                t_llll *ll = hatom_getllll(&el->l_hatom);
-                if (ll->l_size >= 2 && hatom_gettype(&ll->l_head->l_hatom) == H_SYM && is_hatom_number(&ll->l_head->l_next->l_hatom)) {
-                    t_symbol *parameter = hatom_getsym(&ll->l_head->l_hatom);
-                    double value = hatom_getdouble(&ll->l_head->l_next->l_hatom);
-                    plugin->setParameter(parameter->s_name, value); // does this work?
-                }
-            }
-        }
-    }
     
     wrapper = dynamic_cast<PluginWrapper *>(plugin);
     if (wrapper) {
@@ -544,7 +641,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
         
         features = plugin->process(plugbuf, rt);
         
-        ears_vamp_append_features_to_llll(RealTime::realTime2Frame(rt + adjustment, sr), sr, od, outputNo, features, useFrames, out_ll, temporalmode, timeunit);
+        ears_vamp_append_features_to_llll(RealTime::realTime2Frame(rt + adjustment, sr), sr, od, outputNo, features, useFrames, out_ll, timetags_ll, temporalmode, timeunit);
         
         cur += stepSize;
 
@@ -559,7 +656,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
     
     features = plugin->getRemainingFeatures();
     
-    ears_vamp_append_features_to_llll(RealTime::realTime2Frame(rt + adjustment, sr), sr, od, outputNo, features, useFrames, out_ll, temporalmode, timeunit);
+    ears_vamp_append_features_to_llll(RealTime::realTime2Frame(rt + adjustment, sr), sr, od, outputNo, features, useFrames, out_ll, timetags_ll, temporalmode, timeunit);
 //    llll_appendllll(out_ll, getFeatures(RealTime::realTime2Frame(rt + adjustment, sr), sr, od, outputNo, features, useFrames));
     
     // summarization
@@ -624,6 +721,125 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
                 
         llll_flatten(trans_ll, -1, 0);
         *out_features = trans_ll;
+        
+    } else if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_BUFFER) {
+        // we had already checked that the sample rate was fixed.
+        
+        bool wrapped = false;
+        if (out_ll->l_depth == 1) {
+            llll_funall(out_ll, (fun_fn) wrap_once_fn, NULL, 1, 1, FUNALL_ONLY_PROCESS_ATOMS);
+            wrapped = true;
+        }
+
+        // FILL BUFFER from llll (slow, could be improved!)
+        t_ears_err err = EARS_ERR_NONE;
+        long numframes = out_ll->l_size;
+        long numchannels = out_ll->l_head && hatom_gettype(&out_ll->l_head->l_hatom) == H_LLLL ? hatom_getllll(&out_ll->l_head->l_hatom)->l_size : 0;
+        
+        if (numframes > 0 && numchannels > 0 && featuresbuf) {
+            double audiosr = buffer_getsamplerate(buf);
+            if (true) {
+                //        if (interp_mode == EARS_ESSENTIA_BUFFERINTERPMODE_DONT) {
+                double hopsize_samps = stepSize;
+                if (timetags_ll && timetags_ll->l_head && timetags_ll->l_head->l_next) {
+                    double delta = hatom_getdouble(&timetags_ll->l_head->l_next->l_hatom) - hatom_getdouble(&timetags_ll->l_head->l_hatom);
+                    if (delta > 0)
+                        hopsize_samps = ears_convert_timeunit(delta, buf, timeunit, EARS_TIMEUNIT_SAMPS);
+                }
+                double new_sr = audiosr / hopsize_samps;
+                ears_buffer_set_size_and_numchannels(x, featuresbuf, numframes, numchannels);
+                ears_buffer_set_sr(x, featuresbuf, new_sr);
+                float *sample = buffer_locksamples(featuresbuf);
+                if (!sample) {
+                    err = EARS_ERR_CANT_READ;
+                    object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
+                } else {
+                    t_atom_long    channelcount = buffer_getchannelcount(featuresbuf);        // number of floats in a frame
+                    t_atom_long    framecount   = buffer_getframecount(featuresbuf);            // number of floats long the buffer is for a single channel
+                    
+                    long f = 0, c = 0;
+                    for (t_llllelem *el = out_ll->l_head; el; el = el->l_next) {
+                        c = 0;
+                        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                            for (t_llllelem *chel = hatom_getllll(&el->l_hatom)->l_head; chel; chel = chel->l_next) {
+                                sample[f*channelcount + c] = hatom_getdouble(&chel->l_hatom);
+                                c++;
+                                if (c >= channelcount) break;
+                            }
+                        }
+                        f++;
+                        if (f >= framecount) break;
+                    }
+                    
+                    buffer_setdirty(featuresbuf);
+                    buffer_unlocksamples(featuresbuf);
+                }
+                
+                t_ears_spectralbuf_metadata data;
+                ears_spectralbuf_metadata_fill(&data, audiosr, 0, 0, EARS_FREQUNIT_UNKNOWN, gensym("timeseries"), NULL, false);
+                ears_spectralbuf_metadata_set(x, featuresbuf, &data);
+                
+                /*            } else {
+                 
+                 if (ears_buffer_is_spectral(x, buf))
+                 ears_spectralbuf_metadata_remove(x, buf); // not spectral
+                 
+                 ears_buffer_set_sr(x, buf, audiosr);
+                 
+                 ears_buffer_set_size_and_numchannels(x, buf, dur_samps, numchannels);
+                 float *sample = buffer_locksamples(buf);
+                 
+                 if (!sample) {
+                 err = EARS_ERR_CANT_READ;
+                 object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
+                 } else {
+                 
+                 t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+                 t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+                 
+                 if (framecount > 0) {
+                 for (long j = 0; j < innerdim1; j++) {
+                 for (long k = 0; k < innerdim2; k++) {
+                 long p = 0;
+                 long c = innerdim2 * j + k;
+                 double next_hop_position = hop_size_samps;
+                 if (interp_mode == EARS_ESSENTIA_BUFFERINTERPMODE_LOWEST) {
+                 for (long i = 0; i < framecount; i++) {
+                 while (i > next_hop_position) {
+                 next_hop_position += hop_size_samps;
+                 if (p < values.size()-1)
+                 p++;
+                 }
+                 sample[i*channelcount + c] = values[p][j][k];
+                 }
+                 } else if (interp_mode == EARS_ESSENTIA_BUFFERINTERPMODE_LINEAR) { // linear
+                 bool lastp = (p == values.size() - 1);
+                 for (long i = 0; i < framecount; i++) {
+                 while (i > next_hop_position) {
+                 next_hop_position += hop_size_samps;
+                 if (p < values.size()-1) {
+                 p++;
+                 lastp = (p == values.size() - 1);
+                 }
+                 }
+                 sample[i*channelcount + c] = (lastp ? values[p][j][k] : rescale(i, next_hop_position - hop_size_samps, next_hop_position, values[p][j][k], values[p+1][j][k]));
+                 }
+                 } else {
+                 object_error(x, "Unimplemented interpolation mode.");
+                 }
+                 }
+                 
+                 }
+                 buffer_setdirty(buf);
+                 }
+                 
+                 buffer_unlocksamples(buf);
+                 }
+                 } */
+            }
+        } else {
+            object_error((t_object *)x, "Error while composing buffer.");
+        }
     } else {
         *out_features = out_ll;
     }
@@ -631,10 +847,12 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
     returnValue = 0;
     
 done:
+    llll_free(timetags_ll);
     for (int c = 0; c < channels; ++c)
         delete plugbuf[c];
     delete [] plugbuf;
     delete plugin;
+
     
     return 0;
 }
@@ -648,9 +866,10 @@ static double toSeconds(const RealTime &time)
 
 
 void ears_vamp_append_features_to_llll(int frame, int sr,
-                                    const Plugin::OutputDescriptor &output, int outputNo,
-                                    const Plugin::FeatureSet &features, bool useFrames,
-                                    t_llll *features_ll, e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit)
+                                       const Plugin::OutputDescriptor &output, int outputNo,
+                                       const Plugin::FeatureSet &features, bool useFrames,
+                                       t_llll *features_ll, t_llll *timetags_ll,
+                                       e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit)
 {
 
     static int featureCount = -1;
@@ -663,7 +882,7 @@ void ears_vamp_append_features_to_llll(int frame, int sr,
         bool hasduration = false;
         double timestamp = 0, durationstamp = 0;
         
-        if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES) {
+        if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES || timetags_ll) {
             bool haveRt = false;
             RealTime rt;
             
@@ -729,7 +948,8 @@ void ears_vamp_append_features_to_llll(int frame, int sr,
             }
         }
         
-        
+        if (timetags_ll)
+            llll_appenddouble(timetags_ll, timestamp);
         
         if (f.values.size() == 1) {
             if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES) {

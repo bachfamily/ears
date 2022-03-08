@@ -77,6 +77,8 @@ typedef struct _buf_vamp_plugin {
 typedef struct _buf_vamp {
     t_earsbufobj       e_ob;
     
+    char               n_autoframehopsize;
+    
     t_buf_vamp_plugin  n_plugins[EARS_MAX_VAMP_PLUGINS];
     long               n_numplugins;
     t_llll             *n_pluginparameters[EARS_MAX_VAMP_PLUGINS];
@@ -108,6 +110,20 @@ EARSBUFOBJ_ADD_IO_METHODS(vamp)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
+t_max_err buf_vamp_setattr_auto(t_buf_vamp *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (is_atom_number(argv)) {
+            x->n_autoframehopsize = (atom_getlong(argv) != 0 ? 1 : 0);
+            object_attr_setdisabled((t_object *)x, gensym("framesize"), x->n_autoframehopsize);
+            object_attr_setdisabled((t_object *)x, gensym("hopsize"), x->n_autoframehopsize);
+            object_attr_setdisabled((t_object *)x, gensym("overlap"), x->n_autoframehopsize);
+            object_attr_setdisabled((t_object *)x, gensym("numframes"), x->n_autoframehopsize);
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
 
 int C74_EXPORT main(void)
 {
@@ -139,6 +155,9 @@ int C74_EXPORT main(void)
     // organized in sublist by library.
     // A <b>getlist outputs</b> message additionally provides the list of outlets for each plugin, with one
     // additional level of parentheses. <br />
+    // A <b>getlist parameter</b> message, followed by the key identifier of a plugin
+    // (<m>libraryid</m>:<m>pluginid</m>, as in the object box arguments)
+    // provides the list of parameters for the plugin, along with their default values, ranges and additional information. <br />
     // A <b>getlist libraries</b> message provides the list of libraries. <br />
     // A <b>getlist detailed</b> message provides full details about functions, parameters and outputs of each plugins. <br />
     class_addmethod(c, (method)buf_vamp_getlist,  "getlist",      A_GIMME, 0); \
@@ -155,6 +174,16 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
 
+    CLASS_ATTR_CHAR(c, "auto", 0, t_buf_vamp, n_autoframehopsize);
+    CLASS_ATTR_STYLE_LABEL(c,"auto",0,"onoff","Automatically Assign Analysis Parameters");
+    CLASS_ATTR_BASIC(c, "auto", 0);
+    CLASS_ATTR_FILTER_CLIP(c, "auto", 0, 1);
+    CLASS_ATTR_CATEGORY(c, "auto", 0, "Analysis");
+    CLASS_ATTR_ACCESSORS(c, "auto", NULL, buf_vamp_setattr_auto);
+    // @description Toggles the ability to automatically assign analysis parameters according to the preferred values
+    // of each plugin
+    
+    
     CLASS_ATTR_CHAR(c, "summary", 0, t_buf_vamp, n_summarization);
     CLASS_ATTR_STYLE_LABEL(c,"summary",0,"enumindex","Summarization Mode");
     CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean Median Mode");
@@ -318,6 +347,16 @@ int buf_vamp_add_plugin(t_buf_vamp *x, t_symbol *pluginname)
             return 1;
         }
     }
+    
+    // check if output is OK
+    if (tm == EARS_ANALYSIS_TEMPORALMODE_BUFFER && outputs[x->n_plugins[pluginindex].n_outputIndex].sampleType == Plugin::OutputDescriptor::VariableSampleRate) {
+        char errormsg[2048];
+        snprintf_zero(errormsg, 2048, "Output '%s' of plugin '%s' from library '%s' has a variable sample rate and hence does not support the buffer temporal mode.", output.c_str(),
+                      x->n_plugins[pluginindex].n_identifier ? x->n_plugins[pluginindex].n_identifier->s_name : "",
+                      x->n_plugins[pluginindex].n_soname ? x->n_plugins[pluginindex].n_soname->s_name : "");
+        object_error((t_object *)x, errormsg);
+        return 1;
+    }
 
     
     x->n_numplugins ++;
@@ -336,9 +375,20 @@ t_buf_vamp *buf_vamp_new(t_symbol *s, short argc, t_atom *argv)
         
         x->n_summarization = EARS_ANALYSIS_SUMMARIZATION_MEDIAN;
 
+        x->n_autoframehopsize = true;
+        object_attr_setdisabled((t_object *)x, gensym("framesize"), x->n_autoframehopsize);
+        object_attr_setdisabled((t_object *)x, gensym("hopsize"), x->n_autoframehopsize);
+        object_attr_setdisabled((t_object *)x, gensym("overlap"), x->n_autoframehopsize);
+        object_attr_setdisabled((t_object *)x, gensym("numframes"), x->n_autoframehopsize);
+
+        
         // @arg 0 @name plugin_identifiers @optional 1 @type symbol/list
-        // @digest List of plugin identifiers in the form: <b>pluginlibrary:pluginname:output</b>.
+        // @digest List of plugin identifiers in the form: <b>libraryid:pluginid[:output]</b>.
+        // The output is optional; if no output is given the first default one is used.
         // Plugins must be located in the VAMP default folder.
+        // The ids are the textual identifiers. For instance, a valid argument is
+        // <b>bbc-vamp-plugins:bbc-energy</b> or <b>bbc-vamp-plugins:bbc-energy:rmsenergy</b>
+        // with explicit specification of an outlet.
 
         t_llll *args = llll_parse(true_ac, argv);
         
@@ -364,9 +414,9 @@ t_buf_vamp *buf_vamp_new(t_symbol *s, short argc, t_atom *argv)
 
         char outlets[LLLL_MAX_OUTLETS];
         for (long i = 0; i < x->n_numplugins; i++) {
-            outlets[i] = (x->n_plugins[i].n_temporalmode == EARS_ANALYSIS_TEMPORALMODE_BUFFER ? 'E' : '4');
+            outlets[x->n_numplugins-i] = (x->n_plugins[i].n_temporalmode == EARS_ANALYSIS_TEMPORALMODE_BUFFER ? 'E' : '4');
         }
-        outlets[x->n_numplugins] = '4';
+        outlets[0] = '4';
         outlets[x->n_numplugins+1] = 0;
        
         char intypes[LLLL_MAX_INLETS];
@@ -414,23 +464,20 @@ void buf_vamp_bang(t_buf_vamp *x)
     for (long i = 0; i < num_plugins; i++)
         res[i] = llll_get();
 
-    // TO DO: MULTICHANNELS? (MULTIPLE BUFFERS?) check with ESSENTIA
-    // iterate on sonames
     for (long p = 0; p < x->n_numplugins; p++) {
         for (long count = 0; count < num_buffers; count++) {
             t_buffer_obj *buf = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
             if (buf) {
                 t_llll *out_features = NULL;
-                t_ears_err err = ears_vamp_run_plugin((t_earsbufobj *)x, buf, x->n_plugins[p].n_soname->s_name, x->n_plugins[p].n_identifier->s_name, x->n_plugins[p].n_outputIndex, &out_features, x->n_plugins[p].n_temporalmode, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_analysis_summarization) x->n_summarization,
-                                                      ears_convert_timeunit(x->e_ob.a_framesize, buf, (e_ears_timeunit)x->e_ob.l_antimeunit, EARS_TIMEUNIT_SAMPS),
-                                                      ears_convert_timeunit(x->e_ob.a_hopsize, buf, (e_ears_timeunit)x->e_ob.l_antimeunit, EARS_TIMEUNIT_SAMPS),
-                                                      x->n_pluginparameters[p]
-                                                      );
+                t_buffer_obj *featuresbuf = (x->n_plugins[p].n_temporalmode == EARS_ANALYSIS_TEMPORALMODE_BUFFER) ? earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, earsbufobj_outlet_to_bufstore((t_earsbufobj *)x, p), count) : NULL;
+                t_ears_err err = ears_vamp_run_plugin((t_earsbufobj *)x, buf, x->n_plugins[p].n_soname->s_name, x->n_plugins[p].n_identifier->s_name, x->n_plugins[p].n_outputIndex, &out_features, featuresbuf, x->n_plugins[p].n_temporalmode, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_analysis_summarization) x->n_summarization, x->n_autoframehopsize ? 0 : ears_convert_timeunit(x->e_ob.a_framesize, buf, (e_ears_timeunit)x->e_ob.l_antimeunit, EARS_TIMEUNIT_SAMPS), x->n_autoframehopsize ? 0 : ears_convert_timeunit(x->e_ob.a_hopsize, buf, (e_ears_timeunit)x->e_ob.l_antimeunit, EARS_TIMEUNIT_SAMPS), x->n_pluginparameters[p]);
                 if (err != EARS_ERR_NONE)
                     object_error((t_object *)x, "Error while processing plugins.");
                 if (out_features) {
                     if (x->n_plugins[p].n_temporalmode == EARS_ANALYSIS_TEMPORALMODE_WHOLE && out_features->l_depth == 1 && out_features->l_size == 1)
                         llll_chain(res[p], out_features);
+                    else if (x->n_plugins[p].n_temporalmode == EARS_ANALYSIS_TEMPORALMODE_BUFFER)
+                        llll_free(out_features);
                     else
                         llll_appendllll(res[p], out_features);
                 }
@@ -465,9 +512,19 @@ void buf_vamp_getlist(t_buf_vamp *x, t_symbol *msg, long ac, t_atom *av)
     if (parsed && parsed->l_head && hatom_getsym(&parsed->l_head->l_hatom) == gensym("libraries")) {
         info = ears_vamp_enumerate_libraries((t_object *)x);
     } else if (parsed && parsed->l_head && hatom_getsym(&parsed->l_head->l_hatom) == gensym("detailed")){
-        info = ears_vamp_enumerate_plugins_detailed((t_object *)x);
+        if (parsed->l_head->l_next && hatom_gettype(&parsed->l_head->l_next->l_hatom) == H_SYM) {
+            info = ears_vamp_enumerate_plugins_detailed((t_object *)x, hatom_getsym(&parsed->l_head->l_next->l_hatom));
+        } else {
+            info = ears_vamp_enumerate_plugins_detailed((t_object *)x, NULL);
+        }
     } else if (parsed && parsed->l_head && hatom_getsym(&parsed->l_head->l_hatom) == gensym("outputs")){
         info = ears_vamp_enumerate_plugins((t_object *)x, true);
+    } else if (parsed && parsed->l_head && hatom_getsym(&parsed->l_head->l_hatom) == gensym("parameters")){
+        if (parsed->l_head->l_next && hatom_gettype(&parsed->l_head->l_next->l_hatom) == H_SYM) {
+            info = ears_vamp_enumerate_plugin_parameters((t_object *)x, hatom_getsym(&parsed->l_head->l_next->l_hatom));
+        } else {
+            object_error((t_object *)x, "No plugin identifier given.");
+        }
     } else {
         info = ears_vamp_enumerate_plugins((t_object *)x, false);
     }

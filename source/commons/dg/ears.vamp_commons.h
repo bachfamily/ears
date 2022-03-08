@@ -1,7 +1,7 @@
 /**
 	@file
 	ears.vamp_commons.h
-	VAMP bridge for ears
+	Vamp bridge for ears
  
 	by Daniele Ghisi
  */
@@ -37,14 +37,15 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 t_llll *ears_vamp_enumerate_plugins(t_object *x, bool enumerate_outlets);
-t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x);
+t_llll *ears_vamp_enumerate_plugin_parameters(t_object *x, t_symbol *fullkey);
+t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x, t_symbol *fullkey); // use fullkey=NULL for all plugins
 t_llll *ears_vamp_enumerate_libraries(t_object *x);
 t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string soname, string identifier, int outputNo,
-                                t_llll **out_features, e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit, e_ears_analysis_summarization summarizationm, long framesize_samps, long hopsize_samps, t_llll *params);
+                                t_llll **out_features, t_buffer_obj *featuresbuf, e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit, e_ears_analysis_summarization summarizationm, long framesize_samps, long hopsize_samps, t_llll *params);
 void ears_vamp_append_features_to_llll(int frame, int sr,
                                        const Plugin::OutputDescriptor &output, int outputNo,
                                        const Plugin::FeatureSet &features, bool useFrames,
-                                       t_llll *features_ll, e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit);
+                                       t_llll *features_ll, t_llll *timetags_ll, e_ears_analysis_temporalmode temporalmode, e_ears_timeunit timeunit);
 
 t_llll *getFeatures(int, int,
                     const Plugin::OutputDescriptor &, int,
