@@ -32,7 +32,7 @@
 	buffer, info, get, retrieve, rms, amplitude, peak
  
 	@seealso
-	info~, ears.features~
+	info~, ears.essentia~
 	
 	@owner
 	Daniele Ghisi

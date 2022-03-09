@@ -108,7 +108,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -127,7 +127,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -146,7 +146,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -168,7 +168,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional message attributes specify the encoding properties (variable bitrate mode, bitrates). <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -187,7 +187,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -206,7 +206,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
@@ -229,7 +229,7 @@
 				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
 				and the filename (otherwise a dialog menu will appear).
 				Optional message attributes specify the encoding properties (correction, bitrate, sample ). <br />
-				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer (default)),
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
 				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
 				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
 			</description>
