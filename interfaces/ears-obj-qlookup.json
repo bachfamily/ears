@@ -308,24 +308,6 @@
       "ears.resample~"
     ]
   },
-  "ears.essentia~": {
-    "digest": "Extract buffer features via the Essentia library",
-    "module": "ears",
-    "category": [
-      "ears analysis"
-    ],
-    "keywords": [
-      "buffer",
-      "essentia",
-      "feature",
-      "descriptor"
-    ],
-    "seealso": [
-      "ears.info~",
-      "ears.vamp~",
-      "ears.spectrogram~"
-    ]
-  },
   "ears.unpack~": {
     "digest": "Unpack buffer channels",
     "module": "ears",
@@ -443,6 +425,24 @@
     "seealso": [
       "onepole~",
       "ears.biquad~"
+    ]
+  },
+  "ears.essentia~": {
+    "digest": "Extract buffer features via the Essentia library",
+    "module": "ears",
+    "category": [
+      "ears analysis"
+    ],
+    "keywords": [
+      "buffer",
+      "essentia",
+      "feature",
+      "descriptor"
+    ],
+    "seealso": [
+      "ears.info~",
+      "ears.vamp~",
+      "ears.spectrogram~"
     ]
   },
   "ears.rot~": {
@@ -1039,7 +1039,7 @@
     ]
   },
   "ears.vamp~": {
-    "digest": "Extract features via VAMP plugins",
+    "digest": "Vamp plugins host",
     "module": "ears",
     "category": [
       "ears analysis"

@@ -6,11 +6,11 @@
 <c74object name="ears.vamp~" module="ears">
 
 	<digest>
-		Extract features via VAMP plugins
+		Vamp plugins host
 	</digest>
 
 	<description>
-		Runs a VAMP plugins and obtains its output
+		Extract audio features via Vamp plugins
 	</description>
 
 	<!--METADATA-->
@@ -41,22 +41,29 @@
 	<outletlist>
 		<outlet id="0" type="INLET_TYPE">
 			<digest>
-				Output buffer names
+				Feature for the corresponding key
 			</digest>
 			<description>
+				Feature for one of the introduced key; some essentia require multiple outlets (see outlet assistance).
+			</description>
+		</outlet>
+		<outlet id="1" type="INLET_TYPE">
+			<digest>
+				Notifications
+			</digest>
+			<description>
+				Receive notifications from <m>getlist</m> messages.
 			</description>
 		</outlet>
 	</outletlist>
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="outnames" optional="1" type="symbol">
+		<objarg name="plugin_identifiers" optional="1" type="symbol/list">
 			<digest>
-				Output buffer names
+				List of plugin identifiers in the form: <b>libraryid:pluginid[:output]</b>.
 			</digest>
 			<description>
-				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
 	</objarglist>
@@ -71,6 +78,23 @@
 			<description>
 				Double-clicking on the object will open the display window for the output buffer(s).
 				If more than 10 buffers are to be output, only the first 10 are displayed.
+			</description>
+		</method>
+		<method name="getlist">
+			<arglist />
+			<digest>
+				Get plugin list
+			</digest>
+			<description>
+				The <m>getlist</m> message provides the list of identifiers for the currently installed plugins,
+				organized in sublist by library.
+				A <b>getlist outputs</b> message additionally provides the list of outlets for each plugin, with one
+				additional level of parentheses. <br />
+				A <b>getlist parameter</b> message, followed by the key identifier of a plugin
+				(<m>libraryid</m>:<m>pluginid</m>, as in the object box arguments)
+				provides the list of parameters for the plugin, along with their default values, ranges and additional information. <br />
+				A <b>getlist libraries</b> message provides the list of libraries. <br />
+				A <b>getlist detailed</b> message provides full details about functions, parameters and outputs of each plugins. <br />
 			</description>
 		</method>
 		<method name="list/llll">
@@ -238,6 +262,65 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="antimeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Analysis Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="auto" get="1" set="1" type="int" size="1">
+			<digest>
+				Automatically Assign Analysis Parameters
+			</digest>
+			<description>
+				Toggles the ability to automatically assign analysis parameters according to the preferred values
+				of each plugin
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatically Assign Analysis Parameters" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="framesize" get="1" set="1" type="float" size="1">
+			<digest>
+				Frame Size
+			</digest>
+			<description>
+				Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frame Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="hopsize" get="1" set="1" type="float" size="1">
+			<digest>
+				Hop Size
+			</digest>
+			<description>
+				Sets the analysis hop size (the unit depends on the <m>antimeunit</m> attribute)
+				Floating point values are allowed.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Hop Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -259,6 +342,53 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="numframes" get="1" set="1" type="atom" size="1">
+			<digest>
+				Number of Analysis Frames
+			</digest>
+			<description>
+				Sets the number of analysis frames. Defaults to "auto", as this number is a consequence of the
+				<m>framesize</m> and <m>hopsize</m> attributes. If this number is set to a positive integer value, the <m>hopsize</m>
+				is ignored and inferred from <m>numframes</m>.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number of Analysis Frames" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="out" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Outlet Types
+			</digest>
+			<description>
+				The <m>out</m> attribute is a sequence of characters identifying the outlet types (one character for each llll outlet). Characters can be one of the following: <br />
+				<m>n</m> (default): 'native' output: faster and more precise between bach objects, but unreadable by standard Max objects (an "bach.llll" message appears instead). <br />
+				<m>t</m>: 'text' output: slower and limited in size, but readable by standard Max objects. A plain llll in text format is a generic Max message.
+				To keep the representation invertible (i.e., to allow a bach object receiving a text-format llll to interpret it exactly as if it was native format,
+				except for the size limitation), some specific kinds of symbols are preceded by a backtick: namely, symbols containing parens, or containing textual
+				representations of numbers or pitches, or beginning with a backtick, plus the symbols "null" and "nil" (distinct from the reserved words
+				"null" and "nil" representing the empty list and the empty sublist) are preceded by a backtick. Moreover, the symbols "int", "float" or "list"
+				are preceded by a backtick only if they are the first element of an llll, to distinguish them from the corresponding reserved messages of Max. <br />
+				<m>m</m>: 'max' output: mostly equivalent to the "t" specifier, but no symbol is backticket except "int", "float" and "list" at the beginning of an llll.
+				It is important to notice that, differently from text-format lllls proper, Max-format lllls might not be invertible even if they do not reach the size
+				limit for Max message. This means that a bach object receiving a Max-format llll output from another bach object might interpret it differently
+				from the original, or in some cases might even reject it. <br />
+				<m>x</m>: disabled output (nothing is output) <br />
+				<m>p</m>: 'portal' output: only used by bach.portal to intercept the @out attribute specified while creating the abstraction (see bach.portal). <br />
+				The native output is recommended, unless communication with standard Max messages is needed.
+				Disabling unused outputs can be useful if extreme optimization of the patch is needed.
+				<br /> <br />
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Outlet Types" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="outname" get="1" set="1" type="llll" size="1">
 			<digest>
 				Output Buffer Names
@@ -271,6 +401,55 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="overlap" get="1" set="1" type="float" size="1">
+			<digest>
+				Overlap
+			</digest>
+			<description>
+				Sets the overlap factor between the analysis window size and the hop size.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Overlap" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="summary" get="1" set="1" type="int" size="1">
+			<digest>
+				Summarization Mode
+			</digest>
+			<description>
+				Sets the summarization mode. Available modes are:
+				<b>First</b>: take first frame; <br />
+				<b>Last</b>: last last frame; <br />
+				<b>Middle</b>: take middle frame; <br />
+				<b>Mean</b>: average through frames; <br />
+				<b>Median</b>: median through frames (for use with single-valued essentia); <br />
+				<b>Mode</b>: mode through frames (for use with discrete essentia). <br />
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="timeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 	</attributelist>
@@ -294,9 +473,16 @@
 	</misc>
 
 	<misc name = "Output">
-		<entry name ="Outlet 1 (symbol/list)">
+		<entry name ="Outlets 1, 2, 3... (llll/buffer)">
 			<description>
-				Output buffer names.
+				Feature for the corresponding key.
+				Feature for one of the introduced key; some essentia require multiple outlets (see outlet assistance).
+			</description>
+		</entry>
+		<entry name ="The last Outlet (llll)">
+			<description>
+				Notifications.
+				Receive notifications from <m>getlist</m> messages.
 			</description>
 		</entry>
 	</misc>

@@ -30,7 +30,7 @@
 		</inlet>
 		<inlet id="1" type="INLET_TYPE">
 			<digest>
-				Parameters for each of the essentia (one inlet per feature).
+				Parameters for each of the features (one inlet per feature).
 			</digest>
 			<description>
 			</description>
@@ -44,16 +44,16 @@
 				Feature for the corresponding key
 			</digest>
 			<description>
-				Feature for one of the introduced key; some essentia require multiple outlets (see outlet assistance).
+				Feature for one of the introduced key; some features require multiple outlets (see outlet assistance).
 			</description>
 		</outlet>
 	</outletlist>
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="essentia" optional="0" type="list">
+		<objarg name="features" optional="0" type="list">
 			<digest>
-				essentia to be computed
+				Features to be computed
 			</digest>
 			<description>
 				A list of symbols, each associated with a feature to be computed
@@ -316,7 +316,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Minimum Kernel Size" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -386,6 +385,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Envelopes" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Attack Time" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -640,7 +640,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Order Peaks By" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -662,7 +661,7 @@
 				Summarization Mode
 			</digest>
 			<description>
-				Sets the summarization mode, for essentia that are requested as static but needs to be computed on a frame-by-frame basis.
+				Sets the summarization mode, for features that are requested as static but needs to be computed on a frame-by-frame basis.
 				Available modes are:
 				<b>First</b>: take first frame; <br />
 				<b>Last</b>: last last frame; <br />
@@ -674,7 +673,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Mode" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -824,7 +822,7 @@
 		</entry>
 		<entry name ="Inlets 2, 3, 4... (llll)">
 			<description>
-				Parameters for each of the essentia (one inlet per feature)..
+				Parameters for each of the features (one inlet per feature)..
 			</description>
 		</entry>
 	</misc>
@@ -833,7 +831,7 @@
 		<entry name ="Outlets 1, 2, 3... (llll/buffer)">
 			<description>
 				Feature for the corresponding key.
-				Feature for one of the introduced key; some essentia require multiple outlets (see outlet assistance).
+				Feature for one of the introduced key; some features require multiple outlets (see outlet assistance).
 			</description>
 		</entry>
 	</misc>

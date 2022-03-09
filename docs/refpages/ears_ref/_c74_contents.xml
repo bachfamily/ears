@@ -16,13 +16,13 @@
 <refpage name='ears.read~.maxref.xml'/>
 <refpage name='ears.slice~.maxref.xml'/>
 <refpage name='ears.format~.maxref.xml'/>
-<refpage name='ears.essentia~.maxref.xml'/>
 <refpage name='ears.unpack~.maxref.xml'/>
 <refpage name='ears.processinfo~.maxref.xml'/>
 <refpage name='ears.hoa.mirror~.maxref.xml'/>
 <refpage name='ears.fromsamps~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
 <refpage name='ears.onepole~.maxref.xml'/>
+<refpage name='ears.essentia~.maxref.xml'/>
 <refpage name='ears.rot~.maxref.xml'/>
 <refpage name='ears.write~.maxref.xml'/>
 <refpage name='ears.in~.maxref.xml'/>
