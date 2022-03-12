@@ -9,6 +9,7 @@ using Vamp::RealTime;
 using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
+using Vamp::HostExt::PluginSummarisingAdapter;
 
 
 t_llll *ears_vamp_enumerate_libraries(t_object *x)
@@ -327,7 +328,7 @@ t_llll *ears_vamp_enumerate_plugins_detailed(t_object *x, t_symbol *fullkey)
                 
                 t_llll *outputs_ll = llll_get();
                 Plugin::OutputList outputs = plugin->getOutputDescriptors();
-                llll_appendsym(parameters_ll, gensym("outputs"));
+                llll_appendsym(outputs_ll, gensym("outputs"));
                 for (size_t j = 0; j < outputs.size(); ++j) {
                     Plugin::OutputDescriptor &od(outputs[j]);
                     t_llll *this_output_ll = llll_get();
@@ -444,7 +445,21 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
         object_error((t_object *)x, error_msg);
         return EARS_ERR_GENERIC;
     }
+
+    // TO DO: verify if summarization is possible. This perhaps is doable via the dynamic cast to PluginSummarisingAdapter?
+    /*
+    { // THIS IS BAD PRACTICE, I'M SURE, just put here so that it works
+        Plugin *plugin2 = loader->loadPlugin(key, sr, PluginLoader::ADAPT_ALL_SAFE);
+        shared_ptr<Plugin> my_ptr(plugin2);
+        auto adapter = dynamic_pointer_cast<PluginSummarisingAdapter>(my_ptr);
+        if (adapter) {
+            long foo = 8;
+            foo++;
+        }
+    }
+     */
     
+
     //    cerr << "Running plugin: \"" << plugin->getIdentifier() << "\"..." << endl;
     
     // FOLLOWING VAMP SDK:
@@ -701,6 +716,23 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
                         }
                     }
                         break;
+                    case EARS_ANALYSIS_SUMMARIZATION_MIN:
+                    case EARS_ANALYSIS_SUMMARIZATION_MAX:
+                    {
+                        t_hatom *min = NULL, *max = NULL;
+                        t_llll *minaddress = llll_get(), *maxaddress = llll_get();
+                        llll_minmax(ll, &min, &max, minaddress, maxaddress, 1, 1);
+                        if (summarization == EARS_ANALYSIS_SUMMARIZATION_MIN) {
+                            if (min)
+                                summary = hatom_getdouble(min);
+                        } else {
+                            if (max)
+                                summary = hatom_getdouble(max);
+                        }
+                        llll_free(minaddress);
+                        llll_free(maxaddress);
+                    }
+                        break;
                     case EARS_ANALYSIS_SUMMARIZATION_MEAN:
                     {
                         summary = llll_average_of_plain_double_llll(ll);
@@ -864,6 +896,11 @@ static double toSeconds(const RealTime &time)
     return time.sec + double(time.nsec + 1) / 1000000000.0; // why +1 ? it was in the vamp stuff, let's keep it.
 }
 
+static double toMilliSeconds(const RealTime &time)
+{
+    return time.sec + double(time.nsec + 1) / 1000000.0; // why +1 ? it was in the vamp stuff, let's keep it.
+}
+
 
 void ears_vamp_append_features_to_llll(int frame, int sr,
                                        const Plugin::OutputDescriptor &output, int outputNo,
@@ -912,7 +949,7 @@ void ears_vamp_append_features_to_llll(int frame, int sr,
                     displayFrame = RealTime::realTime2Frame(rt, sr);
                 }
                 
-                timestamp = rt.msec();
+                timestamp = rt.sec * 1000 + rt.msec();
 //                llll_appendlong(frametimes_ll, displayFrame);
                 //            (out ? *out : cout) << displayFrame;
                 
@@ -932,13 +969,13 @@ void ears_vamp_append_features_to_llll(int frame, int sr,
                     rt = RealTime::frame2RealTime(frame, sr);
                 }
                 
-                timestamp = rt.msec();
+                timestamp = 1000*rt.sec + rt.msec();
 //                llll_appenddouble(frametimes_ll, rt.msec());
                 //            (out ? *out : cout) << rt.toString();
                 
                 if (f.hasDuration) {
                     rt = f.duration;
-                    durationstamp = rt.msec();
+                    durationstamp = 1000*rt.sec + rt.msec();
                     hasduration = true;
 //                    llll_appenddouble(frametimes_ll, rt.msec());
                     //                (out ? *out : cout) << "," << rt.toString();
@@ -1038,12 +1075,12 @@ t_llll *ears_vamp_get_frametime_as_llll(int frame, int sr,
                 rt = RealTime::frame2RealTime(frame, sr);
             }
             
-            llll_appenddouble(feature_ll, rt.msec());
+            llll_appenddouble(feature_ll, rt.sec * 1000 + rt.msec());
             //            (out ? *out : cout) << rt.toString();
             
             if (f.hasDuration) {
                 rt = f.duration;
-                llll_appenddouble(feature_ll, rt.msec());
+                llll_appenddouble(feature_ll, rt.sec * 1000 + rt.msec());
                 //                (out ? *out : cout) << "," << rt.toString();
             }
             
@@ -1119,12 +1156,12 @@ t_llll *getFeatures(int frame, int sr,
                 rt = RealTime::frame2RealTime(frame, sr);
             }
             
-            llll_appenddouble(feature_ll, rt.msec());
+            llll_appenddouble(feature_ll, rt.sec * 1000 + rt.msec());
             //            (out ? *out : cout) << rt.toString();
             
             if (f.hasDuration) {
                 rt = f.duration;
-                llll_appenddouble(feature_ll, rt.msec());
+                llll_appenddouble(feature_ll, rt.sec * 1000 + rt.msec());
                 //                (out ? *out : cout) << "," << rt.toString();
             }
             

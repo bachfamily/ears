@@ -14,6 +14,7 @@
 #include "vamp-hostsdk/PluginHostAdapter.h"
 #include "vamp-hostsdk/PluginInputDomainAdapter.h"
 #include "vamp-hostsdk/PluginLoader.h"
+#include <vamp-hostsdk/PluginSummarisingAdapter.h>
 
 #include <iostream>
 #include <fstream>

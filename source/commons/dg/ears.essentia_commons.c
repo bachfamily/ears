@@ -1176,6 +1176,10 @@ e_ears_analysis_summarization ears_summary_from_symbol(t_symbol *s)
         return EARS_ANALYSIS_SUMMARIZATION_MEDIAN;
     if (s == gensym("mode") || s == gensym("Mode"))
         return EARS_ANALYSIS_SUMMARIZATION_MODE;
+    if (s == gensym("min") || s == gensym("Min") || s == gensym("minimum") || s == gensym("Minimum"))
+        return EARS_ANALYSIS_SUMMARIZATION_MIN;
+    if (s == gensym("max") || s == gensym("Max") || s == gensym("maximum") || s == gensym("Maximum"))
+        return EARS_ANALYSIS_SUMMARIZATION_MAX;
     return EARS_ANALYSIS_SUMMARIZATION_UNKNOWN;
 }
 
@@ -4074,7 +4078,24 @@ std::vector<std::vector<Real>> vector_of_vector_average(t_object *culprit, std::
             case EARS_ANALYSIS_SUMMARIZATION_MIDDLE:
                 res = v[v.size()/2];
                 break;
-                
+
+            case EARS_ANALYSIS_SUMMARIZATION_MIN:
+            case EARS_ANALYSIS_SUMMARIZATION_MAX:
+            {
+                std::vector<Real> flattened = vector_of_vector_of_vector_flatten(v);
+                if (flattened.size() > 0) {
+                    std::sort(flattened.begin(), flattened.end());
+                    if (flattened.size() % 2 == 0) {
+                        // odd number of elements: middle element
+                        if (summarization == EARS_ANALYSIS_SUMMARIZATION_MIN)
+                            return wrap_to_vector_of_vectors(flattened[0]);
+                        else
+                            return wrap_to_vector_of_vectors(flattened[flattened.size()-1]);
+                    }
+                }
+            }
+                break;
+
             case EARS_ANALYSIS_SUMMARIZATION_MEDIAN: // only works for single-valued features
                 if (weights) {
                     std::vector<std::vector<Real>> flattened_with_weights = vector_of_vector_of_vector_flatten_with_weights(v, weights, weightssize);

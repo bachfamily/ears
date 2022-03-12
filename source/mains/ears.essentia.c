@@ -220,9 +220,9 @@ int C74_EXPORT main(void)
     
     CLASS_ATTR_CHAR(c, "summary", 0, t_buf_essentia, summarization);
     CLASS_ATTR_STYLE_LABEL(c,"summary",0,"enumindex","Summarization Mode");
-    CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean Median Mode");
+    CLASS_ATTR_ENUMINDEX(c, "summary", 0, "First Last Middle Mean Median Mode Min Max");
     CLASS_ATTR_BASIC(c, "summary", 0);
-    CLASS_ATTR_FILTER_CLIP(c, "summary", 0, 5);
+    CLASS_ATTR_FILTER_CLIP(c, "summary", 0, 7);
     CLASS_ATTR_CATEGORY(c, "summary", 0, "Summarization");
     // @description Sets the summarization mode, for features that are requested as static but needs to be computed on a frame-by-frame basis.
     // Available modes are:
