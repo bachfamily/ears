@@ -446,19 +446,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
         return EARS_ERR_GENERIC;
     }
 
-    // TO DO: verify if summarization is possible. This perhaps is doable via the dynamic cast to PluginSummarisingAdapter?
-    /*
-    { // THIS IS BAD PRACTICE, I'M SURE, just put here so that it works
-        Plugin *plugin2 = loader->loadPlugin(key, sr, PluginLoader::ADAPT_ALL_SAFE);
-        shared_ptr<Plugin> my_ptr(plugin2);
-        auto adapter = dynamic_pointer_cast<PluginSummarisingAdapter>(my_ptr);
-        if (adapter) {
-            long foo = 8;
-            foo++;
-        }
-    }
-     */
-    
+
 
     //    cerr << "Running plugin: \"" << plugin->getIdentifier() << "\"..." << endl;
     
@@ -564,6 +552,12 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
     od = outputs[outputNo];
     //    cerr << "Output is: \"" << od.identifier << "\"" << endl;
     
+    // check if output is summarizable, otherwise change temporal mode
+    if (od.sampleType == Plugin::OutputDescriptor::VariableSampleRate) { // this is not summarizable!
+        temporalmode = EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES;
+    }
+            
+
     // parameters
     if (params) {
         for (t_llllelem *el = params->l_head; el; el = el->l_next) {
