@@ -982,7 +982,23 @@ void ears_vamp_append_features_to_llll(int frame, int sr,
         if (timetags_ll)
             llll_appenddouble(timetags_ll, timestamp);
         
-        if (f.values.size() == 1) {
+        if (f.values.size() == 0 && f.label != "") {
+            if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES) {
+                if (hasduration) {
+                    t_llll *inner = llll_get();
+                    llll_appendllll(inner, double_couple_to_llll(timestamp, durationstamp));
+                    llll_appendsym(features_ll, gensym(f.label.c_str()));
+                    llll_appendllll(features_ll, inner);
+                } else {
+                    t_llll *inner = llll_get();
+                    llll_appenddouble(inner, timestamp);
+                    llll_appendsym(inner, gensym(f.label.c_str()));
+                    llll_appendllll(features_ll, inner);
+                }
+            } else {
+                llll_appendsym(features_ll, gensym(f.label.c_str()));
+            }
+        } else if (f.values.size() == 1) {
             if (temporalmode == EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES) {
                 if (hasduration) {
                     t_llll *inner = llll_get();

@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 891.0, 553.0 ],
+		"rect" : [ 123.0, 224.0, 891.0, 553.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 501.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -191,7 +191,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 204.0, 203.0, 263.0, 25.0 ],
+									"patching_rect" : [ 204.0, 205.0, 263.0, 25.0 ],
 									"text" : "Also get all parameters, descriptions, etc."
 								}
 
@@ -388,7 +388,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 152.0, 891.0, 501.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -824,7 +824,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 501.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1173,7 +1173,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 501.0 ],
+						"rect" : [ 123.0, 250.0, 891.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1204,6 +1204,20 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-3",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 345.0, 188.5, 318.0, 50.0 ],
+									"presentation_linecount" : 4,
+									"text" : "(e.g. bbc-vamp-plugins:bbc-energy)\n\n               (e.g. bbc-vamp-plugins:bbc-energy:average)",
+									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-19",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -1223,8 +1237,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 497.0, 363.5, 141.0, 21.0 ],
-									"text" : "no timestamps: just flat",
+									"patching_rect" : [ 497.0, 363.5, 206.0, 21.0 ],
+									"text" : "no timestamps (just flatten the list)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
 
@@ -1345,7 +1359,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 456.0, 282.0, 294.0, 50.0 ],
-									"text" : "This is the standard way Vamp plugins output data. You can however choose to have it output differently (see \"temporal modes\" tab)",
+									"presentation_linecount" : 3,
+									"text" : "This is the standard way Vamp plugins output data. You can however choose summarization or buffer output (see \"temporal modes\" tab)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
 
@@ -1373,8 +1388,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 228.606537000000003, 177.5, 246.0, 50.0 ],
-									"text" : "Plugins are identified either via\n\nwhich gives the first, default outlet, or via:",
+									"patching_rect" : [ 243.606537000000003, 174.5, 256.0, 50.0 ],
+									"text" : "Plugins are identified either via\n\nwhich gives by default the first outlet, or via",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
 
@@ -1386,10 +1401,10 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 252.606537000000003, 177.5, 186.0, 65.0 ],
-									"text" : "\nfamilyid:pluginid\n\nfamilyid:pluginid:outputid",
+									"patching_rect" : [ 243.606537000000003, 174.5, 186.0, 65.0 ],
+									"text" : "\nfamilyID:pluginID\n\nfamilyID:pluginID:outputID",
 									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ],
-									"textjustification" : 1
+									"textjustification" : 0
 								}
 
 							}
@@ -1691,7 +1706,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 501.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
