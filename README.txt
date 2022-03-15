@@ -2,7 +2,7 @@
 ears
 ==================================================
 
-**ears** is a library for `Max <http://cycling74.com/>`_ containing 
+**ears** is a library for `Max <http://cycling74.com/>`_ containing
 objects for elementary buffer manipulation.
 
 **ears** is based on the `bach <http://www.bachproject.net/>`_ public API.
@@ -18,12 +18,12 @@ Dependencies
 • bach (https://github.com/bachfamily/bach)
 
 • the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libessentia.a
-The packaged version of Essentia has been modified to 
-1) prevent the collision with functions named "error" (in debugger.h). The naming has been modified to "essentia_error". 
+The packaged version of Essentia has been modified to
+1) prevent the collision with functions named "error" (in debugger.h). The naming has been modified to "essentia_error".
 2) allow non-integer hopSize for the frameCutter algorithm
 3) fix some little bugs (e.g. parameters of the SPS model were not passed to the internal sinusoidal model).
 
-To build the library, you should use the lightweight configuration, without dependencies. 
+To build the library, you should use the lightweight configuration, without dependencies.
 If you're on a Mac Intel, enter the library folder and then:
 
     ./waf configure --build-static --fft='KISS' --lightweight=""
@@ -38,21 +38,21 @@ If you're on an Apple Silicon machine, in principle by running the line above yo
     ./waf
     ./waf install
     mv /usr/local/lib/libessentia.a /usr/local/lib/libessentia_arm64.a
-3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.essentia~ in the Xcode project. If you want to build both architecture instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure. 
+3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.essentia~ in the Xcode project. If you want to build both architecture instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure.
 4) Re-enter the library folder, and then
     arch -x64_64 zsh
     ./waf configure --build-static --fft='KISS' --lightweight=""
     ./waf
     ./waf install
-    cd /usr/local/lib   
+    cd /usr/local/lib
     lipo libessentia_backup.a -extract arm64 -output libessentia_arm64.a
 
-Notice we are using the KissFFT library because it is already a dependency of bach (see below). 
+Notice we are using the KissFFT library because it is already a dependency of bach (see below).
 
 
 • For the [ears.write~] and [ears.read~] module: the TagLib (https://taglib.org/, released under LGPL)
 A version of the library is included in the repository. On a Mac, simply enter the folder source/lib/taglib-1.12/
-then 
+then
 
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_OSX_ARCHITECTURES="i386;x86_64;arm64" -DBUILD_SHARED_LIBS=OFF .
     make
@@ -77,7 +77,7 @@ The modifications extend the functionalities of the library in order to support 
 ./configure --enable-static=yes
 make install
 make
-If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmpg123.a 
+If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmpg123.a
 If you need to build it for Apple Silicon, you need to
 1. Run the commands above
 2. Rename the library (e.g. libmpg123.arm64)
@@ -85,7 +85,7 @@ If you need to build it for Apple Silicon, you need to
 4. Clean the temporary build locations (or just recreate a new source code folder)
 5. Run again the commands above
 6. Create a fat bundle out of the two single-platform binaries:
- cd /usr/local/lib 
+ cd /usr/local/lib
  lipo libmpg123.a libmpg123.arm64 -create -output libmpg123.a
 7. Remove libmpg123.arm64
 
@@ -96,7 +96,7 @@ On an Apple Silicon machine, you need to have two versions of Homebrew installed
     lipo /usr/local/opt/mpfr/lib/libmp3lame.a /opt/homebrew/lib/libmp3lame.a -create -output /usr/local/opt/lame/lib/libmp3lame.a
 Now the file that previously contained the x86 version contains the fat binary, while the arm64 files has not been changed. This should allow you to compile everything.
 
-• WavPack (released under BSD license) 
+• WavPack (released under BSD license)
 
 • for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
 
@@ -106,9 +106,12 @@ Now the file that previously contained the x86 version contains the fat binary, 
 
 • for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 
-• for the [ears.vamp~] module: the VAMP Plugin and host SDK. It's located inside the repository, to compile it follow the system-specific instructions inside the build folder (e.g. build/README.osx), e.g. on OSX: 
+• for the [ears.vamp~] module: a slightly modified version of the VAMP Plugin and host SDK, which is located inside the repository.
+To compile on a Mac Intel, go to the library folder and run
 make -f build/Makefile.osx
-
+To compile on a Mac M1, go to the library folder and run
+make -f build/Makefile.osxm1 sdk
+Note that, on the M1, building the vamp example plugins is potentially problematic because of their dependencies that should all be built for the arm64 architecture. 
 
 In turn, bach depends on
 - A modified version of Simon Tatham's listsort (https://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.c), released under the terms of the MIT License.
