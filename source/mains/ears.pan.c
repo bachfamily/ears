@@ -32,7 +32,7 @@
 	buffer, pan, panoramics, stereo, mono
  
 	@seealso
-	ears.gain~
+	ears.mixdown~, ears.gain~
 	
 	@owner
 	Daniele Ghisi

@@ -1932,7 +1932,7 @@ double multichannel_pan(double pan, e_ears_pan_modes pan_mode, long channelcount
 
 
 // pan goes between 0 and 1
-// Should also work "inplace" when source = dest (NOT TESTED)
+// Should also work "inplace" when source = dest
 t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long num_out_channels, double pan, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law, double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping)
 {
     if (!source || !dest)

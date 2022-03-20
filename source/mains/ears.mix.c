@@ -33,7 +33,7 @@
 	buffer, mix, superpose, merge
  
 	@seealso
-	ears.assemble~, ears.join~, ears.crop~, ears.read~, ears.fade~
+	ears.assemble~, ears.join~, ears.crop~, ears.read~, ears.fade~, ears.mixdown~
 	
 	@owner
 	Daniele Ghisi
