@@ -20,66 +20,48 @@
 		<metadata name="tag">ears process</metadata>
 	</metadatalist>
 
-	<!--INLETS-->
-	<inletlist>
-		<inlet id="0" type="INLET_TYPE">
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" type="INLET_TYPE">
 			<digest>
-				
+				Input signal
 			</digest>
 			<description>
 			</description>
-		</inlet>
-		<inlet id="1" type="INLET_TYPE">
-			<digest>
-				Audio from buffer
-			</digest>
-			<description>
-			</description>
-		</inlet>
-	</inletlist>
+		</outlet>
+	</outletlist>
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="bufchans" optional="1" type="int/list">
+		<objarg name="inlet_and_channels" optional="1" type="llll">
 			<digest>
-				Buffer and channel indices
+				The llll is composed of two parts:<br/>
 			</digest>
 			<description>
-				The first (or only) value
-				sets the inlet of <o>ears.process~</o> whose buffer data
-				will be passed to the object, defaulting to 1.<br/>
-				The subsequent values set the channel numbers
-				whose samples will be output from each outlet.
-				If none is provided, only the first channel will be output.
 			</description>
 		</objarg>
 	</objarglist>
 
 	<!--MESSAGES-->
 	<methodlist>
-		<method name="int">
-			<arglist />
-			<digest>
-				Set input buffer
-			</digest>
-			<description>
-				An integer sets the inlet of
-				<o>ears.process~</o> whose data will be passed
-				to the <o>ears.in~</o> object.<br/>
-				The output channels are not changed.
-			</description>
-		</method>
-		<method name="list">
+		<method name="llll">
 			<arglist />
 			<digest>
 				Set input buffers and channels
 			</digest>
 			<description>
-				The first element of the list sets
-				the inlet of <o>ears.process~</o> whose buffer data
-				will be passed to the <o>ears.in~</o> object.<br/>
-				Each subsequent element sets a buffer channel
-				whose samples will be output from the corresponding outlet.
+				The llll is composed of two parts:<br/>
+				- an integer, setting the number of the
+				<o>ears.process~</o> object's inlet
+				from which samples will be passed to <o>ears.in~</o>; and<br/>
+				- a sublist containing the channel numbers of the incoming buffer
+				whose samples will be passed to each outlet of <o>ears.in~</o>.<br/>
+				As a shortcut, if just a flat llll is provided then
+				its first element is interpreted as the inlet number
+				and its subsequent elements are interpreted as the channel indices.<br/>
+				Both parts are optional. If not provided,
+				the inlet number defaults to 1
+				and only the first channel's samples will be output.
 			</description>
 		</method>
 	</methodlist>
@@ -96,15 +78,10 @@
 		<seealso name="ears.tovector~" />
 	</seealsolist>
 
-	<misc name = "Input">
-		<entry name ="Inlet 1">
+	<misc name = "Output">
+		<entry name ="Outlets 1, 2, 3...">
 			<description>
-				.
-			</description>
-		</entry>
-		<entry name ="Inlets 2, 3, 4... (signal)">
-			<description>
-				Audio from buffer.
+				Input signal.
 			</description>
 		</entry>
 	</misc>

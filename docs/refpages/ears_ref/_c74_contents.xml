@@ -1,9 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <root>
 <refpage name='ears.stft~.maxref.xml'/>
+<refpage name='ears.fromvector~.maxref.xml'/>
+<refpage name='ears.out.maxref.xml'/>
 <refpage name='ears.lace~.maxref.xml'/>
 <refpage name='ears.specshow~.maxref.xml'/>
 <refpage name='ears.trans~.maxref.xml'/>
+<refpage name='ears.tovector~.maxref.xml'/>
 <refpage name='ears.process~.maxref.xml'/>
 <refpage name='ears.join~.maxref.xml'/>
 <refpage name='ears.playmp3~.maxref.xml'/>
@@ -33,6 +36,7 @@
 <refpage name='ears.assemble~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
+<refpage name='ears.out~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
 <refpage name='ears.paulfreeze~.maxref.xml'/>
 <refpage name='ears.cqt~.maxref.xml'/>
@@ -40,7 +44,9 @@
 <refpage name='ears.envelope~.maxref.xml'/>
 <refpage name='ears.fade~.maxref.xml'/>
 <refpage name='ears.hoa.decode~.maxref.xml'/>
+<refpage name='ears.in.maxref.xml'/>
 <refpage name='ears.biquad~.maxref.xml'/>
+<refpage name='ears.mc.out~.maxref.xml'/>
 <refpage name='ears.filterempty~.maxref.xml'/>
 <refpage name='ears.pack~.maxref.xml'/>
 <refpage name='ears.py~.maxref.xml'/>
