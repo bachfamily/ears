@@ -66,6 +66,7 @@
 <refpage name='ears.window~.maxref.xml'/>
 <refpage name='ears.gain~.maxref.xml'/>
 <refpage name='ears.model.sine.analysis~.maxref.xml'/>
+<refpage name='ears.mixdown~.maxref.xml'/>
 <refpage name='ears.roll.synthesis~.maxref.xml'/>
 <refpage name='ears.split~.maxref.xml'/>
 <refpage name='ears.hoa.rotate~.maxref.xml'/>

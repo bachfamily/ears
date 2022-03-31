@@ -335,7 +335,7 @@ int C74_EXPORT main()
     class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_inletinfo, "inletinfo", A_CANT, 0);
 
-    earsbufobj_add_common_methods(earsprocess_class);
+    earsbufobj_add_common_methods(earsprocess_class, 1);
 
     earsbufobj_class_add_outname_attr(earsprocess_class);
     earsbufobj_class_add_naming_attr(earsprocess_class);

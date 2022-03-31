@@ -3623,7 +3623,7 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
     return err;
 }
 
-void ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps)
+t_ears_err ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps)
 {
     t_ears_err err = EARS_ERR_NONE;
     

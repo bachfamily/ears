@@ -592,7 +592,9 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     }
 
     if (use_assembly_line) {
-        ears_buffer_assemble_close((t_object *)e_ob, dest, normalization_mode, basebuffer_numframes);
+        if (ears_buffer_assemble_close((t_object *)e_ob, dest, normalization_mode, basebuffer_numframes) != EARS_ERR_NONE) {
+            object_error((t_object *)e_ob, "Something went wrong during assembling.");
+        }
     } else {
         // mixing
         ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode,

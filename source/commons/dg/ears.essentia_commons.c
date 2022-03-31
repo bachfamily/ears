@@ -4925,6 +4925,11 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                             lib->alg_SpectralPeaks->compute();
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(peaksdatafreqs);
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[1]).set(peaksdatamags);
+                            // remove 0Hz peak if any
+                            if (peaksdatafreqs.size() > 0 && peaksdatafreqs[0] == 0) {
+                                peaksdatafreqs.erase(peaksdatafreqs.begin());
+                                peaksdatamags.erase(peaksdatamags.begin());
+                            }
                             break;
  
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKSANDFZERO:
@@ -5276,7 +5281,11 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
 
             }
             
-        } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  err =  EARS_ERR_ESSENTIA;   }
+        } catch (essentia::EssentiaException e) {
+            object_error(ob, e.what());
+            err =  EARS_ERR_ESSENTIA;
+            
+        }
     }
     
     
