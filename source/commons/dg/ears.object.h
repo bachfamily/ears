@@ -257,7 +257,7 @@ t_max_err earsbufobj_setattr_outname(t_earsbufobj *e_ob, t_object *attr, long ar
 t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data);
 
 /// Methods and attributes
-void earsbufobj_add_common_methods(t_class *c);
+void earsbufobj_add_common_methods(t_class *c, long flags = 0);
 void earsbufobj_class_add_outname_attr(t_class *c);
 void earsbufobj_class_add_blocking_attr(t_class *c);
 void earsbufobj_class_add_timeunit_attr(t_class *c);

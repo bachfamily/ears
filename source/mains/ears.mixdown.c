@@ -48,6 +48,7 @@
 typedef struct _buf_mixdown {
     t_earsbufobj       e_ob;
     long               numchannels;
+    char               autogain;
     char               channelmode_downmix;
 
 } t_buf_mixdown;
@@ -106,14 +107,19 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "numchannels", 0);
     CLASS_ATTR_STYLE_LABEL(c, "numchannels", 0, "text", "Number Of Output Channels");
     // @description Sets the number of output channels (defaults to 2).
-    
-    CLASS_ATTR_CHAR(c, "channelmodedown",    0,    t_buf_mixdown, channelmode_downmix);
-    CLASS_ATTR_STYLE_LABEL(c, "channelmodedown", 0, "enumindex", "Down-Mixing Channel Conversion");
-    CLASS_ATTR_ENUMINDEX(c,"channelmodedown", 0, "Clear Keep Pad Cycle Palindrome Pan");
+
+    CLASS_ATTR_CHAR(c, "autogain",    0,    t_buf_mixdown, autogain);
+    CLASS_ATTR_BASIC(c, "autogain", 0);
+    CLASS_ATTR_STYLE_LABEL(c, "autogain", 0, "onoff", "Gain Compensation");
+    // @description Compensate the gain according to the ratio between input channels and output channels.
+
+    CLASS_ATTR_CHAR(c, "channelmode",    0,    t_buf_mixdown, channelmode_downmix);
+    CLASS_ATTR_STYLE_LABEL(c, "channelmode", 0, "enumindex", "Down-Mixing Channel Conversion");
+    CLASS_ATTR_ENUMINDEX(c,"channelmode", 0, "Clear Keep Pad Cycle Palindrome Pan");
     // @description Sets the channel conversion mode while downmixing: <br />
     // 0 (Clear) = Delete all samples <br />
     // 1 (Keep) = Only keep existing channels <br />
-    // 2 (Pad) = Pad last channel while upmixing <br />
+    // 2 (Pad) = Pad last channel (only useful while upmixing, useless for <o>ears.mixdown~</o>) <br />
     // 3 (Cycle, default) = Repeat all channels (cycling) while upmixing <br />
     // 4 (Palindrome) = Palindrome cycling of channels while upmixing <br />
     // 5 (Pan) = Pan channels to new configuration <br />
@@ -131,10 +137,8 @@ void buf_mixdown_assist(t_buf_mixdown *x, void *b, long m, long a, char *s)
     if (m == ASSIST_INLET) {
         if (a == 0) // @in 0 @type symbol @digest Buffer name
             sprintf(s, "symbol: Buffer Names");
-        else if (a == 1) // @out 1 @type number @digest mixdown in duration
-            sprintf(s, "float: mixdown In Duration"); // @description Duration of the mixdown in
-        else if (a == 2) // @out 2 @type number @digest mixdown out duration
-            sprintf(s, "float: mixdown Out Duration"); // @description Duration of the mixdown out
+        else if (a == 1) // @out 1 @type number @digest Number of output channels
+            sprintf(s, "int: Number of Output Channels");
     } else {
         sprintf(s, "Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names(s)
                                             // @description Name of the output buffer
@@ -167,6 +171,18 @@ t_buf_mixdown *buf_mixdown_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
+        // @arg 1 @name numchannels @optional 1 @type int
+        // @digest Number of Output Channels
+        // @description Sets the initial number of output channels.
+        
+        if (args && args->l_head) {
+            x->numchannels = hatom_getlong(&args->l_head->l_hatom);
+            if (x->numchannels <= 0) {
+                object_error((t_object *)x, "The number of channels must be at least one. Defaulting to stereo.");
+                x->numchannels = 2;
+            }
+        }
+
         attr_args_process(x, argc, argv);
 
         earsbufobj_setup((t_earsbufobj *)x, "Ei", "E", names);
@@ -191,6 +207,7 @@ void buf_mixdown_bang(t_buf_mixdown *x)
     long channelmode_downmix = x->channelmode_downmix;
     long channelmode_upmix = EARS_CHANNELCONVERTMODE_CYCLE;
     long numchannels = x->numchannels;
+    char autogain = x->autogain;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
@@ -200,9 +217,13 @@ void buf_mixdown_bang(t_buf_mixdown *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long curr_num_channels = ears_buffer_get_numchannels((t_object *)x, out);
-        if (curr_num_channels != numchannels)
+        long curr_num_channels = ears_buffer_get_numchannels((t_object *)x, in);
+        if (curr_num_channels != numchannels) {
+            ears_buffer_clone((t_object *)x, in, out);
             ears_buffer_convert_numchannels((t_object *)x, out, numchannels, (e_ears_channel_convert_modes)channelmode_upmix, (e_ears_channel_convert_modes)channelmode_downmix);
+            if (autogain)
+                ears_buffer_gain((t_object *)x, out, out, numchannels*1./curr_num_channels, false);
+        }
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 

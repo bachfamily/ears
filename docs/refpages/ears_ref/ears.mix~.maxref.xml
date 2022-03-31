@@ -442,6 +442,7 @@
 		<seealso name="ears.crop~" />
 		<seealso name="ears.read~" />
 		<seealso name="ears.fade~" />
+		<seealso name="ears.mixdown~" />
 	</seealsolist>
 
 	<misc name = "Input">

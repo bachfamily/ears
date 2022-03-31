@@ -639,6 +639,7 @@
       "mono"
     ],
     "seealso": [
+      "ears.mixdown~",
       "ears.gain~"
     ]
   },
@@ -1177,7 +1178,8 @@
       "ears.join~",
       "ears.crop~",
       "ears.read~",
-      "ears.fade~"
+      "ears.fade~",
+      "ears.mixdown~"
     ]
   },
   "ears.window~": {
@@ -1232,6 +1234,26 @@
     ],
     "seealso": [
       "ears.model.sine.synthesis~"
+    ]
+  },
+  "ears.mixdown~": {
+    "digest": "Reduce number of channels",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "mixdown",
+      "downmix",
+      "mix",
+      "down",
+      "reduce",
+      "pan"
+    ],
+    "seealso": [
+      "ears.mix~",
+      "ears.pan~"
     ]
   },
   "ears.roll.synthesis~": {

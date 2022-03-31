@@ -1198,10 +1198,11 @@ void earsbufobj_reset(t_earsbufobj *e_ob)
 }
 
 
-void earsbufobj_add_common_methods(t_class *c)
+void earsbufobj_add_common_methods(t_class *c, long flags)
 {
     class_addmethod(c, (method)earsbufobj_notify, "notify", A_CANT, 0);
-    class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
+    if (!flags)
+        class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
     class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "write", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writeaiff", A_GIMME, 0);
