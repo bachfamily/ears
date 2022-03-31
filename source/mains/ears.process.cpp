@@ -200,9 +200,9 @@ void earsprocess_parentpatcher(t_earsprocess *x, t_patcher **parent);
 
 void earsprocess_setupOutObjects(t_earsprocess *x);
 
-void earsprocess_earsintildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *in);
+void earsprocess_earsintildecreated(t_earsprocess *x, t_atom_long ioNum, t_object *in);
 void earsprocess_earsintildedeleted(t_earsprocess *x, t_object *in);
-void earsprocess_earsouttildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *out);
+void earsprocess_earsouttildecreated(t_earsprocess *x, t_atom_long ioNum, t_object *out);
 void earsprocess_earsouttildedeleted(t_earsprocess *x, t_object *out);
 
 void earsprocess_earsincreated(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet);
@@ -512,12 +512,12 @@ t_max_err earsprocess_get_ownsdspchain(t_earsprocess *x, t_object *attr, long *a
  */
 
 
-void earsprocess_earsintildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *in)
+void earsprocess_earsintildecreated(t_earsprocess *x, t_atom_long ioNum, t_object *in)
 {
     x->earsInTildeObjects->insert(in);
     x->generator = false;
-    if (bufIndex > x->nBufInlets)
-        x->nBufInlets = bufIndex;
+    if (ioNum > x->nBufInlets)
+        x->nBufInlets = ioNum;
 }
 
 void earsprocess_earsintildedeleted(t_earsprocess *x, t_object *in)
@@ -525,11 +525,11 @@ void earsprocess_earsintildedeleted(t_earsprocess *x, t_object *in)
     x->earsInTildeObjects->erase(in);
 }
 
-void earsprocess_earsouttildecreated(t_earsprocess *x, t_atom_long bufIndex, t_object *out)
+void earsprocess_earsouttildecreated(t_earsprocess *x, t_atom_long ioNum, t_object *out)
 {
     x->earsOutTildeObjects->insert(out);
-    if (bufIndex > x->nBufOutlets)
-        x->nBufOutlets = bufIndex;
+    if (ioNum > x->nBufOutlets)
+        x->nBufOutlets = ioNum;
 }
 
 void earsprocess_earsouttildedeleted(t_earsprocess *x, t_object *out)
@@ -579,6 +579,10 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     // @digest Patcher name
     // @description Sets the name of the patch to be loaded   
     
+    // two symbols / sublist + symbol: buffer name(s) and patch
+    // one symbol: patch
+    // llll: buffer names
+    
     t_earsprocess *x = (t_earsprocess *) object_alloc(earsprocess_class);
     t_symbol *patchname = nullptr;
     
@@ -591,6 +595,16 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     t_llll* args = llll_parse(true_ac, argv);
     
+    /// GESTIRE I VARI CASI:
+    // [!=_]? [two symbols] | [sublist + symbol]: buffer name(s) and patch
+    // [!=_]? one symbol: patch
+    // [!=_]? llll: buffer names
+    
+    /// !!! MA PASSARE UNA LLLL SENZA IL PATCHER NAME
+    t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
+    
+    
+    /// !!! TOGLIERE QUESTO
     switch (args->l_size) {
         case 0:
             break;
@@ -647,8 +661,9 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     }
     outtypes[i] = 0;
 
-    earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, args);
+    earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, names);
     llll_free(args);
+    llll_free(names);
 
     earsprocess_setupOutObjects(x);
 

@@ -1,10 +1,43 @@
-//
-//  ears.out.cpp
-//  lib_ears
-//
-//  Created by andreaagostini on 03/04/2021.
-//
-
+/**
+ @file
+ ears.out.c
+ 
+ @name
+ ears.out
+ 
+ @realname
+ ears.out
+ 
+ @type
+ object
+ 
+ @module
+ ears
+ 
+ @author
+ Andrea Agostini, partly based upon work by Alexander J. Harker
+ 
+ @digest
+ Message input for a patch loaded by ears.process~
+ 
+ @description
+ Use the <o>ears.in~</o> object inside a patch loaded by ears.process~
+ to create a multichannel signal inlet receiving data from the parent patch.
+ 
+ @discussion
+ 
+ @category
+ ears process
+ 
+ @keywords
+ buffer, offline, patch, patcher, non-realtime
+ 
+ @seealso
+ ears.in~, ears.out, ears.out~
+ 
+ @owner
+ Andrea Agostini
+ */
 
 #include "ears.process_commons.h"
 
@@ -49,10 +82,34 @@ int C74_EXPORT main()
                                A_GIMME,
                                0);
     
+    // @method bang @digest Output bangs from the corresponding outlet of <o>ears.process~</o>
+    // @description
+    // A bang sent in any input of <o>ears.out</o> is sent out
+    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_bang, "bang", 0);
+    
+    // @method int @digest Output integers from the corresponding outlet of <o>ears.process~</o>
+    // @description
+    // An integer sent in any input of <o>ears.out</o> is sent out
+    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_int, "int", A_LONG, 0);
+    
+    // @method float @digest Output floats from the corresponding outlet of <o>ears.process~</o>
+    // @description
+    // A float sent in any input of <o>ears.out</o> is sent out
+    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_float, "float", A_FLOAT, 0);
+    
+    // @method list @digest Output lists from the corresponding outlet of <o>ears.process~</o>
+    // @description
+    // A list sent in any input of <o>ears.out</o> is sent out
+    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_anything, "list", A_GIMME, 0);
+    
+    // @method anything @digest Output messages from the corresponding outlet of <o>ears.process~</o>
+    // @description
+    // A message sent in any input of <o>ears.out</o> is sent out
+    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_anything, "anything", A_GIMME, 0);
     
     class_addmethod(ears_out_class, (method) ears_out_setoutlets, "setoutlets", A_CANT, 0);
@@ -105,6 +162,12 @@ void *ears_out_new(t_symbol *s, t_atom_long ac, t_atom* av)
     t_ears_out *x = (t_ears_out *) object_alloc(ears_out_class);
     x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
+    // @arg 0 @name outlets @optional 1 @type number/list @digest ears.process~ Message Outlet Numbers
+    // @description The numbers of the message outlets of <o>ears.process~</o>
+    // (conted from 1, starting from the leftmost)
+    // to which to pass messages received by <o>ears.in</o>.
+    // Default is 1.
+    
     if (ac > EARS_OUT_MAX_INLETS) {
         object_error((t_object *) x, "Too many inlets, cropping to %d", EARS_OUT_MAX_INLETS);
         ac = EARS_OUT_MAX_INLETS;
@@ -152,7 +215,7 @@ void ears_out_free(t_ears_out *x)
 
 void ears_out_assist(t_ears_out *x, void *b, long m, long a, char *s)
 {
-
+    sprintf(s,"To Message Output %ld of ears.process~", (long) x->outlet_nums[a]); // @out 0 @type signal @loop 1 @digest Input multichannel signal
 }
 
 

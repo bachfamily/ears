@@ -1,9 +1,44 @@
-//
-//  ears.tovector~.cpp
-//  lib_ears
-//
-//  Created by andreaagostini on 03/04/2021.
-//
+/**
+ @file
+ ears.fromvector.c
+ 
+ @name
+ ears.fromvector~
+ 
+ @realname
+ ears.fromvector~
+ 
+ @type
+ object
+ 
+ @module
+ ears
+ 
+ @author
+ Andrea Agostini, partly based upon work by Alexander J. Harker
+ 
+ @digest
+ Convert synchronously a list of numbers into a signal vector
+ 
+ @description
+ Use the <o>ears.fromvector~</o> object inside a patch loaded by ears.process~
+ to convert a list of numbers into a signal vector.
+ The object can be used in conjunction with <o>ears.tovector~</o>
+ for performing non-realtime audio processing through non-signal Max objects.
+ @discussion
+ 
+ @category
+ ears process
+ 
+ @keywords
+ buffer, offline, patch, patcher, non-realtime
+ 
+ @seealso
+ ears.out~, ears.fromvector~
+ 
+ @owner
+ Andrea Agostini
+ */
 
 
 #include "ears.process_commons.h"
@@ -17,7 +52,6 @@ typedef struct _ears_tovector
     t_object* earsProcessParent;
     double vec[EARS_PROCESS_MAX_VS];
     long n;
-    long leftalign;
     long autoclear;
 } t_ears_tovector;
 
@@ -45,6 +79,7 @@ int C74_EXPORT main()
     common_symbols_init();
     llllobj_common_symbols_init();
     
+    
     ears_tovector_class = class_new("ears.tovector~",
                                     (method) ears_tovector_new,
                                     (method) ears_tovector_free,
@@ -62,12 +97,8 @@ int C74_EXPORT main()
                     A_GIMME, 0);
     
     class_addmethod(ears_tovector_class, (method)ears_tovector_dsp64, "dsp64", A_CANT, 0);
-    
-    CLASS_ATTR_LONG(ears_tovector_class, "leftalign", 0, t_ears_tovector, leftalign);
-    CLASS_ATTR_STYLE_LABEL(ears_tovector_class, "leftalign", 0, "onoff", "Left Align");
-    CLASS_ATTR_FILTER_CLIP(ears_tovector_class, "leftalign", 0, 1);
-    
-    CLASS_ATTR_LONG(ears_tovector_class, "autoclear", 0, t_ears_tovector, leftalign);
+
+    CLASS_ATTR_LONG(ears_tovector_class, "autoclear", 0, t_ears_tovector, autoclear);
     CLASS_ATTR_STYLE_LABEL(ears_tovector_class, "autoclear", 0, "onoff", "Left Align");
     CLASS_ATTR_FILTER_CLIP(ears_tovector_class, "autoclear", 0, 1);
     
@@ -150,13 +181,10 @@ void ears_tovector_assist(t_ears_tovector *x, void *b, long m, long a, char *s)
 
 void ears_tovector_perform64(t_ears_tovector *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam)
 {
-    if (x->leftalign) {
-        memcpy(outs[0], x->vec, x->n * sizeof(double));
-    } else {
-        long pad = MAX(vec_size - x->n, 0);
-        memset(outs[0], 0, pad);
-        memcpy(outs[0] + pad, x->vec, (vec_size - pad) * sizeof(double));
-    }
+    memcpy(outs[0], x->vec, x->n * sizeof(double));
+    long pad = MAX(vec_size - x->n, 0);
+    memset(outs[0], 0, pad);
+    memcpy(outs[0] + pad, x->vec, (vec_size - pad) * sizeof(double));
     if (x->autoclear)
         ears_tovector_clear(x);
 }

@@ -21,6 +21,8 @@ const int EARS_PROCESS_MAX_DATA_OUTLETS = EARS_PROCESS_MAX_DATA_INLETS;
 
 const int EARS_PROCESS_MAX_VS = 4096;
 
+const int EARS_INTILDE_MAX_CHANS = 256;
+const int EARS_OUTTILDE_MAX_CHANS = 256;
 
 class bufferData {
 public:
@@ -203,6 +205,19 @@ public:
     }
     
 };
+
+
+
+typedef struct {
+    t_pxobject x_obj;
+    t_atom_long ioNum;
+    t_atom_long chan[EARS_OUTTILDE_MAX_CHANS];
+    int nChans;
+    t_object* earsProcessParent;
+    t_atom_long position;
+} t_ears_inouttilde;
+
+long ears_inouttilde_llll(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av);
 
 
 #endif /* ears_process_h */

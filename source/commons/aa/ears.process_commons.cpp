@@ -8,4 +8,80 @@
 #include <ears.process_commons.h>
 
 
+void ears_inouttilde_get_inlet_index(t_ears_inouttilde *x, t_llllelem *el)
+{
+    x->ioNum = hatom_getlong(&el->l_hatom);
+    if (x->ioNum < 1) {
+        object_error((t_object *) x, "Wrong inlet number, setting to 1");
+        x->ioNum = 1;
+    }
+}
 
+long ears_inouttilde_get_channel_indices(t_ears_inouttilde *x, t_llllelem *el)
+{
+    int i;
+    for (i = 0;
+         el && i < EARS_INTILDE_MAX_CHANS;
+         el = el->l_next, i++) {
+        t_atom_long v = hatom_getlong(&el->l_hatom);
+        if (v < 1) {
+            object_error((t_object *) x, "Wrong channel index, setting to 1");
+            v = 0;
+        }
+        x->chan[i] = v - 1;
+    }
+    return i;
+}
+
+long ears_inouttilde_llll(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av)
+{
+    long nChans = -1;
+    t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_MSP, s, ac, av, LLLL_PARSE_RETAIN);
+    if (!ll) {
+        return nChans;
+    }
+    if (ll->l_size == 0) {
+        object_error((t_object *) x, "Incorrect inlet / channel indices");
+        goto ears_inouttilde_exit;
+        
+    }
+    switch (ll->l_depth) {
+        case 1: {
+            if (t_llllelem *el; el = ll->l_head) {
+                ears_inouttilde_get_inlet_index(x, el);
+                el = el->l_next;
+                nChans = ears_inouttilde_get_channel_indices(x, el);
+            }
+            break;
+        }
+        case 2: {
+            switch (ll->l_size) {
+                case 1: {
+                    t_llllelem *el = hatom_getllll(&ll->l_head->l_hatom)->l_head;
+                    nChans = ears_inouttilde_get_channel_indices(x, el);
+                    break;
+                }
+                case 2: {
+                    if (hatom_gettype(&ll->l_head->l_hatom) == H_LLLL ||
+                        hatom_gettype(&ll->l_tail->l_hatom) != H_LLLL) {
+                        object_error((t_object *) x, "Incorrect inlet / channel indices");
+                        goto ears_inouttilde_exit;
+                    }
+                    ears_inouttilde_get_inlet_index(x, ll->l_head);
+                    nChans = ears_inouttilde_get_channel_indices(x, hatom_getllll(&ll->l_tail->l_hatom)->l_head);
+                    break;
+                }
+                default:
+                    object_error((t_object *) x, "Incorrect inlet / channel indices");
+                    goto ears_inouttilde_exit;
+            }
+        }
+        default:
+            object_error((t_object *) x, "Incorrect inlet / channel indices");
+            goto ears_inouttilde_exit;
+    }
+    
+ears_inouttilde_exit:
+    llll_release(ll);
+    return nChans;
+}
