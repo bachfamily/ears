@@ -74,6 +74,11 @@ int C74_EXPORT main()
     common_symbols_init();
     llllobj_common_symbols_init();
     
+    if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
+        ears_error_bachcheck();
+        return 1;
+    }
+    
     ears_intilde_class = class_new("ears.in~",
                               (method)ears_intilde_new,
                               (method)ears_intilde_free,
@@ -97,7 +102,11 @@ int C74_EXPORT main()
     // Both parts are optional. If not provided,
     // the inlet number defaults to 1
     // and only the first channel's samples will be output.
-    class_addmethod(ears_intilde_class, (method)ears_inouttilde_llll, "llll", A_GIMME, 0);
+    class_addmethod(ears_intilde_class, (method)ears_inouttilde_anything, "anything", A_GIMME, 0);
+    
+    class_addmethod(ears_intilde_class, (method)ears_inouttilde_int, "int", A_LONG, 0);
+    class_addmethod(ears_intilde_class, (method)ears_inouttilde_float, "float", A_FLOAT, 0);
+    class_addmethod(ears_intilde_class, (method)ears_inouttilde_anything, "list", A_GIMME, 0);
     
     class_addmethod(ears_intilde_class, (method)ears_intilde_assist, "assist", A_CANT, 0);
     class_addmethod(ears_intilde_class, (method)ears_intilde_inletinfo, "inletinfo", A_CANT, 0);
@@ -136,7 +145,7 @@ void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
     x->io_obj.nChans = 1;
     x->io_obj.chan[0] = 1;
 
-    long nChans = ears_inouttilde_llll((t_ears_inouttilde *) x, s, ac, av);
+    long nChans = ears_inouttilde_anything((t_ears_inouttilde *) x, s, ac, av);
     if (nChans == -1) {
         object_free(x);
         return nullptr;

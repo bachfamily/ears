@@ -217,7 +217,9 @@ typedef struct {
     t_atom_long position;
 } t_ears_inouttilde;
 
-long ears_inouttilde_llll(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av);
+long ears_inouttilde_int(t_ears_inouttilde *x, long v);
+long ears_inouttilde_float(t_ears_inouttilde *x, double v);
+long ears_inouttilde_anything(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av);
 
 
 #endif /* ears_process_h */

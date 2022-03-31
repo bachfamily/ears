@@ -72,6 +72,11 @@ int C74_EXPORT main()
     common_symbols_init();
     llllobj_common_symbols_init();
     
+    if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
+        ears_error_bachcheck();
+        return 1;
+    }
+    
     ears_outtilde_class = class_new("ears.out~",
                                    (method) ears_outtilde_new,
                                    (method) ears_outtilde_free,
@@ -93,7 +98,11 @@ int C74_EXPORT main()
     // Both parts are optional. If not provided,
     // the output number defaults to 1
     // and only the first channel will be written to.
-    class_addmethod(ears_outtilde_class, (method)ears_inouttilde_llll, "llll", A_GIMME, 0);
+    class_addmethod(ears_outtilde_class, (method)ears_inouttilde_anything, "anything", A_GIMME, 0);
+    
+    class_addmethod(ears_outtilde_class, (method)ears_inouttilde_int, "int", A_LONG, 0);
+    class_addmethod(ears_outtilde_class, (method)ears_inouttilde_float, "float", A_FLOAT, 0);
+    class_addmethod(ears_outtilde_class, (method)ears_inouttilde_anything, "list", A_GIMME, 0);
     
     class_addmethod(ears_outtilde_class, (method)ears_outtilde_dsp64, "dsp64", A_CANT, 0);
     class_addmethod(ears_outtilde_class, (method)ears_outtilde_setchanmap, "setchanmap", A_CANT, 0);
@@ -126,33 +135,15 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
     
     x->io_obj.earsProcessParent = getParentEarsProcess((t_object *) x);
     
-    if (ac > 0) {
-        x->io_obj.ioNum = atom_getlong(av);
-        ac--; av++;
-    }
+    long nChans = ears_inouttilde_anything((t_ears_inouttilde*) x, nullptr, attr_args_offset(ac, av), av);
     
-    if (ac > EARS_OUTTILDE_MAX_CHANS) {
-        object_error((t_object *) x, "Too many channels, cropping to %d", EARS_OUTTILDE_MAX_CHANS);
-        ac = EARS_OUTTILDE_MAX_CHANS;
+    if (nChans == -1) {
+        object_free(x);
+        return nullptr;
     }
-    
-    if (ac > 0) {
-        x->io_obj.nChans = ac;
-        for (int i = 0; i < ac; i++) {
-            t_atom_long v = atom_getlong(av++);
-            if (v < 1) {
-                object_error((t_object *) x, "Invalid channel number at position %d, setting to 1", i + 1);
-                v = 1;
-            }
-            x->io_obj.chan[i] = v;
-        }
-    } else {
-        x->io_obj.nChans = 1;
-        x->io_obj.chan[0] = 1;
+    if (nChans > 0) {
+        x->io_obj.nChans = nChans;
     }
-    
-    if (x->io_obj.ioNum < 1 || x->io_obj.ioNum > EARS_PROCESS_MAX_OUTPUT_BUFFERS)
-        x->io_obj.ioNum = 1;
     
     dsp_setup((t_pxobject *) x, x->io_obj.nChans);
     
@@ -201,3 +192,4 @@ void ears_outtilde_setchanmap(t_ears_outtilde *x, audioChanMap* map)
     x->chanMap = map;
 }
 
+ 

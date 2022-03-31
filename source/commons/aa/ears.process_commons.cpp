@@ -26,14 +26,28 @@ long ears_inouttilde_get_channel_indices(t_ears_inouttilde *x, t_llllelem *el)
         t_atom_long v = hatom_getlong(&el->l_hatom);
         if (v < 1) {
             object_error((t_object *) x, "Wrong channel index, setting to 1");
-            v = 0;
+            v = 1;
         }
-        x->chan[i] = v - 1;
+        x->chan[i] = v;
     }
     return i;
 }
 
-long ears_inouttilde_llll(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av)
+long ears_inouttilde_int(t_ears_inouttilde *x, long v)
+{
+    t_atom outatom;
+    atom_setlong(&outatom, v);
+    return ears_inouttilde_anything(x, _sym_int, 1, &outatom);
+}
+
+long ears_inouttilde_float(t_ears_inouttilde *x, double v)
+{
+    t_atom outatom;
+    atom_setfloat(&outatom, v);
+    return ears_inouttilde_anything(x, _sym_float, 1, &outatom);
+}
+
+long ears_inouttilde_anything(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av)
 {
     long nChans = -1;
     t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_MSP, s, ac, av, LLLL_PARSE_RETAIN);

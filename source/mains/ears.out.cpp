@@ -74,6 +74,11 @@ int C74_EXPORT main()
     common_symbols_init();
     llllobj_common_symbols_init();
     
+    if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
+        ears_error_bachcheck();
+        return 1;
+    }
+    
     ears_out_class = class_new("ears.out",
                                (method)ears_out_new,
                                (method)ears_out_free,

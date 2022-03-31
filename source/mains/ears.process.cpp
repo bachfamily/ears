@@ -248,10 +248,10 @@ int C74_EXPORT main()
     
     class_addmethod(earsprocess_class, (method)earsprocess_assist, "assist", A_CANT, 0);
     
-    // @method open @digest Open patcher
-    // @description The <m>open</m> message
+    // @method wopen @digest Open patcher
+    // @description The <m>wopen</m> message
     // opens the patcher window loaded in the object, if any.
-    class_addmethod(earsprocess_class, (method)earsprocess_open, "open", 0);
+    class_addmethod(earsprocess_class, (method)earsprocess_open, "wopen", 0);
     
     
     // @method (doubleclick) @digest Open patcher
@@ -571,6 +571,8 @@ void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
 void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
 {
+    
+    
     // @arg 0 @name outnames @optional 1 @type symbol
     // @digest Output buffer names
     // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -595,35 +597,93 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     t_llll* args = llll_parse(true_ac, argv);
     
-    /// GESTIRE I VARI CASI:
-    // [!=_]? [two symbols] | [sublist + symbol]: buffer name(s) and patch
-    // [!=_]? one symbol: patch
-    // [!=_]? llll: buffer names
     
-    /// !!! MA PASSARE UNA LLLL SENZA IL PATCHER NAME
-    t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
+    char intypes[2048];
+    char outtypes[2048];
+    int i;
+    t_bool ok = true;
     
-    
-    /// !!! TOGLIERE QUESTO
     switch (args->l_size) {
         case 0:
             break;
-        case 1:
-            patchname = hatom_getsym(&args->l_head->l_hatom);
-            llll_clear(args);
+        case 1: { // it's !_= or the patcher name or an llll with the buffer names
+            t_hatom *h = &args->l_head->l_hatom;
+            switch (hatom_gettype(h)) {
+                case H_SYM: {
+                    t_symbol *s = hatom_getsym(h);
+                    if (!earsbufobj_is_sym_naming_mech(s)) {
+                        // patcher name
+                        patchname = s;
+                        llll_clear(args);
+                    } // if it is !=_ then keep them, otherwise it is the patcher name
+                    break;
+                }
+                case H_LLLL:
+                    break; // earsbufobj_extract_names_from_args() will take care of it
+                default:
+                    ok = false;
+                    break;
+            }
             break;
-        case 2:
-            patchname = hatom_getsym(&args->l_tail->l_hatom);
-            llll_betail(args);
-            args = nullptr;
+        }
+        case 2: {
+            t_llllelem *el = args->l_head;
+            t_hatom *h = &el->l_hatom;
+            if (hatom_gettype(h) != H_SYM) {
+                ok = false;
+                break;
+            }
+            if (earsbufobj_is_sym_naming_mech(s)) {
+                el = el->l_next;
+                h = &el->l_hatom;
+                switch(hatom_gettype(h)) {
+                    case H_SYM:
+                        patchname = hatom_getsym(h);
+                        llll_destroyelem(el);
+                        break;
+                    case H_LLLL:
+                        break;
+                    default:
+                        ok = false;
+                        break;
+                }
+            } else {
+                el = el->l_next;
+                h = &el->l_hatom;
+                if (hatom_gettype(h) != H_SYM) {
+                    patchname = hatom_getsym(h);
+                    llll_destroyelem(el); // what follows is surely the buffer names
+                } else {
+                    ok = false;
+                }
+            }
             break;
+        }
+        case 3: {
+            t_llllelem *el = args->l_head->l_next; // the first must be a symbol
+            // earsbufobj_extract_names_from_args() will take care of it
+            patchname = hatom_getsym(&el->l_hatom);
+            if (patchname) {
+                ok = false;
+            } else {
+                llll_destroyelem(el);
+            }
+            break;
+        }
         default:
-            object_error((t_object *) x, "too many arguments");
-            llll_free(args);
-            return nullptr;
+            ok = false;
             break;
     }
-
+    
+    if (!ok) {
+        object_error((t_object *) x, "Bad arguments");
+        llll_free(args);
+        object_free(x);
+        return nullptr;
+    }
+    
+    t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
+    
     x->theInOutlets = new earsInOutlets;
     x->theOuts = new std::set<t_object*>;
     x->earsInTildeObjects = new objectSet;
@@ -642,8 +702,7 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     // e = buffer; E = buffer list;
 
-    char intypes[2048];
-    int i;
+
     for (i = 0; i < x->nBufInlets; i++) {
         intypes[i] = 'E';
     }
@@ -652,7 +711,6 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     }
     intypes[i + x->nBufInlets] = 0;
     
-    char outtypes[2048];
     for (i = x->nDataOutlets - 1; i >= 0; i--) {
         x->dataOutlets[i] = outlet_new(x, NULL);
     }
