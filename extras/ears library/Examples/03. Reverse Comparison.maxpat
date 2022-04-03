@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 11,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -39,6 +39,18 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-25",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 171.0, 282.0, 62.0, 22.0 ],
+					"text" : "ears.pan~"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"fontsize" : 18.0,
 					"id" : "obj-22",
@@ -300,8 +312,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 524.0, 156.007836990595592, 68.0, 22.0 ],
-					"text" : "buffer~ oof"
+					"patching_rect" : [ 524.0, 156.007836990595592, 119.0, 22.0 ],
+					"text" : "buffer~ oof cherokee"
 				}
 
 			}
@@ -336,8 +348,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 524.0, 126.007836990595607, 68.0, 22.0 ],
-					"text" : "buffer~ foo"
+					"patching_rect" : [ 524.0, 123.007836990595592, 119.0, 22.0 ],
+					"text" : "buffer~ foo cherokee"
 				}
 
 			}
@@ -520,11 +532,15 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ears.rev~.mxo",
+				"name" : "ears.pan~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ears.read~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.rev~.mxo",
 				"type" : "iLaX"
 			}
  ],
