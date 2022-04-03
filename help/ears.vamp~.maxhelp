@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 123.0, 224.0, 891.0, 553.0 ],
+		"rect" : [ 100.0, 100.0, 891.0, 553.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -472,9 +472,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-5",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 10.0, 422.0, 216.0, 23.0 ],
 									"text" : "ears.vamp~ vamp-aubio:aubioonset"
 								}
@@ -681,9 +681,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 5,
-									"numoutlets" : 5,
-									"outlettype" : [ "", "", "", "", "" ],
+									"numinlets" : 1,
+									"numoutlets" : 4,
+									"outlettype" : [ "", "", "", "" ],
 									"patching_rect" : [ 10.0, 268.0, 861.0, 23.0 ],
 									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy bbc-vamp-plugins:bbc-energy... bbc-vamp-plugins:bbc-energy::: bbc-vamp-plugins:bbc-energy~ @out mn"
 								}
@@ -1003,8 +1003,8 @@
 									"id" : "obj-14",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 419.0, 258.0, 261.0, 23.0 ],
 									"text" : "ears.vamp~ vamp-aubio:aubiomfcc @out m"
 								}
@@ -1173,7 +1173,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 123.0, 250.0, 891.0, 527.0 ],
+						"rect" : [ 100.0, 126.0, 891.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1204,13 +1204,26 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-13",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 646.0, 168.5, 198.500000000000114, 36.0 ],
+									"presentation_linecount" : 2,
+									"text" : "You need to have vamp plugins installed for this help to work",
+									"textcolor" : [ 0.717647058823529, 0.125490196078431, 0.125490196078431, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-3",
 									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 345.0, 188.5, 318.0, 50.0 ],
-									"presentation_linecount" : 4,
 									"text" : "(e.g. bbc-vamp-plugins:bbc-energy)\n\n               (e.g. bbc-vamp-plugins:bbc-energy:average)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1359,7 +1372,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 456.0, 282.0, 294.0, 50.0 ],
-									"presentation_linecount" : 3,
 									"text" : "This is the standard way Vamp plugins output data. You can however choose summarization or buffer output (see \"temporal modes\" tab)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1403,8 +1415,7 @@
 									"numoutlets" : 0,
 									"patching_rect" : [ 243.606537000000003, 174.5, 186.0, 65.0 ],
 									"text" : "\nfamilyID:pluginID\n\nfamilyID:pluginID:outputID",
-									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ],
-									"textjustification" : 0
+									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
 								}
 
 							}
@@ -1560,9 +1571,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 3,
-									"numoutlets" : 3,
-									"outlettype" : [ "", "", "" ],
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 10.0, 246.0, 485.0, 23.0 ],
 									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy::: vamp-example-plugins:zerocrossing..."
 								}
