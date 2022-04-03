@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 891.0, 553.0 ],
+		"rect" : [ 100.0, 100.0, 891.0, 572.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -122,8 +122,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 226.0, 339.599853515625, 246.0, 23.0 ],
-									"text" : "getlist parameters vamp-aubio:aubiomfcc"
+									"patching_rect" : [ 226.0, 339.599853515625, 227.0, 23.0 ],
+									"text" : "getlist parameters vamp-libxtract:mfcc"
 								}
 
 							}
@@ -388,7 +388,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
+						"rect" : [ 100.0, 126.0, 891.0, 546.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -430,53 +430,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-17",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 354.5, 488.0, 21.0 ],
-									"text" : "Some features have a variable sample rate and are not summarizable, for instance:",
-									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-13",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 385.0, 114.0, 23.0 ],
-									"text" : "earsBufDrumLoop"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-8",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 454.0, 66.0, 23.0 ],
-									"saved_object_attributes" : 									{
-										"versionnumber" : 80105
-									}
-,
-									"text" : "bach.print"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-5",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 422.0, 216.0, 23.0 ],
-									"text" : "ears.vamp~ vamp-aubio:aubioonset"
+									"patching_rect" : [ 10.0, 354.5, 518.0, 36.0 ],
+									"text" : "Notice that some features may a variable sample rate and hence are not summarizable (such as the ones that deal with onset identification)",
+									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
 								}
 
 							}
@@ -681,9 +641,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 4,
-									"outlettype" : [ "", "", "", "" ],
+									"numinlets" : 5,
+									"numoutlets" : 5,
+									"outlettype" : [ "", "", "", "", "" ],
 									"patching_rect" : [ 10.0, 268.0, 861.0, 23.0 ],
 									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy bbc-vamp-plugins:bbc-energy... bbc-vamp-plugins:bbc-energy::: bbc-vamp-plugins:bbc-energy~ @out mn"
 								}
@@ -719,13 +679,6 @@
 							}
  ],
 						"lines" : [ 							{
-								"patchline" : 								{
-									"destination" : [ "obj-5", 0 ],
-									"source" : [ "obj-13", 0 ]
-								}
-
-							}
-, 							{
 								"patchline" : 								{
 									"destination" : [ "obj-11", 0 ],
 									"source" : [ "obj-14", 1 ]
@@ -781,13 +734,6 @@
 								}
 
 							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-8", 0 ],
-									"source" : [ "obj-5", 0 ]
-								}
-
-							}
  ]
 					}
 ,
@@ -824,7 +770,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -854,6 +800,62 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-17",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 661.0, 105.0, 82.0, 23.0 ],
+									"text" : "loadmess 20"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-10",
+									"maxclass" : "number",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 346.0, 368.0, 50.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-7",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "int" ],
+									"patching_rect" : [ 346.0, 335.0, 76.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"versionnumber" : 80105
+									}
+,
+									"text" : "bach.length"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-3",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 346.0, 304.0, 58.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"versionnumber" : 80105
+									}
+,
+									"text" : "bach.flat"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
@@ -911,13 +913,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-6",
-									"linecount" : 6,
+									"linecount" : 3,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 422.5, 310.0, 254.0, 96.0 ],
-									"text" : "[ -12.774685 1.450862 -0.70947 -0.66988 -0.749412 0.26481 0.149529 0.022061 0.086624 -0.113425 0.043307 0.00383 -0.033484 0.075394 0.199391 -0.599361 -0.143567 0.344721 -0.297499 -0.002908 ]"
+									"patching_rect" : [ 422.5, 310.0, 288.5, 52.0 ],
+									"text" : "[ -421.784775 -6.097472 -17.197474 -11.132143 -12.417735 -10.31911 -1.850591 4.411842 6.921427 -1.578525 -2.085429 ]"
 								}
 
 							}
@@ -928,8 +930,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 661.0, 175.0, 83.0, 23.0 ],
-									"text" : "[ ncoeffs $1 ]"
+									"patching_rect" : [ 661.0, 175.0, 108.0, 23.0 ],
+									"text" : "[ highestcoef $1 ]"
 								}
 
 							}
@@ -991,8 +993,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 216.599853515625, 246.0, 23.0 ],
-									"text" : "getlist parameters vamp-aubio:aubiomfcc"
+									"patching_rect" : [ 17.0, 216.599853515625, 227.0, 23.0 ],
+									"text" : "getlist parameters vamp-libxtract:mfcc"
 								}
 
 							}
@@ -1003,10 +1005,10 @@
 									"id" : "obj-14",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 419.0, 258.0, 261.0, 23.0 ],
-									"text" : "ears.vamp~ vamp-aubio:aubiomfcc @out m"
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 419.0, 258.0, 242.0, 23.0 ],
+									"text" : "ears.vamp~ vamp-libxtract:mfcc @out m"
 								}
 
 							}
@@ -1078,6 +1080,21 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"order" : 1,
+									"source" : [ "obj-14", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-7", 0 ],
+									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-5", 0 ],
 									"source" : [ "obj-4", 0 ]
 								}
@@ -1092,6 +1109,20 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-10", 0 ],
+									"source" : [ "obj-7", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-13", 0 ],
+									"source" : [ "obj-9", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "", 0 ],
 									"source" : [ "obj-14", 0 ]
 								}
@@ -1100,7 +1131,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-6", 1 ],
+									"order" : 0,
 									"source" : [ "obj-14", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-9", 0 ],
+									"source" : [ "obj-17", 0 ]
 								}
 
 							}
@@ -1108,13 +1147,6 @@
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
 									"source" : [ "obj-35", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-13", 0 ],
-									"source" : [ "obj-9", 0 ]
 								}
 
 							}
@@ -1173,7 +1205,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 891.0, 527.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1209,9 +1241,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 646.0, 168.5, 198.500000000000114, 36.0 ],
-									"presentation_linecount" : 2,
-									"text" : "You need to have vamp plugins installed for this help to work",
+									"patching_rect" : [ 10.0, 110.0, 548.0, 36.0 ],
+									"text" : "You need to have BBC and Libxtract Vamp plugins installed for this help to work\nGet them at https://vamp-plugins.org/download.html",
 									"textcolor" : [ 0.717647058823529, 0.125490196078431, 0.125490196078431, 1.0 ]
 								}
 
@@ -1223,7 +1254,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 345.0, 188.5, 318.0, 50.0 ],
+									"patching_rect" : [ 345.0, 208.5, 318.0, 50.0 ],
 									"text" : "(e.g. bbc-vamp-plugins:bbc-energy)\n\n               (e.g. bbc-vamp-plugins:bbc-energy:average)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1235,12 +1266,12 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 243.0, 334.0, 154.0, 23.0 ],
+									"patching_rect" : [ 243.0, 354.0, 175.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80105
 									}
 ,
-									"text" : "bach.print ZeroCrossings"
+									"text" : "bach.print ZeroCrossingRate"
 								}
 
 							}
@@ -1250,7 +1281,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 497.0, 363.5, 206.0, 21.0 ],
+									"patching_rect" : [ 497.0, 383.5, 206.0, 21.0 ],
 									"text" : "no timestamps (just flatten the list)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1262,7 +1293,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 239.0, 363.5, 122.0, 21.0 ],
+									"patching_rect" : [ 239.0, 383.5, 122.0, 21.0 ],
 									"text" : "remove timestamps",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1278,7 +1309,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 497.0, 246.0, 262.0, 25.0 ],
+									"patching_rect" : [ 497.0, 266.0, 262.0, 25.0 ],
 									"text" : "Use ... instead of ::: to avoid time-tagging"
 								}
 
@@ -1292,9 +1323,9 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 386.0, 393.5, 364.0, 70.0 ],
-									"setminmax" : [ 0.0, 300.0 ],
-									"size" : 100
+									"patching_rect" : [ 386.0, 413.5, 364.0, 70.0 ],
+									"setminmax" : [ 0.0, 0.300000011920929 ],
+									"size" : 200
 								}
 
 							}
@@ -1305,7 +1336,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 386.0, 363.5, 107.0, 23.0 ],
+									"patching_rect" : [ 386.0, 383.5, 107.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80105
 									}
@@ -1323,7 +1354,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 393.5, 364.0, 70.0 ],
+									"patching_rect" : [ 10.0, 413.5, 364.0, 70.0 ],
 									"setminmax" : [ 0.0, 0.300000011920929 ],
 									"size" : 100
 								}
@@ -1337,7 +1368,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 363.5, 227.0, 23.0 ],
+									"patching_rect" : [ 10.0, 383.5, 227.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"embed" : 1,
 										"versionnumber" : 80105
@@ -1359,7 +1390,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 173.0, 266.0, 281.0, 55.0 ],
+									"patching_rect" : [ 173.0, 286.0, 281.0, 55.0 ],
 									"text" : "Use ::: at the end of a plugin key to specifiy that you want the time-tagged time series"
 								}
 
@@ -1371,7 +1402,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 456.0, 282.0, 294.0, 50.0 ],
+									"patching_rect" : [ 456.0, 302.0, 294.0, 50.0 ],
 									"text" : "This is the standard way Vamp plugins output data. You can however choose summarization or buffer output (see \"temporal modes\" tab)",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1388,7 +1419,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 122.0, 184.0, 104.0, 55.0 ],
+									"patching_rect" : [ 122.0, 204.0, 104.0, 55.0 ],
 									"text" : "Arguments are plugin identifiers"
 								}
 
@@ -1400,7 +1431,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 243.606537000000003, 174.5, 256.0, 50.0 ],
+									"patching_rect" : [ 243.606537000000003, 194.5, 256.0, 50.0 ],
 									"text" : "Plugins are identified either via\n\nwhich gives by default the first outlet, or via",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1413,7 +1444,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 243.606537000000003, 174.5, 186.0, 65.0 ],
+									"patching_rect" : [ 243.606537000000003, 194.5, 186.0, 65.0 ],
 									"text" : "\nfamilyID:pluginID\n\nfamilyID:pluginID:outputID",
 									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
 								}
@@ -1426,7 +1457,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 243.606537000000003, 133.5, 216.0, 36.0 ],
+									"patching_rect" : [ 243.606537000000003, 153.5, 216.0, 36.0 ],
 									"text" : "If you send more than one buffer, they will be all processed in batch",
 									"textcolor" : [ 0.552941176470588, 0.552941176470588, 0.552941176470588, 1.0 ]
 								}
@@ -1438,7 +1469,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 32.0, 282.0, 110.0, 23.0 ],
+									"patching_rect" : [ 32.0, 302.0, 110.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"versionnumber" : 80105
 									}
@@ -1460,7 +1491,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 478.0, 393.0, 36.0 ],
+									"patching_rect" : [ 10.0, 498.0, 393.0, 36.0 ],
 									"text" : "Click here to learn about the common features of ears modules, including in-place operations and dynamic allocation."
 								}
 
@@ -1473,7 +1504,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 512.0, 152.0, 23.0 ],
+									"patching_rect" : [ 21.0, 532.0, 152.0, 23.0 ],
 									"text" : "load ears.help.commons"
 								}
 
@@ -1486,7 +1517,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 547.0, 57.0, 23.0 ],
+									"patching_rect" : [ 21.0, 567.0, 57.0, 23.0 ],
 									"text" : "pcontrol"
 								}
 
@@ -1536,7 +1567,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 94.0, 131.5, 146.0, 25.0 ],
+									"patching_rect" : [ 94.0, 151.5, 146.0, 25.0 ],
 									"text" : "Send buffer name(s)"
 								}
 
@@ -1548,7 +1579,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 131.5, 87.0, 23.0 ],
+									"patching_rect" : [ 10.0, 151.5, 87.0, 23.0 ],
 									"text" : "earsBufAnton"
 								}
 
@@ -1571,11 +1602,11 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 10.0, 246.0, 485.0, 23.0 ],
-									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy::: vamp-example-plugins:zerocrossing..."
+									"numinlets" : 3,
+									"numoutlets" : 3,
+									"outlettype" : [ "", "", "" ],
+									"patching_rect" : [ 10.0, 266.0, 485.0, 23.0 ],
+									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy::: vamp-libxtract:zcr..."
 								}
 
 							}
@@ -1717,7 +1748,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 527.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1776,6 +1807,10 @@
 			}
 , 			{
 				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.length.mxo",
 				"type" : "iLaX"
 			}
 , 			{
