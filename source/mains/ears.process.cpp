@@ -185,6 +185,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
 void earsprocess_stop(t_earsprocess *x);
 void earsprocess_int(t_earsprocess *x, t_atom_long n);
 void earsprocess_float(t_earsprocess *x, t_atom_float f);
+void earsprocess_list(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av);
 void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long argc, t_atom *argv);
 
 void earsprocess_dsp64(t_earsprocess *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
@@ -291,14 +292,30 @@ int C74_EXPORT main()
     // to the client patch through its <o>ears.in</o> objects.
     class_addmethod(earsprocess_class, (method)earsprocess_patchername, "patchername", A_DEFER, 0);
     
-    
-    class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
-    class_addmethod(earsprocess_class, (method)earsprocess_anything, "list", A_GIMME, 0);
-    
-    // @method list/llll @digest Function depends on inlet
+    // @method int @digest Passed to ears.in
     // @description
-    // If a list or llll with buffer names is passed to one of the buffer inlets,
+    // An integer received in one of <o>ears.process~</o>'s inlets
+    // is passed to the corresponding <o>ears.in</o> object
+    // in the loaded patch.
+    class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
+    
+    // @method float @digest Passed to ears.in
+    // @description
+    // A float received in one of <o>ears.process~</o>'s inlets
+    // is passed to the corresponding <o>ears.in</o> object
+    // in the loaded patch.
+    class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
+    
+    // @method list @digest Passed to ears.in
+    // @description
+    // A list received in one of <o>ears.process~</o>'s inlets
+    // is passed to the corresponding <o>ears.in</o> object
+    // in the loaded patch.
+    class_addmethod(earsprocess_class, (method)earsprocess_list, "list", A_GIMME, 0);
+    
+    // @method symbol/llll @digest Function depends on inlet
+    // @description
+    // If an llll with buffer names is passed to one of the buffer inlets,
     // The contents of the corresponding buffers will be passed
     // to the loaded patcher through the patcher's
     // <o>ears.in~</o> and <o>ears.mc.in~</o> objects,
@@ -306,11 +323,13 @@ int C74_EXPORT main()
     // The names of the buffers containing the processed audio,
     // as output by the patcher's <o>ears.out~</o> and <o>ears.mc.out~</o> objects,
     // will be subsequently output.<br/>
-    // Lists and llll received in non-buffer inlets
+    // Lllls received in non-buffer inlets
     // will be passed as they are to the loaded patcher,
     // through its <o>ears.in</o> objects.<br/>
-    // If the list or llll is received in the first inlet,
-    // The processing will be triggered.
+    // If the llll is received in the first inlet,
+    // The processing will be triggered.<br/>
+    // A single symbol, or any message starting with a symbol,
+    // will be treated as an llll anyway.
     class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
 
     
@@ -355,7 +374,7 @@ int C74_EXPORT main()
     // The default is 128.
 
 
-    CLASS_ATTR_LONG(earsprocess_class, "sr", 0, t_earsprocess, sr);
+    CLASS_ATTR_DOUBLE(earsprocess_class, "sr", 0, t_earsprocess, sr);
     CLASS_ATTR_FILTER_MIN(earsprocess_class, "sr", 0);
     CLASS_ATTR_LABEL(earsprocess_class, "sr", 0, "Default Sample Rate");
     // @description
@@ -569,7 +588,7 @@ void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 
 // 1 arg: patch name
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
-void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
+void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
 {
     
     
@@ -629,7 +648,8 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
         case 2: {
             t_llllelem *el = args->l_head;
             t_hatom *h = &el->l_hatom;
-            if (hatom_gettype(h) != H_SYM) {
+            t_symbol *s = hatom_getsym(h);
+            if (s == nullptr) {
                 ok = false;
                 break;
             }
@@ -696,7 +716,7 @@ void *earsprocess_new(t_symbol *s, long argc, t_atom *argv)
     
     // Load patch
     
-    x->nBufInlets = 1;
+    x->nBufInlets = 0;
     if (patchname)
         earsprocess_patchername(x, patchname, 0, NULL);
     
@@ -769,11 +789,6 @@ void earsprocess_setupOutObjects(t_earsprocess *x)
 void earsprocess_patchername(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    
-    if (inlet >= x->nBufInlets) {
-        earsprocess_anything(x, patchname, ac, av);
-        return;
-    }
     
     x->theInOutlets->clear();
     x->theOuts->clear();
@@ -881,30 +896,14 @@ void earsprocess_open(t_earsprocess *x)
 {
     if (!x->client_patch)
         return;
-    
-    long inlet = proxy_getinlet((t_object *) x);
-    
-    if (inlet >= x->nBufInlets) {
-        earsprocess_anything(x, _sym_open, 0, NULL);
-    } else {
-        //method m = zgetfn((t_object *) x->client_patch, _sym_vis);
-        //post("%p", m);
-        object_method((t_object *) x->client_patch, _sym_vis);
-    }
+    object_method((t_object *) x->client_patch, _sym_vis);
 }
 
 void earsprocess_wclose(t_earsprocess *x)
 {
     if (!x->client_patch)
         return;
-    
-    long inlet = proxy_getinlet((t_object *) x);
-    
-    if (inlet >= x->nBufInlets) {
-        earsprocess_anything(x, _sym_wclose, 0, NULL);
-    } else {
-        object_method((t_object *) x->client_patch, _sym_wclose);
-    }
+    object_method((t_object *) x->client_patch, _sym_wclose);
 }
 
 
@@ -938,21 +937,52 @@ void earsprocess_int(t_earsprocess *x, t_atom_long i)
 {
     t_atom a[1];
     atom_setlong(a, i);
-    earsprocess_anything(x, _sym_int, 1, a);
+    long inlet = proxy_getinlet((t_object *) x);
+    if (inlet >= x->nBufInlets) {
+        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
+        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
+            outlet_anything(o, _sym_int, 1, a);
+        }
+        return;
+    } else {
+        object_error((t_object *) x, "Don't understand int in inlet %ld", inlet + 1);
+    }
 }
 
 void earsprocess_float(t_earsprocess *x, t_atom_float f)
 {
     t_atom a[1];
     atom_setfloat(a, f);
-    earsprocess_anything(x, _sym_float, 1, a);
+    long inlet = proxy_getinlet((t_object *) x);
+    if (inlet >= x->nBufInlets) {
+        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
+        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
+            outlet_anything(o, _sym_int, 1, a);
+        }
+        return;
+    } else {
+        object_error((t_object *) x, "Don't understand float in inlet %ld", inlet + 1);
+    }
+}
+
+void earsprocess_list(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
+{
+    long inlet = proxy_getinlet((t_object *) x);
+    if (inlet >= x->nBufInlets) {
+        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
+        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
+            outlet_list(o, nullptr, ac, av);
+        }
+        return;
+    } else {
+        object_error((t_object *) x, "Don't understand list in inlet %ld", inlet + 1);
+    }
 }
 
 void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    
-    if (inlet > 0 && inlet >= x->nBufInlets) {
+    if (inlet >= x->nBufInlets) {
         // TODO: send to ears.in <<<--- SEEMS TO BE OK...
         for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_anything(o, s, ac, av);
@@ -981,15 +1011,7 @@ void earsprocess_bang(t_earsprocess *x)
 {
     if (!x->client_patch)
         return;
-    
-    long inlet = proxy_getinlet((t_object *) x);
-    
-    if (inlet >= x->nBufInlets) {
-        earsprocess_anything(x, _sym_bang, 0, NULL);
-    } else {
-        defer(x, (method) earsprocess_bang_do, NULL, 0, NULL);
-    }
-
+    defer(x, (method) earsprocess_bang_do, NULL, 0, NULL);
 }
 
 void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *av)
@@ -1058,8 +1080,8 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             default: break;
         }
         
-        if (duration <= 0)
-            duration = LONG_MAX;
+        if (duration < 0)
+            duration = 0;
         
         //t_object *prnt = (t_object *) newinstance(gensym("print"), 0, NULL);
         

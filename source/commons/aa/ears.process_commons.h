@@ -63,7 +63,7 @@ typedef std::vector<t_sample> sampleVector;
 
 class audioChannel {
 private:
-    static const t_atom_long maxAllocSize = 1 << 20;
+    static const t_atom_long maxAllocSize = 1 << 24;
     void increaseAllocSize() {
         if (lastAllocSize < maxAllocSize)
             lastAllocSize *= 2;
@@ -72,6 +72,7 @@ private:
     sampleVector* getNewSampleVector() {
         increaseAllocSize();
         sampleVector* sv = new sampleVector(lastAllocSize, 0);
+        cpost("requested new vector of size %ld", lastAllocSize);
         sVec.push_back(sv);
         totSize += lastAllocSize;
         currPosition = 0;

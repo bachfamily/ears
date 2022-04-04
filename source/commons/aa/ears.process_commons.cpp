@@ -19,7 +19,7 @@ void ears_inouttilde_get_inlet_index(t_ears_inouttilde *x, t_llllelem *el)
 
 long ears_inouttilde_get_channel_indices(t_ears_inouttilde *x, t_llllelem *el)
 {
-    int i;
+    int i = 0;
     for (i = 0;
          el && i < EARS_INTILDE_MAX_CHANS;
          el = el->l_next, i++) {
@@ -55,9 +55,10 @@ long ears_inouttilde_anything(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom
         return nChans;
     }
     if (ll->l_size == 0) {
-        object_error((t_object *) x, "Incorrect inlet / channel indices");
+        x->ioNum = 1;
+        x->chan[0] = 1;
+        nChans = 1;
         goto ears_inouttilde_exit;
-        
     }
     switch (ll->l_depth) {
         case 1: {
