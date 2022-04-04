@@ -50,7 +50,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 266.0, 394.038276672363281, 136.0, 52.0 ],
-					"presentation_linecount" : 5,
 					"text" : "Initialize table along with its columns (fields)"
 				}
 
@@ -102,7 +101,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 373.5, 209.038276672363281, 96.0, 52.0 ],
-					"presentation_linecount" : 2,
 					"text" : "summarized descriptors",
 					"textjustification" : 1
 				}
@@ -121,7 +119,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 373.5, 209.038276672363281, 96.0, 52.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Summarized descriptors",
 					"textjustification" : 1
 				}
@@ -139,7 +136,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 373.5, 209.038276672363281, 96.0, 52.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Summarized descriptors",
 					"textjustification" : 1
 				}
@@ -168,7 +164,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 9.0, 70.0, 538.0, 33.0 ],
-					"presentation_linecount" : 2,
 					"text" : "We take the piano samples we have in the media folder of the ears package and analyze them via the Essentia descriptors (spectral centroid, inharmonicity, loudness), plot them and navigate them."
 				}
 
@@ -370,8 +365,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 100.5, 409.038276672363281, 143.0, 22.0 ],
-					"text" : "loadmess bang @defer 1"
+					"patching_rect" : [ 100.5, 409.038276672363281, 90.0, 22.0 ],
+					"text" : "loadmess bang"
 				}
 
 			}
@@ -724,7 +719,7 @@
 			}
 , 			{
 				"name" : "bach.prepend.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
 				"patcherrelativepath" : "../../../../bach/patchers",
 				"type" : "JSON",
 				"implicit" : 1
