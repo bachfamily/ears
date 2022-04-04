@@ -938,12 +938,13 @@ void earsprocess_int(t_earsprocess *x, t_atom_long i)
     t_atom a[1];
     atom_setlong(a, i);
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets) {
+    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
         // TODO: send to ears.in <<<--- SEEMS TO BE OK...
         for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_anything(o, _sym_int, 1, a);
         }
-        return;
+        if (inlet == 0)
+            earsprocess_bang(x);
     } else {
         object_error((t_object *) x, "Don't understand int in inlet %ld", inlet + 1);
     }
@@ -954,12 +955,13 @@ void earsprocess_float(t_earsprocess *x, t_atom_float f)
     t_atom a[1];
     atom_setfloat(a, f);
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets) {
+    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
         // TODO: send to ears.in <<<--- SEEMS TO BE OK...
         for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_anything(o, _sym_int, 1, a);
         }
-        return;
+        if (inlet == 0)
+            earsprocess_bang(x);
     } else {
         object_error((t_object *) x, "Don't understand float in inlet %ld", inlet + 1);
     }
@@ -968,12 +970,13 @@ void earsprocess_float(t_earsprocess *x, t_atom_float f)
 void earsprocess_list(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets) {
+    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
         // TODO: send to ears.in <<<--- SEEMS TO BE OK...
         for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_list(o, nullptr, ac, av);
         }
-        return;
+        if (inlet == 0)
+            earsprocess_bang(x);
     } else {
         object_error((t_object *) x, "Don't understand list in inlet %ld", inlet + 1);
     }
@@ -982,7 +985,7 @@ void earsprocess_list(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
 void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets) {
+    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
         // TODO: send to ears.in <<<--- SEEMS TO BE OK...
         for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
             outlet_anything(o, s, ac, av);

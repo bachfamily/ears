@@ -72,7 +72,6 @@ private:
     sampleVector* getNewSampleVector() {
         increaseAllocSize();
         sampleVector* sv = new sampleVector(lastAllocSize, 0);
-        cpost("requested new vector of size %ld", lastAllocSize);
         sVec.push_back(sv);
         totSize += lastAllocSize;
         currPosition = 0;
