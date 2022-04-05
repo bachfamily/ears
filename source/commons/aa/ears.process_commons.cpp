@@ -50,7 +50,7 @@ long ears_inouttilde_float(t_ears_inouttilde *x, double v)
 long ears_inouttilde_anything(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av)
 {
     long nChans = -1;
-    t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_MSP, s, ac, av, LLLL_PARSE_RETAIN);
+    t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_MSP, nullptr, ac, av, LLLL_PARSE_RETAIN);
     if (!ll) {
         return nChans;
     }
