@@ -212,13 +212,13 @@ void ears_mcouttilde_perform64(t_ears_mcouttilde *x, t_dspchain *dsp64, double *
     
     long outlet = x->outlet;
     long startChan = x->firstChan;
-    long endChan = x->firstChan + MIN(x->chans, numins);
+    long endChan = x->firstChan + (x->chans < 1 ? numins : MIN(x->chans, numins));
     
     if (endChan == 0)
         endChan = 1;
     long inIdx, i;
     
-    for (inIdx = 0, i = startChan; i <= endChan; i++, inIdx++) {
+    for (inIdx = 0, i = startChan; i < endChan; i++, inIdx++) {
         audioChannel *ch = x->chanMap->getChannel(outlet, i);
         ch->skipTo(pos);
         ch->insert(vec_size, ins[inIdx]);
