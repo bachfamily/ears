@@ -226,7 +226,7 @@ void ears_intilde_inletinfo(t_ears_intilde *x, void *b, long a, char *t)
 void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_OUTLET)
-        sprintf(s,"(signal) Audio From Channel %ld", (long) x->io_obj.chan[a] + 1); // @out 0 @type signal @loop 1 @digest Input signal
+        sprintf(s,"(signal) Audio From Channel %ld", (long) x->io_obj.chan[a]); // @out 0 @type signal @loop 1 @digest Input signal
     else
         sprintf(s,"(int) Dummy");
 }

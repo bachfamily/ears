@@ -162,7 +162,7 @@ void ears_outtilde_free(t_ears_outtilde *x)
 
 void ears_outtilde_assist(t_ears_outtilde *x, void *b, long m, long a, char *s)
 {
-    sprintf(s, "(signal) To buffer channel %ld", x->io_obj.chan[a] + 1); // @out 0 @type signal @loop 1 @digest Output signal
+    sprintf(s, "(signal) To buffer channel %ld", x->io_obj.chan[a]); // @out 0 @type signal @loop 1 @digest Output signal
 }
 
 void ears_outtilde_perform64(t_ears_outtilde *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam)

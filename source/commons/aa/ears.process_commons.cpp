@@ -90,6 +90,7 @@ long ears_inouttilde_anything(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom
                     object_error((t_object *) x, "Incorrect inlet / channel indices");
                     goto ears_inouttilde_exit;
             }
+            break;
         }
         default:
             object_error((t_object *) x, "Incorrect inlet / channel indices");
