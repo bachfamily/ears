@@ -750,7 +750,7 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                                 } else if (strcmp(s_frameid, "GEOB") == 0) {
                                     object_warn((t_object *)x, "GEOB frames are unsupported at writing time.");
                                 } else if (strcmp(s_frameid, "OWNE") == 0) {
-                                    TagLib::ID3v2::OwnershipFrame fr;
+                                    TagLib::ID3v2::OwnershipFrame *fr = new TagLib::ID3v2::OwnershipFrame();
                                     char *price = NULL, *date = NULL, *seller = NULL;
                                     if (el_ll->l_size > 1)
                                         hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &price);
@@ -758,17 +758,17 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                                         hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &date);
                                     if (el_ll->l_size > 3)
                                         hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_next->l_hatom, &seller);
-                                    if (price) fr.setPricePaid(price);
-                                    if (date) fr.setDatePurchased(date);
-                                    if (seller) fr.setSeller(seller);
-                                    tags->addFrame(&fr);
+                                    if (price) fr->setPricePaid(price);
+                                    if (date) fr->setDatePurchased(date);
+                                    if (seller) fr->setSeller(seller);
+                                    tags->addFrame(fr);
                                     if (price) bach_freeptr(price);
                                     if (date) bach_freeptr(date);
                                     if (seller) bach_freeptr(seller);
                                 } else if (strcmp(s_frameid, "PCST") == 0) {
                                     object_warn((t_object *)x, "PCST frames are unsupported at writing time.");
                                 } else if (strcmp(s_frameid, "POPM") == 0) {
-                                    TagLib::ID3v2::PopularimeterFrame fr;
+                                    TagLib::ID3v2::PopularimeterFrame *fr = new TagLib::ID3v2::PopularimeterFrame();
                                     char *email = NULL;
                                     long rating = 0, counter = 0;
                                     if (el_ll->l_size > 1)
@@ -777,21 +777,21 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                                         rating = hatom_getlong(&el_ll->l_head->l_next->l_next->l_hatom);
                                     if (el_ll->l_size > 3)
                                         counter = hatom_getlong(&el_ll->l_head->l_next->l_next->l_next->l_hatom);
-                                    if (email) fr.setEmail(email);
-                                    if (el_ll->l_size > 2) fr.setRating(rating);
-                                    if (el_ll->l_size > 3) fr.setCounter(counter);
-                                    tags->addFrame(&fr);
+                                    if (email) fr->setEmail(email);
+                                    if (el_ll->l_size > 2) fr->setRating(rating);
+                                    if (el_ll->l_size > 3) fr->setCounter(counter);
+                                    tags->addFrame(fr);
                                     if (email) bach_freeptr(email);
                                 } else if (strcmp(s_frameid, "PRIV") == 0) {
-                                    TagLib::ID3v2::PrivateFrame fr;
+                                    TagLib::ID3v2::PrivateFrame *fr = new TagLib::ID3v2::PrivateFrame();
                                     char *owner = NULL, *data = NULL;
                                     if (el_ll->l_size > 1)
                                         hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &owner);
                                     if (el_ll->l_size > 2)
                                         hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &data);
-                                    if (owner) fr.setOwner(owner);
-                                    if (data) fr.setData(data);
-                                    tags->addFrame(&fr);
+                                    if (owner) fr->setOwner(owner);
+                                    if (data) fr->setData(data);
+                                    tags->addFrame(fr);
                                     if (owner) bach_freeptr(owner);
                                     if (data) bach_freeptr(data);
                                 } else if (strcmp(s_frameid, "RVA2") == 0) {
@@ -806,8 +806,8 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                                         hatom_to_text_buf(&el_ll->l_head->l_next->l_hatom, &owner);
                                     if (el_ll->l_size > 2)
                                         hatom_to_text_buf(&el_ll->l_head->l_next->l_next->l_hatom, &identif);
-                                    TagLib::ID3v2::UniqueFileIdentifierFrame fr(owner, TagLib::ByteVector(identif));
-                                    tags->addFrame(&fr);
+                                    TagLib::ID3v2::UniqueFileIdentifierFrame *fr = new TagLib::ID3v2::UniqueFileIdentifierFrame(owner, TagLib::ByteVector(identif));
+                                    tags->addFrame(fr);
                                     if (owner) bach_freeptr(owner);
                                     if (identif) bach_freeptr(identif);
                                 } else {
@@ -859,7 +859,7 @@ void buf_write_tags(t_buf_write *x, t_symbol *filename, t_llll *tags_ll)
         buf_write_tags_ID3v1(x, MPEGfile->ID3v1Tag(), tags_ID3v1);
         buf_write_tags_ID3v2(x, MPEGfile->ID3v2Tag(), tags_ID3v2);
     }
-    
+
     TagLib::WavPack::File *WAVPACKfile = dynamic_cast<TagLib::WavPack::File *>(file);
     if (WAVPACKfile) {
         buf_write_tags_APE(x, WAVPACKfile->APETag(), tags_APE);

@@ -79,7 +79,7 @@ long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob)
     return e_ob->l_curr_proxy;
 }
 
-
+/*
 void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *name, char mustfree)
 {    
     if (name && buf) {
@@ -120,7 +120,83 @@ void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *
             }
         }
     }
+} */
+
+void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *name, char mustfree)
+{
+    if (name && buf) {
+        ears_buffer_release(buf); // this is the max function that does
+        
+        // now we handle the ears-only reference count
+        t_atom_long count = 0;
+        t_hashtab *ht = ears_hashtab_get();
+        if (ht) {
+            t_max_err err = hashtab_lookuplong(ht, name, &count);
+            if (err == MAX_ERR_NONE) {
+                if (count > 1) {
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Releasing buffer %s: now has count %ld", name->s_name, count-1);
+                    hashtab_storelong(ht, name, count-1); // decrease reference count
+                } else {
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Releasing buffer %s: count is now 0. %s", name->s_name, mustfree ? "Also freeing buffer." : "Not freeing buffer.");
+                    hashtab_chuckkey(ht, name);
+
+                    // is this a spectral buffer? do we need to chuck it from the spectral hash table?
+                    t_object *meta = NULL;
+                    t_hashtab *htspec = ears_hashtab_spectrograms_get();
+                    if (hashtab_lookup(htspec, name, &meta) == MAX_ERR_NONE) {
+                        if (meta) {
+                            t_ears_spectralbuf_metadata *data = (t_ears_spectralbuf_metadata *)meta;
+                            llll_free(data->bins);
+                            data->bins = NULL;
+                            hashtab_delete(htspec, name); // also frees memory
+                        }
+                    }
+                }
+            }
+        }
+    }
+        
+/*        t_atom_long count = 0;
+        t_hashtab *ht = ears_hashtab_get();
+        if (ht) {
+            t_max_err err = hashtab_lookuplong(ht, name, &count);
+            if (err == MAX_ERR_NONE) {
+                if (count > 1) {
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Releasing buffer %s: now has count %ld", name->s_name, count-1);
+                    hashtab_storelong(ht, name, count-1); // decrease reference count
+                } else {
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Releasing buffer %s: count is now 0. %s", name->s_name, mustfree ? "Also freeing buffer." : "Not freeing buffer.");
+                    hashtab_chuckkey(ht, name);
+
+                    
+                    // is this a spectral buffer? do we need to chuck it from the spectral hash table?
+                    t_object *meta = NULL;
+                    t_hashtab *htspec = ears_hashtab_spectrograms_get();
+                    if (hashtab_lookup(htspec, name, &meta) == MAX_ERR_NONE) {
+                        if (meta) {
+                            t_ears_spectralbuf_metadata *data = (t_ears_spectralbuf_metadata *)meta;
+                            llll_free(data->bins);
+                            data->bins = NULL;
+                            hashtab_delete(htspec, name); // also frees memory
+                        }
+                    }
+                    
+                    if (mustfree) {
+                        object_free_debug(buf); ///< This makes Max crash, for some weird reason... Gotta discover why, highest priority
+                    }
+                }
+            } else {
+                if (EARS_ALLOCATIONVERBOSE)
+                    post("--- ears allocation: Trying to release buffer %s which was not autoassigned, nothing to do.", name->s_name);
+            }
+        }
+    } */
 }
+
 
 void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx, bool prevent_from_freeing)
 {
@@ -214,7 +290,7 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
     if (!buf_name)
         return; // to do: handle better
     
-    // retrieving references
+    // retrieving existing references
     t_buffer_ref **ref = NULL;
     t_symbol **name = NULL;
     t_object **buf = NULL;
@@ -250,16 +326,16 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
     } else {
         buffer_ref_set(*ref, buf_name);
 
-        if (name && *name && buf && *buf) {
+/*        if (name && *name && buf && *buf) {
             if (e_ob->l_bufouts_naming != EARSBUFOBJ_NAMING_DYNAMIC)
                 earsbufobj_buffer_release(e_ob, where, store_index, buffer_index);
-        }
-        
-        // now the old buffer does not exist any more
-//        long ex = buffer_ref_exists(buffer_ref_new((t_object *)e_ob, *name));
-//        object_post((t_object *)e_ob, "%ld", ex);
+        } */
     }
-    
+
+    if (name && *name && buf && *buf) {
+        earsbufobj_buffer_release(e_ob, where, store_index, buffer_index);
+    }
+
     if (!*ref) {
         object_error((t_object *)e_ob, "Can't create new buffer reference.");
         return;
@@ -276,9 +352,8 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
             *name = symbol_unique();
             
             // must create an actual buffer with the unique name
-            t_atom a;
-            atom_setsym(&a, *name);
-            t_object *b = (t_object *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
+            t_object *b = (t_object *)ears_buffer_make(*name);
+            
             buffer_ref_set(*ref, *name);
             *buf = b;
             if (earsbufobj_is_buf_autoassigned(e_ob, where, store_index, buffer_index)) {
@@ -289,9 +364,7 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
         } else {
             
             // must create an actual buffer with that name
-            t_atom a;
-            atom_setsym(&a, buf_name);
-            t_object *b = (t_object *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
+            t_object *b = (t_object *)ears_buffer_make(buf_name);
             buffer_ref_set(*ref, buf_name);
             *buf = b;
             *name = buf_name;
@@ -305,6 +378,7 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
     } else {
         // buffer already exists. Cool. Let's just get it.
         *buf = buffer_ref_getobject(*ref);
+        ears_buffer_retain(*buf); // we retain the buffer
         *name = buf_name;
         ears_hashtab_inccount(*name);
     }
@@ -587,7 +661,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                 }
 //                earsbufobj_resize_store(e_ob, EARSBUFOBJ_IN, j, 1, false);
 //                e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
-                if (e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS) {
+                if (e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS) { // this is currently never used
                     earsbufobj_resize_store(e_ob, EARSBUFOBJ_IN, j, 1, false);
                     e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
                     e_ob->l_instore[j].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
@@ -884,11 +958,19 @@ void earsbufobj_free(t_earsbufobj *e_ob)
 
 }
 
+t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
+{
+    return MAX_ERR_NONE;
+}
 
+// This was an old function, I don't think it's needed any longer
+/*
 t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
     long i, j;
     long res = MAX_ERR_NONE;
+    
+    return res;
     
     if (ears_is_freeing)
         return res;
@@ -952,67 +1034,8 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
     
     return res;
 }
+ */
 
-
-/*
-t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
-{
-    long i, j;
-    long res = MAX_ERR_NONE;
-    for (i = 0; i < e_ob->l_numbufouts; i++)
-        for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs; j++) {
-            t_buffer_ref *ref = earsbufobj_get_outlet_buffer_ref(e_ob, i, j);
-            if (ref) {
-                if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
-                    res = MAX_ERR_GENERIC;
-                
-                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
-                    if (data == earsbufobj_get_outlet_buffer_obj(e_ob, i, j)) {
-// N.B.: buffer_ref_getobject() is unreliable for our instores and outstores
-//                    t_buffer_obj *new_obj = buffer_ref_getobject(ref);
-//                    if (!new_obj) {
-                        
-                        t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, i, j);
-                        if (ears_hashtab_getcount(name) > 0) {
-                            // gotta recreate buffer
-                            t_atom a;
-                            atom_setsym(&a, name);
-                            t_object *b = (t_object *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
-                            buffer_ref_set(ref, name);
-                            ears_hashtab_inccount(name);
-                            e_ob->l_outstore[i].stored_buf[j].l_buf = b;
-                            e_ob->l_outstore[i].stored_buf[j].l_name = name;
-                        }
-                    }
-                }
-            }
-        }
-
-    
-    // checking if some of the stored buffer in the inlets has been undergone unbinding
-    // This could happen for the objects that DO NOT keep a cloned copy of the buffer in their instore
-    for (i = 0; i < e_ob->l_numbufins; i++)
-        for (j = 0; j < e_ob->l_instore[i].num_stored_bufs; j++) {
-            t_buffer_ref *ref = earsbufobj_get_inlet_buffer_ref(e_ob, i, j);
-            if (ref) {
-                if (buffer_ref_notify(ref, s, msg, sender, data) != MAX_ERR_NONE)
-                    res = MAX_ERR_GENERIC;
-                
-                if (!ears_is_freeing && msg == gensym("globalsymbol_unbinding")) { // maybe removing some buffer?
-                    if (data == earsbufobj_get_inlet_buffer_obj(e_ob, i, j)) {
-                        t_buffer_obj *new_obj = buffer_ref_getobject(ref);
-                        if (!new_obj) {
-                            e_ob->l_instore[i].stored_buf[j].l_buf = NULL;
-                            e_ob->l_instore[i].stored_buf[j].l_name = NULL;
-                            e_ob->l_instore[i].stored_buf[j].l_ref = NULL;
-                        }
-                    }
-                }
-            }
-        }
-    
-    return res;
-} */
 
 long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out where)
 {

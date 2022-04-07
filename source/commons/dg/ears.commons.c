@@ -8,6 +8,34 @@
 #include "ears.wavpack.h"
 #include <vector>
 
+t_buffer_obj *ears_buffer_make(t_symbol *buffername)
+{
+    if (buffername) {
+        t_atom a;
+        atom_setsym(&a, buffername);
+        return (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
+    } else
+        return (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
+}
+
+t_max_err ears_buffer_retain(t_buffer_obj *buffer)
+{
+    return object_retain((t_object *)buffer);
+}
+
+// currently it's equivalent to ears_buffer_free...
+t_max_err ears_buffer_release(t_buffer_obj *buffer)
+{
+    object_free((t_object *)buffer);
+}
+
+// use it only for volatile temporary buffers that are created and then immediately destroyed
+// otherwise use ears_buffer_release()
+t_max_err ears_buffer_free(t_buffer_obj *buffer)
+{
+    object_free((t_object *)buffer);
+}
+
 t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf)
 {
     return buffer_getframecount(buf);
@@ -2488,7 +2516,7 @@ t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onse
         chans[0] = buf;
     } else if (num_channels > 1) {
         for (long i = 0; i < num_channels; i++) {
-            chans[i] = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
+            chans[i] = ears_buffer_make(NULL);
             ears_buffer_copy_format(ob, impulse, chans[i]);
         }
     }
@@ -2518,7 +2546,7 @@ t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onse
     if (num_channels > 1) {
         ears_buffer_pack(ob, num_channels, chans, buf, EARS_RESAMPLINGPOLICY_DONT, 10);
         for (long i = 0; i < num_channels; i++)
-            object_free(chans[i]);
+            ears_buffer_free(chans[i]);
     }
     
     bach_freeptr(chans);
@@ -3682,9 +3710,7 @@ t_symbol *default_synth2buffername(long buffer_index)
 t_ears_err ears_buffer_from_buffer(t_object *ob, t_buffer_obj **dest, t_symbol *buffername, double start_ms, double end_ms, long buffer_idx)
 {
     t_symbol *name = default_filepath2buffername(buffername, buffer_idx);
-    t_atom a;
-    atom_setsym(&a, name);
-    *dest = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
+    *dest = ears_buffer_make(name);
     
     t_ears_err this_err = ears_buffer_clone(ob, ears_buffer_getobject(buffername), *dest);
     
@@ -3704,11 +3730,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
         // creating a buffer object!
         
         t_symbol *name = default_filepath2buffername(filepath, buffer_idx);
-        t_atom a;
-        atom_setsym(&a, name);
-        
-        *dest = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
-        
+        *dest = ears_buffer_make(name);
         if (!*dest) {
             err = EARS_ERR_GENERIC;
         } else {
@@ -3719,6 +3741,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
             } else {
 #endif
                 // trying to load file into input buffer
+                t_atom a;
                 atom_setsym(&a, filepath);
                 typedmess(*dest, gensym("importreplace"), 1, &a);
                 
@@ -3737,7 +3760,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
         err = EARS_ERR_NO_FILE;
         object_error(ob, EARS_ERROR_BUF_NO_FILE_NAMED, filepath ? filepath->s_name : (file ? file->s_name : "???"));
         
-        *dest = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
+        *dest = ears_buffer_make(NULL);
         ears_buffer_setempty(ob, *dest, 1);
 
     }
@@ -3809,11 +3832,8 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
     double sr_os = sr * oversampling;
     long duration_samps = (long)ceil(duration_ms * (sr_os/1000.));
     t_symbol *name = default_synth2buffername(buffer_idx);
-    t_atom a;
-    atom_setsym(&a, name);
+    *dest = ears_buffer_make(name);
     
-    *dest = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
-
     ears_buffer_set_size_and_numchannels(e_ob, *dest, duration_samps, 1);
     ears_buffer_set_sr(e_ob, *dest, sr_os);
 

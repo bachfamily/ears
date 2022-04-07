@@ -477,9 +477,9 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
                     }
                 } else {
                     // Reconstruct via Griffin-Lim
-                    t_buffer_obj *phases = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
-                    t_buffer_obj *amps = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
-                    t_buffer_obj *tempout = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
+                    t_buffer_obj *phases = ears_buffer_make(NULL);
+                    t_buffer_obj *amps = ears_buffer_make(NULL);
+                    t_buffer_obj *tempout = ears_buffer_make(NULL); 
 
                     ears_buffer_copy_format(ob, dest, tempout);
                     ears_buffer_set_size_and_numchannels(ob, tempout, outframecount, 1);
@@ -523,9 +523,9 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
                         buffer_unlocksamples(tempout);
                     }
                     
-                    object_free(amps);
-                    object_free(phases);
-                    object_free(tempout);
+                    ears_buffer_free(amps);
+                    ears_buffer_free(phases);
+                    ears_buffer_free(tempout);
                 }
             }
         }

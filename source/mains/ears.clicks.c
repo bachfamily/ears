@@ -151,7 +151,7 @@ t_buf_clicks *buf_clicks_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
 
-        x->impulse = (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
+        x->impulse = ears_buffer_make(NULL); 
         ears_buffer_set_sr((t_object *)x, x->impulse, x->sr > 0 ? x->sr : ears_get_current_Max_sr());
         t_llll *temp = llll_from_text_buf("[1]");
         ears_buffer_from_llll((t_object *)x, x->impulse, temp, 1);
@@ -169,7 +169,7 @@ t_buf_clicks *buf_clicks_new(t_symbol *s, short argc, t_atom *argv)
 
 void buf_clicks_free(t_buf_clicks *x)
 {
-    object_free(x->impulse);
+    ears_buffer_free(x->impulse);
     earsbufobj_free((t_earsbufobj *)x);
 }
 

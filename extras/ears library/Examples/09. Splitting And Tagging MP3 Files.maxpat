@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 11,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 39.0, 86.0, 681.0, 578.0 ],
+		"rect" : [ 39.0, 100.0, 681.0, 578.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -79,8 +79,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 331.0, 475.0, 228.0, 47.0 ],
-					"presentation_linecount" : 3,
+					"patching_rect" : [ 331.0, 475.0, 231.0, 47.0 ],
 					"text" : "If you need an editor to inspect and edit ID3 tags, kid3 is a free, open source, and cross-platform option:"
 				}
 
@@ -95,8 +94,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 463.5, 398.0, 189.0, 51.0 ],
-					"presentation_linecount" : 4,
+					"patching_rect" : [ 463.5, 398.0, 192.0, 51.0 ],
 					"text" : "Combine existing tags with the offset information as a TXXX comment"
 				}
 
@@ -180,10 +178,10 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 262.5, 391.5, 76.25, 22.0 ],
+					"patching_rect" : [ 262.5, 391.5, 55.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"embed" : 0,
-						"versionnumber" : 80104
+						"versionnumber" : 80105
 					}
 ,
 					"text" : "bach.reg"
@@ -264,7 +262,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 428.25, 300.0, 192.0, 37.0 ],
-					"presentation_linecount" : 6,
 					"text" : "Retrieve ID3v1 and ID3v2 tags and save them for later use"
 				}
 
@@ -595,15 +592,15 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ears.read~.mxo",
+				"name" : "bach.collect.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.split~.mxo",
+				"name" : "bach.hypercomment.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.write~.mxo",
+				"name" : "bach.join.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -611,7 +608,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.collect.mxo",
+				"name" : "bach.length.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -623,15 +620,15 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.length.mxo",
+				"name" : "ears.read~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.join.mxo",
+				"name" : "ears.split~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.hypercomment.mxo",
+				"name" : "ears.write~.mxo",
 				"type" : "iLaX"
 			}
  ],

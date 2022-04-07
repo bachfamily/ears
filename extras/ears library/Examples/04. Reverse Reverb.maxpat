@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 11,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -263,7 +263,7 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u373000632",
+					"buffername" : "u277001147",
 					"fontsize" : 12.0,
 					"id" : "obj-22",
 					"maxclass" : "waveform~",
@@ -514,7 +514,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.rev~.mxo",
+				"name" : "ears.info~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -522,11 +522,11 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.info~.mxo",
+				"name" : "ears.offset~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.offset~.mxo",
+				"name" : "ears.rev~.mxo",
 				"type" : "iLaX"
 			}
  ],
