@@ -111,6 +111,8 @@ int C74_EXPORT main()
     class_addmethod(ears_intilde_class, (method)ears_intilde_assist, "assist", A_CANT, 0);
     class_addmethod(ears_intilde_class, (method)ears_intilde_inletinfo, "inletinfo", A_CANT, 0);
     
+    class_addmethod(ears_intilde_class, (method)ears_intilde_setbuffers, "setbuffers", A_CANT, 0);
+
     class_dspinit(ears_intilde_class);
 
     class_register(CLASS_BOX, ears_intilde_class);
