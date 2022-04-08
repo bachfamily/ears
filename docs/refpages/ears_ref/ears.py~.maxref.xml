@@ -63,6 +63,8 @@
 				Output buffer names
 			</digest>
 			<description>
+				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
+				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
 		<objarg name="patcher" optional="1" type="symbol">
@@ -177,6 +179,41 @@
 			<description>
 			</description>
 			<attributelist>
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="naming" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Naming Policy
+			</digest>
+			<description>
+				Chooses the output buffer naming policy: <br />
+				0 (Copy): the buffer name is copied from the input (in-place modification).
+				Notice that some objects do not allow this policy. <br />
+				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
+				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
+				Beware! This may allocate a lot of memory!
+				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
+				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
+				<b>-</b> for static and <b>!</b> for dynamic.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="outname" get="1" set="1" type="llll" size="1">
+			<digest>
+				Output Buffer Names
+			</digest>
+			<description>
+				Sets the name for each one of the buffer outlets. Leave blank to auto-assign
+				unique names.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>

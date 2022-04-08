@@ -62,7 +62,6 @@
 				Play MP3 file
 			</digest>
 			<description>
-				Syntax: <b>play <m>[&lt;float: start_ms&gt;]</m> <m>[&lt;float: end_ms&gt;]</m> </b><br />				<br />
 				A <m>play</m> message, followed by a MP3 filename, will play the MP3 file natively.
 				Additional arguments provide the starting and ending point in milliseconds for playback.
 			</description>
