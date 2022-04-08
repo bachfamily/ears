@@ -668,10 +668,8 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
                         break;
                 }
             } else {
-                el = el->l_next;
-                h = &el->l_hatom;
-                if (hatom_gettype(h) != H_SYM) {
-                    patchname = hatom_getsym(h);
+                patchname = hatom_getsym(h);
+                if (patchname) {
                     llll_destroyelem(el); // what follows is surely the buffer names
                 } else {
                     ok = false;
@@ -683,7 +681,7 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
             t_llllelem *el = args->l_head->l_next; // the first must be a symbol
             // earsbufobj_extract_names_from_args() will take care of it
             patchname = hatom_getsym(&el->l_hatom);
-            if (patchname) {
+            if (!patchname) {
                 ok = false;
             } else {
                 llll_destroyelem(el);
