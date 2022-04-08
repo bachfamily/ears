@@ -21,7 +21,7 @@
 	Slice a buffer into two
  
 	@description
-	Split a buffer according to a temporal position
+	Splits a buffer according to a temporal position.
  
 	@discussion
  

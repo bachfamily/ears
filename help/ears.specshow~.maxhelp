@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 5,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 92.0, 836.0, 566.0 ],
+		"rect" : [ 100.0, 100.0, 836.0, 546.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -52,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 118.0, 836.0, 540.0 ],
+						"rect" : [ 0.0, 26.0, 836.0, 520.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -100,7 +100,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 330.0, 250.0, 181.0, 54.0 ],
-									"presentation_linecount" : 3,
 									"text" : "Static attachment: the object will display a specific buffer (if it exists)"
 								}
 
@@ -120,7 +119,7 @@
 , 							{
 								"box" : 								{
 									"autoscale" : 1,
-									"buffername" : "myCQT",
+									"buffername" : "",
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -184,7 +183,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 309.513966480446925, 159.5, 185.0, 69.0 ],
-									"presentation_linecount" : 5,
 									"text" : "Volatile attachment: the object will display the content of the last buffer received as input"
 								}
 
@@ -384,14 +382,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 836.0, 540.0 ],
+						"rect" : [ 100.0, 126.0, 836.0, 520.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -428,7 +426,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.54982857767277, 491.0, 170.90034284465446, 23.0 ]
+									"patching_rect" : [ 651.54982857767277, 471.0, 170.90034284465446, 23.0 ]
 								}
 
 							}
@@ -440,7 +438,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.54982857767277, 466.0, 170.90034284465446, 23.0 ]
+									"patching_rect" : [ 651.54982857767277, 446.0, 170.90034284465446, 23.0 ]
 								}
 
 							}
@@ -454,7 +452,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 694.5, 211.0, 101.0, 40.0 ],
+									"patching_rect" : [ 694.5, 191.0, 101.0, 40.0 ],
 									"text" : "Personalize grids"
 								}
 
@@ -467,7 +465,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 593.0, 211.0, 96.0, 38.0 ],
+									"patching_rect" : [ 593.0, 191.0, 96.0, 38.0 ],
 									"text" : "timegrid 250, freqgrid 2500"
 								}
 
@@ -481,7 +479,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 706.0, 186.0, 101.0, 25.0 ],
+									"patching_rect" : [ 706.0, 166.0, 101.0, 25.0 ],
 									"text" : "Turn grids off"
 								}
 
@@ -493,7 +491,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 573.0, 186.0, 128.0, 23.0 ],
+									"patching_rect" : [ 573.0, 166.0, 128.0, 23.0 ],
 									"text" : "timegrid 0, freqgrid 0"
 								}
 
@@ -508,7 +506,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 496.0, 355.5, 159.0, 40.0 ],
+									"patching_rect" : [ 496.0, 335.5, 159.0, 40.0 ],
 									"text" : "Maximum number of bins to display (0 = all)"
 								}
 
@@ -522,7 +520,7 @@
 									"numoutlets" : 1,
 									"orientation" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 393.0, 352.5, 97.0, 46.0 ]
+									"patching_rect" : [ 393.0, 332.5, 97.0, 46.0 ]
 								}
 
 							}
@@ -535,7 +533,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 205.513966480446925, 224.0, 127.0, 25.0 ],
+									"patching_rect" : [ 205.513966480446925, 204.0, 127.0, 25.0 ],
 									"text" : "Display start (ms)"
 								}
 
@@ -549,7 +547,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 424.513966480446925, 224.0, 123.0, 25.0 ],
+									"patching_rect" : [ 424.513966480446925, 204.0, 123.0, 25.0 ],
 									"text" : "Display end (ms)"
 								}
 
@@ -563,7 +561,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 366.02793296089385, 224.0, 50.0, 23.0 ]
+									"patching_rect" : [ 366.02793296089385, 204.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -576,24 +574,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 153.513966480446925, 224.0, 50.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"fontface" : 0,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"hyperlinkcolor" : [ 0.741176, 0.356863, 0.047059, 1.0 ],
-									"id" : "obj-22",
-									"linkstart" : [ "h" ],
-									"maxclass" : "bach.hypercomment",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 114.0, 473.0, 21.0 ],
-									"text" : "With ears.specshow~ you can display spectrograms obtained from STFT or CQT"
+									"patching_rect" : [ 153.513966480446925, 204.0, 50.0, 23.0 ]
 								}
 
 							}
@@ -607,7 +588,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 488.0, 264.5, 146.0, 69.0 ],
+									"patching_rect" : [ 488.0, 244.5, 146.0, 69.0 ],
 									"text" : "Scale automatically maxvalue and minvalue according to input buffer"
 								}
 
@@ -621,7 +602,7 @@
 									"numoutlets" : 1,
 									"orientation" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 393.0, 281.0, 90.0, 46.0 ]
+									"patching_rect" : [ 393.0, 261.0, 90.0, 46.0 ]
 								}
 
 							}
@@ -633,7 +614,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 475.54982857767277, 464.0, 170.90034284465446, 23.0 ]
+									"patching_rect" : [ 475.54982857767277, 444.0, 170.90034284465446, 23.0 ]
 								}
 
 							}
@@ -645,7 +626,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 475.54982857767277, 491.0, 170.90034284465446, 23.0 ]
+									"patching_rect" : [ 475.54982857767277, 471.0, 170.90034284465446, 23.0 ]
 								}
 
 							}
@@ -657,7 +638,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 475.54982857767277, 439.0, 170.90034284465446, 23.0 ]
+									"patching_rect" : [ 475.54982857767277, 419.0, 170.90034284465446, 23.0 ]
 								}
 
 							}
@@ -669,7 +650,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 475.54982857767277, 414.0, 170.90034284465446, 23.0 ]
+									"patching_rect" : [ 475.54982857767277, 394.0, 170.90034284465446, 23.0 ]
 								}
 
 							}
@@ -680,7 +661,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 146.5, 87.0, 23.0 ],
+									"patching_rect" : [ 10.0, 126.5, 87.0, 23.0 ],
 									"text" : "earsBufAnton"
 								}
 
@@ -694,7 +675,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 10.0, 183.0, 62.0, 23.0 ],
+									"patching_rect" : [ 10.0, 163.0, 62.0, 23.0 ],
 									"text" : "ears.cqt~"
 								}
 
@@ -708,11 +689,12 @@
 									"fontsize" : 10.0,
 									"id" : "obj-7",
 									"maxclass" : "ears.specshow~",
-									"maxvalue" : 0.041030246764421,
-									"minvalue" : 0.000000000014766,
+									"maxnumbins" : 200,
+									"maxvalue" : 0.252623170614243,
 									"numinlets" : 3,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 264.5, 375.02793296089385, 212.25 ]
+									"patching_rect" : [ 10.0, 244.5, 375.02793296089385, 212.25 ],
+									"timegridcolor" : [ 0.5, 0.5, 0.5, 1.0 ]
 								}
 
 							}
@@ -729,7 +711,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 491.0, 393.0, 36.0 ],
+									"patching_rect" : [ 10.0, 471.0, 393.0, 36.0 ],
 									"text" : "Click here to learn about the common features of ears modules, including in-place operations and dynamic allocation."
 								}
 
@@ -742,7 +724,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 516.0, 152.0, 23.0 ],
+									"patching_rect" : [ 21.0, 496.0, 152.0, 23.0 ],
 									"text" : "load ears.help.commons"
 								}
 
@@ -755,7 +737,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 551.0, 57.0, 23.0 ],
+									"patching_rect" : [ 21.0, 531.0, 57.0, 23.0 ],
 									"text" : "pcontrol"
 								}
 
@@ -794,7 +776,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 225.0, 146.5, 146.0, 25.0 ],
+									"patching_rect" : [ 225.0, 126.5, 146.0, 25.0 ],
 									"text" : "Send buffer name"
 								}
 
@@ -806,7 +788,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 130.0, 146.5, 87.0, 23.0 ],
+									"patching_rect" : [ 130.0, 126.5, 87.0, 23.0 ],
 									"text" : "earsBufAnton"
 								}
 
@@ -820,7 +802,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 130.0, 189.0, 366.0, 23.0 ],
+									"patching_rect" : [ 130.0, 169.0, 366.0, 23.0 ],
 									"text" : "ears.stft~ @framesize 2048 @hopsize 1024 @timeunit samps"
 								}
 
@@ -831,13 +813,13 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-10",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.specshow~", 90 ],
+									"jsarguments" : [ "ears.specshow~", 100 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 522.25, 100.0 ]
+									"patching_rect" : [ 10.0, 10.0, 582.25, 102.0 ]
 								}
 
 							}
@@ -845,7 +827,7 @@
 						"lines" : [ 							{
 								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
-									"midpoints" : [ 582.5, 259.75, 19.5, 259.75 ],
+									"midpoints" : [ 582.5, 239.75, 19.5, 239.75 ],
 									"source" : [ "obj-11", 0 ]
 								}
 
@@ -874,7 +856,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
-									"midpoints" : [ 602.5, 259.25, 19.5, 259.25 ],
+									"midpoints" : [ 602.5, 239.25, 19.5, 239.25 ],
 									"source" : [ "obj-16", 0 ]
 								}
 
@@ -1017,14 +999,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 836.0, 540.0 ],
+						"rect" : [ 0.0, 26.0, 836.0, 520.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1074,13 +1056,29 @@
  ],
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
-				"name" : "helpname.js",
+				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.cqt~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.specshow~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.stft~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
-				"name" : "helpdetails.js",
+				"name" : "helpname.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
@@ -1090,22 +1088,6 @@
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.stft~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.specshow~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.cqt~.mxo",
-				"type" : "iLaX"
 			}
  ],
 		"autosave" : 0

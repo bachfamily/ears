@@ -584,7 +584,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     llll_appenddouble(note_gain_ll, note_gain);
                     ears_buffer_assemble_once((t_object *)e_ob, dest, buf, note_gain_ll, ears_ms_to_samps(onset_ms, sr_os), earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth, &basebuffer_numframes, &basebuffer_allocatedframes);
                     llll_free(note_gain_ll);
-                    object_free(buf);
+                    ears_buffer_free(buf);
                 }
 
             }
@@ -610,11 +610,11 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     if (!use_assembly_line) {
         if (optimize_for_identical_samples) {
             for (long i = 0; i < noteinfo.size(); i++)
-                object_free(noteinfo[i].buffer);
+                ears_buffer_free(noteinfo[i].buffer);
         } else {
             for (t_llllelem *el = sources->l_head; el; el = el->l_next) {
                 t_buffer_obj *buf = (t_buffer_obj *)hatom_getobj(&el->l_hatom);
-                object_free(buf);
+                ears_buffer_free(buf);
             }
         }
     }

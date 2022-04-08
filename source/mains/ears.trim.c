@@ -21,7 +21,7 @@
 	Trim silence from a buffer
  
 	@description
-    Removes the silence at the beginning and/or at the end of a buffer, depending on an amplitude threshold
+    Removes the silence at the beginning and/or at the end of a buffer, depending on an amplitude threshold.
  
 	@discussion
  

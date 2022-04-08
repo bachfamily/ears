@@ -122,7 +122,6 @@ typedef enum _ears_bufstatus
 
 typedef struct earsbufobj_stored_buffer
 {
-    t_buffer_ref              *l_ref;
     t_symbol                  *l_name;
     t_object                  *l_buf;
     e_earsbufobj_bufstatus    l_status;
@@ -186,7 +185,7 @@ typedef struct _earsbufobj
                                                 /// Names for buffer outlets are static, i.e. "destructive” operation mode.
 // stuff for cycling over a finite list of generated output names
     t_llll                  *l_generated_outnames;    ///< Updated list of automatically generated output buffer names
-                                                      ///  (one subllll for each buffer outlet
+                                                      ///  (one subllll for each buffer outlet)
     long                    l_generated_outname_count[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
 
     // threading
@@ -234,13 +233,14 @@ typedef struct _earsbufobj
 
 void ears_error_bachcheck();
 
+
 /// Buffer mechanisms
 void ears_hashtabs_setup();
 t_hashtab *ears_hashtab_get();
 void ears_hashtab_inccount(t_symbol *name);
+void ears_hashtab_store(t_symbol *name);
 t_atom_long ears_hashtab_getcount(t_symbol *name);
-void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *name, char mustfree);
-void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx, bool prevent_from_freeing = false);
+void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx);
 
 // spectrogram table
 t_hashtab *ears_hashtab_spectrograms_get();
@@ -250,6 +250,13 @@ void *ears_hashtab_spectrograms_retrieve(t_symbol *buffername);
 
 // Proxy mechanism
 long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob);
+
+
+// Handling generated out names
+t_llll *earsbufobj_generated_names_llll_getlist(t_llll *ll, long pos1, long pos2);
+t_llllelem *earsbufobj_generated_names_llll_getsymbol(t_llll *ll, long pos1, long pos2, long pos3);
+void earsbufobj_generated_names_llll_subssymbol(t_llll *ll, t_symbol *sym, long pos1, long pos2, long pos3);
+
 
 
 /// Accessors
@@ -303,11 +310,9 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
 
 e_slope_mapping earsbufobj_get_slope_mapping(t_earsbufobj *e_ob);
 
-t_buffer_ref *earsbufobj_get_inlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx, bool update_buffer_obj = true);
 t_symbol *earsbufobj_get_inlet_buffer_name(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 
-t_buffer_ref *earsbufobj_get_outlet_buffer_ref(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_object *earsbufobj_get_outlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 t_symbol *earsbufobj_get_outlet_buffer_name(t_earsbufobj *e_ob, long store_idx, long buffer_idx);
 long earsbufobj_outlet_to_bufstore(t_earsbufobj *e_ob, long outlet);
@@ -335,7 +340,6 @@ long earsbufobj_get_num_outlet_stored_buffers(t_earsbufobj *e_ob, long store_idx
 
 
 t_earsbufobj_store *earsbufobj_get_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long index);
-t_buffer_ref *earsbufobj_get_stored_buffer_ref(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx);
 t_buffer_obj *earsbufobj_get_stored_buffer_obj(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx);
 t_symbol *earsbufobj_get_stored_buffer_name(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx);
 

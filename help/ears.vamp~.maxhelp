@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 891.0, 572.0 ],
+		"rect" : [ 226.0, 196.0, 891.0, 572.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -388,7 +388,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 891.0, 546.0 ],
+						"rect" : [ 226.0, 222.0, 891.0, 546.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -641,9 +641,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 5,
-									"numoutlets" : 5,
-									"outlettype" : [ "", "", "", "", "" ],
+									"numinlets" : 1,
+									"numoutlets" : 4,
+									"outlettype" : [ "", "", "", "" ],
 									"patching_rect" : [ 10.0, 268.0, 861.0, 23.0 ],
 									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy bbc-vamp-plugins:bbc-energy... bbc-vamp-plugins:bbc-energy::: bbc-vamp-plugins:bbc-energy~ @out mn"
 								}
@@ -918,7 +918,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 422.5, 310.0, 288.5, 52.0 ],
+									"patching_rect" : [ 422.5, 310.0, 292.0, 52.0 ],
 									"text" : "[ -421.784775 -6.097472 -17.197474 -11.132143 -12.417735 -10.31911 -1.850591 4.411842 6.921427 -1.578525 -2.085429 ]"
 								}
 
@@ -1005,8 +1005,8 @@
 									"id" : "obj-14",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 419.0, 258.0, 242.0, 23.0 ],
 									"text" : "ears.vamp~ vamp-libxtract:mfcc @out m"
 								}
@@ -1602,9 +1602,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 3,
-									"numoutlets" : 3,
-									"outlettype" : [ "", "", "" ],
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 10.0, 266.0, 485.0, 23.0 ],
 									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy::: vamp-libxtract:zcr..."
 								}

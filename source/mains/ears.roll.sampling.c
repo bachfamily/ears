@@ -21,9 +21,10 @@
 	Convert a <o>bach.roll</o> into a montage of audio samples
  
 	@description
-	Bounce a <o>bach.roll</o> object containing soundfile names in a given slot into a buffer
+	Bounces into a buffer a <o>bach.roll</o> object containing soundfile or buffer names.
  
 	@discussion
+    Soundfile or buffer names must be contained in a slot.
  
 	@category
 	ears export
