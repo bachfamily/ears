@@ -66,6 +66,7 @@ The modifications are the following:
     r->buffer2 = NULL;
     r->buflen2 = 0;
 at line 152 of libaiff.c
+- Fixed a bug in lpcm_dequant() which gave reversed buffers for 24 bit files
 You do not need to install the library, because the sources are directly compiled in the project.
 
 

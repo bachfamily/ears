@@ -171,8 +171,9 @@ lpcm_dequant(int segmentSize, void *buffer, float *outSamples, int nSamples)
 			  uint8_t *b = (uint8_t *) buffer;
 			  int32_t integer;
 			  int sgn;
+              long i = 0;
 			  
-			  while (nSamples-- > 0)
+			  while (i < nSamples)
 				{
 #ifdef WORDS_BIGENDIAN
 				  sgn = b[0] & 0x80;
@@ -197,8 +198,9 @@ lpcm_dequant(int segmentSize, void *buffer, float *outSamples, int nSamples)
 					  integer = (int32_t) (0xFF000000 | (uint32_t) integer);
 					}
 				  
-				  outSamples[nSamples] = (float) integer / 8388608.0;
+				  outSamples[i] = (float) integer / 8388608.0;
 				  b += 3;
+                  i++;
 				}
 			  break;
 		  }
