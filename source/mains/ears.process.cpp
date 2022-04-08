@@ -1036,6 +1036,8 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         (num_buffer_to_iter == 0 && x->generator))
         num_buffer_to_iter = 1;
 
+    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+
     for (long i = 0; i < x->nBufOutlets; i++)
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, i, num_buffer_to_iter, true);
     
