@@ -1212,6 +1212,7 @@ void earsbufobj_add_common_methods(t_class *c, long flags)
     class_addmethod(c, (method)earsbufobj_writegeneral, "writemp3", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writewavpack", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writewv", A_GIMME, 0);
+    
     class_addmethod(c, (method)earsbufobj_open, "open", 0);
 
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
@@ -3177,3 +3178,7 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
 }
 
 
+t_bool earsbufobj_is_sym_naming_mech(t_symbol *s)
+{
+    return s == gensym("!") || s == gensym("=") || s == gensym("_");
+}

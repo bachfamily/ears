@@ -21,6 +21,8 @@ const int EARS_PROCESS_MAX_DATA_OUTLETS = EARS_PROCESS_MAX_DATA_INLETS;
 
 const int EARS_PROCESS_MAX_VS = 4096;
 
+const int EARS_INTILDE_MAX_CHANS = 256;
+const int EARS_OUTTILDE_MAX_CHANS = 256;
 
 class bufferData {
 public:
@@ -61,7 +63,7 @@ typedef std::vector<t_sample> sampleVector;
 
 class audioChannel {
 private:
-    static const t_atom_long maxAllocSize = 1 << 20;
+    static const t_atom_long maxAllocSize = 1 << 24;
     void increaseAllocSize() {
         if (lastAllocSize < maxAllocSize)
             lastAllocSize *= 2;
@@ -203,6 +205,21 @@ public:
     }
     
 };
+
+
+
+typedef struct {
+    t_pxobject x_obj;
+    t_atom_long ioNum;
+    t_atom_long chan[EARS_OUTTILDE_MAX_CHANS];
+    int nChans;
+    t_object* earsProcessParent;
+    t_atom_long position;
+} t_ears_inouttilde;
+
+long ears_inouttilde_int(t_ears_inouttilde *x, long v);
+long ears_inouttilde_float(t_ears_inouttilde *x, double v);
+long ears_inouttilde_anything(t_ears_inouttilde *x, t_symbol *s, long ac, t_atom *av);
 
 
 #endif /* ears_process_h */

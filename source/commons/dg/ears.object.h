@@ -399,5 +399,7 @@ double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value);
 t_llll *earsbufobj_llllelem_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, e_ears_timeunit dest_envtimeunit, double orig_from, double orig_to, char convert_from_decibels);
 t_llll *earsbufobj_llll_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf, e_ears_timeunit dest_envtimeunit, double orig_from, double orig_to, char convert_from_decibels);
 
+// returns true if the s is _ = or !
+t_bool earsbufobj_is_sym_naming_mech(t_symbol *s);
 
 #endif // _EARS_BUF_OBJECT_H_

@@ -1,10 +1,45 @@
-//
-//  ears.fromvector~.cpp
-//  lib_ears
-//
-//  Created by andreaagostini on 03/04/2021.
-//
-
+/**
+ @file
+ ears.fromvector.c
+ 
+ @name
+ ears.fromvector~
+ 
+ @realname
+ ears.fromvector~
+ 
+ @type
+ object
+ 
+ @module
+ ears
+ 
+ @author
+ Andrea Agostini, partly based upon work by Alexander J. Harker
+ 
+ @digest
+ Convert synchronously a signal vector into a list
+ 
+ @description
+ The <o>ears.fromvector~</o> object inside a patch loaded by ears.process~
+ converts a signal vector into a list.
+ It will then be possible to operate upon the list with regular Max object,
+ and then convert it back to a signal vector through the <o>ears.tovector~</o> object.
+ 
+ @discussion
+ 
+ @category
+ ears process
+ 
+ @keywords
+ buffer, offline, patch, patcher, non-realtime
+ 
+ @seealso
+ ears.in~, ears.tovector~
+ 
+ @owner
+ Andrea Agostini
+ */
 
 #include "ears.process_commons.h"
 #include <z_dsp.h>
@@ -33,6 +68,11 @@ int C74_EXPORT main()
 {
     common_symbols_init();
     llllobj_common_symbols_init();
+    
+    if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
+        ears_error_bachcheck();
+        return 1;
+    }
     
     ears_fromvector_class = class_new("ears.fromvector~",
                                     (method) ears_fromvector_new,
@@ -70,7 +110,10 @@ void ears_fromvector_free(t_ears_fromvector *x)
 
 void ears_fromvector_assist(t_ears_fromvector *x, void *b, long m, long a, char *s)
 {
-    
+    if (m == ASSIST_OUTLET)
+        sprintf(s,"(list) Signal Vector as a List"); // @out 0 @type list @digest Input signal
+    else
+        sprintf(s,"(int) Dummy");
 }
 
 void ears_fromvector_perform64(t_ears_fromvector *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam)
@@ -87,8 +130,9 @@ void ears_fromvector_perform64(t_ears_fromvector *x, t_dspchain *dsp64, double *
 
 void ears_fromvector_dsp64(t_ears_fromvector *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
-    object_method(dsp64, gensym("dsp_add64"), x, ears_fromvector_perform64, 0, NULL);
     if (!x->earsProcessParent) {
-        object_warn((t_object *) x, "Can cause trouble if used outside ears.process~");
+        object_error((t_object *) x, "Only works inside ears.process~");
+    } else {
+        object_method(dsp64, gensym("dsp_add64"), x, ears_fromvector_perform64, 0, NULL);
     }
 }

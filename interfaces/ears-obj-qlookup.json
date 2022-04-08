@@ -17,6 +17,43 @@
       "ears.istft~"
     ]
   },
+  "ears.fromvector~": {
+    "digest": "Convert synchronously a signal vector into a list",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in~",
+      "ears.tovector~"
+    ]
+  },
+  "ears.out": {
+    "digest": "Message input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in~",
+      "ears.out",
+      "ears.out~"
+    ]
+  },
   "ears.lace~": {
     "digest": "Interleave buffer channels",
     "module": "ears",
@@ -75,6 +112,24 @@
       "ears.sftf~",
       "ears.cqt~",
       "bach.trans"
+    ]
+  },
+  "ears.tovector~": {
+    "digest": "Convert synchronously a list of numbers into a signal vector",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.out~",
+      "ears.tovector~"
     ]
   },
   "ears.process~": {
@@ -625,6 +680,26 @@
       "ears.model.sps.synthesis~"
     ]
   },
+  "ears.out~": {
+    "digest": "Signal output for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.mc.in~",
+      "ears.in~",
+      "ears.tovector~"
+    ]
+  },
   "ears.pan~": {
     "digest": "1D buffer panning",
     "module": "ears",
@@ -756,6 +831,25 @@
       "ears.hoa.mirror~"
     ]
   },
+  "ears.in": {
+    "digest": "Message input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in~",
+      "ears.out",
+      "ears.out~"
+    ]
+  },
   "ears.biquad~": {
     "digest": "Two-pole two-zero filter for buffers",
     "module": "ears",
@@ -779,6 +873,27 @@
     "seealso": [
       "biquad~",
       "ears.onepole~"
+    ]
+  },
+  "ears.mc.out~": {
+    "digest": "Signal output for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime",
+      "multichannel"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.in~",
+      "ears.out",
+      "ears.tovector~"
     ]
   },
   "ears.filterempty~": {

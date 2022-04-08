@@ -24,7 +24,7 @@ The packaged version of Essentia has been modified to
 3) fix some little bugs (e.g. parameters of the SPS model were not passed to the internal sinusoidal model).
 
 To build the library, you should use the lightweight configuration, without dependencies.
-If you're on a Mac Intel, enter the library folder and then:
+If you're on a Mac Intel (but NOT on a Silicon machine: for this see below!), enter the library folder (source/lib/essentia-2.1_beta5-modif) and then:
 
     ./waf configure --build-static --fft='KISS' --lightweight=""
     ./waf
@@ -40,12 +40,12 @@ If you're on an Apple Silicon machine, in principle by running the line above yo
     mv /usr/local/lib/libessentia.a /usr/local/lib/libessentia_arm64.a
 3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.essentia~ in the Xcode project. If you want to build both architecture instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure.
 4) Re-enter the library folder, and then
-    arch -x64_64 zsh
+    arch -x86_64 zsh
     ./waf configure --build-static --fft='KISS' --lightweight=""
     ./waf
     ./waf install
     cd /usr/local/lib
-    lipo libessentia_backup.a -extract arm64 -output libessentia_arm64.a
+    lipo libessentia.a libessentia_arm64.a -create -output libessentia.a
 
 Notice we are using the KissFFT library because it is already a dependency of bach (see below).
 
@@ -54,7 +54,7 @@ Notice we are using the KissFFT library because it is already a dependency of ba
 A version of the library is included in the repository. On a Mac, simply enter the folder source/lib/taglib-1.12/
 then
 
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_OSX_ARCHITECTURES="i386;x86_64;arm64" -DBUILD_SHARED_LIBS=OFF .
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DBUILD_SHARED_LIBS=OFF .
     make
     make install
 
@@ -70,14 +70,17 @@ at line 152 of libaiff.c
 You do not need to install the library, because the sources are directly compiled in the project.
 
 
-• For the [ears.write~] and [ears.read~] module: the AudioFile library released under GPLv3)
+• For the [ears.write~] and [ears.read~] module: the AudioFile library (released under GPLv3)
 A modified version of the library is included in the repository.
 The modifications extend the functionalities of the library in order to support marker and cues in WAV files.
+You do not need to compile or install the library separately: sources are directly compiled within the project.
 
-• the mpg123 library 1.23.4 (released under LGPLv2.1). To do so, run
+• the mpg123 library 1.23.4 (released under LGPLv2.1). 
+We have tested with versio 1.29.3 (and, previously with version 1.23.4). It may work with following versions also.
+Download the source code from https://www.mpg123.de, enter the folder, then run
 ./configure --enable-static=yes
-make install
 make
+make install
 If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmpg123.a
 If you need to build it for Apple Silicon, you need to
 1. Run the commands above
@@ -90,29 +93,48 @@ If you need to build it for Apple Silicon, you need to
  lipo libmpg123.a libmpg123.arm64 -create -output libmpg123.a
 7. Remove libmpg123.arm64
 
+
 • The mp3 LAME library 3.1.00, licensed under the LGPL (If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmp3lame.a)
 On an Apple Silicon machine, you need to have two versions of Homebrew installed, respectively for the ARM64 and Intel architectures. The ARM64 is the default one, which you can install by running in the terminal the commands provided listed the Homebrew site home page. Once you've done this, you can run `brew install lame' as usual.
   Once you've done this, you must install Homebrew for the Intel architecture. To do so, run `arch -x86_64 zsh' in a terminal. This will open a zsh session under Rosetta 2. Now you have to install Homebrew anew, but the x64 version will be installed in a different location: /usr/local/Homebrew/bin . If you just call the system-wide brew, the arm64 version will be called, so now you have to run `/usr/local/Homebrew/bin/brew install lame'.
   At this point, you have two architecture-specific versions of the library installed, which you now need to pack in a single fat binary. The arm64 version is in /opt/homebrew/lib, the x86 version is in /usr/local/opt/lame/lib. So we have to run the following line:
-    lipo /usr/local/opt/mpfr/lib/libmp3lame.a /opt/homebrew/lib/libmp3lame.a -create -output /usr/local/opt/lame/lib/libmp3lame.a
+    lipo /usr/local/opt/lame/lib/libmp3lame.a /opt/homebrew/lib/libmp3lame.a -create -output /usr/local/opt/lame/lib/libmp3lame.a
 Now the file that previously contained the x86 version contains the fat binary, while the arm64 files has not been changed. This should allow you to compile everything.
 
 • WavPack (released under BSD license)
+You do not need to compile or install the library separately: sources are directly compiled within the project.
 
 • for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
+You do not need to compile or install the library separately: sources are directly compiled within the project.
 
 • for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2)
+You do not need to compile or install the library separately: sources are directly compiled within the project.
 
-• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2); a slightly modified version of commit f42a369 is included in the repository; the resampler used is libsamplerate (released under BSD license), which you must install from Homebrew on Apple Silicon, following the same steps provided for the lame library (download separately the arm64 and x86 version, and combine them with lipo).
+• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2); a slightly modified version of commit f42a369 is included in the repository.
+You do not need to compile or install the library separately: sources are directly compiled within the project.
+However you may need to install the resampler dependency. The resampler used is libsamplerate (released under BSD license), which you must install from Homebrew on Apple Silicon, following the same steps provided for the lame library (download separately the arm64 and x86 version, and combine them with lipo).
+On Apple Silicon:
+1) type "brew install libsamplerate". This creates /opt/homebrew/lib/libsamplerate.a
+2) enter rosetta with "arch -x86_46 zsh", and use the Rosetta homebrew version you previously installed and type "/usr/local/Homebrew/bin/brew install libsamplerate".
+This creates  /usr/local/lib/libsamplerate.a
+3) keep a copy of the x86 lib if you want
+    cp  /usr/local/lib/libsamplerate.a /usr/local/lib/libsamplerate_x86_64.a
+3) then combine them
+    lipo /usr/local/lib/libsamplerate.a /opt/homebrew/lib/libsamplerate.a -create -output /usr/local/lib/libsamplerate.a
+
 
 • for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
+You do not need to compile or install the library separately: sources are directly compiled within the project.
 
-• for the [ears.vamp~] module: a slightly modified version of the VAMP Plugin and host SDK, which is located inside the repository.
+• for the [ears.vamp~] module: a slightly modified version of the VAMP Plugin and host SDK, which is located inside the repository (source/lib/vamp-plugin-sdk-master).
 To compile on a Mac Intel, go to the library folder and run
 make -f build/Makefile.osx
 To compile on a Mac M1, go to the library folder and run
 make -f build/Makefile.osxm1 sdk
 Note that, on the M1, building the vamp example plugins is potentially problematic because of their dependencies that should all be built for the arm64 architecture. 
+
+
+-------------------------
 
 In turn, bach depends on
 - A modified version of Simon Tatham's listsort (https://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.c), released under the terms of the MIT License.
@@ -134,4 +156,4 @@ Related projects
 Copyrights
 ==========
 
-* Copyright (c) 2017-2021 Daniele Ghisi
+* Copyright (c) 2017-2022 Daniele Ghisi

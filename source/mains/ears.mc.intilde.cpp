@@ -49,8 +49,8 @@ t_class *ears_mcintilde_class;
 typedef struct _ears_mcintilde
 {
     t_pxobject x_obj;
-    long bufIndex;
-    long bufIndexOk;
+    long inlet;
+    long inletOk;
     long firstChan;
     long firstChanOk;
     long chans;
@@ -84,6 +84,11 @@ int C74_EXPORT main()
     common_symbols_init();
     llllobj_common_symbols_init();
     
+    if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
+        ears_error_bachcheck();
+        return 1;
+    }
+    
     ears_mcintilde_class = class_new("ears.mc.in~",
                                    (method)ears_mcintilde_new,
                                    (method)ears_mcintilde_free,
@@ -94,35 +99,28 @@ int C74_EXPORT main()
     
     class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_dsp64, "dsp64", A_CANT, 0);
     
-    // @method offset @digest Set channel offset
-    // @description The message <m>offset</m> followed
-    // by an integer sets the first channel
-    // to be output from <o>ears.mc.in~</o>'s outlet.
-    
-    // <o>ears.process~</o> whose data will be passed
-    // to the <o>ears.mc.in~</o> object.<br/>
-    // The channel offset is not changed.
-    //class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_offset, "offset", A_LONG, 0);
+    class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_assist, "assist", A_CANT, 0);
 
-    // @method int @digest Set input buffer
-    // @description An integer sets the inlet of
-    // <o>ears.process~</o> whose data will be passed
-    // to the <o>ears.mc.in~</o> object.<br/>
-    // The channel offset is not changed.
-    //class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_int, "int", A_LONG, 0);
-
-    
-    CLASS_ATTR_LONG(ears_mcintilde_class, "bufferindex", 0, t_ears_mcintilde, bufIndex);
-    CLASS_ATTR_LABEL(ears_mcintilde_class, "bufferindex", 0, "Buffer Index");
-    CLASS_ATTR_FILTER_MIN(ears_mcintilde_class, "bufferindex", 1);
+    CLASS_ATTR_LONG(ears_mcintilde_class, "inlet", 0, t_ears_mcintilde, inlet);
+    CLASS_ATTR_LABEL(ears_mcintilde_class, "inlet", 0, "ears.process~ Inlet Number");
+    CLASS_ATTR_FILTER_MIN(ears_mcintilde_class, "inlet", 1);
+    // @description Sets the number of the inlet of <o>ears.process~</o>
+    // (conted from 1, starting from the leftmost)
+    // whose buffer contents are to be passed to <o>ears.mc.in~</o>.
     
     CLASS_ATTR_LONG(ears_mcintilde_class, "firstchannel", 0, t_ears_mcintilde, firstChan);
     CLASS_ATTR_LABEL(ears_mcintilde_class, "firstchannel", 0, "First Channel");
     CLASS_ATTR_FILTER_MIN(ears_mcintilde_class, "firstchannel", 1);
+    // @description Sets the first channel of the incoming buffer.
     
     CLASS_ATTR_LONG(ears_mcintilde_class, "chans", 0, t_ears_mcintilde, chans);
     CLASS_ATTR_LABEL(ears_mcintilde_class, "chans", 0, "Output Channels");
     CLASS_ATTR_FILTER_MIN(ears_mcintilde_class, "chans", 0);
+    // @description Sets how many channels, starting from the value of the
+    // <m>firstchannel</m> attribute, must be retrieved from the buffer and output.
+    // The default is 0, meaning that the all the buffer channels
+    // will be passed, up to a maximum to 1024
+    // (that is, the maximum channel count for a multichannel signal).
     
     class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_setbuffers, "setbuffers", A_CANT, 0);
     class_addmethod(ears_mcintilde_class, (method)ears_mcintilde_multichanneloutputs, "multichanneloutputs", A_CANT, 0);
@@ -134,14 +132,36 @@ int C74_EXPORT main()
     return 0;
 }
 
+
+
 t_ears_mcintilde *ears_mcintilde_new(t_symbol *s, long ac, t_atom* av)
 {
     t_ears_mcintilde *x = (t_ears_mcintilde*) object_alloc(ears_mcintilde_class);
+    
+    // @arg 0 @name inlet @optional 1 @type number @digest ears.process~ Signal Inlet Number
+    // @description The number of the inlet of <o>ears.process~</o>
+    // (conted from 1, starting from the leftmost)
+    // whose buffer contents are to be passed to <o>ears.mc.in~</o>.
+    // It corresponds to the <m>inlet</m> attribute, default is 1.
+
+    // @arg 1 @name first_channel @optional 1 @type number @digest First Channel
+    // @description the first channel of the incoming buffer
+    // to be passed to <o>ears.process~</o>.
+    // It corresponds to the <m>inlet</m> attribute, default is 1.
+    
+    // @arg 2 @name channels @optional 1 @type number @digest Output Channels
+    // @description The number of the output channels, starting from the value of the second argument or the
+    // <m>firstchannel</m> attribute, must be passed to <o>ears.process~</o>.
+    // It corresponds to the <m>chans</m> attribute.
+    // The default is 0, meaning that the all the buffer channels
+    // will have be passed, up to a maximum to 1024
+    // (that is, the maximum channel count for a multichannel signal).
+    
     x->earsProcessParent = getParentEarsProcess((t_object *) x);
     
     dsp_setup((t_pxobject *) x, 0);
     
-    x->bufIndex = 1;
+    x->inlet = 1;
     x->firstChan = 1;
     
     long true_ac = attr_args_offset(ac, av);
@@ -149,9 +169,9 @@ t_ears_mcintilde *ears_mcintilde_new(t_symbol *s, long ac, t_atom* av)
     if (true_ac > 0) {
         long b = atom_getlong(av);
         if (b > 0 && b <= EARS_PROCESS_MAX_INPUT_BUFFERS)
-            x->bufIndex = b;
+            x->inlet = b;
         else
-            object_error((t_object *) x, "Bad buffer index");
+            object_error((t_object *) x, "Bad inlet number");
         true_ac--;
         ac--;
         av++;
@@ -168,12 +188,23 @@ t_ears_mcintilde *ears_mcintilde_new(t_symbol *s, long ac, t_atom* av)
         av++;
     }
     
+    if (true_ac > 0) {
+        long c = atom_getlong(av);
+        if (c > 0 && c <= 1024)
+            x->chans = c;
+        else
+            object_error((t_object *) x, "Bad channel count");
+        true_ac--;
+        ac--;
+        av++;
+    }
+    
     attr_args_process(x, ac, av);
   
     outlet_new(x, "multichannelsignal");
     
     if (x->earsProcessParent)
-        object_method(x->earsProcessParent, gensym("ears.in~_created"), x->bufIndex, x);
+        object_method(x->earsProcessParent, gensym("ears.in~_created"), x->inlet, x);
     return x;
 }
 
@@ -186,16 +217,21 @@ void ears_mcintilde_free(t_ears_mcintilde *x)
 
 void ears_mcintilde_assist(t_ears_mcintilde *x, void *b, long m, long a, char *s)
 {
-    
+    if (m == ASSIST_INLET) {
+        switch (a) {
+            case 0: sprintf(s, "Dummy"); break;
+        }
+    } else {
+        sprintf(s, "(signal) Input %ld", a); // @out 0 @type signal @loop 1 @digest Input multichannel signal
+    }
 }
-
 
 // TODO: parallelize
 
 void ears_mcintilde_perform64(t_ears_mcintilde *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam)
 {
-    unsigned short bufIndex = x->bufIndex;
-    bufferData *buf = x->bufs ? x->bufs + bufIndex - 1 : nullptr;
+    unsigned short inlet = x->inlet;
+    bufferData *buf = x->bufs ? x->bufs + inlet - 1 : nullptr;
     int s;
     long offset = x->firstChanOk - 1;
     if (!buf || offset >= buf->chans) {
@@ -256,11 +292,11 @@ long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
 {
     if (!x->earsProcessParent)
         return 1;
-    x->bufIndexOk = x->bufIndex;
+    x->inletOk = x->inlet;
     x->firstChanOk = x->firstChan;
     x->chansOk = x->chans;
-    if (auto b = &x->bufs[x->bufIndexOk - 1]) {
-        if (x->chansOk != 0)
+    if (auto b = &x->bufs[x->inletOk - 1]) {
+        if (x->chansOk > 0)
             return x->chansOk;
         else {
             return MIN(MAX(b->chans - x->firstChan, 0) + 1, 1024);
@@ -270,5 +306,3 @@ long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
         return 1;
     }
 }
-
-

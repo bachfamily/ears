@@ -415,7 +415,9 @@ void buf_write_bang(t_buf_write *x)
     t_symbol **names_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
     t_symbol **fullpath_sym = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
     t_llllelem *fullpath_el;
-    for (i = 0, el = names->l_head, fullpath_el = fullpaths->l_head; el; el = el->l_next, fullpath_el = fullpath_el ? fullpath_el->l_next : NULL, i++) {
+    for (i = 0, el = names->l_head, fullpath_el = fullpaths->l_head;
+         el && i < num_buffers;
+         el = el->l_next, fullpath_el = fullpath_el ? fullpath_el->l_next : NULL, i++) {
         names_sym[i] = hatom_getsym(&el->l_hatom);
         fullpath_sym[i] = fullpath_el ? hatom_getsym(&fullpath_el->l_hatom) : names_sym[i];
     }
