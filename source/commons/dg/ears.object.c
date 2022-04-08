@@ -111,7 +111,7 @@ void earsbufobj_buffer_release_raw(t_earsbufobj *e_ob, t_object *buf, t_symbol *
                     }
                     
                     if (mustfree) {
-                        object_free_debug(buf); ///< This makes Max crash, for some weird reason... Gotta discover why, highest priority
+                        object_free_debug(buf);
                     }
                 }
             } else {
