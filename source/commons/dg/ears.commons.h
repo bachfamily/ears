@@ -9,7 +9,7 @@
 #ifndef _EARS_BUF_COMMONS_H_
 #define _EARS_BUF_COMMONS_H_
 
-#define EARS_ALLOCATIONVERBOSE true
+#define EARS_ALLOCATIONVERBOSE false
 
 #define EARS_ERROR_BUF_CANT_READ "Can't read from buffer"
 #define EARS_ERROR_BUF_CANT_WRITE "Can't write to buffer"
