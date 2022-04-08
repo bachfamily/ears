@@ -9,6 +9,8 @@
 #ifndef _EARS_BUF_COMMONS_H_
 #define _EARS_BUF_COMMONS_H_
 
+#define EARS_ALLOCATIONVERBOSE true
+
 #define EARS_ERROR_BUF_CANT_READ "Can't read from buffer"
 #define EARS_ERROR_BUF_CANT_WRITE "Can't write to buffer"
 #define EARS_ERROR_BUF_NO_BUFFER "No buffer given"
@@ -251,11 +253,10 @@ t_ears_spectralbuf_metadata spectralbuf_metadata_get_empty();
 // BUFFER LIFECYCLE
 
 // This one is the core function that creates new buffers when needed. It's a wrapper of object_new_typed()
-t_buffer_obj *ears_buffer_make(t_symbol *buffername); // create a new buffer
-t_max_err ears_buffer_retain(t_buffer_obj *buffer); // retain an existing buffer
-t_max_err ears_buffer_release(t_buffer_obj *buffer); // currently equivalent to ears_buffer_free()
+t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable = false); // create a new buffer
+t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll *generated_names); // retain an existing buffer
+t_max_err ears_buffer_release(t_buffer_obj *buffer, t_symbol *buffername); // currently equivalent to ears_buffer_free()
 t_max_err ears_buffer_free(t_buffer_obj *buffer);
-t_symbol *ears_bufferref_to_name(t_buffer_ref *ref);
 
 
 

@@ -68,7 +68,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 0.0, 640.0, 480.0 ],
+						"rect" : [ 59.0, 119.0, 640.0, 480.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -103,8 +103,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 50.0, 278.7799072265625, 74.0, 22.0 ],
-									"text" : "chanoffset 8"
+									"patching_rect" : [ 370.0, 308.7799072265625, 74.0, 22.0 ],
+									"text" : "chanoffset 1"
 								}
 
 							}
@@ -115,8 +115,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 50.0, 255.551850318908691, 74.0, 22.0 ],
-									"text" : "chanoffset 7"
+									"patching_rect" : [ 318.0, 258.551850318908691, 74.0, 22.0 ],
+									"text" : "chanoffset 2"
 								}
 
 							}
@@ -127,8 +127,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 50.0, 234.909348011016846, 74.0, 22.0 ],
-									"text" : "chanoffset 6"
+									"patching_rect" : [ 260.0, 239.909348011016846, 74.0, 22.0 ],
+									"text" : "chanoffset 3"
 								}
 
 							}
@@ -139,8 +139,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 50.0, 208.909348011016846, 74.0, 22.0 ],
-									"text" : "chanoffset 5"
+									"patching_rect" : [ 198.0, 208.909348011016846, 74.0, 22.0 ],
+									"text" : "chanoffset 4"
 								}
 
 							}
@@ -151,8 +151,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 50.0, 179.2877197265625, 74.0, 22.0 ],
-									"text" : "chanoffset 4"
+									"patching_rect" : [ 138.0, 179.2877197265625, 74.0, 22.0 ],
+									"text" : "chanoffset 5"
 								}
 
 							}
@@ -163,8 +163,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 50.0, 154.370697021484375, 74.0, 22.0 ],
-									"text" : "chanoffset 3"
+									"patching_rect" : [ 98.0, 155.2877197265625, 74.0, 22.0 ],
+									"text" : "chanoffset 6"
 								}
 
 							}
@@ -175,8 +175,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 50.0, 130.0, 74.0, 22.0 ],
-									"text" : "chanoffset 2"
+									"patching_rect" : [ 63.0, 128.0, 74.0, 22.0 ],
+									"text" : "chanoffset 7"
 								}
 
 							}
@@ -188,7 +188,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 50.0, 100.0, 74.0, 22.0 ],
-									"text" : "chanoffset 1"
+									"text" : "chanoffset 8"
 								}
 
 							}
@@ -484,15 +484,14 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 453.0, 411.48028564453125, 97.5, 142.0 ],
-					"text" : "8\n\n7\n\n6\n\n5\n\n4\n\n3\n\n2\n\n1\n"
+					"patching_rect" : [ 453.0, 411.48028564453125, 97.5, 134.0 ],
+					"text" : "8\n\n7\n\n6\n\n5\n\n4\n\n3\n\n2\n\n1"
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
-					"chanoffset" : 8,
+					"buffername" : "u251001489",
 					"id" : "obj-37",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -506,8 +505,8 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
-					"chanoffset" : 7,
+					"buffername" : "u251001489",
+					"chanoffset" : 2,
 					"id" : "obj-38",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -521,8 +520,8 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
-					"chanoffset" : 6,
+					"buffername" : "u251001489",
+					"chanoffset" : 3,
 					"id" : "obj-39",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -536,8 +535,8 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
-					"chanoffset" : 5,
+					"buffername" : "u251001489",
+					"chanoffset" : 4,
 					"id" : "obj-35",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -551,8 +550,8 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
-					"chanoffset" : 4,
+					"buffername" : "u251001489",
+					"chanoffset" : 5,
 					"id" : "obj-36",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -566,8 +565,8 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
-					"chanoffset" : 3,
+					"buffername" : "u251001489",
+					"chanoffset" : 6,
 					"id" : "obj-33",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -581,8 +580,8 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
-					"chanoffset" : 2,
+					"buffername" : "u251001489",
+					"chanoffset" : 7,
 					"id" : "obj-20",
 					"labels" : 0,
 					"maxclass" : "waveform~",
@@ -608,7 +607,8 @@
 			}
 , 			{
 				"box" : 				{
-					"buffername" : "u191000653",
+					"buffername" : "u251001489",
+					"chanoffset" : 8,
 					"id" : "obj-22",
 					"maxclass" : "waveform~",
 					"numinlets" : 5,

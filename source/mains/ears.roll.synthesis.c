@@ -21,7 +21,7 @@
 	Convert a <o>bach.roll</o> into a mix of synthesis
  
 	@description
-	Bounces a <o>bach.roll</o> object into a buffer considering each note a sinusoid
+	Bounces a <o>bach.roll</o> object into a buffer considering each note as an osciillator.
  
 	@discussion
  

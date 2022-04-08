@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 11,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 35.0, 79.0, 811.0, 514.0 ],
+		"rect" : [ 35.0, 100.0, 773.0, 521.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,45 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-16",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 317.0, 111.0, 125.0, 22.0 ],
+					"text" : "/tmp/myclicktrack.wav"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-19",
+					"maxclass" : "button",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 26.0, 314.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-7",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 173.0, 378.0, 61.0, 22.0 ],
+					"saved_object_attributes" : 					{
+						"versionnumber" : 80105
+					}
+,
+					"text" : "bach.print"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"bubble" : 1,
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
@@ -48,7 +87,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 135.0, 148.0, 173.0, 24.0 ],
-					"text" : "We generate 20 trajectories"
+					"text" : "We generate 5 trajectories"
 				}
 
 			}
@@ -218,8 +257,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 3,
 					"outlettype" : [ "bang", "bang", "int" ],
-					"patching_rect" : [ 90.0, 148.0, 41.0, 22.0 ],
-					"text" : "uzi 20"
+					"patching_rect" : [ 90.0, 148.0, 40.0, 22.0 ],
+					"text" : "uzi 5"
 				}
 
 			}
@@ -335,7 +374,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-29", 0 ],
-					"midpoints" : [ 110.5, 175.0, 55.5, 175.0 ],
+					"midpoints" : [ 110.0, 175.0, 55.5, 175.0 ],
 					"source" : [ "obj-12", 1 ]
 				}
 
@@ -365,8 +404,22 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-10", 0 ],
+					"source" : [ "obj-16", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-14", 3 ],
 					"source" : [ "obj-17", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-29", 0 ],
+					"source" : [ "obj-19", 0 ]
 				}
 
 			}
@@ -387,7 +440,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-2", 0 ],
-					"order" : 1,
+					"order" : 2,
 					"source" : [ "obj-29", 0 ]
 				}
 
@@ -395,6 +448,14 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-4", 0 ],
+					"order" : 1,
+					"source" : [ "obj-29", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-7", 0 ],
 					"order" : 0,
 					"source" : [ "obj-29", 0 ]
 				}
@@ -440,15 +501,7 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ears.write~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.read~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.hoa.encode~.mxo",
+				"name" : "bach.collect.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -456,7 +509,19 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.collect.mxo",
+				"name" : "bach.print.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.hoa.encode~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.read~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.write~.mxo",
 				"type" : "iLaX"
 			}
  ],

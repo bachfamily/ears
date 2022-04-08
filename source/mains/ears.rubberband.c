@@ -21,7 +21,7 @@
 	Rubber Band pitch and time processing
  
 	@description
-    Implements the Rubber Band library algorithms for pitch shifting and time stretching
+    Implements the Rubber Band library algorithms for pitch shifting and time stretching.
  
 	@discussion
     The original code for the Rubber Band library is by Breakfast Quay (https://breakfastquay.com/rubberband/)
