@@ -227,7 +227,7 @@ t_max_err earsprocess_get_ownsdspchain(t_earsprocess *x, t_object *attr, long *a
 
 
 
-
+t_llll *emptyLl;
 
 typedef enum {
     eDURPOLICY_SHORTEST = 0,
@@ -361,6 +361,8 @@ int C74_EXPORT main()
 
     earsbufobj_class_add_outname_attr(earsprocess_class);
     earsbufobj_class_add_naming_attr(earsprocess_class);
+    
+    llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);
 
     CLASS_ATTR_OBJ(earsprocess_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsprocess, e_ob);
     CLASS_ATTR_ACCESSORS(earsprocess_class, "ownsdspchain", (method) earsprocess_get_ownsdspchain, NULL);
@@ -448,14 +450,13 @@ int C74_EXPORT main()
     // When set to 0 (as per the default), the patch is only loaded
     // when <o>ears.process</o> is instantiated
     // or when the <m>patchername</m> message is received.
-
-    
-    
     
     CLASS_ATTR_LONG(earsprocess_class, "autoclock", 0, t_earsprocess, autoclock);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "autoclock", 0, "onoff", "Automatic Clock Message");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "autoclock", 0, 1);
 
+    emptyLl = llll_get();
+    
     class_register(CLASS_BOX, earsprocess_class);
     // @description
     // The <o>ears.process~</o> objects manages an internal <o>clock</o>
@@ -596,8 +597,6 @@ void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
 void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
 {
-    
-    
     // @arg 0 @name outnames @optional 1 @type symbol
     // @digest Output buffer names
     // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -621,7 +620,6 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
     attr_args_process(x, argc - true_ac, argv + true_ac);
     
     t_llll* args = llll_parse(true_ac, argv);
-    
     
     char intypes[2048];
     char outtypes[2048];
@@ -727,22 +725,21 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
     
     // e = buffer; E = buffer list;
 
-
-    for (i = 0; i < x->nBufInlets; i++) {
-        intypes[i] = 'E';
-    }
-    for (i = 0; i < x->theInsByIndex->maxIdx; i++) {
+    intypes[x->nBufInlets + x->theInsByIndex->maxIdx] = 0;
+    for (i = x->theInsByIndex->maxIdx - 1; i >= 0; i--) {
         intypes[i + x->nBufInlets] = '4';
     }
-    intypes[i + x->nBufInlets] = 0;
-    
-    for (i = x->nDataOutlets - 1; i >= 0; i--) {
-        x->dataOutlets[i] = outlet_new(x, NULL);
+    for (i = x->nBufInlets - 1; i >= 0; i--) {
+        intypes[i] = 'E';
     }
-    for (i = 0; i < x->nBufOutlets; i++) {
+
+    outtypes[x->nDataOutlets + x->nBufOutlets] = 0;
+    for (i = x->nDataOutlets - 1; i >= 0; i--) {
+        outtypes[i + x->nBufOutlets] = '4';
+    }
+    for (i = x->nBufOutlets - 1; i >= 0; i--) {
         outtypes[i] = 'E';
     }
-    outtypes[i] = 0;
 
     earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, names);
     llll_free(args);
@@ -975,7 +972,7 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
 {
     long inlet = proxy_getinlet((t_object *) x);
     if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
-        t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_MSP, s, ac, av, LLLL_PARSE_RETAIN);
+        t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_VANILLA, s, ac, av, LLLL_PARSE_RETAIN);
         if (!ll)
             return;
         for (t_object* in: *x->theInsByIndex->theMap[inlet - x->nBufInlets + 1]) {
@@ -1090,7 +1087,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         atom_setsym(&scarg, x->clock_name);
         t_object *setclock = (t_object *) newinstance(gensym("setclock"), 1, &scarg);
 
-        for (auto i: *x->theIns) {
+        for (t_object* i: *x->theIns) {
             object_method(i, gensym("iteration"), iterBuf + 1);
         }
         
@@ -1162,7 +1159,26 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             object_method(i, gensym("end"));
         }
         
+        for (t_object* o: *x->theOuts) {
+            object_method(o, gensym("iteration"), iterBuf + 1);
+        }
+        
         object_free(setclock);
+    }
+    
+    for (int i = x->nDataOutlets - 1; i >= 0; i--) {
+        llll_retain(emptyLl);
+        llllobj_gunload_llll((t_object *) x, LLLL_OBJ_VANILLA, emptyLl, i);
+    }
+    
+    for (t_object* o: *x->theOuts) {
+        object_method(o, gensym("finalize"));
+    }
+    
+    for (int i = x->nDataOutlets - 1; i >= 0; i--) {
+        if (llllobj_get_loaded_llll((t_object *) x, LLLL_OBJ_VANILLA, i) != emptyLl) {
+            llllobj_shoot_llll((t_object *) x, LLLL_OBJ_VANILLA, i);
+        }
     }
     
     for (int i = x->nBufOutlets - 1; i >= 0 ; i--)
