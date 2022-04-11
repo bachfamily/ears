@@ -1808,10 +1808,14 @@ void earsbufobj_outlet_buffer(t_earsbufobj *e_ob, long outnum)
             }
             
             if (c > 0) {
+                llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), c - 1, a + 1);
+                
+/*
                 if (c == 1)
                     llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), 0, NULL);
                 else
                     llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, _sym_list, c, a);
+ */
             }
             
             bach_freeptr(a);

@@ -83,6 +83,8 @@ public:
     }
     
     void remove(t_atom_long idx, T what) {
+        if (theMap.find(idx) == theMap.end())
+            return;
         theMap[idx]->erase(what);
         if (theMap[idx]->size() == 0) {
             delete theMap[idx];
@@ -98,7 +100,7 @@ public:
     }
 };
 
-typedef earsprocessMultiMap<void*> earsInOutlets;
+typedef earsprocessMultiMap<t_object*> earsInsByIndex;
 
 class earsOuts : public earsprocessMultiMap<t_object *>
 {
@@ -149,7 +151,8 @@ typedef struct _earsprocess
     t_atom_long nOutBufChans[EARS_PROCESS_MAX_OUTPUT_BUFFERS];
     t_atom_long nDataOutlets;
     
-    earsInOutlets *theInOutlets;
+    earsInsByIndex *theInsByIndex;
+    std::set<t_object*> *theIns;
     //earsOuts *theOuts;
     std::set<t_object*> *theOuts;
     void *dataOutlets[EARS_PROCESS_MAX_DATA_OUTLETS];
@@ -206,9 +209,9 @@ void earsprocess_earsintildedeleted(t_earsprocess *x, t_object *in);
 void earsprocess_earsouttildecreated(t_earsprocess *x, t_atom_long ioNum, t_object *out);
 void earsprocess_earsouttildedeleted(t_earsprocess *x, t_object *out);
 
-void earsprocess_earsincreated(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet);
+void earsprocess_earsincreated(t_earsprocess *x, t_object *in, t_atom_long n, t_atom_long *index);
 void earsprocess_earsoutcreated(t_earsprocess *x, long maxindex, t_object *obj);
-void earsprocess_earsindeleted(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet);
+void earsprocess_earsindeleted(t_earsprocess *x, t_object *in, t_atom_long n, t_atom_long *index);
 void earsprocess_earsoutdeleted(t_earsprocess *x, t_object *obj);
 
 void earsprocess_earsprocessinfocreated(t_earsprocess *x, t_object *obj);
@@ -556,9 +559,16 @@ void earsprocess_earsouttildedeleted(t_earsprocess *x, t_object *out)
     x->earsOutTildeObjects->erase(out);
 }
 
-void earsprocess_earsincreated(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet) {
+void earsprocess_earsincreated(t_earsprocess *x, t_object *in, t_atom_long n, t_atom_long *index) {
     for (int i = 0; i < n; i++)
-        x->theInOutlets->insert(*(index++), *(outlet++));
+        x->theInsByIndex->insert(*(index++), in);
+    x->theIns->insert(in);
+}
+
+void earsprocess_earsindeleted(t_earsprocess *x, t_object *in, t_atom_long n, t_atom_long *index) {
+    for (int i = 0; i < n; i++)
+        x->theInsByIndex->remove(*(index++), in);
+    x->theIns->erase(in);
 }
 
 void earsprocess_earsoutcreated(t_earsprocess *x, long maxindex, t_object *obj) {
@@ -566,10 +576,6 @@ void earsprocess_earsoutcreated(t_earsprocess *x, long maxindex, t_object *obj) 
     if (x->nDataOutlets < maxindex)
         x->nDataOutlets = maxindex;
 }
-
-void earsprocess_earsindeleted(t_earsprocess *x, t_atom_long n, t_atom_long *index, void **outlet) {
-    for (int i = 0; i < n; i++)
-        x->theInOutlets->remove(*(index++), *(outlet++));}
 
 void earsprocess_earsoutdeleted(t_earsprocess *x, t_object *obj) {
     x->theOuts->erase(obj);
@@ -702,7 +708,8 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
     
     t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
     
-    x->theInOutlets = new earsInOutlets;
+    x->theInsByIndex = new earsInsByIndex;
+    x->theIns = new std::set<t_object*>;
     x->theOuts = new std::set<t_object*>;
     x->earsInTildeObjects = new objectSet;
     x->earsOutTildeObjects = new objectSet;
@@ -724,8 +731,8 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
     for (i = 0; i < x->nBufInlets; i++) {
         intypes[i] = 'E';
     }
-    for (i = 0; i < x->theInOutlets->maxIdx; i++) {
-        intypes[i + x->nBufInlets] = 'a';
+    for (i = 0; i < x->theInsByIndex->maxIdx; i++) {
+        intypes[i + x->nBufInlets] = '4';
     }
     intypes[i + x->nBufInlets] = 0;
     
@@ -756,7 +763,8 @@ void earsprocess_free(t_earsprocess *x)
     earsprocess_wclose(x);
     object_free(x->client_patch);
     
-    delete x->theInOutlets;
+    delete x->theInsByIndex;
+    delete x->theIns;
     delete x->theOuts;
     delete x->earsInTildeObjects;
     delete x->earsOutTildeObjects;
@@ -786,9 +794,7 @@ void earsprocess_setupOutObjects(t_earsprocess *x)
 
 void earsprocess_patchername(t_earsprocess *x, t_symbol *patchname, long ac, t_atom *av)
 {
-    long inlet = proxy_getinlet((t_object *) x);
-    
-    x->theInOutlets->clear();
+    x->theInsByIndex->clear();
     x->theOuts->clear();
     x->earsInTildeObjects->clear();
     x->earsOutTildeObjects->clear();
@@ -936,15 +942,10 @@ void earsprocess_int(t_earsprocess *x, t_atom_long i)
     t_atom a[1];
     atom_setlong(a, i);
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
-        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
-        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
-            outlet_anything(o, _sym_int, 1, a);
-        }
-        if (inlet == 0)
-            earsprocess_bang(x);
+    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx) {
+        earsprocess_anything(x, _sym_int, 1, a);
     } else {
-        object_error((t_object *) x, "Don't understand int in inlet %ld", inlet + 1);
+        object_error((t_object *) x, "Doesn't understand int in inlet %ld", inlet + 1);
     }
 }
 
@@ -953,41 +954,36 @@ void earsprocess_float(t_earsprocess *x, t_atom_float f)
     t_atom a[1];
     atom_setfloat(a, f);
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
-        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
-        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
-            outlet_anything(o, _sym_int, 1, a);
-        }
-        if (inlet == 0)
-            earsprocess_bang(x);
+    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
+        earsprocess_anything(x, _sym_float, 1, a);
     } else {
-        object_error((t_object *) x, "Don't understand float in inlet %ld", inlet + 1);
+        object_error((t_object *) x, "Doesn't understand float in inlet %ld", inlet + 1);
     }
 }
 
 void earsprocess_list(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
-        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
-        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
-            outlet_list(o, nullptr, ac, av);
-        }
-        if (inlet == 0)
-            earsprocess_bang(x);
+    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
+        earsprocess_anything(x, s, ac, av);
     } else {
-        object_error((t_object *) x, "Don't understand list in inlet %ld", inlet + 1);
+        object_error((t_object *) x, "Doesn't understand list in inlet %ld", inlet + 1);
     }
 }
 
 void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom* av)
 {
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets && inlet < x->theInOutlets->maxIdx) {
-        // TODO: send to ears.in <<<--- SEEMS TO BE OK...
-        for (auto o: *x->theInOutlets->theMap[inlet - x->nBufInlets + 1]) {
-            outlet_anything(o, s, ac, av);
+    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
+        t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_MSP, s, ac, av, LLLL_PARSE_RETAIN);
+        if (!ll)
+            return;
+        for (t_object* in: *x->theInsByIndex->theMap[inlet - x->nBufInlets + 1]) {
+            object_method(in, gensym("llll"), ll, inlet - x->nBufInlets + 1);
         }
+        if (inlet == 0)
+            earsprocess_bang(x);
+        llll_release(ll);
         return;
     }
     
@@ -1094,6 +1090,10 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         atom_setsym(&scarg, x->clock_name);
         t_object *setclock = (t_object *) newinstance(gensym("setclock"), 1, &scarg);
 
+        for (auto i: *x->theIns) {
+            object_method(i, gensym("iteration"), iterBuf + 1);
+        }
+        
         if (iterBuf == 0) {
             earsprocess_autoclock(x, x->client_patch);
             for (t_object* o : *x->earsprocessinfoObjects) {
