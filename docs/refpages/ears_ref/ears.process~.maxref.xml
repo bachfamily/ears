@@ -58,21 +58,19 @@
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="outnames" optional="1" type="symbol">
-			<digest>
-				Output buffer names
-			</digest>
-			<description>
-				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
-			</description>
-		</objarg>
 		<objarg name="patcher" optional="1" type="symbol">
 			<digest>
 				Patcher name
 			</digest>
 			<description>
 				Sets the name of the patch to be loaded
+			</description>
+		</objarg>
+		<objarg name="outnames" optional="1" type="symbol/llll">
+			<digest>
+				Output buffer names
+			</digest>
+			<description>
 			</description>
 		</objarg>
 	</objarglist>
@@ -110,7 +108,10 @@
 			<description>
 				A float received in one of <o>ears.process~</o>'s inlets
 				is passed to the corresponding <o>ears.in</o> object
-				in the loaded patch.
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the float will be passed immediately to the receiving patch,
+				or at the beginning of the first buffer iteration.
 			</description>
 		</method>
 		<method name="int">
@@ -121,7 +122,10 @@
 			<description>
 				An integer received in one of <o>ears.process~</o>'s inlets
 				is passed to the corresponding <o>ears.in</o> object
-				in the loaded patch.
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the integer will be passed immediately to the receiving patch,
+				or at the beginning of the first buffer iteration.
 			</description>
 		</method>
 		<method name="list">
@@ -132,7 +136,10 @@
 			<description>
 				A list received in one of <o>ears.process~</o>'s inlets
 				is passed to the corresponding <o>ears.in</o> object
-				in the loaded patch.
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the list will be passed immediately to the receiving patch,
+				or iterated along with the incoming buffers.
 			</description>
 		</method>
 		<method name="patchername">
@@ -173,13 +180,13 @@
 				The names of the buffers containing the processed audio,
 				as output by the patcher's <o>ears.out~</o> and <o>ears.mc.out~</o> objects,
 				will be subsequently output.<br/>
-				Lllls received in non-buffer inlets
-				will be passed as they are to the loaded patcher,
+				Lllls received in non-buffer inlets will be passed to the loaded patcher
 				through its <o>ears.in</o> objects.<br/>
-				If the llll is received in the first inlet,
-				The processing will be triggered.<br/>
-				A single symbol, or any message starting with a symbol,
-				will be treated as an llll anyway.
+				If the llll is received in the first inlet, the processing will be triggered.<br/>
+				A single symbol, or any message starting with a symbol, will be treated as an llll anyway.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the llll will be passed immediately to the receiving patch,
+				or iterated along with the incoming buffers.
 			</description>
 		</method>
 		<method name="wclose">
@@ -222,47 +229,16 @@
 				as with "Scheduler in Overdrive" and "Scheduler in Audio Interrupt" both on.<br/>
 				If the <o>autoclock</o> attribute is set to 1 (as per the default),
 				all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
-				will automatically have their clock set by <o>ears.process~</o> before each run of the patch
+				will automatically have their clock set by <o>ears.process~</o> before each run of the patch.<br/>
+				If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
+				and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.processinfo~</o>, to the relevant objects.<br/>
+				Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
+				There is currently no way to use such objects with correct timing inside <o>ears.process~</o>.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatic Clock Message" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
-			</attributelist>
-		</attribute>
-		<attribute name="naming" get="1" set="1" type="int" size="1">
-			<digest>
-				Output Naming Policy
-			</digest>
-			<description>
-				Chooses the output buffer naming policy: <br />
-				0 (Copy): the buffer name is copied from the input (in-place modification).
-				Notice that some objects do not allow this policy. <br />
-				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
-				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
-				Beware! This may allocate a lot of memory!
-				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
-				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
-				<b>-</b> for static and <b>!</b> for dynamic.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="outname" get="1" set="1" type="llll" size="1">
-			<digest>
-				Output Buffer Names
-			</digest>
-			<description>
-				Sets the name for each one of the buffer outlets. Leave blank to auto-assign
-				unique names.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="ownsdspchain" get="1" set="1" type="" size="1">

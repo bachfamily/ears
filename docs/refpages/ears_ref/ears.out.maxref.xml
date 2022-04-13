@@ -102,6 +102,30 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="direct" get="1" set="1" type="int" size="1">
+			<digest>
+				Direct
+			</digest>
+			<description>
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Direct" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="outwrap" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Wrap
+			</digest>
+			<description>
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Wrap" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 	</attributelist>
 
 	<!--SEEALSO-->

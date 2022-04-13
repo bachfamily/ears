@@ -299,21 +299,30 @@ int C74_EXPORT main()
     // @description
     // An integer received in one of <o>ears.process~</o>'s inlets
     // is passed to the corresponding <o>ears.in</o> object
-    // in the loaded patch.
+    // in the loaded patch.<br/>
+    // According to whether each instance of <o>ears.in</o> is in direct mode or not,
+    // the integer will be passed immediately to the receiving patch,
+    // or at the beginning of the first buffer iteration.
     class_addmethod(earsprocess_class, (method)earsprocess_int, "int", A_LONG, 0);
     
     // @method float @digest Passed to ears.in
     // @description
     // A float received in one of <o>ears.process~</o>'s inlets
     // is passed to the corresponding <o>ears.in</o> object
-    // in the loaded patch.
+    // in the loaded patch.<br/>
+    // According to whether each instance of <o>ears.in</o> is in direct mode or not,
+    // the float will be passed immediately to the receiving patch,
+    // or at the beginning of the first buffer iteration.
     class_addmethod(earsprocess_class, (method)earsprocess_float, "float", A_FLOAT, 0);
     
     // @method list @digest Passed to ears.in
     // @description
     // A list received in one of <o>ears.process~</o>'s inlets
     // is passed to the corresponding <o>ears.in</o> object
-    // in the loaded patch.
+    // in the loaded patch.<br/>
+    // According to whether each instance of <o>ears.in</o> is in direct mode or not,
+    // the list will be passed immediately to the receiving patch,
+    // or iterated along with the incoming buffers.
     class_addmethod(earsprocess_class, (method)earsprocess_list, "list", A_GIMME, 0);
     
     // @method symbol/llll @digest Function depends on inlet
@@ -326,17 +335,15 @@ int C74_EXPORT main()
     // The names of the buffers containing the processed audio,
     // as output by the patcher's <o>ears.out~</o> and <o>ears.mc.out~</o> objects,
     // will be subsequently output.<br/>
-    // Lllls received in non-buffer inlets
-    // will be passed as they are to the loaded patcher,
+    // Lllls received in non-buffer inlets will be passed to the loaded patcher
     // through its <o>ears.in</o> objects.<br/>
-    // If the llll is received in the first inlet,
-    // The processing will be triggered.<br/>
-    // A single symbol, or any message starting with a symbol,
-    // will be treated as an llll anyway.
+    // If the llll is received in the first inlet, the processing will be triggered.<br/>
+    // A single symbol, or any message starting with a symbol, will be treated as an llll anyway.<br/>
+    // According to whether each instance of <o>ears.in</o> is in direct mode or not,
+    // the llll will be passed immediately to the receiving patch,
+    // or iterated along with the incoming buffers.
     class_addmethod(earsprocess_class, (method)earsprocess_anything, "anything", A_GIMME, 0);
 
-    
-    
     class_addmethod(earsprocess_class, (method)earsprocess_pupdate, "pupdate", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_subpatcher, "subpatcher", A_CANT, 0);
     class_addmethod(earsprocess_class, (method)earsprocess_parentpatcher, "parentpatcher", A_CANT, 0);
@@ -435,7 +442,7 @@ int C74_EXPORT main()
     // When set to 0 (as per the default), if a buffer inlet receives a single buffer
     // no iterator will be performed, and only the first buffer of each inlet will be processed.
     
-    
+    /*
     CLASS_ATTR_LONG(earsprocess_class, "reload", 0, t_earsprocess, reload);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "reload", 0, "onoff", "Reload");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "reload", 0, 1);
@@ -450,14 +457,11 @@ int C74_EXPORT main()
     // When set to 0 (as per the default), the patch is only loaded
     // when <o>ears.process</o> is instantiated
     // or when the <m>patchername</m> message is received.
-    
+    */
+     
     CLASS_ATTR_LONG(earsprocess_class, "autoclock", 0, t_earsprocess, autoclock);
     CLASS_ATTR_STYLE_LABEL(earsprocess_class, "autoclock", 0, "onoff", "Automatic Clock Message");
     CLASS_ATTR_FILTER_CLIP(earsprocess_class, "autoclock", 0, 1);
-
-    emptyLl = llll_get();
-    
-    class_register(CLASS_BOX, earsprocess_class);
     // @description
     // The <o>ears.process~</o> objects manages an internal <o>clock</o>
     // to control scheduler-based objects such as
@@ -470,17 +474,19 @@ int C74_EXPORT main()
     // as with "Scheduler in Overdrive" and "Scheduler in Audio Interrupt" both on.<br/>
     // If the <o>autoclock</o> attribute is set to 1 (as per the default),
     // all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
-    // will automatically have their clock set by <o>ears.process~</o> before each run of the patch
-    //
+    // will automatically have their clock set by <o>ears.process~</o> before each run of the patch.<br/>
     // If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
     // and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.processinfo~</o>, to the relevant objects.<br/>
     // Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
     // There is currently no way to use such objects with correct timing inside <o>ears.process~</o>.
     
+    emptyLl = llll_get();
+    
+    class_register(CLASS_BOX, earsprocess_class);
+
+    
     return 0;
 }
-
-
 
 t_max_err earsprocess_set_vs(t_earsprocess *x, t_object *attr, long argc, t_atom *argv)
 {
@@ -597,17 +603,12 @@ void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
 void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
 {
-    // @arg 0 @name outnames @optional 1 @type symbol
-    // @digest Output buffer names
-    // @description @copy EARS_DOC_OUTNAME_ATTR
-    
-    // @arg 1 @name patcher name @optional 1 @type symbol
+    // @arg 0 @name patcher name @optional 1 @type symbol
     // @digest Patcher name
     // @description Sets the name of the patch to be loaded   
-    
-    // two symbols / sublist + symbol: buffer name(s) and patch
-    // one symbol: patch
-    // llll: buffer names
+    // @arg 1 @name outnames @optional 1 @type symbol/llll
+    // @digest Output buffer names
+    // @description @copy EARS_DOC_OUTNAME_ATTR
     
     t_earsprocess *x = (t_earsprocess *) object_alloc(earsprocess_class);
     t_symbol *patchname = nullptr;
@@ -725,21 +726,23 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
     
     // e = buffer; E = buffer list;
 
-    intypes[x->nBufInlets + x->theInsByIndex->maxIdx] = 0;
-    for (i = x->theInsByIndex->maxIdx - 1; i >= 0; i--) {
-        intypes[i + x->nBufInlets] = '4';
+ 
+    int t;
+    for (i = x->theInsByIndex->maxIdx - 1, t = 0; i >= 0; i--, t++) {
+        intypes[t] = '4';
     }
-    for (i = x->nBufInlets - 1; i >= 0; i--) {
-        intypes[i] = 'E';
+    for (i = x->nBufInlets - 1; i >= 0; i--, t++) {
+        intypes[t] = 'E';
     }
-
-    outtypes[x->nDataOutlets + x->nBufOutlets] = 0;
-    for (i = x->nDataOutlets - 1; i >= 0; i--) {
-        outtypes[i + x->nBufOutlets] = '4';
+    intypes[t] = 0;
+    
+    for (i = x->nDataOutlets - 1, t = 0; i >= 0; i--, t++) {
+        outtypes[t] = '4';
     }
-    for (i = x->nBufOutlets - 1; i >= 0; i--) {
-        outtypes[i] = 'E';
+    for (i = x->nBufOutlets - 1; i >= 0; i--, t++) {
+        outtypes[t] = 'E';
     }
+    outtypes[t] = 0;
 
     earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, names);
     llll_free(args);
@@ -1172,10 +1175,10 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
     }
     
     for (t_object* o: *x->theOuts) {
-        object_method(o, gensym("finalize"));
+        object_method(o, gensym("finalize"), x->nBufOutlets);
     }
     
-    for (int i = x->nDataOutlets - 1; i >= 0; i--) {
+    for (int i = x->nDataOutlets + x->nBufOutlets - 1; i >= x->nBufOutlets; i--) {
         if (llllobj_get_loaded_llll((t_object *) x, LLLL_OBJ_VANILLA, i) != emptyLl) {
             llllobj_shoot_llll((t_object *) x, LLLL_OBJ_VANILLA, i);
         }
@@ -1184,9 +1187,6 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
     for (int i = x->nBufOutlets - 1; i >= 0 ; i--)
         earsbufobj_outlet_buffer((t_earsbufobj *)x, i);
 }
-
-
-
 
 void earsprocess_stop(t_earsprocess *x)
 {
@@ -1200,7 +1200,6 @@ void earsprocess_stop(t_earsprocess *x)
         x->stopped = true;
     }
 }
-
 
 void earsprocess_autoclock(t_earsprocess *x, t_patcher *p)
 {

@@ -69,7 +69,7 @@ void ears_out_int(t_ears_out *x, t_atom_long i);
 void ears_out_float(t_ears_out *x, t_atom_float f);
 void ears_out_anything(t_ears_out *x, t_symbol *s, long ac, t_atom *av);
 
-void ears_out_finalize(t_ears_out *x);
+void ears_out_finalize(t_ears_out *x, long n);
 void ears_out_iteration(t_ears_out *x, long n);
 
 
@@ -193,14 +193,15 @@ void ears_out_iteration(t_ears_out *x, long n)
     bach_atomic_unlock(&x->lock);
 }
 
-void ears_out_finalize(t_ears_out *x)
+void ears_out_finalize(t_ears_out *x, long n)
 {
     if (x->direct)
         return;
     t_object *process = x->earsProcessParent;
     bach_atomic_lock(&x->lock);
-    for (int i = 0; i < x->nInlets; i++) {
-        llllobj_gunload_llll((t_object *) process, LLLL_OBJ_VANILLA, x->collected[i], x->outlet_nums[i] - 1);
+    int i;
+    for (i = 0; i < x->nInlets; i++, n++) {
+        llllobj_gunload_llll((t_object *) process, LLLL_OBJ_VANILLA, x->collected[i], x->outlet_nums[i] - 1 + n);
         x->collected[i] = llll_get();
     }
     bach_atomic_unlock(&x->lock);
