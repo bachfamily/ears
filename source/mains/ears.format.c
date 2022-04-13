@@ -124,7 +124,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     
-    
+    earsbufobj_class_add_resamplingfiltersize_attr(c);
+
     CLASS_ATTR_LONG(c, "numchannels",	0,	t_buf_format, numchannels);
     CLASS_ATTR_BASIC(c, "numchannels", 0);
     CLASS_ATTR_STYLE_LABEL(c, "numchannels", 0, "text", "Number Of Output Channels");
@@ -313,7 +314,7 @@ void buf_format_bang(t_buf_format *x)
             double curr_sr = ears_buffer_get_sr((t_object *)x, out);
             if (curr_sr != sr) {
                 if (x->resample)
-                    ears_buffer_convert_sr((t_object *)x, out, sr);
+                    ears_buffer_convert_sr((t_object *)x, out, sr, x->e_ob.l_resamplingfilterwidth);
                 else
                     ears_buffer_set_sr((t_object *)x, out, sr);
             }

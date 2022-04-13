@@ -823,13 +823,13 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
 
 
 // resamples
-t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr)
+t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr, long resampling_filter_size)
 {
     t_ears_err err = EARS_ERR_NONE;
     double curr_sr = buffer_getsamplerate(buf);
     double factor = sr/curr_sr;
     
-    long window_width = 11;
+    long window_width = resampling_filter_size;
     double fmax = sr / 2.;
     
     float *sample = buffer_locksamples(buf);
@@ -855,7 +855,7 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr)
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
-            ears_resample(temp, framecount, &sample, new_framecount, factor, fmax, sr, window_width, channelcount);
+            ears_resample(temp, framecount, &sample, new_framecount, factor, fmax, sr, resampling_filter_size, channelcount);
             buffer_setdirty(buf);
             buffer_unlocksamples(buf);
         }
@@ -1028,7 +1028,7 @@ t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizein
 
 
 // Different from ears_buffer_copy_format() because it resamples and also downmixes/upmixes
-t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix)
+t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix, long resampling_filter_size)
 {
     if (!orig || !dest) {
         object_error((t_object *)ob, EARS_ERROR_BUF_NO_BUFFER);
@@ -1042,7 +1042,7 @@ t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer
     double dest_sr = buffer_getsamplerate(dest);
     
     if (dest_sr != orig_sr)
-        ears_buffer_convert_sr(ob, dest, orig_sr);
+        ears_buffer_convert_sr(ob, dest, orig_sr, resampling_filter_size);
     
     if (dest_channelcount != orig_channelcount)
         ears_buffer_convert_numchannels(ob, dest, orig_channelcount, channelmode_upmix, channelmode_downmix);

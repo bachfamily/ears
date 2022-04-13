@@ -528,7 +528,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     // only if the buffer is a new one, and is not exactly the same as a previous one (in sampling mode)
                     
                     if (buffer_getsamplerate(buf) != sr_os)
-                        ears_buffer_convert_sr((t_object *)e_ob, buf, sr_os);
+                        ears_buffer_convert_sr((t_object *)e_ob, buf, sr_os, e_ob->l_resamplingfilterwidth);
 
                     if (gain_env) {
                         t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARS_TIMEUNIT_SAMPS, gain_min, gain_max, false);
