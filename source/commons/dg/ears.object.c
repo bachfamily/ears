@@ -387,6 +387,28 @@ char llll_contains_only_symbols_and_at_least_one(t_llll *ll)
     return 1;
 }
 
+char llll_is_fit_for_being_names(t_llll *ll)
+{
+    if (!ll->l_head)
+        return 0;
+    
+    if (ll->l_depth <= 1 && llll_contains_only_symbols_and_at_least_one(ll))
+        return 1;
+    
+    if (ll->l_depth == 2) {
+        for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                if (!llll_contains_only_symbols_and_at_least_one(hatom_getllll(&el->l_hatom)))
+                    return 0;
+            } else if (hatom_gettype(&el->l_hatom) != H_SYM) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+    
+    return 0;
+}
 
 // destructive on args
 t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, char assign_naming_policy)
@@ -415,10 +437,12 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
             }
         }
         if (args->l_head) {
-            if (hatom_gettype(&args->l_head->l_hatom) == H_LLLL && llll_contains_only_symbols_and_at_least_one(hatom_getllll(&args->l_head->l_hatom))) {
-                names = llll_get();
-                llll_appendhatom_clone(names, &args->l_head->l_hatom);
-                llll_behead(args);
+            if (hatom_gettype(&args->l_head->l_hatom) == H_LLLL) {
+                if (llll_is_fit_for_being_names(hatom_getllll(&args->l_head->l_hatom))) {
+                    names = llll_get();
+                    llll_appendhatom_clone(names, &args->l_head->l_hatom);
+                    llll_behead(args);
+                }
             } else if (hatom_gettype(&args->l_head->l_hatom) == H_SYM) {
                 names = symbol2llll(hatom_getsym(&args->l_head->l_hatom));
                 llll_behead(args);
@@ -582,6 +606,8 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
     }
     if (e_ob->l_numbufouts) {
         e_ob->l_outstore = (t_earsbufobj_store *) bach_newptrclear(e_ob->l_numbufouts * sizeof(t_earsbufobj_store));
+        if (outlet_names && outlet_names->l_depth == 3 && outlet_names->l_size == 1 && hatom_gettype(&outlet_names->l_head->l_hatom) == H_LLLL) // names are assigned to multiple outlets
+            outlet_names = hatom_getllll(&outlet_names->l_head->l_hatom);
         t_llllelem *elem;
         for (i = 0, j = 0, elem = (outlet_names ? outlet_names->l_head : NULL); i < max_out_len; i++) {
             if (out_types[i] == 'e' || out_types[i] == 'E') {
