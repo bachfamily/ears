@@ -1125,6 +1125,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             chain = dspchain_compile(x->client_patch, vs, sr);
         }
         
+
         if (chain) {
             
             t_atom_long s;
@@ -1163,6 +1164,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             }
         }
         
+
         for (const auto &i : *x->earsprocessinfoObjects) {
             object_method(i, gensym("end"));
         }
