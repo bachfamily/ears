@@ -241,23 +241,12 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
-		<attribute name="ownsdspchain" get="1" set="1" type="" size="1">
-			<digest>
-				
-			</digest>
-			<description>
-			</description>
-			<attributelist>
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="policy" get="1" set="1" type="int" size="1">
+		<attribute name="duration" get="1" set="1" type="int" size="1">
 			<digest>
 				Duration Policy
 			</digest>
 			<description>
-				The <m>policy</m> attribute controls how the duration of the incoming buffers
+				The <m>duration</m> attribute controls how the duration of the incoming buffers
 				affects the duration of the resulting ones.<br/>
 				If the duration policy is set to <m>0</m> (<b>shortest</b>), as per the default,
 				the duration of the processed (and therefore resulting) audio
@@ -278,6 +267,17 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Duration Policy" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="ownsdspchain" get="1" set="1" type="" size="1">
+			<digest>
+				
+			</digest>
+			<description>
+			</description>
+			<attributelist>
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="reload" get="1" set="1" type="int" size="1">
@@ -343,7 +343,7 @@
 			</digest>
 			<description>
 				The <m>tail</m> attribute adds a duration (always measured in milliseconds)
-				to the processing duration as established by the <m>policy</m> attribute.
+				to the processing duration as established by the <m>duration</m> attribute.
 				It defaults to 0.
 				If the loaded patch has no buffer inlets and the tail is not set to a value higher than 0 ms,
 				no processing will take place.
@@ -385,12 +385,12 @@
 	</seealsolist>
 
 	<misc name = "Input">
-		<entry name ="Inlets 1, 2, 3... (symbol/llll)">
+		<entry name ="Inlets 1, 2, 3... (symbol/list/llll)">
 			<description>
 				Incoming buffer name.
 			</description>
 		</entry>
-		<entry name ="Inlets 2, 3, 4... (symbol/llll)">
+		<entry name ="Inlets 2, 3, 4... (llll)">
 			<description>
 				Incoming data for <o>ears.in</o>..
 			</description>
@@ -403,7 +403,7 @@
 				Output buffer.
 			</description>
 		</entry>
-		<entry name ="Outlets 2, 3, 4... (symbol/llll)">
+		<entry name ="Outlets 2, 3, 4... (llll)">
 			<description>
 				Output data from <o>ears.out</o>..
 			</description>

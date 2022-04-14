@@ -403,17 +403,17 @@ int C74_EXPORT main()
     CLASS_ATTR_FILTER_MIN(earsprocess_class, "tail", 0);
     // @description
     // The <m>tail</m> attribute adds a duration (always measured in milliseconds)
-    // to the processing duration as established by the <m>policy</m> attribute.
+    // to the processing duration as established by the <m>duration</m> attribute.
     // It defaults to 0.
     // If the loaded patch has no buffer inlets and the tail is not set to a value higher than 0 ms,
     // no processing will take place.
     
     
-    CLASS_ATTR_LONG(earsprocess_class, "policy", 0, t_earsprocess, policy);
-    CLASS_ATTR_ENUMINDEX(earsprocess_class,"policy", 0, "Shortest Longest Fixed");
-    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "policy", 0, "enumindex", "Duration Policy");
+    CLASS_ATTR_LONG(earsprocess_class, "duration", 0, t_earsprocess, policy);
+    CLASS_ATTR_ENUMINDEX(earsprocess_class,"duration", 0, "Shortest Longest Fixed");
+    CLASS_ATTR_STYLE_LABEL(earsprocess_class, "duration", 0, "enumindex", "Duration Policy");
     // @description
-    // The <m>policy</m> attribute controls how the duration of the incoming buffers
+    // The <m>duration</m> attribute controls how the duration of the incoming buffers
     // affects the duration of the resulting ones.<br/>
     // If the duration policy is set to <m>0</m> (<b>shortest</b>), as per the default,
     // the duration of the processed (and therefore resulting) audio
@@ -1231,15 +1231,17 @@ void earsprocess_assist(t_earsprocess *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a < x->nBufInlets) {
-            sprintf(s, "symbol/list/llll: Incoming buffer Name"); // @in 0 @loop 1 @type symbol/llll @digest Incoming buffer name
+            sprintf(s, "symbol/list/llll: Incoming Buffer Names for Inlet %ld", a + 1); // @in 0 @loop 1 @type symbol/list/llll @digest Incoming buffer name
         } else {
-            sprintf(s, "symbol/list/llll: Incoming data"); // @in 1 @loop 1 @type symbol/llll @digest Incoming data for <o>ears.in</o>.
+            sprintf(s, "llll: Incoming Data for ears.in %ld", a - x->nBufInlets + 1); // @in 1 @loop 1 @type llll @digest Incoming data for <o>ears.in</o>.
         }
     } else {
         if (a < x->nBufOutlets) {
-            sprintf(s, "symbol/list/llll: Output buffer"); // @out 0 @loop 1 @type symbol/llll @digest Output buffer
+            sprintf(s, "symbol/list/llll: Output Buffer Names for Outlet %ld", a + 1); // @out 0 @loop 1 @type symbol/llll @digest Output buffer
         } else {
-            sprintf(s, "symbol/list/llll: Output data"); // @out 1 @loop 1 @type symbol/llll @digest Output data from <o>ears.out</o>.
+            char *type;
+            llllobj_get_llll_outlet_type_as_string((t_object *) x, LLLL_OBJ_VANILLA, a, &type);
+            sprintf(s, "llll (%s): Output Data for ears.out %ld", type, a - x->nBufOutlets + 1); // @out 1 @loop 1 @type llll @digest Output data from <o>ears.out</o>.
         }
     }
 }
