@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 598.0, 387.0, 792.0, 549.0 ],
+		"rect" : [ 627.0, 199.0, 792.0, 549.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1824,7 +1824,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 598.0, 413.0, 792.0, 523.0 ],
+						"rect" : [ 627.0, 225.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1882,146 +1882,19 @@
 								"box" : 								{
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
-									"id" : "obj-1",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 269.0, 305.5, 390.0, 36.0 ],
-									"text" : "On the other hand, the optional shortcut symbol for the naming mechanism (=, _ or !) is the first argument, if present."
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"bubble" : 1,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-25",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 211.0, 262.0, 288.0, 40.0 ],
-									"text" : "Click repeatedly and you will see the output name change in the message box below!"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-15",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 409.0, 384.0, 223.0, 23.0 ],
-									"text" : "earsBufDrumLoop earsBufAnton"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "earsBufAnton",
-									"id" : "obj-17",
-									"maxclass" : "waveform~",
-									"numinlets" : 5,
-									"numoutlets" : 6,
-									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 211.0, 384.0, 182.5, 39.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-18",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 211.0, 354.0, 46.0, 23.0 ],
-									"text" : "set $2"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "earsBufDrumLoop",
-									"id" : "obj-19",
-									"maxclass" : "waveform~",
-									"numinlets" : 5,
-									"numoutlets" : 6,
-									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 10.0, 384.0, 182.5, 39.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-20",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 354.0, 46.0, 23.0 ],
-									"text" : "set $1"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-23",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 270.5, 198.0, 23.0 ],
-									"text" : "earsBufDrumLoop earsBufAnton"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-24",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 312.0, 253.0, 23.0 ],
-									"text" : "ears.process~ ! ears.HalfAmplitude-inside"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-3",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 409.0, 197.0, 169.0, 23.0 ],
-									"text" : "halfDrums halfAnton"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
 									"id" : "obj-7",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 394.606537000000003, 117.5, 317.0, 36.0 ],
-									"text" : "The optional explicit names for the output buffers must come after the patch name."
+									"patching_rect" : [ 334.606537000000003, 117.5, 317.0, 36.0 ],
+									"text" : "A recirculating delay line. We want to stop the process when the signal drops below -60 dB RMS."
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "halfDrums",
+									"buffername" : "u730008134",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -2104,56 +1977,8 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-17", 0 ],
-									"source" : [ "obj-18", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-19", 0 ],
-									"source" : [ "obj-20", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-22", 0 ],
 									"source" : [ "obj-21", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-24", 0 ],
-									"source" : [ "obj-23", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-15", 1 ],
-									"midpoints" : [ 19.5, 344.0, 622.5, 344.0 ],
-									"order" : 0,
-									"source" : [ "obj-24", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-18", 0 ],
-									"midpoints" : [ 19.5, 344.0, 220.5, 344.0 ],
-									"order" : 1,
-									"source" : [ "obj-24", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-20", 0 ],
-									"midpoints" : [ 19.5, 344.0, 19.5, 344.0 ],
-									"order" : 2,
-									"source" : [ "obj-24", 0 ]
 								}
 
 							}
@@ -2271,7 +2096,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u316000797",
+									"buffername" : "u133003300",
 									"id" : "obj-12",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -2283,7 +2108,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u239000749",
+									"buffername" : "u908003119",
 									"id" : "obj-11",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -2559,13 +2384,6 @@
 		}
 ,
 		"dependency_cache" : [ 			{
-				"name" : "ears.HalfAmplitude-inside.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/ears/help",
-				"patcherrelativepath" : ".",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
 				"name" : "ears.delayStopped-inside.maxpat",
 				"bootpath" : "~/Documents/Max 8/Packages/ears/help",
 				"patcherrelativepath" : ".",

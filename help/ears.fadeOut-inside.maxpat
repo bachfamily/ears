@@ -45,8 +45,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 257.666666666666629, 361.0, 546.0, 33.0 ],
-					"presentation_linecount" : 2,
+					"patching_rect" : [ 257.666666666666629, 366.0, 546.0, 33.0 ],
 					"text" : "The resulting buffer may be slightly shorter if ears.process~ \"crop\" attribute is on (as per the default), since the end of the processing will always coincide with the end of a vector."
 				}
 
@@ -115,7 +114,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 173.333333333333286, 339.0, 612.0, 20.0 ],
+					"patching_rect" : [ 173.333333333333286, 344.0, 612.0, 20.0 ],
 					"text" : "time position in ms during the iteration, sent before the processing of each vector and at the end of the processing"
 				}
 
@@ -137,7 +136,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 238.999999999999943, 280.0, 281.0, 20.0 ],
+					"patching_rect" : [ 238.999999999999943, 285.0, 281.0, 20.0 ],
 					"text" : "1 before processing starts, 0 after processing ends."
 				}
 
@@ -159,7 +158,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 298.666666666666629, 225.0, 173.0, 20.0 ],
+					"patching_rect" : [ 298.666666666666629, 230.0, 173.0, 20.0 ],
 					"text" : "sampling rate for each iteration"
 				}
 
@@ -181,7 +180,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 357.0, 171.0, 315.0, 20.0 ],
+					"patching_rect" : [ 357.0, 176.0, 315.0, 20.0 ],
 					"text" : "vector size (same for each iteration, but reported anyway)"
 				}
 
@@ -203,7 +202,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 418.0, 121.0, 326.0, 20.0 ],
+					"patching_rect" : [ 418.0, 126.0, 326.0, 20.0 ],
 					"text" : "list of the durations of the incoming buffers for each iteration"
 				}
 
@@ -237,7 +236,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 474.0, 55.0, 453.0, 33.0 ],
+					"patching_rect" : [ 474.0, 60.0, 453.0, 33.0 ],
 					"text" : "setclock message for timed objects. You won't generally need it, as ears.process~ sends it automatically if the \"autoclock\" attribute is on, as per the default."
 				}
 

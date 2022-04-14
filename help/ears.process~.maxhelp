@@ -501,7 +501,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
+						"rect" : [ 100.0, 126.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -532,6 +532,297 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-14",
+									"maxclass" : "newobj",
+									"numinlets" : 0,
+									"numoutlets" : 0,
+									"patcher" : 									{
+										"fileversion" : 1,
+										"appversion" : 										{
+											"major" : 8,
+											"minor" : 3,
+											"revision" : 0,
+											"architecture" : "x64",
+											"modernui" : 1
+										}
+,
+										"classnamespace" : "box",
+										"rect" : [ 84.0, 131.0, 479.0, 651.0 ],
+										"bglocked" : 0,
+										"openinpresentation" : 0,
+										"default_fontsize" : 12.0,
+										"default_fontface" : 0,
+										"default_fontname" : "Arial",
+										"gridonopen" : 1,
+										"gridsize" : [ 15.0, 15.0 ],
+										"gridsnaponopen" : 1,
+										"objectsnaponopen" : 1,
+										"statusbarvisible" : 2,
+										"toolbarvisible" : 1,
+										"lefttoolbarpinned" : 0,
+										"toptoolbarpinned" : 0,
+										"righttoolbarpinned" : 0,
+										"bottomtoolbarpinned" : 0,
+										"toolbars_unpinned_last_save" : 0,
+										"tallnewobj" : 0,
+										"boxanimatetime" : 200,
+										"enablehscroll" : 1,
+										"enablevscroll" : 1,
+										"devicewidth" : 0.0,
+										"description" : "",
+										"digest" : "",
+										"tags" : "",
+										"style" : "",
+										"subpatcher_template" : "",
+										"assistshowspatchername" : 0,
+										"boxes" : [ 											{
+												"box" : 												{
+													"id" : "obj-21",
+													"linecount" : 3,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 597.0, 446.0, 47.0 ],
+													"presentation_linecount" : 3,
+													"text" : "For some of these limiations there are workarounds. For others, unfortunately, not. Feel free to experiment, share your experiences on the forums and exert gentle pressure upon Cycling '74 for extending the support for the clock message!"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-20",
+													"linecount" : 7,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 133.0, 450.0, 156.0, 100.0 ],
+													"presentation_linecount" : 9,
+													"text" : "and the message outlets of \nadsr~\nlive.adsr~\ncurve~\nline~\nlive.gain5\nplay~"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-16",
+													"linecount" : 7,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 306.0, 121.0, 100.0 ],
+													"presentation_linecount" : 8,
+													"text" : "adsr~\nlive.adsr~\ncurve~\nline~\nplay~\nsig~\nand all the oscillators"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-14",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 556.0, 446.0, 33.0 ],
+													"presentation_linecount" : 13,
+													"text" : "peakamp~ and snapshot~ will behave correctly if triggered by an external bang, typically produced by metro."
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-13",
+													"linecount" : 4,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 450.0, 65.0, 60.0 ],
+													"presentation_linecount" : 6,
+													"text" : "edge~\nfzero~\npeakamp~\nsnapshot~"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-12",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 415.0, 446.0, 33.0 ],
+													"presentation_linecount" : 4,
+													"text" : "On the other hand, objects that take signals and produce messages will generally have timing issues. This concerns, among the others:"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-9",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 265.0, 381.0, 33.0 ],
+													"presentation_linecount" : 17,
+													"text" : "Objects that produce signals in response to messages generally work correctly. This includes the signal outlets of the following:"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontface" : 1,
+													"id" : "obj-8",
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 20.0, 240.0, 243.0, 20.0 ],
+													"presentation_linecount" : 2,
+													"text" : "Special considerations for audio objects:"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-7",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 182.0, 218.0, 33.0 ],
+													"presentation_linecount" : 9,
+													"text" : "Even for these objects, the itm syntax (such as 4n and so on) is unsupported."
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontface" : 1,
+													"id" : "obj-6",
+													"linecount" : 3,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 290.0, 23.0, 168.0, 47.0 ],
+													"presentation_linecount" : 3,
+													"text" : "Timed objects that don't implement the clock message or attribute:"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-5",
+													"linecount" : 5,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 304.0, 85.0, 70.0, 74.0 ],
+													"presentation_linecount" : 5,
+													"text" : "mtr\nqlist\nquickthresh\nseq\nthresh"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontface" : 1,
+													"id" : "obj-4",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 20.0, 28.0, 168.0, 33.0 ],
+													"text" : "Objects that implement the clock message or attribute:"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-2",
+													"linecount" : 8,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 25.0, 62.0, 221.0, 114.0 ],
+													"text" : "clocker\ndelay\nline\nmakenote\nmetro\npipe\ntimer\nand all the timed bach and dada objects"
+												}
+
+											}
+ ],
+										"lines" : [  ]
+									}
+,
+									"patching_rect" : [ 144.0, 456.0, 188.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"description" : "",
+										"digest" : "",
+										"globalpatchername" : "",
+										"tags" : ""
+									}
+,
+									"text" : "p \"supported and unsupported\""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-13",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 2,
+									"outlettype" : [ "float", "" ],
+									"patching_rect" : [ 376.0, 183.0, 37.0, 23.0 ],
+									"text" : "timer"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-10",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 3,
+									"outlettype" : [ "", "bang", "bang" ],
+									"patching_rect" : [ 575.0, 292.0, 40.0, 23.0 ],
+									"save" : [ "#N", "qlist", ";" ],
+									"text" : "qlist"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-9",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 497.0, 246.0, 45.0, 23.0 ],
+									"text" : "thresh"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-8",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 452.0, 301.0, 29.5, 23.0 ],
+									"text" : "thr"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 3,
+									"outlettype" : [ "int", "bang", "" ],
+									"patching_rect" : [ 325.0, 292.0, 40.0, 23.0 ],
+									"text" : "seq"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"attr" : "autoclock",
 									"id" : "obj-3",
 									"maxclass" : "attrui",
@@ -548,12 +839,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-5",
-									"linecount" : 4,
+									"linecount" : 5,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 356.0, 616.0, 65.0 ],
-									"text" : "This happens by courtesy of a hidden setclock object, completely managed by ears.process~, that \"talks\" directly to any timed object in the loaded patch, with the known exceptions of mtr and quickthresh.\nIn case you'd like to disable it, you're free to do it through the \"autoclock\" attribute. We're not sure why on Earth you might want that, though.",
+									"patching_rect" : [ 10.0, 356.0, 616.0, 79.0 ],
+									"text" : "This happens by courtesy of a hidden setclock object, completely managed by ears.process~, that \"talks\" directly to any timed object supporting the clock message or attribute. For a provisional list of supported and unsupported objects, see the patch below.\nIn case you'd like to disable it, you're free to do it through the \"autoclock\" attribute. We're not sure why on Earth you might want that, though.",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -1352,7 +1643,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 792.0, 523.0 ],
+						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1859,55 +2150,56 @@
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
+									"id" : "obj-8",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 106.0, 270.5, 312.0, 25.0 ],
+									"text" : "Click multiple time to see the amplitude decrease!"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 518.606537000000117, 359.5, 66.0, 23.0 ],
+									"text" : "readagain"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-1",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "float", "bang" ],
+									"patching_rect" : [ 518.606537000000117, 392.0, 194.0, 23.0 ],
+									"text" : "buffer~ earsBufEroica eroica.aiff"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
 									"id" : "obj-25",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 269.0, 303.5, 390.0, 40.0 ],
+									"patching_rect" : [ 265.0, 305.5, 390.0, 36.0 ],
 									"text" : "On the other hand, the optional shortcut symbol for the naming mechanism (=, _ or !) is the first argument, if present."
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"id" : "obj-15",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 409.0, 384.0, 223.0, 23.0 ],
-									"text" : "earsBufDrumLoop earsBufAnton"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "earsBufAnton",
-									"id" : "obj-17",
-									"maxclass" : "waveform~",
-									"numinlets" : 5,
-									"numoutlets" : 6,
-									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 211.0, 384.0, 182.5, 39.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-18",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 211.0, 354.0, 46.0, 23.0 ],
-									"text" : "set $2"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "earsBufDrumLoop",
+									"buffername" : "earsBufEroica",
 									"id" : "obj-19",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1936,8 +2228,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 270.5, 198.0, 23.0 ],
-									"text" : "earsBufDrumLoop earsBufAnton"
+									"patching_rect" : [ 10.0, 270.5, 90.0, 23.0 ],
+									"text" : "earsBufEroica"
 								}
 
 							}
@@ -1969,7 +2261,6 @@
 							}
 , 							{
 								"box" : 								{
-									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-7",
@@ -1977,7 +2268,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 395.606537000000003, 115.5, 317.0, 40.0 ],
+									"patching_rect" : [ 395.606537000000003, 115.5, 317.0, 36.0 ],
 									"text" : "The optional explicit names for the output buffers must come after the patch name."
 								}
 
@@ -2109,13 +2400,6 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-17", 0 ],
-									"source" : [ "obj-18", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-19", 0 ],
 									"source" : [ "obj-20", 0 ]
 								}
@@ -2137,27 +2421,8 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-15", 1 ],
-									"midpoints" : [ 19.5, 344.0, 622.5, 344.0 ],
-									"order" : 0,
-									"source" : [ "obj-24", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-18", 0 ],
-									"midpoints" : [ 19.5, 344.0, 220.5, 344.0 ],
-									"order" : 1,
-									"source" : [ "obj-24", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-20", 0 ],
 									"midpoints" : [ 19.5, 344.0, 19.5, 344.0 ],
-									"order" : 2,
 									"source" : [ "obj-24", 0 ]
 								}
 
@@ -2166,6 +2431,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-14", 0 ],
 									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-1", 0 ],
+									"source" : [ "obj-6", 0 ]
 								}
 
 							}

@@ -32,8 +32,9 @@ public:
     t_atom_long chans;
     t_atom_long frames;
     double sr;
+    t_bool locked;
     
-    bufferData() : obj(nullptr), ref(nullptr), samps(nullptr), chans(0), frames(0), sr(0) { }
+    bufferData() : obj(nullptr), ref(nullptr), samps(nullptr), chans(0), frames(0), sr(0), locked(false) { }
     
     bufferData(t_object* x, t_symbol *name) {
         set(x, name);
@@ -43,15 +44,22 @@ public:
         ref = buffer_ref_new((t_object *) x, name);
         obj = buffer_ref_getobject(ref);
         samps = buffer_locksamples(obj);
+        locked = true;
         chans = ears_buffer_get_numchannels(x, obj);
         frames = ears_buffer_get_size_samps(x, obj);
         sr = ears_buffer_get_sr(x, obj);
     }
     
+    void unlock() {
+        if (samps && locked) {
+            buffer_unlocksamples(obj);
+            locked = false;
+        }
+    }
+    
     virtual ~bufferData() {
         if (obj) {
-            if (samps)
-                buffer_unlocksamples(obj);
+            unlock();
             object_free(ref);
         }
     }

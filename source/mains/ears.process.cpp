@@ -1146,6 +1146,9 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             
             object_free((t_object *) chain);
             
+            for (int i = 0; i < x->nBufInlets; i++)
+                bufs[i].unlock();
+            
             bufferData outBuf[EARS_PROCESS_MAX_OUTPUT_BUFFERS];
             
             for (int i = 0; i < x->nBufOutlets; i++) {            
