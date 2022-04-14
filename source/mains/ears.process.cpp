@@ -1081,9 +1081,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         
         if (duration < 0)
             duration = 0;
-        
-        //t_object *prnt = (t_object *) newinstance(gensym("print"), 0, NULL);
-        
+                
         x->stopped = false;
         
         t_atom scarg;
@@ -1132,7 +1130,14 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             t_atom_long s;
             for (s = 0; s < duration && !x->stopped; s += vs) {
                 object_method_double(setclock, _sym_float, s / mssr, NULL);
+                for (t_object* o : *x->earsprocessinfoObjects) {
+                    object_method(o, gensym("output_position"));
+                }
                 dspchain_tick(chain);
+            }
+            
+            for (t_object* o : *x->earsprocessinfoObjects) {
+                object_method(o, gensym("output_position"));
             }
             
             if (x->stopped)
