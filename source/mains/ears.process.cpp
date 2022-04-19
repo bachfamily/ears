@@ -975,7 +975,8 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
 {
     long inlet = proxy_getinlet((t_object *) x);
     if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
-        t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_VANILLA, s, ac, av, LLLL_PARSE_RETAIN);
+        t_llll *ll = llllobj_parse_retain_and_store((t_object *) x, LLLL_OBJ_VANILLA, s, ac, av, inlet);
+        //t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_VANILLA, s, ac, av, LLLL_PARSE_RETAIN);
         if (!ll)
             return;
         for (t_object* in: *x->theInsByIndex->theMap[inlet - x->nBufInlets + 1]) {
@@ -1019,25 +1020,36 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         earsprocess_patchername((t_earsprocess*) x, x->patch_name, x->client_argc, x->client_argv);
     
     // Get number of buffers on which to iterate
-    long num_buffer_to_iter = LONG_MAX;
-    for (long i = 0; i < x->nBufInlets; i++) {
+    long nIterations = LONG_MAX;
+    long i;
+    for (i = 0; i < x->nBufInlets; i++) {
         long this_num_buf = earsbufobj_get_num_inlet_stored_buffers((t_earsbufobj *)x, i, false);
         if (x->scalarmode && this_num_buf == 1) {
             // nothing to do
         } else {
-            num_buffer_to_iter = MIN(num_buffer_to_iter, this_num_buf);
+            nIterations = MIN(nIterations, this_num_buf);
         }
     }
-    if (num_buffer_to_iter == LONG_MAX ||
-        (num_buffer_to_iter == 0 && x->generator))
-        num_buffer_to_iter = 1;
+    for (; i < x->nBufInlets + x->theInsByIndex->maxIdx; i++) {
+        t_llll *ll = llllobj_get_store_contents((t_object *) x, LLLL_OBJ_VANILLA, i, 0);
+        long this_size = ll->l_size;
+        llll_release(ll);
+        if (x->scalarmode && this_size == 1) {
+            // nothing to do
+        } else {
+            nIterations = MIN(nIterations, this_size);
+        }
+    }
+    if (nIterations == LONG_MAX ||
+        (nIterations == 0 && x->generator))
+        nIterations = 1;
 
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
 
     for (long i = 0; i < x->nBufOutlets; i++)
-        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, i, num_buffer_to_iter, true);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, i, nIterations, true);
     
-    for (int iterBuf = 0; iterBuf < num_buffer_to_iter; iterBuf++) {
+    for (int iteration = 0; iteration < nIterations; iteration++) {
         bufferData bufs[EARS_PROCESS_MAX_INPUT_BUFFERS];
         t_atom bufDurs[EARS_PROCESS_MAX_INPUT_BUFFERS];
 
@@ -1050,7 +1062,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             for (long i = 0; i < x->nBufInlets; i++) {
                 t_atom_long bufNum = (x->scalarmode &&
                     earsbufobj_get_num_inlet_stored_buffers((t_earsbufobj *)x, i, false) == 1) ?
-                    0 : iterBuf;
+                    0 : iteration;
                 t_symbol *name = earsbufobj_get_inlet_buffer_name((t_earsbufobj*) x, i, bufNum);
                 if (name) {
                     bufs[i].set((t_object*) x, name);
@@ -1089,10 +1101,10 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         t_object *setclock = (t_object *) newinstance(gensym("setclock"), 1, &scarg);
 
         for (t_object* i: *x->theIns) {
-            object_method(i, gensym("iteration"), iterBuf + 1);
+            object_method(i, gensym("iteration"), iteration + 1);
         }
         
-        if (iterBuf == 0) {
+        if (iteration == 0) {
             earsprocess_autoclock(x, x->client_patch);
             for (t_object* o : *x->earsprocessinfoObjects) {
                 object_method(o, gensym("prepare"), &scarg);
@@ -1152,12 +1164,12 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             bufferData outBuf[EARS_PROCESS_MAX_OUTPUT_BUFFERS];
             
             for (int i = 0; i < x->nBufOutlets; i++) {            
-                t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, i, iterBuf);
+                t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, i, iteration);
                 ears_buffer_set_sr((t_object *)x, buf, sr);
                 int nChans = chanMap.chansPerBuf[i];
                 ears_buffer_set_size_and_numchannels((t_object *)x, buf, duration, MAX(nChans, 1));
 
-                outBuf[i].set((t_object *) x, earsbufobj_get_outlet_buffer_name((t_earsbufobj *)x, i, iterBuf));
+                outBuf[i].set((t_object *) x, earsbufobj_get_outlet_buffer_name((t_earsbufobj *)x, i, iteration));
                 for (int c = 1; c <= outBuf[i].chans; c++) {
                     audioChannel *ch = chanMap.retrieveChannel(i + 1, c);
                     if (ch) {
@@ -1173,7 +1185,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
         }
         
         for (t_object* o: *x->theOuts) {
-            object_method(o, gensym("iteration"), iterBuf + 1);
+            object_method(o, gensym("iteration"), iteration + 1);
         }
         
         object_free(setclock);
