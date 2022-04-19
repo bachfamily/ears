@@ -547,7 +547,7 @@
 										}
 ,
 										"classnamespace" : "box",
-										"rect" : [ 84.0, 131.0, 479.0, 651.0 ],
+										"rect" : [ 66.0, 100.0, 903.0, 664.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -575,15 +575,66 @@
 										"style" : "",
 										"subpatcher_template" : "",
 										"assistshowspatchername" : 0,
+										"visible" : 1,
 										"boxes" : [ 											{
+												"box" : 												{
+													"id" : "obj-11",
+													"linecount" : 3,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 294.0, 569.0, 381.0, 47.0 ],
+													"presentation_linecount" : 3,
+													"text" : "They are currently undocumented, but in principle work exactly the same as the original ones, except for their ability to behave correctly under with a clock message."
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-10",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 294.0, 527.0, 72.0, 33.0 ],
+													"presentation_linecount" : 3,
+													"text" : "ears.line~\nears.curve~"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-3",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 294.0, 486.0, 381.0, 33.0 ],
+													"presentation_linecount" : 2,
+													"text" : "ears includes a few abstraction that should work around the timing issues of the corresponding Max objects:"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontface" : 1,
+													"id" : "obj-1",
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 289.0, 458.0, 157.0, 20.0 ],
+													"text" : "Surrogate audio modules:"
+												}
+
+											}
+, 											{
 												"box" : 												{
 													"id" : "obj-21",
 													"linecount" : 3,
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 597.0, 446.0, 47.0 ],
-													"presentation_linecount" : 3,
+													"patching_rect" : [ 294.0, 385.0, 448.0, 47.0 ],
 													"text" : "For some of these limiations there are workarounds. For others, unfortunately, not. Feel free to experiment, share your experiences on the forums and exert gentle pressure upon Cycling '74 for extending the support for the clock message!"
 												}
 
@@ -595,8 +646,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 133.0, 450.0, 156.0, 100.0 ],
-													"presentation_linecount" : 9,
+													"patching_rect" : [ 402.0, 238.0, 156.0, 100.0 ],
 													"text" : "and the message outlets of \nadsr~\nlive.adsr~\ncurve~\nline~\nlive.gain5\nplay~"
 												}
 
@@ -608,8 +658,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 306.0, 121.0, 100.0 ],
-													"presentation_linecount" : 8,
+													"patching_rect" : [ 294.0, 94.0, 121.0, 100.0 ],
 													"text" : "adsr~\nlive.adsr~\ncurve~\nline~\nplay~\nsig~\nand all the oscillators"
 												}
 
@@ -621,8 +670,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 556.0, 446.0, 33.0 ],
-													"presentation_linecount" : 13,
+													"patching_rect" : [ 294.0, 344.0, 446.0, 33.0 ],
 													"text" : "peakamp~ and snapshot~ will behave correctly if triggered by an external bang, typically produced by metro."
 												}
 
@@ -634,8 +682,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 450.0, 65.0, 60.0 ],
-													"presentation_linecount" : 6,
+													"patching_rect" : [ 294.0, 238.0, 65.0, 60.0 ],
 													"text" : "edge~\nfzero~\npeakamp~\nsnapshot~"
 												}
 
@@ -647,8 +694,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 415.0, 446.0, 33.0 ],
-													"presentation_linecount" : 4,
+													"patching_rect" : [ 294.0, 203.0, 446.0, 33.0 ],
 													"text" : "On the other hand, objects that take signals and produce messages will generally have timing issues. This concerns, among the others:"
 												}
 
@@ -660,8 +706,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 265.0, 381.0, 33.0 ],
-													"presentation_linecount" : 17,
+													"patching_rect" : [ 294.0, 53.0, 381.0, 33.0 ],
 													"text" : "Objects that produce signals in response to messages generally work correctly. This includes the signal outlets of the following:"
 												}
 
@@ -673,8 +718,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 20.0, 240.0, 243.0, 20.0 ],
-													"presentation_linecount" : 2,
+													"patching_rect" : [ 289.0, 28.0, 243.0, 20.0 ],
 													"text" : "Special considerations for audio objects:"
 												}
 
@@ -687,7 +731,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 25.0, 182.0, 218.0, 33.0 ],
-													"presentation_linecount" : 9,
 													"text" : "Even for these objects, the itm syntax (such as 4n and so on) is unsupported."
 												}
 
@@ -700,8 +743,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 290.0, 23.0, 168.0, 47.0 ],
-													"presentation_linecount" : 3,
+													"patching_rect" : [ 20.0, 257.0, 168.0, 47.0 ],
 													"text" : "Timed objects that don't implement the clock message or attribute:"
 												}
 
@@ -713,8 +755,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 304.0, 85.0, 70.0, 74.0 ],
-													"presentation_linecount" : 5,
+													"patching_rect" : [ 34.0, 319.0, 70.0, 74.0 ],
 													"text" : "mtr\nqlist\nquickthresh\nseq\nthresh"
 												}
 
@@ -757,67 +798,6 @@
 									}
 ,
 									"text" : "p \"supported and unsupported\""
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-13",
-									"maxclass" : "newobj",
-									"numinlets" : 2,
-									"numoutlets" : 2,
-									"outlettype" : [ "float", "" ],
-									"patching_rect" : [ 376.0, 183.0, 37.0, 23.0 ],
-									"text" : "timer"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-10",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 3,
-									"outlettype" : [ "", "bang", "bang" ],
-									"patching_rect" : [ 575.0, 292.0, 40.0, 23.0 ],
-									"save" : [ "#N", "qlist", ";" ],
-									"text" : "qlist"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-9",
-									"maxclass" : "newobj",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 497.0, 246.0, 45.0, 23.0 ],
-									"text" : "thresh"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-8",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 452.0, 301.0, 29.5, 23.0 ],
-									"text" : "thr"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-6",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 3,
-									"outlettype" : [ "int", "bang", "" ],
-									"patching_rect" : [ 325.0, 292.0, 40.0, 23.0 ],
-									"text" : "seq"
 								}
 
 							}
