@@ -975,7 +975,7 @@ void earsprocess_anything(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom*
 {
     long inlet = proxy_getinlet((t_object *) x);
     if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
-        t_llll *ll = llllobj_parse_retain_and_store((t_object *) x, LLLL_OBJ_VANILLA, s, ac, av, inlet);
+        t_llll *ll = llllobj_parse_retain_and_store((t_object *) x, LLLL_OBJ_VANILLA, s, ac, av, inlet - x->nBufInlets);
         //t_llll *ll = llllobj_parse_llll((t_object *) x, LLLL_OBJ_VANILLA, s, ac, av, LLLL_PARSE_RETAIN);
         if (!ll)
             return;
