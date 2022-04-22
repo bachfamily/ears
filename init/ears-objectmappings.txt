@@ -1,1 +1,3 @@
 max objectfile ears.shift~ ears.offset~;
+max objectfile mc.zl mc.wrapper~ zl;
+max objectfile mc.delay mc.wrapper~ delay;

@@ -584,7 +584,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 294.0, 569.0, 381.0, 47.0 ],
-													"presentation_linecount" : 3,
 													"text" : "They are currently undocumented, but in principle work exactly the same as the original ones, except for their ability to behave correctly under with a clock message."
 												}
 
@@ -596,9 +595,8 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 527.0, 72.0, 33.0 ],
-													"presentation_linecount" : 3,
-													"text" : "ears.line~\nears.curve~"
+													"patching_rect" : [ 294.0, 527.0, 124.0, 33.0 ],
+													"text" : "ears.process.line~\nears.process~.curve~"
 												}
 
 											}
@@ -610,7 +608,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 294.0, 486.0, 381.0, 33.0 ],
-													"presentation_linecount" : 2,
 													"text" : "ears includes a few abstraction that should work around the timing issues of the corresponding Max objects:"
 												}
 
@@ -647,7 +644,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 402.0, 238.0, 156.0, 100.0 ],
-													"text" : "and the message outlets of \nadsr~\nlive.adsr~\ncurve~\nline~\nlive.gain5\nplay~"
+													"text" : "and the message outlets of \nadsr~\nlive.adsr~\ncurve~\nline~\nlive.gain~\nplay~"
 												}
 
 											}
