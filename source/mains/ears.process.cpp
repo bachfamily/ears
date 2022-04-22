@@ -1030,7 +1030,7 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             nIterations = MIN(nIterations, this_num_buf);
         }
     }
-    for (; i < x->nBufInlets + x->theInsByIndex->maxIdx; i++) {
+    for (i = 0; i < x->nBufInlets; i++) {
         t_llll *ll = llllobj_get_store_contents((t_object *) x, LLLL_OBJ_VANILLA, i, 0);
         long this_size = ll->l_size;
         llll_release(ll);
