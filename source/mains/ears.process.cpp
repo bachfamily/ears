@@ -626,7 +626,7 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
     char outtypes[2048];
     int i;
     t_bool ok = true;
-    
+    t_llllelem *el;
     switch (args->l_size) {
         case 0:
             break;
@@ -651,39 +651,30 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
             break;
         }
         case 2: {
-            t_llllelem *el = args->l_head;
+            el = args->l_head;
             t_hatom *h = &el->l_hatom;
-            t_symbol *s = hatom_getsym(h);
-            if (s == nullptr) {
-                ok = false;
-                break;
-            }
-            if (earsbufobj_is_sym_naming_mech(s)) {
-                el = el->l_next;
-                h = &el->l_hatom;
-                switch(hatom_gettype(h)) {
-                    case H_SYM:
-                        patchname = hatom_getsym(h);
-                        llll_destroyelem(el);
-                        break;
-                    case H_LLLL:
-                        break;
-                    default:
-                        ok = false;
-                        break;
-                }
-            } else {
-                patchname = hatom_getsym(h);
-                if (patchname) {
-                    llll_destroyelem(el); // what follows is surely the buffer names
-                } else {
-                    ok = false;
+            if (hatom_gettype(h) == H_SYM) {
+                t_symbol *s = hatom_getsym(h);
+                if (earsbufobj_is_sym_naming_mech(s)) {
+                    el = el->l_next;
+                    h = &el->l_hatom;
+                    switch(hatom_gettype(h)) {
+                        case H_SYM:
+                            patchname = hatom_getsym(h);
+                            llll_destroyelem(el);
+                            break;
+                        case H_LLLL:
+                            break;
+                        default:
+                            ok = false;
+                            break;
+                    }
+                    break;
                 }
             }
-            break;
         }
         case 3: {
-            t_llllelem *el = args->l_head->l_next; // the first must be a symbol
+            el = args->l_tail;
             // earsbufobj_extract_names_from_args() will take care of it
             patchname = hatom_getsym(&el->l_hatom);
             if (!patchname) {

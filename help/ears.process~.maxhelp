@@ -501,7 +501,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 792.0, 523.0 ],
+						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2093,7 +2093,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
+						"rect" : [ 100.0, 126.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2170,7 +2170,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 265.0, 305.5, 390.0, 36.0 ],
-									"text" : "On the other hand, the optional shortcut symbol for the naming mechanism (=, _ or !) is the first argument, if present."
+									"text" : "The optional shortcut symbol for the naming mechanism (=, _ or !) is the first argument, if present."
 								}
 
 							}
@@ -2246,7 +2246,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 395.606537000000003, 115.5, 317.0, 36.0 ],
-									"text" : "The optional explicit names for the output buffers must come after the patch name."
+									"text" : "The optional explicit names for the output buffers must come before the patch name."
 								}
 
 							}
@@ -2319,8 +2319,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 124.0, 378.0, 23.0 ],
-									"text" : "ears.process~ ears.HalfAmplitude-inside [halfDrums halfAnton]"
+									"patching_rect" : [ 10.0, 124.0, 371.0, 23.0 ],
+									"text" : "ears.process~ [halfDrums halfAnton] ears.HalfAmplitude-inside"
 								}
 
 							}
