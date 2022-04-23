@@ -603,12 +603,12 @@ void earsprocess_earsprocessinfodeleted(t_earsprocess *x, t_object *obj)
 // 2 args: buffer name (llll), patch name: [ foo bar ] patchname
 void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
 {
-    // @arg 0 @name patcher name @optional 1 @type symbol
-    // @digest Patcher name
-    // @description Sets the name of the patch to be loaded   
-    // @arg 1 @name outnames @optional 1 @type symbol/llll
+    // @arg 0 @name outnames @optional 1 @type symbol/llll
     // @digest Output buffer names
     // @description @copy EARS_DOC_OUTNAME_ATTR
+    // @arg 1 @name patcher name @optional 1 @type symbol
+    // @digest Patcher name
+    // @description Sets the name of the patch to be loaded
     
     t_earsprocess *x = (t_earsprocess *) object_alloc(earsprocess_class);
     t_symbol *patchname = nullptr;
