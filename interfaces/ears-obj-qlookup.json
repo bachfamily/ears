@@ -267,6 +267,7 @@
       "band"
     ],
     "seealso": [
+      "ears.soundtouch~",
       "ears.paulstretch~",
       "ears.resample~"
     ]
@@ -1170,6 +1171,29 @@
     ],
     "seealso": [
       "ears.essentia~"
+    ]
+  },
+  "ears.soundtouch~": {
+    "digest": "SoundTouch pitch and time processing",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "pitch",
+      "stretch",
+      "shift",
+      "pitchshift",
+      "timestretch",
+      "soundtouch",
+      "sound",
+      "touch"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.paulstretch~",
+      "ears.resample~"
     ]
   },
   "ears.istft~": {

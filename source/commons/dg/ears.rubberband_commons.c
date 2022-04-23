@@ -203,6 +203,11 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
+            t_atom_long    channelcount = buffer_getchannelcount(dest);
+            t_atom_long    framecount   = buffer_getframecount(dest);
+            if (outframecount > framecount)
+                outframecount = framecount;
+
             sysmem_copyptr(output_sample_wk, dest_sample, channelcount * outframecount * sizeof(float));
             
             buffer_setdirty(dest);

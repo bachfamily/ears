@@ -342,6 +342,7 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.soundtouch~" />
 		<seealso name="ears.paulstretch~" />
 		<seealso name="ears.resample~" />
 	</seealsolist>

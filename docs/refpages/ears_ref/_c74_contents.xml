@@ -62,6 +62,7 @@
 <refpage name='ears.normalize~.maxref.xml'/>
 <refpage name='ears.offset~.maxref.xml'/>
 <refpage name='ears.vamp~.maxref.xml'/>
+<refpage name='ears.soundtouch~.maxref.xml'/>
 <refpage name='ears.istft~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
 <refpage name='ears.model.stochastic.synthesis~.maxref.xml'/>

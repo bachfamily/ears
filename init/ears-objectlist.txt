@@ -60,6 +60,7 @@ max oblist "ears objects" ears.trim~;
 max oblist "ears objects" ears.normalize~;
 max oblist "ears objects" ears.offset~;
 max oblist "ears objects" ears.vamp~;
+max oblist "ears objects" ears.soundtouch~;
 max oblist "ears objects" ears.istft~;
 max oblist "ears objects" ears.reg~;
 max oblist "ears objects" ears.model.stochastic.synthesis~;
