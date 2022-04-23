@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 226.0, 196.0, 891.0, 572.0 ],
+		"rect" : [ 100.0, 100.0, 891.0, 604.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 578.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -388,7 +388,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 226.0, 222.0, 891.0, 546.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 578.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -641,9 +641,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 4,
-									"outlettype" : [ "", "", "", "" ],
+									"numinlets" : 5,
+									"numoutlets" : 5,
+									"outlettype" : [ "", "", "", "", "" ],
 									"patching_rect" : [ 10.0, 268.0, 861.0, 23.0 ],
 									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy bbc-vamp-plugins:bbc-energy... bbc-vamp-plugins:bbc-energy::: bbc-vamp-plugins:bbc-energy~ @out mn"
 								}
@@ -770,7 +770,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 578.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1005,8 +1005,8 @@
 									"id" : "obj-14",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 419.0, 258.0, 242.0, 23.0 ],
 									"text" : "ears.vamp~ vamp-libxtract:mfcc @out m"
 								}
@@ -1205,7 +1205,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
+						"rect" : [ 100.0, 126.0, 891.0, 578.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1235,6 +1235,20 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-21",
+									"linecount" : 4,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 402.5, 498.0, 347.5, 65.0 ],
+									"presentation_linecount" : 3,
+									"text" : "If the object is red, it may very well be because you do not have the version of the plugins compiled for the correct architecture. Check your VAMP installation (if you are on a M1 Max, you may want to try using Rosetta)",
+									"textcolor" : [ 0.717647058823529, 0.125490196078431, 0.125490196078431, 1.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-13",
 									"linecount" : 2,
@@ -1602,9 +1616,9 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
+									"numinlets" : 3,
+									"numoutlets" : 3,
+									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 10.0, 266.0, 485.0, 23.0 ],
 									"text" : "ears.vamp~ bbc-vamp-plugins:bbc-energy::: vamp-libxtract:zcr..."
 								}
@@ -1748,7 +1762,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 891.0, 546.0 ],
+						"rect" : [ 0.0, 26.0, 891.0, 578.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
