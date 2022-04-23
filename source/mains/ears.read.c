@@ -131,6 +131,8 @@ int C74_EXPORT main(void)
     // @mattr append @type int @default 0 @digest Append buffers
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(read)
 
+    earsbufobj_class_add_timeunit_attr(c);
+    
     // @method append @digest Import files as additional buffers
     // @description The <m>append</m> message, followed by a list of filenames, will import the files as buffers
     // appending them to the existing one, and then outputting the whole set of output buffer names.

@@ -152,7 +152,7 @@
 				Vector size.
 			</description>
 		</entry>
-		<entry name ="Outlet 6 (list)">
+		<entry name ="Outlet 6 (float/list)">
 			<description>
 				Durations of the input buffers.
 			</description>
