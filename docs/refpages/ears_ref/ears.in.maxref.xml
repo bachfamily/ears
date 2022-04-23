@@ -75,6 +75,23 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
+		<attribute name="unwrap" get="1" set="1" type="int" size="1">
+			<digest>
+				Unwrap
+			</digest>
+			<description>
+				If the <m>unwrap</m> attribute is set to 1
+				and the <m>direct</m> attribute is set to 0, the outermost level of
+				parentheses (if present) is removed from the llll output at each iteration.
+				If the <m>direct</m> attribute is set to 1, the <m>unwrap</m> attribute has no effect.
+				The default is 0.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Unwrap" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 	</attributelist>
 
 	<!--SEEALSO-->

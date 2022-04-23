@@ -107,9 +107,19 @@
 				Direct
 			</digest>
 			<description>
+				When the <m>direct</m> attribute is set to 0 (as per the default),
+				at each iteration triggered by <o>ears.process~</o>
+				an llll is collected and, at the end of all the iterations,
+				they are all chained together and output by <o>ears.process~</o>.
+				If more than one llll is received by <o>ears.out</o> during one iteration,
+				only the last one is collected.</br>.
+				When the <m>direct</m> attribute is set to 1,
+				each llll received by <o>ears.out</o> is immediately output
+				from the corresponding outlet of <o>ears.process~</o>.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Direct" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -118,6 +128,12 @@
 				Output Wrap
 			</digest>
 			<description>
+				If the <m>outwrap</m> attribute is set to 1
+				and the <m>direct</m> attribute is set to 0,
+				the lllls collected at each iteration are returned as sublists,
+				each wrapped in parentheses, rather than just chained together
+				as per the default behavior, with <m>outwrap</m> set to 0.<br/>
+				If the <m>direct</m> attribute is set to 1, the <m>outwrap</m> attribute has no effect.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Wrap" />
