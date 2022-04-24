@@ -127,10 +127,26 @@ int C74_EXPORT main()
     CLASS_ATTR_LONG(ears_out_class, "direct", 0, t_ears_out, direct);
     CLASS_ATTR_STYLE_LABEL(ears_out_class, "direct", 0, "onoff", "Direct");
     CLASS_ATTR_FILTER_CLIP(ears_out_class, "direct", 0, 1);
+    // @description
+    // When the <m>direct</m> attribute is set to 0 (as per the default),
+    // at each iteration triggered by <o>ears.process~</o>
+    // an llll is collected and, at the end of all the iterations,
+    // they are all chained together and output by <o>ears.process~</o>.
+    // If more than one llll is received by <o>ears.out</o> during one iteration,
+    // only the last one is collected.</br>.
+    // When the <m>direct</m> attribute is set to 1,
+    // each llll received by <o>ears.out</o> is immediately output
+    // from the corresponding outlet of <o>ears.process~</o>.
     
     CLASS_ATTR_LONG(ears_out_class, "outwrap", 0, t_ears_out, outwrap);
     CLASS_ATTR_STYLE_LABEL(ears_out_class, "outwrap", 0, "onoff", "Output Wrap");
     CLASS_ATTR_FILTER_CLIP(ears_out_class, "outwrap", 0, 1);
+    // @description If the <m>outwrap</m> attribute is set to 1
+    // and the <m>direct</m> attribute is set to 0,
+    // the lllls collected at each iteration are returned as sublists,
+    // each wrapped in parentheses, rather than just chained together
+    // as per the default behavior, with <m>outwrap</m> set to 0.<br/>
+    // If the <m>direct</m> attribute is set to 1, the <m>outwrap</m> attribute has no effect.
     
     class_register(CLASS_BOX, ears_out_class);
     

@@ -52,6 +52,7 @@ typedef struct _ears_in
     long inlet_nums[EARS_IN_MAX_OUTLETS];
     long nOutlets;
     long direct;
+    long unwrap;
     t_object* earsProcessParent;
 } t_ears_in;
 
@@ -107,6 +108,15 @@ int C74_EXPORT main()
     // When set to 1, each llll received by <o>ears.process~</o>
     // is immediately output from the corresponding <o>ears.in</o>.
     
+    CLASS_ATTR_LONG(ears_in_class, "unwrap", 0, t_ears_in, unwrap);
+    CLASS_ATTR_STYLE_LABEL(ears_in_class, "unwrap", 0, "onoff", "Unwrap");
+    CLASS_ATTR_FILTER_CLIP(ears_in_class, "unwrap", 0, 1);
+    // @description If the <m>unwrap</m> attribute is set to 1
+    // and the <m>direct</m> attribute is set to 0, the outermost level of
+    // parentheses (if present) is removed from the llll output at each iteration.
+    // If the <m>direct</m> attribute is set to 1, the <m>unwrap</m> attribute has no effect.
+    // The default is 0.
+    
     llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
 
     class_register(CLASS_BOX, ears_in_class);
@@ -139,7 +149,11 @@ void ears_in_iteration(t_ears_in *x, long n)
         if (el) {
             t_hatom *h = &el->l_hatom;
             t_llll *outll = llll_get();
-            llll_appendhatom_clone(outll, h);
+            if (x->unwrap && hatom_gettype(h) == H_LLLL) {
+                llll_appendllll_clone(outll, hatom_getllll(h));
+            } else {
+                llll_appendhatom_clone(outll, h);
+            }
             llllobj_outlet_llll((t_object *) x, LLLL_OBJ_VANILLA, s, outll);
             llll_free(outll);
         }
