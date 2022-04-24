@@ -48,6 +48,7 @@
 
 typedef struct _buf_clicks {
     t_earsbufobj       e_ob;
+    t_llll             *gains;
     t_buffer_obj       *impulse;
     double      sr;
 } t_buf_clicks;
@@ -101,6 +102,7 @@ int C74_EXPORT main(void)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
+    earsbufobj_class_add_ampunit_attr(c);
 
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_clicks, sr);
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");
@@ -118,6 +120,10 @@ void buf_clicks_assist(t_buf_clicks *x, void *b, long m, long a, char *s)
     if (m == ASSIST_INLET) {
         if (a == 0)
             sprintf(s, "llll: Onsets"); // @in 0 @type llll @digest Onsets
+            // @description List of onsets (unit depends on the <m>timeunit</m> attribute)
+        else if (a == 1)
+            sprintf(s, "llll: Gains"); // @in 1 @type llll @digest Gains
+            // @description List of gains (unit depends on the <m>ampunit</m> attribute)
         else
             sprintf(s, "llll: Impulse"); // @in 1 @type llll @digest Impulse samples
     } else {
@@ -151,13 +157,14 @@ t_buf_clicks *buf_clicks_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
 
-        x->impulse = ears_buffer_make(NULL); 
+        x->gains = llll_make();
+        x->impulse = ears_buffer_make(NULL);
         ears_buffer_set_sr((t_object *)x, x->impulse, x->sr > 0 ? x->sr : ears_get_current_Max_sr());
         t_llll *temp = llll_from_text_buf("[1]");
         ears_buffer_from_llll((t_object *)x, x->impulse, temp, 1);
         llll_free(temp);
         
-        earsbufobj_setup((t_earsbufobj *)x, "44", "e", names);
+        earsbufobj_setup((t_earsbufobj *)x, "444", "e", names);
 
         
         llll_free(args);
@@ -169,6 +176,7 @@ t_buf_clicks *buf_clicks_new(t_symbol *s, short argc, t_atom *argv)
 
 void buf_clicks_free(t_buf_clicks *x)
 {
+    llll_free(x->gains);
     ears_buffer_free(x->impulse);
     earsbufobj_free((t_earsbufobj *)x);
 }
@@ -191,6 +199,15 @@ long convert_timeunit_fn(void *data, t_hatom *a, const t_llll *address){
     return 0;
 }
 
+long convert_ampunit_fn(void *data, t_hatom *a, const t_llll *address){
+    t_buf_clicks *x = (t_buf_clicks *) data;
+    
+    if (is_hatom_number(a) && x->e_ob.l_ampunit != EARS_AMPUNIT_LINEAR){
+        hatom_setdouble(a, ears_convert_ampunit(hatom_getdouble(a), NULL, (e_ears_ampunit)x->e_ob.l_ampunit, EARS_AMPUNIT_LINEAR));
+    }
+    return 0;
+}
+
 
 void buf_clicks_anything(t_buf_clicks *x, t_symbol *msg, long ac, t_atom *av)
 {
@@ -200,20 +217,34 @@ void buf_clicks_anything(t_buf_clicks *x, t_symbol *msg, long ac, t_atom *av)
     if (!parsed) return;
     
     if (parsed) {
-        if (inlet == 1) {
+        if (inlet == 2) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
             t_llll *temp = llll_clone(parsed);
             llll_wrap_once(&temp);
             ears_buffer_set_sr((t_object *)x, x->impulse, x->sr > 0 ? x->sr : ears_get_current_Max_sr());
             ears_buffer_from_llll((t_object *)x, x->impulse, temp, 1);
             llll_free(temp);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+        } else if (inlet == 1) {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            llll_free(x->gains);
+            x->gains = llll_clone(parsed);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
         } else if (inlet == 0){
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
             if (parsed->l_depth == 1) // flat llll = 1 channel only
                 llll_wrap_once(&parsed);
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
             t_llll *onsets_samps = llll_clone(parsed);
+            t_llll *gains_linear = llll_clone(x->gains);
+            if (gains_linear->l_depth == 1) // flat llll = 1 channel only
+                llll_wrap_once(&gains_linear);
             llll_funall(onsets_samps, (fun_fn) convert_timeunit_fn, x, 1, -1, FUNALL_ONLY_PROCESS_ATOMS);
-            ears_buffer_from_clicks((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), onsets_samps, x->impulse);
+            llll_funall(gains_linear, (fun_fn) convert_ampunit_fn, x, 1, -1, FUNALL_ONLY_PROCESS_ATOMS);
+            ears_buffer_from_clicks((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0), onsets_samps, gains_linear, x->impulse);
             llll_free(onsets_samps);
+            llll_free(gains_linear);
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
             buf_clicks_bang(x);
         }
     }
