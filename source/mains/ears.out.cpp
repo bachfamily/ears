@@ -133,7 +133,7 @@ int C74_EXPORT main()
     // an llll is collected and, at the end of all the iterations,
     // they are all chained together and output by <o>ears.process~</o>.
     // If more than one llll is received by <o>ears.out</o> during one iteration,
-    // only the last one is collected.</br>.
+    // only the last one is collected. <br />
     // When the <m>direct</m> attribute is set to 1,
     // each llll received by <o>ears.out</o> is immediately output
     // from the corresponding outlet of <o>ears.process~</o>.
