@@ -13,16 +13,209 @@
 #include <vector>
 
 
+typedef enum _earsbufobj_in_out
+{
+    EARSBUFOBJ_IN = 0,
+    EARSBUFOBJ_OUT = 1
+} e_earsbufobj_in_out;
+
+typedef enum _ears_bufstatus
+{
+    EARSBUFOBJ_BUFSTATUS_NONE = 0,
+    EARSBUFOBJ_BUFSTATUS_COPIED = 1,
+    EARSBUFOBJ_BUFSTATUS_USERNAMED = 2,
+    EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED = 3
+} e_earsbufobj_bufstatus;
+
+
+
+typedef struct earsbufobj_stored_buffer
+{
+    t_symbol                  *l_name;
+    t_object                  *l_buf;
+    e_earsbufobj_bufstatus    l_status;
+} t_earsbufobj_stored_buffer;
+
+
+typedef struct earsbufobj_store
+{
+    long                        num_stored_bufs;
+    t_earsbufobj_stored_buffer  *stored_buf;
+    long                        max_num_stored_bufs; // currently can only be 0 (=no limit) or 1 (=single buffer)
+} t_earsbufobj_store;
+
+
+
+typedef enum _earsbufobj_namings
+{
+    EARSBUFOBJ_NAMING_COPY = 0,   ///< Output buffers are NOT cloned, and copied whenever possible from the input buffers
+    EARSBUFOBJ_NAMING_STATIC = 1,   ///< Output buffers are "static": we always use the same ones
+    EARSBUFOBJ_NAMING_DYNAMIC = 2,  ///< Output buffers are "dynamic": new buffers are created at each output
+                                    /// (but can be cycled via the "cycle" message)
+} e_earsbufobj_namings;
+
+
+typedef enum _earsbufobj_flag
+{
+    EARSBUFOBJ_FLAG_NONE = 0,
+    EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
+    EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
+} e_earsbufobj_flag;
+
+typedef enum _earsbufobj_blocking
+{
+    EARSBUFOBJ_BLOCKING_OWNTHREAD = 0,    ///< Processing happens in an own separate thread
+    EARSBUFOBJ_BLOCKING_MAINTHREAD = 1,   ///< Processing happens in the main thread
+    EARSBUFOBJ_BLOCKING_CALLINGTHREAD = 2,    ///< Processing happens in the scheduler thread
+} e_earsbufobj_blocking;
+
+
+typedef struct _earsbufobj
+{
+    t_llllobj_object        l_ob;            ///< the t_object from which we inherit
+    
+    // Inlets
+    t_int32                    l_numins;       ///< how many inlets do we have
+    void                    **l_proxy;      ///< inlets
+    long                    l_in;           ///< place to store proxy number
+    t_int32                    l_numbufins;    ///< how many buffer inlets do we have
+    t_earsbufobj_store      *l_instore;     ///< the in stores
+    
+    // Outlets
+// (the first two fields are handled directly via the llllobj_object structure
+//    t_int32                    l_numouts;      ///< how many outlets
+//    void                    **l_outlet;     ///< the outlets
+    char                    l_outlet_types[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
+    t_int32                    l_numbufouts;    ///< how many buffer outlets
+    t_earsbufobj_store      *l_outstore;    ///< the out stores
+    t_llll                  *l_outnames;    ///< Output names, could be a level2 list if outlets have multiple buffers
+    char                    l_bufouts_naming;   ///< One of the e_earsbufobj_namings.
+                                                /// Names for buffer outlets are static, i.e. "destructive” operation mode.
+// stuff for cycling over a finite list of generated output names
+    t_llll                  *l_generated_outnames;    ///< Updated list of automatically generated output buffer names
+                                                      ///  (one subllll for each buffer outlet)
+    long                    l_generated_outname_count[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
+
+    bool                    l_inlet_hot[LLLL_MAX_INLETS];  ///<1 for Inlets that are hot
+
+    // threading
+    char                    l_blocking;   ///< One of the e_earsbufobj_blocking
+    t_systhread             l_thread;     ///< Thread
+
+    
+    
+    // Settings
+    char                    l_timeunit;      ///< Time unit
+    char                    l_ampunit;      ///< Amplitude unit
+    char                    l_antimeunit;      ///< Time unit for analysis
+    char                    l_envtimeunit;      ///< Time unit for envelopes
+    char                    l_envampunit;      ///< Amplitude unit for envelopes
+    char                    l_pitchunit;      ///< Pitch unit
+    char                    l_frequnit;       ///< Frequency unit
+    char                    l_angleunit;      ///< Angle unit
+    
+    // Resampling modes
+    char                    l_resamplingpolicy;
+    long                    l_resamplingfilterwidth;
+    
+    // analysis
+    double                  a_framesize;
+    double                  a_hopsize;
+    t_atom                  a_numframes;
+    double                  a_overlap;
+    t_symbol                *a_wintype;
+    char                    a_winnorm; //< if set, window is normalized to have area of 1 and then scaled by a factor of 2
+    long                    a_zeropadding;
+    char                    a_zerophase;
+    char                    a_lastframetoendoffile;
+    char                    a_winstartfromzero;
+    
+    char                    l_slopemapping; ///< Slope mapping (one of the #e_slope_mapping)
+
+    t_systhread_mutex       l_mutex;        ///< A mutex
+    
+    long                    l_flags;        ///< A combination of the e_earsbufobj_flag
+    
+    char                    l_is_creating;  ///< 1 when object is being created (in the method "new"), 0 otherwise;
+    long                    l_curr_proxy;  ///< Filled with the number of the proxy being used
+    char                    l_buffer_size_changed; ///< 1 when buffer size has changed
+} t_earsbufobj;
+
+
+typedef struct _earstaskdata
+{
+    t_earsbufobj *e_ob;
+    t_symbol *s;
+    long ac;
+    t_atom *av;
+} t_earstaskdata;
+
+
+
 #define EARSBUFOBJ_ADD_DEFERRED_METHODS(NAME) \
 void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x); \
 void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av); \
+t_earstaskdata * buf_ ## NAME ## _create_taskdata(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av); \
+void buf_ ## NAME ## _free_thread_and_data(t_earstaskdata *data); \
+void buf_ ## NAME ## _bang_wrapper_task(t_earstaskdata *data); \
+void buf_ ## NAME ## _anything_wrapper_task(t_earstaskdata *data); \
+\
+t_earstaskdata * buf_ ## NAME ## _create_taskdata(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)\
+{\
+    t_earstaskdata *data = (t_earstaskdata *)sysmem_newptr(sizeof(t_earstaskdata));\
+    data->e_ob = e_ob;\
+    if (s == _llllobj_sym_bach_llll) {\
+        llllobj_get_retained_native_llll_from_args(ac, av);\
+    }\
+    data->s = s;\
+    data->ac = ac;\
+    data->av = ac > 0 ? (t_atom *)sysmem_newptr(ac * sizeof(t_atom)) : NULL;\
+    for (long i = 0; i < ac; i++)\
+        data->av[i] = av[i];\
+    return data;\
+}\
+void buf_ ## NAME ## _free_thread_and_data(t_earstaskdata *data)\
+{\
+    if (data->e_ob->l_thread) {\
+        data->e_ob->l_thread = NULL;\
+        systhread_exit(0);\
+    }\
+    if (data->s == _llllobj_sym_bach_llll) { \
+        t_llll *ll = llllobj_get_retained_native_llll_from_args(data->ac, data->av); \
+        llll_release(ll); \
+        llll_release(ll); /* this is correct: we do this twice because we retained it twice. */ \
+    }\
+    if (data->av)\
+        sysmem_freeptr(data->av);\
+    sysmem_freeptr(data);\
+}\
+\
+void buf_ ## NAME ## _bang_wrapper_task(t_earstaskdata *data)\
+{\
+    buf_ ## NAME ## _bang((t_buf_ ## NAME *)data->e_ob);\
+    buf_ ## NAME ## _free_thread_and_data(data);\
+}\
+void buf_ ## NAME ## _anything_wrapper_task(t_earstaskdata *data)\
+{\
+    buf_ ## NAME ## _anything((t_buf_ ## NAME *)data->e_ob, data->s, data->ac, data->av);\
+    buf_ ## NAME ## _free_thread_and_data(data);\
+}\
+\
 void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
 { \
     switch (x->e_ob.l_blocking) { \
         case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
+        {\
+            if (x->e_ob.l_thread) {\
+                object_error((t_object *)x, "Already running.");\
+                return;\
+            }\
+            t_earstaskdata *data = buf_ ## NAME ##_create_taskdata((t_earsbufobj *)x, NULL, 0, NULL);\
+            systhread_create((method) buf_ ## NAME ##_bang_wrapper_task, data, 0, 0, 0, &x->e_ob.l_thread);\
+        }\
         break; \
-        case EARSBUFOBJ_BLOCKING_SCHEDULER: \
-            buf_ ## NAME ##_bang(x, NULL, 0, NULL); \
+        case EARSBUFOBJ_BLOCKING_CALLINGTHREAD: \
+            buf_ ## NAME ##_bang(x); \
         break; \
         case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
         default: \
@@ -40,8 +233,16 @@ void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, l
     } \
     switch (x->e_ob.l_blocking) { \
         case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
+        {\
+            if (x->e_ob.l_thread) {\
+                object_error((t_object *)x, "Already running.");\
+                return;\
+            }\
+            t_earstaskdata *data = buf_ ## NAME ##_create_taskdata((t_earsbufobj *)x, msg, ac, av);\
+            systhread_create((method) buf_ ## NAME ##_anything_wrapper_task, data, 0, 0, 0, &x->e_ob.l_thread);\
+        }\
         break; \
-        case EARSBUFOBJ_BLOCKING_SCHEDULER: \
+        case EARSBUFOBJ_BLOCKING_CALLINGTHREAD: \
             buf_ ## NAME ##_anything(x, msg, ac, av); \
         break; \
         case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
@@ -50,6 +251,7 @@ void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, l
         break; \
     } \
 } \
+
 
 
 #define EARSBUFOBJ_ADD_INT_FLOAT_METHODS(NAME) \
@@ -110,133 +312,6 @@ earsbufobj_add_common_methods(c); \
 
 
 
-typedef enum _earsbufobj_in_out
-{
-    EARSBUFOBJ_IN = 0,
-    EARSBUFOBJ_OUT = 1
-} e_earsbufobj_in_out;
-
-typedef enum _ears_bufstatus
-{
-    EARSBUFOBJ_BUFSTATUS_NONE = 0,
-    EARSBUFOBJ_BUFSTATUS_COPIED = 1,
-    EARSBUFOBJ_BUFSTATUS_USERNAMED = 2,
-    EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED = 3
-} e_earsbufobj_bufstatus;
-
-
-
-typedef struct earsbufobj_stored_buffer
-{
-    t_symbol                  *l_name;
-    t_object                  *l_buf;
-    e_earsbufobj_bufstatus    l_status;
-} t_earsbufobj_stored_buffer;
-
-
-typedef struct earsbufobj_store
-{
-    long                        num_stored_bufs;
-    t_earsbufobj_stored_buffer  *stored_buf;
-    long                        max_num_stored_bufs; // currently can only be 0 (=no limit) or 1 (=single buffer)
-} t_earsbufobj_store;
-
-
-
-
-typedef enum _earsbufobj_namings
-{
-    EARSBUFOBJ_NAMING_COPY = 0,   ///< Output buffers are NOT cloned, and copied whenever possible from the input buffers
-    EARSBUFOBJ_NAMING_STATIC = 1,   ///< Output buffers are "static": we always use the same ones
-    EARSBUFOBJ_NAMING_DYNAMIC = 2,  ///< Output buffers are "dynamic": new buffers are created at each output
-                                    /// (but can be cycled via the "cycle" message)
-} e_earsbufobj_namings;
-
-
-typedef enum _earsbufobj_flag
-{
-    EARSBUFOBJ_FLAG_NONE = 0,
-    EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
-    EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
-} e_earsbufobj_flag;
-
-typedef enum _earsbufobj_blocking
-{
-    EARSBUFOBJ_BLOCKING_OWNTHREAD = 0,    ///< Processing happens in an own separate thread
-    EARSBUFOBJ_BLOCKING_MAINTHREAD = 1,   ///< Processing happens in the main thread
-    EARSBUFOBJ_BLOCKING_SCHEDULER = 2,    ///< Processing happens in the scheduler thread
-} e_earsbufobj_blocking;
-
-
-typedef struct _earsbufobj
-{
-    t_llllobj_object		l_ob;			///< the t_object from which we inherit
-    
-    // Inlets
-    t_int32					l_numins;       ///< how many inlets do we have
-    void                    **l_proxy;      ///< inlets
-    long                    l_in;           ///< place to store proxy number
-    t_int32					l_numbufins;    ///< how many buffer inlets do we have
-    t_earsbufobj_store      *l_instore;     ///< the in stores
-    
-    // Outlets
-// (the first two fields are handled directly via the llllobj_object structure
-//    t_int32					l_numouts;      ///< how many outlets
-//    void					**l_outlet;     ///< the outlets
-    char                    l_outlet_types[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
-    t_int32					l_numbufouts;	///< how many buffer outlets
-    t_earsbufobj_store      *l_outstore;	///< the out stores
-    t_llll                  *l_outnames;    ///< Output names, could be a level2 list if outlets have multiple buffers
-    char                    l_bufouts_naming;   ///< One of the e_earsbufobj_namings.
-                                                /// Names for buffer outlets are static, i.e. "destructive” operation mode.
-// stuff for cycling over a finite list of generated output names
-    t_llll                  *l_generated_outnames;    ///< Updated list of automatically generated output buffer names
-                                                      ///  (one subllll for each buffer outlet)
-    long                    l_generated_outname_count[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
-
-    bool                    l_inlet_hot[LLLL_MAX_INLETS];  ///<1 for Inlets that are hot
-
-    // threading
-    char                    l_blocking;   ///< One of the e_earsbufobj_blocking
-    
-    
-    
-    // Settings
-    char                    l_timeunit;      ///< Time unit
-    char                    l_ampunit;      ///< Amplitude unit
-    char                    l_antimeunit;      ///< Time unit for analysis
-    char                    l_envtimeunit;      ///< Time unit for envelopes
-    char                    l_envampunit;      ///< Amplitude unit for envelopes
-    char                    l_pitchunit;      ///< Pitch unit
-    char                    l_frequnit;       ///< Frequency unit
-    char                    l_angleunit;      ///< Angle unit
-    
-    // Resampling modes
-    char                    l_resamplingpolicy;
-    long                    l_resamplingfilterwidth;
-    
-    // analysis
-    double                  a_framesize;
-    double                  a_hopsize;
-    t_atom                  a_numframes;
-    double                  a_overlap;
-    t_symbol                *a_wintype;
-    char                    a_winnorm; //< if set, window is normalized to have area of 1 and then scaled by a factor of 2
-    long                    a_zeropadding;
-    char                    a_zerophase;
-    char                    a_lastframetoendoffile;
-    char                    a_winstartfromzero;
-    
-    char                    l_slopemapping; ///< Slope mapping (one of the #e_slope_mapping)
-
-    t_systhread_mutex       l_mutex;        ///< A mutex
-    
-    long                    l_flags;        ///< A combination of the e_earsbufobj_flag
-    
-    char                    l_is_freeing;   ///< 1 when object is being freed;
-    long                    l_curr_proxy;  ///< Filled with the number of the proxy being used
-    char                    l_buffer_size_changed; ///< 1 when buffer size has changed
-} t_earsbufobj;
 
 
 
@@ -414,6 +489,9 @@ t_llll *earsbufobj_llll_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_
 
 // returns true if the s is _ = or !
 t_bool earsbufobj_is_sym_naming_mech(t_symbol *s);
+
+
+
 
 
 #endif // _EARS_BUF_OBJECT_H_

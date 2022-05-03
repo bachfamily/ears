@@ -457,6 +457,8 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
 {
     ears_hashtabs_setup();
 
+    e_ob->l_is_creating = 1;
+
     /// attributes (these must be done before the actual initialization)
     e_ob->l_ampunit = EARS_AMPUNIT_LINEAR;
     e_ob->l_timeunit = EARS_TIMEUNIT_MS;
@@ -662,6 +664,8 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
             }
         }
     }
+    object_attr_setdisabled((t_object *)e_ob, gensym("blocking"), 1);
+    e_ob->l_is_creating = 0;
 }
 
 
@@ -790,6 +794,13 @@ void earsbufobj_free(t_earsbufobj *e_ob)
         object_free_debug(e_ob->l_proxy[i]);
     bach_freeptr(e_ob->l_proxy);
 
+    // separate thread running?
+    if (e_ob->l_thread) {
+        unsigned int rv;
+        systhread_join(e_ob->l_thread, &rv);
+        // thread is exited
+    }
+    
     // deleting references
     for (i = 0; i < e_ob->l_numbufins; i++) {
         for (j = 0; j < e_ob->l_instore[i].num_stored_bufs; j++) {
@@ -834,7 +845,7 @@ void bsc(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
 t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
     if (msg == gensym("buffer_modified")) {
-        defer_low(e_ob, (method)bsc, NULL, 0, NULL);
+        defer(e_ob, (method)bsc, NULL, 0, NULL);
     }
 
     return MAX_ERR_NONE;
@@ -1057,16 +1068,30 @@ void earsbufobj_class_add_outname_attr(t_class *c)
     // unique names.
 }
 
+t_max_err earsbufobj_setattr_blocking(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (!e_ob->l_is_creating)
+            object_error((t_object *)e_ob, "The blocking attribute can only be set in the object box.");
+        else if (atom_gettype(argv) == A_LONG)
+            e_ob->l_blocking = atom_getlong(argv);
+    }
+    return MAX_ERR_NONE;
+}
+
 void earsbufobj_class_add_blocking_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "blocking", 0, t_earsbufobj, l_blocking);
-    CLASS_ATTR_STYLE_LABEL(c,"blocking",0,"text","Blocking Mode");
+    CLASS_ATTR_STYLE_LABEL(c,"blocking",0,"enumindex","Blocking Mode");
+    CLASS_ATTR_ENUMINDEX(c,"blocking", 0, "Non-Blocking Blocking (Low Priority) Blocking (High Priority)");
     CLASS_ATTR_BASIC(c, "blocking", 0);
     CLASS_ATTR_CATEGORY(c, "blocking", 0, "Behavior");
+    CLASS_ATTR_ACCESSORS(c, "blocking", NULL, earsbufobj_setattr_blocking);
     // @description Sets the blocking mode, i.e. the thread to be used for computation: <br />
     // 0: the object uses its own separate thread; <br />
     // 1: the object uses the main thread (default); <br />
     // 2: the object uses its the scheduler thread. <br />
+    // The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 }
 
 
@@ -1796,43 +1821,102 @@ void earsbufobj_outlet_anything(t_earsbufobj *e_ob, long outnum, t_symbol *s, lo
     llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s, ac, av);
 }
 
+void earsbufobj_outlet_symbol_list_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    long numsymbols = atom_getlong(av+1);
+    if (numsymbols > 0) {
+        if (numsymbols == 1)
+            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(av+2), 0, NULL);
+        else {
+            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, _sym_list, numsymbols, av+2);
+        }
+    }
+    bach_freeptr(av);
+}
+
 void earsbufobj_outlet_symbol_list(t_earsbufobj *e_ob, long outnum, long numsymbols, t_symbol **s)
 {
     if (numsymbols > 0) {
-        if (numsymbols == 1)
-            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s[0], 0, NULL);
-        else {
-            t_atom *av = (t_atom *)bach_newptr(numsymbols * sizeof(t_atom));
-            for (long i = 0; i < numsymbols; i++)
-                atom_setsym(av+i, s[i]);
-            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, _sym_list, numsymbols, av);
-            bach_freeptr(av);
+        t_atom *av = (t_atom *)bach_newptr((numsymbols + 2) * sizeof(t_atom));
+        atom_setlong(av, outnum);
+        atom_setlong(av+1, numsymbols);
+        for (long i = 0; i < numsymbols; i++)
+            atom_setsym(av+i+2, s[i]);
+        if (e_ob->l_blocking == 0) {
+            defer(e_ob, (method)earsbufobj_outlet_symbol_list_do, NULL, numsymbols+2, av);
+        } else {
+            earsbufobj_outlet_symbol_list_do(e_ob, NULL, numsymbols+2, av);
         }
     }
 }
 
+
+void earsbufobj_outlet_llll_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    t_llll *ll = (t_llll *)atom_getobj(av+1);
+    llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, ll);
+    llll_release(ll);
+}
+
 void earsbufobj_outlet_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
 {
-    llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, ll);
+    t_atom av[2];
+    atom_setlong(av, outnum);
+    atom_setobj(av, ll);
+    llll_retain(ll);
+    if (e_ob->l_blocking == 0) {
+        defer(e_ob, (method)earsbufobj_outlet_llll_do, NULL, 2, av);
+    } else {
+        earsbufobj_outlet_llll_do(e_ob, NULL, 2, av);
+    }
 }
+
 
 void earsbufobj_gunload_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
 {
     llllobj_gunload_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, ll, outnum);
 }
 
+void earsbufobj_shoot_llll_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    llllobj_shoot_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
+}
+
 void earsbufobj_shoot_llll(t_earsbufobj *e_ob, long outnum)
 {
-    llllobj_shoot_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
+    t_atom av;
+    atom_setlong(&av, outnum);
+    if (e_ob->l_blocking == 0) {
+        defer(e_ob, (method)earsbufobj_shoot_llll_do, NULL, 1, &av);
+    } else {
+        earsbufobj_shoot_llll_do(e_ob, NULL, 1, &av);
+    }
+}
+
+
+void earsbufobj_outlet_bang_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    llllobj_outlet_bang((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
 }
 
 void earsbufobj_outlet_bang(t_earsbufobj *e_ob, long outnum)
 {
-    llllobj_outlet_bang((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
+    t_atom av;
+    atom_setlong(&av, outnum);
+    if (e_ob->l_blocking == 0) {
+        defer(e_ob, (method)earsbufobj_outlet_bang_do, NULL, 1, &av);
+    } else {
+        earsbufobj_outlet_bang_do(e_ob, NULL, 1, &av);
+    }
 }
 
-void earsbufobj_outlet_buffer(t_earsbufobj *e_ob, long outnum)
+void earsbufobj_outlet_buffer_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
 {
+    long outnum = atom_getlong(av);
     if (outnum >= 0 && outnum < e_ob->l_ob.l_numouts) {
         long store = earsbufobj_outlet_to_bufstore(e_ob, outnum);
         if (e_ob->l_outstore[store].num_stored_bufs > 0) {
@@ -1859,6 +1943,17 @@ void earsbufobj_outlet_buffer(t_earsbufobj *e_ob, long outnum)
             
             bach_freeptr(a);
         }
+    }
+}
+
+void earsbufobj_outlet_buffer(t_earsbufobj *e_ob, long outnum)
+{
+    t_atom av;
+    atom_setlong(&av, outnum);
+    if (e_ob->l_blocking == 0) {
+        defer(e_ob, (method)earsbufobj_outlet_buffer_do, NULL, 1, &av);
+    } else {
+        earsbufobj_outlet_buffer_do(e_ob, NULL, 1, &av);
     }
 }
 
@@ -2956,3 +3051,9 @@ t_bool earsbufobj_is_sym_naming_mech(t_symbol *s)
 {
     return s == gensym("!") || s == gensym("=") || s == gensym("_");
 }
+
+
+
+
+
+

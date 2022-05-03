@@ -161,7 +161,7 @@ t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_
                 atom_setlong(&a, num_frames);
                 typedmess(buf, gensym("sizeinsamps"), 1, &a);
                 while (!((t_earsbufobj *)ob)->l_buffer_size_changed) {
-                    post("waiting");
+//                    post("waiting");
                 }
                 globalsymbol_dereference(ob, bn, "buffer~");
             }

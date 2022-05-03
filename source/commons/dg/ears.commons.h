@@ -40,6 +40,7 @@
 #include "ears.object.h" // already included in previous one
 #include "ears.utils.h"
 #include "notation.h"
+#include "bach_threads.h"
 
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
 #include "mpg123.h"
