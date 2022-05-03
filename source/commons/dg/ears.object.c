@@ -1844,6 +1844,7 @@ void earsbufobj_outlet_symbol_list(t_earsbufobj *e_ob, long outnum, long numsymb
         for (long i = 0; i < numsymbols; i++)
             atom_setsym(av+i+2, s[i]);
         if (e_ob->l_blocking == 0) {
+            earsbufobj_updateprogress(e_ob, 1.);
             defer(e_ob, (method)earsbufobj_outlet_symbol_list_do, NULL, numsymbols+2, av);
         } else {
             earsbufobj_outlet_symbol_list_do(e_ob, NULL, numsymbols+2, av);
@@ -1867,6 +1868,7 @@ void earsbufobj_outlet_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
     atom_setobj(av+1, ll);
     llll_retain(ll);
     if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
         defer(e_ob, (method)earsbufobj_outlet_llll_do, NULL, 2, av);
     } else {
         earsbufobj_outlet_llll_do(e_ob, NULL, 2, av);
@@ -1890,6 +1892,7 @@ void earsbufobj_shoot_llll(t_earsbufobj *e_ob, long outnum)
     t_atom av;
     atom_setlong(&av, outnum);
     if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
         defer(e_ob, (method)earsbufobj_shoot_llll_do, NULL, 1, &av);
     } else {
         earsbufobj_shoot_llll_do(e_ob, NULL, 1, &av);
@@ -1908,6 +1911,7 @@ void earsbufobj_outlet_bang(t_earsbufobj *e_ob, long outnum)
     t_atom av;
     atom_setlong(&av, outnum);
     if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
         defer(e_ob, (method)earsbufobj_outlet_bang_do, NULL, 1, &av);
     } else {
         earsbufobj_outlet_bang_do(e_ob, NULL, 1, &av);
@@ -1951,6 +1955,7 @@ void earsbufobj_outlet_buffer(t_earsbufobj *e_ob, long outnum)
     t_atom av;
     atom_setlong(&av, outnum);
     if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
         defer(e_ob, (method)earsbufobj_outlet_buffer_do, NULL, 1, &av);
     } else {
         earsbufobj_outlet_buffer_do(e_ob, NULL, 1, &av);
@@ -3054,6 +3059,39 @@ t_bool earsbufobj_is_sym_naming_mech(t_symbol *s)
 
 
 
+void earsbufobj_stopprogress_do(t_earsbufobj *e_ob, t_symbol *sym, short argc, t_atom *argv)
+{
+    t_object *b = NULL;
+    e_ob->l_current_progress = 0;
+    auto err = object_obex_lookup((t_object *)e_ob, _sym_pound_B, &b);
+    if (err == MAX_ERR_NONE) {
+        object_method(b, gensym("stopprogress"));
+    }
+}
 
+void earsbufobj_startprogress_do(t_earsbufobj *e_ob, t_symbol *sym, short argc, t_atom *argv)
+{
+    t_object *b = NULL;
+    e_ob->l_current_progress = 0;
+    auto err = object_obex_lookup((t_object *)e_ob, _sym_pound_B, &b);
+    if (err == MAX_ERR_NONE) {
+        object_method(b, gensym("startprogress"), &e_ob->l_current_progress);
+    }
+}
+
+void earsbufobj_startprogress(t_earsbufobj *e_ob)
+{
+    defer(e_ob, (method)earsbufobj_startprogress_do, NULL, 0, NULL);
+}
+
+void earsbufobj_stopprogress(t_earsbufobj *e_ob)
+{
+    defer(e_ob, (method)earsbufobj_stopprogress_do, NULL, 0, NULL);
+}
+
+void earsbufobj_updateprogress(t_earsbufobj *e_ob, t_atom_float progress)
+{
+    e_ob->l_current_progress = progress;
+}
 
 

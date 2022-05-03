@@ -4006,6 +4006,54 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-32",
+									"maxclass" : "button",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 514.5, 395.0, 24.0, 24.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-30",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "bang" ],
+									"patching_rect" : [ 514.5, 420.0, 50.0, 23.0 ],
+									"text" : "delay 0"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-29",
+									"maxclass" : "newobj",
+									"numinlets" : 3,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 37.125, 467.0, 223.0, 23.0 ],
+									"text" : "ears.rubberband~ 2 400 @blocking 0"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-5",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 37.125, 439.0, 93.0, 23.0 ],
+									"text" : "ears.repeat~ 2"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -4014,20 +4062,20 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 246.5, 455.0, 173.0, 54.0 ],
+									"patching_rect" : [ 262.125, 449.5, 173.0, 54.0 ],
 									"text" : "This performs the computation in a dedicated thread"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u457010279",
+									"buffername" : "u248000742",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 56.0, 523.0, 120.5, 39.0 ]
+									"patching_rect" : [ 37.125, 523.0, 120.5, 39.0 ]
 								}
 
 							}
@@ -4038,22 +4086,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 56.0, 498.0, 46.0, 23.0 ],
+									"patching_rect" : [ 37.125, 498.0, 46.0, 23.0 ],
 									"text" : "set $1"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-26",
-									"maxclass" : "newobj",
-									"numinlets" : 3,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 56.0, 470.5, 185.0, 23.0 ],
-									"text" : "ears.crop~ 0. 500 @blocking 0"
 								}
 
 							}
@@ -4064,8 +4098,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 56.0, 440.5, 116.0, 23.0 ],
-									"text" : "earsBufDrumLoop"
+									"patching_rect" : [ 37.125, 407.5, 441.0, 23.0 ],
+									"text" : "earsBufDrumLoop earsBufDrumLoop earsBufDrumLoop earsBufDrumLoop"
 								}
 
 							}
@@ -4075,24 +4109,24 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-19",
-									"linecount" : 3,
+									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 703.5, 455.0, 185.0, 54.0 ],
-									"text" : "This performs the computation in the scheduler"
+									"patching_rect" : [ 703.5, 455.0, 185.0, 69.0 ],
+									"text" : "This performs the computation in whatever thread it arrives in (in this case: the scheduler)"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u457010279",
+									"buffername" : "u410002584",
 									"id" : "obj-16",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 517.0, 523.0, 120.5, 39.0 ]
+									"patching_rect" : [ 514.5, 532.0, 120.5, 39.0 ]
 								}
 
 							}
@@ -4103,7 +4137,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 517.0, 498.0, 46.0, 23.0 ],
+									"patching_rect" : [ 514.5, 507.0, 46.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -4117,7 +4151,7 @@
 									"numinlets" : 3,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 517.0, 470.5, 185.0, 23.0 ],
+									"patching_rect" : [ 514.5, 479.5, 185.0, 23.0 ],
 									"text" : "ears.crop~ 0. 500 @blocking 2"
 								}
 
@@ -4129,7 +4163,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 517.0, 440.5, 116.0, 23.0 ],
+									"patching_rect" : [ 514.5, 449.5, 116.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -4142,8 +4176,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 374.0, 739.0, 21.0 ],
-									"text" : "You can change this behavior by using the \"blocking\" attribute (whose structure is borrowed from FluCoMa tools)",
+									"patching_rect" : [ 10.0, 369.0, 739.0, 21.0 ],
+									"text" : "You can change this behavior by using the \"blocking\" attribute (whose rationale is borrowed from FluCoMa tools)",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -4409,13 +4443,6 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-25", 0 ],
-									"source" : [ "obj-26", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-24", 0 ],
 									"source" : [ "obj-27", 0 ]
 								}
@@ -4423,8 +4450,15 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-26", 0 ],
+									"destination" : [ "obj-5", 0 ],
 									"source" : [ "obj-28", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-25", 0 ],
+									"source" : [ "obj-29", 0 ]
 								}
 
 							}
@@ -4437,8 +4471,29 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-11", 0 ],
+									"source" : [ "obj-30", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-30", 0 ],
+									"source" : [ "obj-32", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-3", 0 ],
 									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-29", 0 ],
+									"source" : [ "obj-5", 0 ]
 								}
 
 							}
@@ -7066,6 +7121,10 @@
 			}
 , 			{
 				"name" : "ears.reg~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.repeat~.mxo",
 				"type" : "iLaX"
 			}
 , 			{

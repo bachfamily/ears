@@ -496,7 +496,7 @@ void buf_rubberband_bang(t_buf_rubberband *x)
     t_llllelem *ps_el = x->e_pitchshift_env->l_head;
 
     for (long count = 0; count < num_buffers; count++,
-         ts_el = ts_el && ts_el->l_next ? ts_el->l_next : ts_el, ps_el = ps_el && ps_el->l_next ? ps_el->l_next : ps_el) {
+         ts_el = ts_el && ts_el->l_next ? ts_el->l_next : ts_el, ps_el = ps_el && ps_el->l_next ? ps_el->l_next : ps_el, earsbufobj_updateprogress((t_earsbufobj *)x, (float)count/num_buffers)) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 

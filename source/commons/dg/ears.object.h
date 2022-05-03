@@ -101,6 +101,7 @@ typedef struct _earsbufobj
     // threading
     char                    l_blocking;   ///< One of the e_earsbufobj_blocking
     t_systhread             l_thread;     ///< Thread
+    t_atom_float            l_current_progress; ///< For progress bar when dealing with list inputs
 
     
     
@@ -176,10 +177,7 @@ t_earstaskdata * buf_ ## NAME ## _create_taskdata(t_earsbufobj *e_ob, t_symbol *
 }\
 void buf_ ## NAME ## _free_thread_and_data(t_earstaskdata *data)\
 {\
-    if (data->e_ob->l_thread) {\
-        data->e_ob->l_thread = NULL;\
-        systhread_exit(0);\
-    }\
+    t_systhread *thread = &data->e_ob->l_thread; \
     if (data->s == _llllobj_sym_bach_llll) { \
         t_llll *ll = llllobj_get_retained_native_llll_from_args(data->ac, data->av); \
         llll_release(ll); \
@@ -188,16 +186,24 @@ void buf_ ## NAME ## _free_thread_and_data(t_earstaskdata *data)\
     if (data->av)\
         sysmem_freeptr(data->av);\
     sysmem_freeptr(data);\
+    if (thread) {\
+        *thread = NULL;\
+        systhread_exit(0);\
+    }\
 }\
 \
 void buf_ ## NAME ## _bang_wrapper_task(t_earstaskdata *data)\
 {\
+    earsbufobj_startprogress(data->e_ob);\
     buf_ ## NAME ## _bang((t_buf_ ## NAME *)data->e_ob);\
+    earsbufobj_stopprogress(data->e_ob);\
     buf_ ## NAME ## _free_thread_and_data(data);\
 }\
 void buf_ ## NAME ## _anything_wrapper_task(t_earstaskdata *data)\
 {\
+    earsbufobj_startprogress(data->e_ob);\
     buf_ ## NAME ## _anything((t_buf_ ## NAME *)data->e_ob, data->s, data->ac, data->av);\
+    earsbufobj_stopprogress(data->e_ob);\
     buf_ ## NAME ## _free_thread_and_data(data);\
 }\
 \
@@ -490,6 +496,11 @@ t_llll *earsbufobj_llll_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_
 // returns true if the s is _ = or !
 t_bool earsbufobj_is_sym_naming_mech(t_symbol *s);
 
+
+// progress bar
+void earsbufobj_startprogress(t_earsbufobj *e_ob);
+void earsbufobj_stopprogress(t_earsbufobj *e_ob);
+void earsbufobj_updateprogress(t_earsbufobj *e_ob, t_atom_float progress);
 
 
 
