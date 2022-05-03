@@ -2218,7 +2218,7 @@
 		1EFCFA20265660EB0099BBB6 /* ears.model.stochastic.analysis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.model.stochastic.analysis.c; path = ../mains/ears.model.stochastic.analysis.c; sourceTree = "<group>"; };
 		1EFCFA22265660FB0099BBB6 /* ears.model.stochastic.synthesis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.model.stochastic.synthesis.c; path = ../mains/ears.model.stochastic.synthesis.c; sourceTree = "<group>"; };
 		1EFF13141D1D4F3300B7C47A /* ears.playmp3~.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "ears.playmp3~.c"; path = "../mains/ears.playmp3~.c"; sourceTree = SOURCE_ROOT; };
-		1EFF132A1D1D4F5900B7C47A /* ears.playmp3~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.playmp3~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EFF132A1D1D4F5900B7C47A /* ears.utils.playmp3~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.utils.playmp3~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EFFE9BA1D1D533600691C4C /* libmpg123.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmpg123.a; path = /usr/local/lib/libmpg123.a; sourceTree = "<absolute>"; };
 		91319B4B264C022500364EAB /* ears.process_commons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.process_commons.h; path = ../commons/aa/ears.process_commons.h; sourceTree = "<group>"; };
 		91319B4C264C022600364EAB /* ears.process_commons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ears.process_commons.cpp; path = ../commons/aa/ears.process_commons.cpp; sourceTree = "<group>"; };
@@ -2993,7 +2993,7 @@
 			isa = PBXGroup;
 			children = (
 				1ED9C9B1190D1224001973B8 /* lib_ears.a */,
-				1EFF132A1D1D4F5900B7C47A /* ears.playmp3~.mxo */,
+				1EFF132A1D1D4F5900B7C47A /* ears.utils.playmp3~.mxo */,
 				1E06EE911D366EE60064F23B /* ears.crop~.mxo */,
 				1ED65E4A1D384F13007BE0C1 /* ears.fade~.mxo */,
 				1E5D94AC1D39B0A800BFB88E /* ears.read~.mxo */,
@@ -5743,9 +5743,9 @@
 			productReference = 1EFCFA1E265660BF0099BBB6 /* ears.model.stochastic.synthesis~.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
-		1EFF13151D1D4F5900B7C47A /* ears.playmp3~ */ = {
+		1EFF13151D1D4F5900B7C47A /* ears.utils.playmp3~ */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1EFF13271D1D4F5900B7C47A /* Build configuration list for PBXNativeTarget "ears.playmp3~" */;
+			buildConfigurationList = 1EFF13271D1D4F5900B7C47A /* Build configuration list for PBXNativeTarget "ears.utils.playmp3~" */;
 			buildPhases = (
 				1EFF13181D1D4F5900B7C47A /* Headers */,
 				1EFF131C1D1D4F5900B7C47A /* Resources */,
@@ -5758,9 +5758,9 @@
 			dependencies = (
 				1EFF13161D1D4F5900B7C47A /* PBXTargetDependency */,
 			);
-			name = "ears.playmp3~";
+			name = "ears.utils.playmp3~";
 			productName = iterator;
-			productReference = 1EFF132A1D1D4F5900B7C47A /* ears.playmp3~.mxo */;
+			productReference = 1EFF132A1D1D4F5900B7C47A /* ears.utils.playmp3~.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
 		91319B59264C02A700364EAB /* ears.process~ */ = {
@@ -6055,7 +6055,6 @@
 				1EBEAA59275F67D400EFB2CF /* ears.paulfreeze~ */,
 				1EBE31C622EDE11D0090BBFE /* ears.paulstretch~ */,
 				1E88A4DC2615D44700D1D20E /* ears.peaks~ */,
-				1EFF13151D1D4F5900B7C47A /* ears.playmp3~ */,
 				91319B59264C02A700364EAB /* ears.process~ */,
 				91319BEC264C16D200364EAB /* ears.processinfo~ */,
 				91ACB3512753EE4400EB3D95 /* ears.py~ */,
@@ -6080,6 +6079,7 @@
 				1E1743AD2616001A00AB2E7C /* ears.trans~ */,
 				1E5993F022F32AFE00E2EC64 /* ears.trim~ */,
 				1E784C77209DC6DF007CB12A /* ears.unpack~ */,
+				1EFF13151D1D4F5900B7C47A /* ears.utils.playmp3~ */,
 				1E82F01427D55CB200582250 /* ears.vamp~ */,
 				1E174228261CB71C00E6D9E8 /* ears.window~ */,
 				1EDB3A0A217D337F007347EF /* ears.write~ */,
@@ -8758,7 +8758,7 @@
 		};
 		1EFF132E1D1D4F7F00B7C47A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1EFF13151D1D4F5900B7C47A /* ears.playmp3~ */;
+			target = 1EFF13151D1D4F5900B7C47A /* ears.utils.playmp3~ */;
 			targetProxy = 1EFF132D1D1D4F7F00B7C47A /* PBXContainerItemProxy */;
 		};
 		91319B5A264C02A700364EAB /* PBXTargetDependency */ = {
@@ -15685,7 +15685,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;
 		};
-		1EFF13271D1D4F5900B7C47A /* Build configuration list for PBXNativeTarget "ears.playmp3~" */ = {
+		1EFF13271D1D4F5900B7C47A /* Build configuration list for PBXNativeTarget "ears.utils.playmp3~" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1EFF13281D1D4F5900B7C47A /* Development */,

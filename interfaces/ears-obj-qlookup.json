@@ -177,7 +177,7 @@
       "ears.mix~"
     ]
   },
-  "ears.playmp3~": {
+  "ears.utils.playmp3~": {
     "digest": "Play mp3 natively",
     "module": "ears",
     "category": [

@@ -137,6 +137,7 @@ int C74_EXPORT main(void)
     // @description A number in the second, third or fourth inlet respectively sets the yaw, pitch and roll
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
     CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoamirror, dimension);

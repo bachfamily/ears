@@ -126,6 +126,7 @@ int C74_EXPORT main(void)
 
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_envampunit_attr(c);
@@ -181,7 +182,7 @@ void buf_assemble_assist(t_buf_assemble *x, void *b, long m, long a, char *s)
 
 void buf_assemble_inletinfo(t_buf_assemble *x, void *b, long a, char *t)
 {
-    if (a)
+    if (a != 0 && a != 1)
         *t = 1;
 }
 
@@ -224,6 +225,7 @@ t_buf_assemble *buf_assemble_new(t_symbol *s, short argc, t_atom *argv)
         attr_args_process(x, argc, argv);
         
         earsbufobj_setup((t_earsbufobj *)x, "bE44", "e", names);
+        x->e_ob.l_inlet_hot[1] = true;
 
         x->assembly_line_status = 0;
         

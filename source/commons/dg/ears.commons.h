@@ -49,6 +49,25 @@
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
 
 
+
+/** Standard values returned by function calls with a return type of #t_ears_err
+    @ingroup misc */
+typedef enum {
+    EARS_ERR_NONE =          0,    ///< No error
+    EARS_ERR_GENERIC =        -1,    ///< Generic error
+    EARS_ERR_INVALID_PTR =    -2,    ///< Invalid Pointer
+    EARS_ERR_DUPLICATE =    -3,    ///< Duplicate
+    EARS_ERR_OUT_OF_MEM =    -4,    ///< Out of memory
+    EARS_ERR_CANT_WRITE =   -5, ///< Can't write buffer
+    EARS_ERR_CANT_READ =    -6, ///< Can't read buffer
+    EARS_ERR_NO_BUFFER =    -7,  ///< Can't find buffer
+    EARS_ERR_EMPTY_BUFFER = -8,  ///< Empty buffer
+    EARS_ERR_ZERO_AMP =     -9,  ///< Zero amplitude buffer (e.g. for normalization)
+    EARS_ERR_NO_FILE =      -10,  ///< Can't find file
+    EARS_ERR_ESSENTIA =     -11,  ///< Essentia error
+    EARS_ERR_INVALID_MODE = -12  ///< Invalid mode
+} e_ears_errorcodes;
+
 static bool ears_is_freeing = false;
 
 
@@ -87,24 +106,6 @@ typedef struct _ears_encoding_settings
     t_symbol    *format;
 } t_ears_encoding_settings;
 
-
-/** Standard values returned by function calls with a return type of #t_ears_err
-	@ingroup misc */
-typedef enum {
-    EARS_ERR_NONE =          0,	///< No error
-    EARS_ERR_GENERIC =		-1,	///< Generic error
-    EARS_ERR_INVALID_PTR =	-2,	///< Invalid Pointer
-    EARS_ERR_DUPLICATE =	-3,	///< Duplicate
-    EARS_ERR_OUT_OF_MEM =	-4,	///< Out of memory
-    EARS_ERR_CANT_WRITE =   -5, ///< Can't write buffer
-    EARS_ERR_CANT_READ =    -6, ///< Can't read buffer
-    EARS_ERR_NO_BUFFER =    -7,  ///< Can't find buffer
-    EARS_ERR_EMPTY_BUFFER = -8,  ///< Empty buffer
-    EARS_ERR_ZERO_AMP =     -9,  ///< Zero amplitude buffer (e.g. for normalization)
-    EARS_ERR_NO_FILE =      -10,  ///< Can't find file
-    EARS_ERR_ESSENTIA =     -11,  ///< Essentia error
-    EARS_ERR_INVALID_MODE = -12  ///< Invalid mode
-} e_ears_errorcodes;
 
 /** Fade types
 	@ingroup misc */
@@ -415,6 +416,7 @@ double ears_spectralbuf_get_binsize(t_object *ob, t_buffer_obj *buf);
 e_ears_frequnit ears_spectralbuf_get_binunit(t_object *ob, t_buffer_obj *buf);
 t_llll* ears_spectralbuf_get_bins(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
+t_symbol *ears_buffer_get_name(t_object *ob, t_buffer_obj *buf);
 
 
 // SET properties

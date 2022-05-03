@@ -7,7 +7,7 @@ max oblist "ears objects" ears.trans~;
 max oblist "ears objects" ears.tovector~;
 max oblist "ears objects" ears.process~;
 max oblist "ears objects" ears.join~;
-max oblist "ears objects" ears.playmp3~;
+max oblist "ears objects" ears.utils.playmp3~;
 max oblist "ears objects" ears.model.sine.synthesis~;
 max oblist "ears objects" ears.crop~;
 max oblist "ears objects" ears.clip~;

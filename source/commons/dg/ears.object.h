@@ -34,6 +34,10 @@ void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
 void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av) \
 { \
     x->e_ob.l_curr_proxy = proxy_getinlet((t_object *) x); \
+    if (!x->e_ob.l_inlet_hot[x->e_ob.l_curr_proxy]) { \
+        buf_ ## NAME ##_anything(x, msg, ac, av); \
+        return; \
+    } \
     switch (x->e_ob.l_blocking) { \
         case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
         break; \
@@ -103,6 +107,8 @@ earsbufobj_add_common_methods(c); \
 #define EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH (11)   ///< Default resampling window size. Should we increase this?
 #define EARS_DEFAULT_WRITE_FORMAT (_sym_int16)      ///< Default output write format for saving files.
                                                     ///  This is coherent with Max's default
+
+
 
 typedef enum _earsbufobj_in_out
 {
@@ -188,6 +194,8 @@ typedef struct _earsbufobj
                                                       ///  (one subllll for each buffer outlet)
     long                    l_generated_outname_count[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
 
+    bool                    l_inlet_hot[LLLL_MAX_INLETS];  ///<1 for Inlets that are hot
+
     // threading
     char                    l_blocking;   ///< One of the e_earsbufobj_blocking
     
@@ -227,6 +235,7 @@ typedef struct _earsbufobj
     
     char                    l_is_freeing;   ///< 1 when object is being freed;
     long                    l_curr_proxy;  ///< Filled with the number of the proxy being used
+    char                    l_buffer_size_changed; ///< 1 when buffer size has changed
 } t_earsbufobj;
 
 
@@ -405,5 +414,6 @@ t_llll *earsbufobj_llll_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_
 
 // returns true if the s is _ = or !
 t_bool earsbufobj_is_sym_naming_mech(t_symbol *s);
+
 
 #endif // _EARS_BUF_OBJECT_H_

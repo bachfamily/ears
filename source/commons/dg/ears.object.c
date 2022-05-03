@@ -507,6 +507,10 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
     e_ob->l_numins = 0;
     e_ob->l_numbufins = 0;
     
+    for (long i = 0; i < LLLL_MAX_INLETS; i++)
+        e_ob->l_inlet_hot[i] = false;
+    e_ob->l_inlet_hot[0] = true;
+    
     e_ob->l_proxy = (void **) bach_newptr((max_in_len + 1) * sizeof (void *));
     
     for (i = max_in_len - 1; i > 0; i--)
@@ -822,8 +826,17 @@ void earsbufobj_free(t_earsbufobj *e_ob)
 
 }
 
+void bsc(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    e_ob->l_buffer_size_changed = 1;
+}
+
 t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
+    if (msg == gensym("buffer_modified")) {
+        defer_low(e_ob, (method)bsc, NULL, 0, NULL);
+    }
+
     return MAX_ERR_NONE;
 }
 

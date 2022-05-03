@@ -105,6 +105,7 @@ int C74_EXPORT main(void)
     // @description A number in the second inlet sets the gain parameter (depending on the <m>ampunit</m>).
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_envampunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);

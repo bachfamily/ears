@@ -144,6 +144,7 @@ int C74_EXPORT main(void)
 
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_naming_attr(c);

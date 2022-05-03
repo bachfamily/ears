@@ -7,6 +7,7 @@
 #include "ears.mp3.h"
 #include "ears.wavpack.h"
 #include <vector>
+#include "ext_globalsymbol.h"
 
 t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable)
 {
@@ -143,15 +144,32 @@ t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbo
 
 
 
+
+
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
     if (num_frames != ears_buffer_get_size_samps(ob, buf)) {
         t_atom a;
-        atom_setlong(&a, num_frames);
-        typedmess(buf, gensym("sizeinsamps"), 1, &a);
+        if (((t_earsbufobj *)ob)->l_blocking == 1) {
+            atom_setlong(&a, num_frames);
+            typedmess(buf, gensym("sizeinsamps"), 1, &a);
+        } else {
+            if (buffer_getframecount(buf) != num_frames) {
+                const char *bn = ears_buffer_get_name(ob, buf)->s_name;
+                globalsymbol_reference(ob, bn, "buffer~");
+                ((t_earsbufobj *)ob)->l_buffer_size_changed = 0;
+                atom_setlong(&a, num_frames);
+                typedmess(buf, gensym("sizeinsamps"), 1, &a);
+                while (!((t_earsbufobj *)ob)->l_buffer_size_changed) {
+                    post("waiting");
+                }
+                globalsymbol_dereference(ob, bn, "buffer~");
+            }
+        }
     }
     return EARS_ERR_NONE;
 }
+
 
 t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
@@ -172,6 +190,41 @@ t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, 
     }
     return EARS_ERR_NONE;
 }
+
+
+
+
+// ONE NEEDS TO MAKE SURE that this function is called when the samples of buf ARE NOT LOCKED!!!!
+t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels)
+{
+    t_atom a[2];
+    atom_setlong(a, num_frames);
+    atom_setlong(a+1, numchannels);
+    if (((t_earsbufobj *)ob)->l_blocking == 1) {
+        typedmess(buf, gensym("sizeinsamps"), 2, a);
+    } else {
+        if (buffer_getframecount(buf) != num_frames || buffer_getchannelcount(buf) != numchannels) {
+            const char *bn = ears_buffer_get_name(ob, buf)->s_name;
+            globalsymbol_reference(ob, bn, "buffer~");
+            ((t_earsbufobj *)ob)->l_buffer_size_changed = 0;
+            typedmess(buf, gensym("sizeinsamps"), 2, a);
+            while (!((t_earsbufobj *)ob)->l_buffer_size_changed) {
+//                post("waiting");
+            }
+            globalsymbol_dereference(ob, bn, "buffer~");
+        }
+    }
+    return EARS_ERR_NONE;
+}
+
+t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels)
+{
+    return ears_buffer_set_size_and_numchannels(ob, buf, ears_buffer_get_size_samps(ob, buf), numchannels);
+}
+
+
+
+
 
 t_ears_err ears_buffer_set_sr(t_object *ob, t_buffer_obj *buf, double sr)
 {
@@ -462,28 +515,6 @@ t_ears_err ears_buffer_normalize_inplace(t_object *ob, t_buffer_obj *buf, double
 
 
 
-t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels)
-{
-    t_atom a[2];
-    long num_frames = ears_buffer_get_size_samps(ob, buf);
-    atom_setlong(a, num_frames);
-    atom_setlong(a+1, numchannels);
-    typedmess(buf, gensym("sizeinsamps"), 2, a);
- 
-    return EARS_ERR_NONE;
-}
-
-
-// ONE NEEDS TO MAKE SURE that this function is called when the samples of buf ARE NOT LOCKED!!!!
-t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels)
-{
-    t_atom a[2];
-    atom_setlong(a, num_frames);
-    atom_setlong(a+1, numchannels);
-    typedmess(buf, gensym("sizeinsamps"), 2, a);
-    
-    return EARS_ERR_NONE;
-}
 
 
 t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest)
@@ -500,10 +531,10 @@ t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_ob
     double dest_sr = buffer_getsamplerate(dest);
 
     
-    if (dest_sr != orig_sr || dest_channelcount != orig_channelcount) {
+    if (dest_sr != orig_sr)
         ears_buffer_set_sr(ob, dest, orig_sr);
+    if (dest_channelcount != orig_channelcount)
         ears_buffer_set_numchannels(ob, dest, orig_channelcount);
-    }
     
     // is spectral?
     if (ears_buffer_is_spectral(ob, orig)) {
