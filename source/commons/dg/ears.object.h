@@ -22,7 +22,7 @@ void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
         case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
         break; \
         case EARSBUFOBJ_BLOCKING_SCHEDULER: \
-            schedule(x, (method)buf_ ## NAME ##_bang, 0, NULL, 0, NULL); \
+            buf_ ## NAME ##_bang(x, NULL, 0, NULL); \
         break; \
         case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
         default: \
@@ -42,7 +42,7 @@ void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, l
         case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
         break; \
         case EARSBUFOBJ_BLOCKING_SCHEDULER: \
-            schedule(x, (method)buf_ ## NAME ##_anything, 0, msg, ac, av); \
+            buf_ ## NAME ##_anything(x, msg, ac, av); \
         break; \
         case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
         default: \
