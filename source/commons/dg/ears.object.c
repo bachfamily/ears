@@ -1864,7 +1864,7 @@ void earsbufobj_outlet_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
 {
     t_atom av[2];
     atom_setlong(av, outnum);
-    atom_setobj(av, ll);
+    atom_setobj(av+1, ll);
     llll_retain(ll);
     if (e_ob->l_blocking == 0) {
         defer(e_ob, (method)earsbufobj_outlet_llll_do, NULL, 2, av);
