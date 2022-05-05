@@ -2554,7 +2554,7 @@ t_ears_err ears_buffer_from_llll(t_object *ob, t_buffer_obj *buf, t_llll *ll, ch
 
 
 
-t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onsets_samps, t_buffer_obj *impulse)
+t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onsets_samps, t_llll *gains, t_buffer_obj *impulse)
 {
     if (!buf)
         return EARS_ERR_NO_BUFFER;
@@ -2576,23 +2576,35 @@ t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onse
             ears_buffer_copy_format(ob, impulse, chans[i]);
         }
     }
-    for (t_llllelem *onset_el = onsets_samps->l_head; onset_el; onset_el = onset_el->l_next) {
+    t_llllelem *onset_el, *gain_el;
+    long c = 0;
+    for (onset_el = onsets_samps->l_head, gain_el = gains ? gains->l_head : NULL; onset_el;
+         onset_el = onset_el->l_next, gain_el = gain_el ? gain_el->l_next : NULL, c++) {
         t_llll *these_onsets = hatom_getllll(&onset_el->l_hatom);
+        t_llll *these_gains = gain_el ? hatom_getllll(&gain_el->l_hatom) : NULL;
         if (these_onsets) {
             long num_onsets = these_onsets->l_size;
             t_llll *gains = llll_get();
             long *offset_samps = (long *)bach_newptr(MAX(num_onsets, 1) * sizeof(long));
             t_buffer_obj **sources = (t_buffer_obj **)bach_newptr(MAX(num_onsets, 1) * sizeof(t_buffer_obj *));
-            for (long i = 0; i < num_onsets; i++) {
-                llll_appenddouble(gains, 1.);
-                sources[i] = impulse;
+            if (these_gains && these_gains->l_head) {
+                t_llllelem *el = these_gains->l_head;
+                for (long i = 0; i < num_onsets; i++, el = el ? el->l_next : NULL) {
+                    llll_appenddouble(gains, el ? hatom_getdouble(&el->l_hatom) : 1.);
+                    sources[i] = impulse;
+                }
+            } else {
+                for (long i = 0; i < num_onsets; i++) {
+                    llll_appenddouble(gains, 1.);
+                    sources[i] = impulse;
+                }
             }
             long j = 0;
             for (t_llllelem *el = these_onsets->l_head; el; el = el->l_next) {
                 offset_samps[j] = hatom_getdouble(&el->l_hatom);
                 j++;
             }
-            ears_buffer_mix(ob, sources, num_onsets, buf, gains, offset_samps, EARS_NORMALIZE_DONT, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, 10);
+            ears_buffer_mix(ob, sources, num_onsets, chans[c], gains, offset_samps, EARS_NORMALIZE_DONT, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, 10);
             
             bach_freeptr(offset_samps);
             bach_freeptr(sources);
