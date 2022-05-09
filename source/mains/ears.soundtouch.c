@@ -225,11 +225,14 @@ void buf_soundtouch_bang(t_buf_soundtouch *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         ears_buffer_soundtouch((t_object *)x, in, out, x->e_stretch_factor, earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->e_pitch_shift)/100., x->e_quick, x->e_no_antialias, x->e_speech);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

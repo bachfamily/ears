@@ -189,6 +189,9 @@ void buf_rot_bang(t_buf_rot *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     t_llllelem *el = x->byhowmuch->l_head;
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -200,8 +203,12 @@ void buf_rot_bang(t_buf_rot *x)
             ears_buffer_clone((t_object *)x, in, out);
 
         ears_buffer_rot_inplace((t_object *)x, out, out_samples);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

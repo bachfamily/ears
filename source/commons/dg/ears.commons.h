@@ -429,7 +429,8 @@ t_ears_err ears_buffer_clear(t_object *ob, t_buffer_obj *buf);
 t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels);
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels);
 t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbol *sampleformat);
-t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest);
+t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, bool dont_change_buffer_size = false);
+t_ears_err ears_buffer_copy_format_and_set_size_samps(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, long num_frames);
 t_ears_err ears_buffer_crop_ms_inplace(t_object *ob, t_buffer_obj *buf, double ms_start, long ms_end);
 
 // CONVERSIONS

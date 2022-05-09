@@ -256,7 +256,8 @@ void buf_hoadecode_bang(t_buf_hoadecode *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-    
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_atom_float  ls_az[EARS_HOA_MAX_LOUDSPEAKERS];
     t_atom_float  ls_el[EARS_HOA_MAX_LOUDSPEAKERS];
     for (long i = 0; i < x->num_loudspeakers; i++) {
@@ -278,6 +279,8 @@ void buf_hoadecode_bang(t_buf_hoadecode *x)
             ears_buffer_hoa_decode_binaural((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->block_size_samps);
         else
             ears_buffer_hoa_decode((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->num_loudspeakers, ls_az, ls_el);
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

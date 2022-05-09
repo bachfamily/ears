@@ -209,7 +209,7 @@ void buf_channel_bang(t_buf_channel *x)
                 ears_buffer_extractchannels_from_llll((t_object *)x, in, out, temp);
                 llll_free(temp);
             }
-            
+
             if (num_buffers > 1) {
                 object_warn((t_object *)x, "More than one buffer input while object is in 'all channels' mode:");
                 object_warn((t_object *)x, "    buffers other than the first one are ignored.");
@@ -220,11 +220,15 @@ void buf_channel_bang(t_buf_channel *x)
         earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
         
+        earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
         for (long count = 0; count < num_buffers; count++) {
             t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
             t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
             
             ears_buffer_extractchannels_from_llll((t_object *)x, in, out, channel);
+
+            if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
         }
     }
     llll_free(channel);

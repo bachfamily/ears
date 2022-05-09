@@ -16,6 +16,10 @@ class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
 // the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
 // used name. This is especially useful in combination with iterative mechanisms.
 class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
+// @method stop @digest Abort computation
+// @description When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+// set to 0, the computation is aborted as soon as possible.
+class_addmethod(c, (method)earsbufobj_stop, "stop", 0);
 // @method write @digest Save output as audio file
 // @description See equivalent <o>buffer~</o> method.
 // Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)

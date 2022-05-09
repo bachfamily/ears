@@ -208,6 +208,8 @@ void buf_offset_bang(t_buf_offset *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     t_llllelem *el = x->amount->l_head;
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -217,6 +219,8 @@ void buf_offset_bang(t_buf_offset *x)
             ears_buffer_offset_subsampleprec((t_object *)x, in, out, earsbufobj_time_to_fsamps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in), x->e_ob.l_resamplingfilterwidth);
         else
             ears_buffer_offset((t_object *)x, in, out, earsbufobj_time_to_samps((t_earsbufobj *)x, el ? hatom_getdouble(&el->l_hatom) : 0, in));
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 

@@ -419,7 +419,8 @@ void buf_info_bang(t_buf_info *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-    
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     long num_outlets = x->num_outlets;
     t_atom *av[LLLL_MAX_OUTLETS];
     
@@ -430,6 +431,7 @@ void buf_info_bang(t_buf_info *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         for (long i = 0; i < num_outlets; i++)
             buf_info_get_analysis(x, in, x->outlet_info[i], av[i]+count);
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
 
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

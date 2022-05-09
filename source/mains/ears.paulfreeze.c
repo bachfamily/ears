@@ -214,6 +214,7 @@ void buf_paulfreeze_bang(t_buf_paulfreeze *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     t_llllelem *el = x->e_onset->l_head;
     t_llllelem *del = x->e_duration->l_head;
@@ -247,6 +248,8 @@ void buf_paulfreeze_bang(t_buf_paulfreeze *x)
         }
 
         ears_buffer_paulfreeze((t_object *)x, in, out, onset_samps, framesize_samps, jitter_samps, duration_samps, x->e_spectral);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

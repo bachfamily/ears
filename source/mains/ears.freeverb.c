@@ -282,6 +282,7 @@ void buf_freeverb_bang(t_buf_freeverb *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     t_llllelem *dry_el = x->e_dry->l_head;
     t_llllelem *wet_el = x->e_wet->l_head;
@@ -314,6 +315,8 @@ void buf_freeverb_bang(t_buf_freeverb *x)
             x->e_model->setdry(hatom_getdouble(&dry_el->l_hatom));
             ears_buffer_freeverb((t_object *)x, in, out, x->e_model, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_tail, in));
         }
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

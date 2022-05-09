@@ -839,13 +839,28 @@ void earsbufobj_free(t_earsbufobj *e_ob)
 
 void bsc(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
 {
+//    post("buffer size changed!");
     e_ob->l_buffer_size_changed = 1;
 }
 
 t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
     if (msg == gensym("buffer_modified")) {
-        defer(e_ob, (method)bsc, NULL, 0, NULL);
+//        post("buffer modified");
+        switch (e_ob->l_blocking) {
+            case EARSBUFOBJ_BLOCKING_CALLINGTHREAD:
+                defer(e_ob, (method)bsc, NULL, 0, NULL);
+                break;
+                
+            case EARSBUFOBJ_BLOCKING_OWNTHREAD:
+                defer(e_ob, (method)bsc, NULL, 0, NULL);
+//                schedule_defer(e_ob, (method)bsc, 1000, NULL, 0, NULL);
+                break;
+
+            default:
+            case EARSBUFOBJ_BLOCKING_MAINTHREAD:
+                break;
+        }
     }
 
     return MAX_ERR_NONE;
@@ -1035,6 +1050,11 @@ void earsbufobj_reset(t_earsbufobj *e_ob)
         e_ob->l_generated_outname_count[i] = 0;
 }
 
+void earsbufobj_stop(t_earsbufobj *e_ob)
+{
+    e_ob->l_must_stop = 1;
+}
+
 
 void earsbufobj_add_common_methods(t_class *c, long flags)
 {
@@ -1042,6 +1062,7 @@ void earsbufobj_add_common_methods(t_class *c, long flags)
     if (!flags)
         class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
     class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
+    class_addmethod(c, (method)earsbufobj_stop, "stop", 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "write", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writeaiff", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writewave", A_GIMME, 0);
@@ -1993,6 +2014,14 @@ long earsbufobj_get_instore_size(t_earsbufobj *e_ob, long store_idx)
     return 0;
 }
 
+
+long earsbufobj_get_outstore_size(t_earsbufobj *e_ob, long store_idx)
+{
+    if (store_idx >= 0 && store_idx < e_ob->l_numbufouts)
+        return e_ob->l_outstore[store_idx].num_stored_bufs;
+    return 0;
+}
+
 void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *buffername)
 {
     if (buffername) {
@@ -2139,7 +2168,7 @@ void earsbufobj_store_copy_format(t_earsbufobj *e_ob, e_earsbufobj_in_out source
     t_buffer_obj *from = earsbufobj_get_stored_buffer_obj(e_ob, source, source_store_idx, source_buffer_idx);
     t_buffer_obj *to = earsbufobj_get_stored_buffer_obj(e_ob, dest, dest_store_idx, dest_buffer_idx);
     if (from && to)
-        ears_buffer_copy_format((t_object *)e_ob, from, to);
+        ears_buffer_copy_format((t_object *)e_ob, from, to, true); // don't change size/numchannels, though!, we'll do that later.
 }
 
 
@@ -3079,6 +3108,11 @@ void earsbufobj_startprogress_do(t_earsbufobj *e_ob, t_symbol *sym, short argc, 
     }
 }
 
+void earsbufobj_updateprogress_do(t_earsbufobj *e_ob, t_symbol *sym, short argc, t_atom *argv)
+{
+    e_ob->l_current_progress = atom_getfloat(argv);
+}
+
 void earsbufobj_startprogress(t_earsbufobj *e_ob)
 {
     defer(e_ob, (method)earsbufobj_startprogress_do, NULL, 0, NULL);
@@ -3089,9 +3123,176 @@ void earsbufobj_stopprogress(t_earsbufobj *e_ob)
     defer(e_ob, (method)earsbufobj_stopprogress_do, NULL, 0, NULL);
 }
 
+
 void earsbufobj_updateprogress(t_earsbufobj *e_ob, t_atom_float progress)
 {
-    e_ob->l_current_progress = progress;
+    t_atom av;
+    atom_setfloat(&av, progress);
+    defer(e_ob, (method)earsbufobj_updateprogress_do, NULL, 1, &av);
+}
+
+void earsbufobj_init_progress(t_earsbufobj *e_ob, long num_buffers)
+{
+    // we start in any case with a whole-object progress bar
+    // this is due to the fact that we want the user to recognize straight away
+    // that some processing is going on, even if the object is only processing
+    // a single buffer.
+    if (num_buffers == 1) {
+        earsbufobj_updateprogress(e_ob, 1.);
+    } else {
+        earsbufobj_updateprogress(e_ob, 0.);
+    }
+}
+
+long earsbufobj_iter_progress(t_earsbufobj *e_ob, long count, long num_buffers)
+{
+    earsbufobj_updateprogress(e_ob, (float)(1+count)/num_buffers);
+    if (e_ob->l_must_stop) {
+        e_ob->l_must_stop = 0;
+        return 1;
+    }
+    return 0;
 }
 
 
+
+t_max_err earsbufobj_store_buffer_in_dictionary(t_earsbufobj *e_ob, t_buffer_obj *buf, t_dictionary *dict)
+{
+    t_max_err err = MAX_ERR_NONE;
+    char entryname[2048];
+    t_atom_long count = 0, block_size;
+    
+    earsbufobj_mutex_lock(e_ob);
+    t_atom_long num_channels = ears_buffer_get_numchannels((t_object *)e_ob, buf);
+    t_atom_float sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    t_atom_long num_frames = ears_buffer_get_size_samps((t_object *)e_ob, buf);
+    
+    dictionary_appendlong(dict, gensym("numchannels"), num_channels);
+    dictionary_appendlong(dict, gensym("numframes"), num_frames);
+    dictionary_appendfloat(dict, gensym("sr"), sr);
+    dictionary_appendsym(dict, gensym("name"), ears_buffer_get_name((t_object *)e_ob, buf));
+
+    if (num_frames > 0 && num_channels > 0) {
+        long num_atoms = num_frames * num_channels;
+        t_atom *av = (t_atom *)bach_newptr(EARS_EMBED_BLOCK_SIZE * sizeof(t_atom));
+        
+        float *sample = buffer_locksamples(buf);
+        if (!sample) {
+            err = MAX_ERR_GENERIC;
+            object_error((t_object *)e_ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+            t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+            
+            if (channelcount != num_channels || framecount != num_frames) {
+                err = MAX_ERR_GENERIC;
+                object_error((t_object *)e_ob, "Mismatch in number of samples.");
+            } else {
+                float *cursor = sample;
+                
+                while (num_atoms > 0) {
+                    block_size = num_atoms > EARS_EMBED_BLOCK_SIZE ? EARS_EMBED_BLOCK_SIZE : num_atoms;
+                    sprintf(entryname, "block_%010" ATOM_LONG_FMT_MODIFIER "d", count++);
+                    
+                    
+                    for (long i = 0; i < block_size; i++) {
+                        atom_setfloat(av + i, cursor[i]);
+                    }
+                    
+                    dictionary_appendatoms(dict, gensym(entryname), block_size, av);
+                    cursor += block_size;
+                    num_atoms -= block_size;
+                }
+                
+                dictionary_appendlong(dict, gensym("block_count"), count);
+            }
+            buffer_unlocksamples(buf);
+            
+            bach_freeptr(av);
+        }
+    } else {
+        dictionary_appendlong(dict, gensym("block_count"), count);
+
+    }
+
+    earsbufobj_mutex_unlock(e_ob);
+
+    return err;
+}
+
+t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dictionary *dict, t_buffer_obj *buf)
+{
+    char entryname[2048];
+    t_atom_long num_channels = 0, num_frames = 0, block_count = 0;
+    t_atom_float sr = 0;
+    t_symbol *name = NULL;
+    t_max_err err = MAX_ERR_NONE;
+
+    long ac = 0, count;
+    t_atom *av = NULL;
+    long whole_numsamps = 0;
+    t_float *whole_samps, *this_whole_samps;
+
+    earsbufobj_mutex_lock(e_ob);
+
+    err |= dictionary_getlong(dict, gensym("numchannels"), &num_channels);
+    err |= dictionary_getlong(dict, gensym("numframes"), &num_frames);
+    err |= dictionary_getfloat(dict, gensym("sr"), &sr);
+    err |= dictionary_getsym(dict, gensym("name"), &name);
+    err |= dictionary_getlong(dict, gensym("block_count"), &block_count);
+
+    if (err) {
+        earsbufobj_mutex_unlock(e_ob);
+        object_error((t_object *)e_ob, "Error while retrieving saved buffer.");
+        return MAX_ERR_GENERIC;
+    } else if (num_channels == 0 || sr == 0) {
+        earsbufobj_mutex_unlock(e_ob);
+        object_error((t_object *)e_ob, "Mismatch in number of samples.");
+        return MAX_ERR_GENERIC;
+    } else if (name != ears_buffer_get_name((t_object *)e_ob, buf)) {
+        earsbufobj_mutex_unlock(e_ob);
+        object_error((t_object *)e_ob, "Mismatch in buffer name.");
+        return MAX_ERR_GENERIC;
+    }
+    
+    ears_buffer_set_sr((t_object *)e_ob, buf, sr);
+    ears_buffer_set_size_and_numchannels((t_object *)e_ob, buf, num_frames, num_channels);
+    
+    if (block_count == 0) {
+        ears_buffer_clear((t_object *)e_ob, buf);
+    } else {
+        this_whole_samps = whole_samps = (t_float *) bach_newptr(block_count * EARS_EMBED_BLOCK_SIZE * sizeof(t_float));
+        for (t_atom_long i = 0; i < block_count; i++) {
+            sprintf(entryname, "block_%010ld", i);
+            dictionary_getatoms(dict, gensym(entryname), &ac, &av);
+            for (long j = 0; j < ac; j++) {
+                this_whole_samps[j] = (float)(t_atom_float)atom_getfloat(av+j);
+            }
+            whole_numsamps += ac;
+            this_whole_samps += ac;
+        }
+        
+        if (whole_numsamps != num_channels * num_frames) {
+            object_error((t_object *)e_ob, "Wrong saved information about number of samples!");
+        }
+        
+        float *sample = buffer_locksamples(buf);
+        
+        if (!sample) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)e_ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+            t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+            
+            sysmem_copyptr(whole_samps, sample, MIN(whole_numsamps, channelcount * framecount) * sizeof(float));
+            buffer_setdirty(buf);
+            buffer_unlocksamples(buf);
+        }
+        
+        bach_freeptr(whole_samps);
+    }
+
+    earsbufobj_mutex_unlock(e_ob);
+    return EARS_ERR_NONE;
+}

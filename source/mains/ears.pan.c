@@ -353,7 +353,10 @@ void buf_pan_bang(t_buf_pan *x)
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
-    
+
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_llllelem *el = x->pan->l_head;
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -380,8 +383,12 @@ void buf_pan_bang(t_buf_pan *x)
         }
         
         llll_free(pans01);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

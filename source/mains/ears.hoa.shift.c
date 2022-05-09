@@ -226,6 +226,8 @@ void buf_hoashift_bang(t_buf_hoashift *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     t_llllelem *delta_x_el = x->delta_x->l_head;
     t_llllelem *delta_y_el = x->delta_y->l_head;
     t_llllelem *delta_z_el = x->delta_z->l_head;
@@ -246,6 +248,8 @@ void buf_hoashift_bang(t_buf_hoashift *x)
         llll_free(delta_x_env);
         llll_free(delta_y_env);
         llll_free(delta_z_env);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

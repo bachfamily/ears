@@ -247,6 +247,8 @@ void buf_hoarotate_bang(t_buf_hoarotate *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     t_llllelem *yaw_el = x->yaw->l_head;
     t_llllelem *pitch_el = x->pitch->l_head;
     t_llllelem *roll_el = x->roll->l_head;
@@ -271,6 +273,8 @@ void buf_hoarotate_bang(t_buf_hoarotate *x)
         llll_free(yaw_env);
         llll_free(pitch_env);
         llll_free(roll_env);
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

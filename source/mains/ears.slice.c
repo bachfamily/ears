@@ -192,6 +192,9 @@ void buf_slice_bang(t_buf_slice *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_llllelem *el = x->where->l_head;
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -201,8 +204,12 @@ void buf_slice_bang(t_buf_slice *x)
         long split_sample = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in);
         
         ears_buffer_slice((t_object *)x, in, out_left, out_right, split_sample);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }

@@ -30,7 +30,7 @@ t_ears_err ears_buffer_fft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *so
             buffer_unlocksamples(source1);
         } else {
             orig_sample1_wk = orig_sample1;
-            ears_buffer_copy_format(ob, source1, dest1);
+            ears_buffer_copy_format(ob, source1, dest1, true); // won't change frame count and channel count here
         }
 
         if (source2 == dest2) { // inplace operation!
@@ -39,7 +39,7 @@ t_ears_err ears_buffer_fft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *so
             buffer_unlocksamples(source2);
         } else {
             orig_sample2_wk = orig_sample2;
-            ears_buffer_copy_format(ob, source1, dest2);
+            ears_buffer_copy_format(ob, source1, dest2, true);  // won't change frame count and channel count here
         }
         
         ears_buffer_set_size_and_numchannels(ob, dest1, outframecount, channelcount);
@@ -196,8 +196,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
         if (source == dest) { // inplace operation!
             ears_buffer_set_size_samps(ob, source, outframecount);
         } else {
-            ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size_samps(ob, dest, outframecount);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, outframecount);
         }
         
         // create window function
@@ -345,8 +344,7 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
         if (source == dest) { // inplace operation!
             ears_buffer_set_size_samps(ob, source, outframecount);
         } else {
-            ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size_samps(ob, dest, outframecount);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, outframecount);
         }
         
         // create window function
@@ -477,8 +475,7 @@ t_ears_err ears_buffer_paulfreeze(t_object *ob, t_buffer_obj *source, t_buffer_o
         if (source == dest) { // inplace operation!
             ears_buffer_set_size_samps(ob, source, outframecount);
         } else {
-            ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size_samps(ob, dest, outframecount);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, outframecount);
         }
         
         // create window function

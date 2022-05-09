@@ -12,6 +12,7 @@
 #include "ears.commons.h"
 #include <vector>
 
+#define EARS_EMBED_BLOCK_SIZE 16384
 
 typedef enum _earsbufobj_in_out
 {
@@ -101,6 +102,7 @@ typedef struct _earsbufobj
     // threading
     char                    l_blocking;   ///< One of the e_earsbufobj_blocking
     t_systhread             l_thread;     ///< Thread
+    char                    l_must_stop;  ///< Flag to stop separate thread
     t_atom_float            l_current_progress; ///< For progress bar when dealing with list inputs
 
     
@@ -408,6 +410,7 @@ t_symbol *earsbufobj_get_outlet_buffer_name(t_earsbufobj *e_ob, long store_idx, 
 long earsbufobj_outlet_to_bufstore(t_earsbufobj *e_ob, long outlet);
 
 long earsbufobj_get_instore_size(t_earsbufobj *e_ob, long store_idx);
+long earsbufobj_get_outstore_size(t_earsbufobj *e_ob, long store_idx);
 void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *buffername);
 void earsbufobj_store_empty_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx);
 void earsbufobj_importreplace_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long buffer_idx, t_symbol *filename);
@@ -501,7 +504,12 @@ t_bool earsbufobj_is_sym_naming_mech(t_symbol *s);
 void earsbufobj_startprogress(t_earsbufobj *e_ob);
 void earsbufobj_stopprogress(t_earsbufobj *e_ob);
 void earsbufobj_updateprogress(t_earsbufobj *e_ob, t_atom_float progress);
+long earsbufobj_iter_progress(t_earsbufobj *e_ob, long count, long num_buffers);
+void earsbufobj_init_progress(t_earsbufobj *e_ob, long num_buffers);
 
+// saving buffers within the patch
+t_max_err earsbufobj_store_buffer_in_dictionary(t_earsbufobj *e_ob, t_buffer_obj *buf, t_dictionary *dict);
+t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dictionary *dict, t_buffer_obj *buf);
 
 
 

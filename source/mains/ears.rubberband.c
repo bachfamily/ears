@@ -492,11 +492,13 @@ void buf_rubberband_bang(t_buf_rubberband *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_llllelem *ts_el = x->e_timestretch_env->l_head;
     t_llllelem *ps_el = x->e_pitchshift_env->l_head;
 
     for (long count = 0; count < num_buffers; count++,
-         ts_el = ts_el && ts_el->l_next ? ts_el->l_next : ts_el, ps_el = ps_el && ps_el->l_next ? ps_el->l_next : ps_el, earsbufobj_updateprogress((t_earsbufobj *)x, (float)count/num_buffers)) {
+         ts_el = ts_el && ts_el->l_next ? ts_el->l_next : ts_el, ps_el = ps_el && ps_el->l_next ? ps_el->l_next : ps_el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
@@ -517,6 +519,8 @@ void buf_rubberband_bang(t_buf_rubberband *x)
         
         llll_free(ts_env);
         llll_free(ps_env);
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

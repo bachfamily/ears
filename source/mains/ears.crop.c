@@ -213,53 +213,6 @@ void buf_crop_free(t_buf_crop *x)
 
 
 
-/*
-
-void buf_crop_bang(t_buf_crop *x)
-{
-    earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
-}
-
-void buf_crop_anything(t_buf_crop *x, t_symbol *msg, long ac, t_atom *av)
-{
-    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
-
-    t_llll *parsed = llllobj_parse_llll((t_object *) x, LLLL_OBJ_VANILLA, msg, ac, av, LLLL_PARSE_CLONE);
-    if (!parsed) return;
-    
-    if (parsed && parsed->l_head) {
-        if (inlet == 0) {
-            if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
-                t_symbol *buf = hatom_getsym(&parsed->l_head->l_hatom);
-                
-                earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-
-                // storing input buffer
-                earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, buf);
-                earsbufobj_store_copy_format((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 0, EARSBUFOBJ_OUT, 0, 0);
-                
-                long from_sample = x->from < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, x->from, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0));
-                long to_sample = x->to < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, x->to, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0));
-
-                // cloning inlet store to outlet store, and then cropping
-                t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-                t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-                ears_buffer_crop((t_object *)x, in, out, from_sample, to_sample);
-
-                earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
-            }
-        } else if (inlet == 1) {
-            if (is_hatom_number(&parsed->l_head->l_hatom))
-                x->from = hatom_getdouble(&parsed->l_head->l_hatom);
-        } else {
-            if (is_hatom_number(&parsed->l_head->l_hatom))
-                x->to = hatom_getdouble(&parsed->l_head->l_hatom);
-        }
-    }
-    llll_free(parsed);
-}
-*/
-
 
 void buf_crop_bang(t_buf_crop *x)
 {
@@ -267,6 +220,9 @@ void buf_crop_bang(t_buf_crop *x)
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
+    
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
     
     t_llllelem *el_from = x->from->l_head;
     t_llllelem *el_to = x->to->l_head;
@@ -280,8 +236,11 @@ void buf_crop_bang(t_buf_crop *x)
         long to_sample = earsbufobj_time_to_samps((t_earsbufobj *)x, el_to ? hatom_getdouble(&el_to->l_hatom) : 0, in);
         
         ears_buffer_crop((t_object *)x, in, out, from_sample, to_sample);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
-    
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

@@ -726,7 +726,7 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                             tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                         } else {
                             long l = strlen(s->s_name);
-                            char *s_frameid = bach_newptr((l + 1) * sizeof(char));
+                            char *s_frameid = (char *)bach_newptr((l + 1) * sizeof(char));
                             for (long i = 0; i < l; i++)
                                 s_frameid[i] = toupper(s->s_name[i]);
                             s_frameid[l] = 0;

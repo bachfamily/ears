@@ -268,6 +268,8 @@ void buf_hoaencode_bang(t_buf_hoaencode *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_llllelem *coord1_el = x->coord1->l_head;
     t_llllelem *coord2_el = x->coord2->l_head;
     t_llllelem *coord3_el = x->coord3->l_head;
@@ -312,6 +314,8 @@ void buf_hoaencode_bang(t_buf_hoaencode *x)
         llll_free(coord1_env);
         llll_free(coord2_env);
         llll_free(coord3_env);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

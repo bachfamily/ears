@@ -192,16 +192,19 @@ void buf_filterempty_bang(t_buf_filterempty *x)
     t_symbol **syms = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
     long num_syms = 0;
     double ampthresh_linear = earsbufobj_amplitude_to_linear((t_earsbufobj *)x, x->ampthresh);
-     for (long in_count = 0; in_count < num_buffers; in_count++) {
-
-        t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, in_count);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    for (long count = 0; count < num_buffers; count++) {
+        
+        t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         double amp = 0;
         t_ears_err err = ears_buffer_get_maxabs((t_object *)x, in, &amp);
         
         if (err == EARS_ERR_NONE && amp > ampthresh_linear) {
-            syms[num_syms] = earsbufobj_get_inlet_buffer_name((t_earsbufobj *)x, 0, in_count);
+            syms[num_syms] = earsbufobj_get_inlet_buffer_name((t_earsbufobj *)x, 0, count);
             num_syms++;
         }
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     
     earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 0, num_syms, syms);

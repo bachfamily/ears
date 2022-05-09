@@ -203,6 +203,9 @@ void buf_fft_bang(t_buf_fft *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in1 = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *in2 = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 1, count);
@@ -210,8 +213,11 @@ void buf_fft_bang(t_buf_fft *x)
         t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, count);
 
         ears_buffer_fft((t_object *)x, in1, in2, out1, out2, x->polar, x->inverse, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
-    
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
