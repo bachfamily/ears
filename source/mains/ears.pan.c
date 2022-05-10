@@ -203,7 +203,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
-    
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_LONG(c, "numchannels", 0, t_buf_pan, num_out_channels);
     CLASS_ATTR_STYLE_LABEL(c,"numchannels",0,"text","Number of Output Channels");
     CLASS_ATTR_ACCESSORS(c, "numchannels", NULL, earsbufobj_setattr_numouts);

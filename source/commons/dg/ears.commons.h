@@ -9,7 +9,7 @@
 #ifndef _EARS_BUF_COMMONS_H_
 #define _EARS_BUF_COMMONS_H_
 
-#define EARS_ALLOCATIONVERBOSE false
+#define EARS_ALLOCATIONVERBOSE true
 
 #define EARS_ERROR_BUF_CANT_READ "Can't read from buffer"
 #define EARS_ERROR_BUF_CANT_WRITE "Can't write to buffer"
@@ -259,6 +259,11 @@ t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable 
 t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll *generated_names); // retain an existing buffer
 t_max_err ears_buffer_release(t_buffer_obj *buffer, t_symbol *buffername); // currently equivalent to ears_buffer_free()
 t_max_err ears_buffer_free(t_buffer_obj *buffer);
+
+// POLYBUFFER STUFF
+t_object *ears_polybuffer_make(t_symbol *polybuffername, bool add_to_ears_hashtable);
+t_max_err ears_polybuffer_release(t_buffer_obj *polybuffer, t_symbol *polybuffername);
+t_max_err ears_polybuffer_retain(t_buffer_obj *polybuffer, t_symbol *polybuffername);
 
 
 

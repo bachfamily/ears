@@ -115,6 +115,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
     
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_CHAR(c, "interp", 0, t_buf_offset, interp_offsets);
     CLASS_ATTR_STYLE_LABEL(c,"interp",0,"onoff","Interpolate Non-Integer Offset");
     // @description Toggles the ability to perform band-limited interpolation via resampling for non-integer offsets.

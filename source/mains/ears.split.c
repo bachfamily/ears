@@ -149,6 +149,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_LONG(c, "mode", 0, t_buf_split, e_mode);
     CLASS_ATTR_STYLE_LABEL(c,"mode",0,"enumindex","Split Mode");
     CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Duration Number List Silence Onset");

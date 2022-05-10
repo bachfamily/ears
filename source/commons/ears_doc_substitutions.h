@@ -292,3 +292,30 @@ CLASS_ATTR_STYLE_LABEL(c,"winstartfromzero",0,"onoff","First Window Starts At Ze
 CLASS_ATTR_CATEGORY(c, "winstartfromzero", 0, "Analysis");
 // @description If on, the first window is centered at framesize/2; if off (default), the first window is centered at zero.
 
+
+
+#define earsbufobj_class_add_blocking_attr
+CLASS_ATTR_CHAR(c, "blocking", 0, t_earsbufobj, l_blocking);
+CLASS_ATTR_STYLE_LABEL(c,"blocking",0,"enumindex","Blocking Mode");
+CLASS_ATTR_ENUMINDEX(c,"blocking", 0, "Non-Blocking Blocking (Low Priority) Blocking (High Priority)");
+CLASS_ATTR_BASIC(c, "blocking", 0);
+CLASS_ATTR_CATEGORY(c, "blocking", 0, "Behavior");
+CLASS_ATTR_ACCESSORS(c, "blocking", NULL, earsbufobj_setattr_blocking);
+// @description Sets the blocking mode, i.e. the thread to be used for computation: <br />
+// 0: the object uses its own separate thread; <br />
+// 1: the object uses the main thread (default); <br />
+// 2: the object uses its the scheduler thread. <br />
+// The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+
+
+#define earsbufobj_class_add_poly_attr
+CLASS_ATTR_CHAR(c, "poly", 0, t_earsbufobj, l_output_polybuffers);
+CLASS_ATTR_STYLE_LABEL(c,"poly",0,"enumindex","Output Polybuffers");
+CLASS_ATTR_ENUMINDEX(c,"poly", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
+CLASS_ATTR_BASIC(c, "poly", 0);
+CLASS_ATTR_CATEGORY(c, "poly", 0, "Behavior");
+// @description Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
+// - 0 (default) means that no polybuffer is created (individual buffers are output); <br />
+// - 1 means that a polybuffer is created and its name is output; <br />
+// - 2 means that a polybuffer is created and the individual names of its buffers are output.
+

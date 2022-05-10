@@ -110,6 +110,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
+    earsbufobj_class_add_poly_attr(c);
+
     class_addmethod(c, (method)buf_reg_appendtodictionary,    "appendtodictionary", A_CANT, 0);
 
     CLASS_ATTR_LONG(c, "embed",    0,    t_buf_reg, embed);
@@ -186,8 +188,6 @@ void buf_reg_retrieve_buffers_from_dictionary(t_buf_reg *x)
                 }
             }
         }
-        
-        x->embed = 1;
     }
 }
 
@@ -200,6 +200,7 @@ t_buf_reg *buf_reg_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->rms_mode = 0;
         x->level = 1.;
+        x->embed = 0;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         

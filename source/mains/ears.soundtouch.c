@@ -113,6 +113,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_pitchunit_attr(c);
 
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_CHAR(c, "speech", 0, t_buf_soundtouch, e_speech);
     CLASS_ATTR_STYLE_LABEL(c,"speech",0,"onoff","Speech");
     CLASS_ATTR_DEFAULT(c, "speech", 0, "0");

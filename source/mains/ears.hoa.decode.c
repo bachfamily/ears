@@ -147,6 +147,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
 
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_CHAR(c, "binaural", 0, t_buf_hoadecode, binaural);
     CLASS_ATTR_STYLE_LABEL(c,"binaural",0,"onoff","Binaural Decoding");
     CLASS_ATTR_ACCESSORS(c, "binaural", NULL, buf_hoadecode_setattr_binaural);

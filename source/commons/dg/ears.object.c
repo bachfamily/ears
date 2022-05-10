@@ -29,6 +29,12 @@ void ears_error_bachcheck()
     }
 }
 
+t_symbol *ears_buffer_name_get_for_polybuffer(t_symbol *polybuffername, long index) {
+    char polybuffer_buffername[MAX_SYM_LENGTH+30];
+    snprintf_zero(polybuffer_buffername, MAX_SYM_LENGTH+30, "%s.%d", polybuffername->s_name, index);
+    return gensym(polybuffer_buffername);
+}
+
 
 t_hashtab *ears_hashtab_get()
 {
@@ -88,6 +94,21 @@ void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, lo
                 post("--- ears allocation: Buffer %s will be kept in memory (dynamic mode)", name->s_name);
         } else {
             ears_buffer_release(buf, name);
+        }
+    }
+}
+
+void earsbufobj_polybuffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store)
+{
+    t_symbol *name = earsbufobj_get_store(e_ob, where, store)->polybuffer_name;
+    t_object *obj = ears_polybuffer_getobject(name);
+
+    if (name && obj) {
+        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+            if (EARS_ALLOCATIONVERBOSE)
+                post("--- ears allocation: Polybuffer %s will be kept in memory (dynamic mode)", name->s_name);
+        } else {
+            ears_polybuffer_release(obj, name);
         }
     }
 }
@@ -189,6 +210,19 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
         earsbufobj_buffer_release(e_ob, where, store_index, buffer_index);
     }
 
+    // is it a polybuffer buffer?
+    if (where == EARSBUFOBJ_OUT && e_ob->l_outstore[store_index].use_polybuffers) {
+        t_symbol *polybuffer_name = e_ob->l_outstore[store_index].polybuffer_name;
+        t_object *polybuffer_obj = polybuffer_name ? ears_polybuffer_getobject(polybuffer_name) : NULL;
+        if (polybuffer_obj) {
+            long polybuffer_count = object_attr_getlong(polybuffer_obj, _sym_count);
+            for (long i = polybuffer_count; i <= buffer_index; i++) {
+                object_method_long(polybuffer_obj, gensym("appendempty"), 1000, NULL);
+            }
+        }
+    }
+
+    
     // does the buffer exists??
     if (!ears_buffer_symbol_is_buffer(buf_name)) {
 
@@ -258,9 +292,9 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                 for (i = old_num_bufs; i < new_size; i++) {
                     t_symbol *s = NULL;
                     store->stored_buf[i].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
-                    if (type == EARSBUFOBJ_OUT)
+                    if (type == EARSBUFOBJ_OUT) {
                         s = earsbufobj_output_get_symbol_unique(e_ob, store_idx, i, &store->stored_buf[i].l_status);
-                    else
+                    } else
                         s = symbol_unique();
                     if (s)
                         earsbufobj_buffer_link(e_ob, type, store_idx, i, s);
@@ -326,9 +360,7 @@ long substitute_polybuffers(t_llll *ll)
                     if (pbuf) {
                         long count = object_attr_getlong(pbuf, _sym_count);
                         for (long i = 1; i <= count; i++){
-                            char polybuffer_buffername[MAX_SYM_LENGTH];
-                            snprintf_zero(polybuffer_buffername, MAX_SYM_LENGTH, "%s.%d", s->s_name, i);
-                            llll_insertsym_before(gensym(polybuffer_buffername), el);
+                            llll_insertsym_before(ears_buffer_name_get_for_polybuffer(s, i), el);
                         }
                         must_delete_el = true;
                     }
@@ -502,6 +534,7 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
 
 void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_types, t_llll *outlet_names)
 {
+    bool output_polybuffers = e_ob->l_output_polybuffers;
     long i, j, h;
 
     // INLETS;
@@ -576,6 +609,8 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
         llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL);
     else if (count_a == 2)
         llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL, NULL);
+    else
+        object_error((t_object *)e_ob, "Unimplemented feature.");
 
     /*
     e_ob->l_outlet = (void **) bach_newptr((max_out_len + 1) * sizeof (void *));
@@ -623,21 +658,43 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                 } else if (out_types[i] == 'E') { // 'E' buffer outlets can output a list of buffers from a single outlet
                     e_ob->l_outstore[j].max_num_stored_bufs = 0; // no limit
                     outstoresize = MAX(1, elem && hatom_gettype(&elem->l_hatom) == H_LLLL ? hatom_getllll(&elem->l_hatom)->l_size : 1);
+                    
+                    if (output_polybuffers) {
+                        e_ob->l_outstore[j].use_polybuffers = true;
+                        if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
+                            t_symbol *s = hatom_getsym(&elem->l_hatom);
+                            e_ob->l_outstore[j].polybuffer_name = s;
+                            e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
+                            if (!ears_polybuffer_symbol_is_polybuffer(s)) {
+                                ears_polybuffer_make(s, true);
+                            } else {
+                                ears_polybuffer_retain(ears_polybuffer_getobject(s), s);
+                            }
+                        } else {
+                            t_symbol *s = symbol_unique();
+                            e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                            e_ob->l_outstore[j].polybuffer_name = s;
+                            ears_polybuffer_make(s, true);
+                        }
+                    }
                 }
                 earsbufobj_resize_store(e_ob, EARSBUFOBJ_OUT, j, outstoresize, false);
                 t_llllelem *subelem = (elem && hatom_gettype(&elem->l_hatom) == H_LLLL) ? hatom_getllll(&elem->l_hatom)->l_head : NULL;
                 for (h = 0; h < outstoresize; h++) {
                     t_symbol *name = NULL;
-                    if (subelem && hatom_gettype(&subelem->l_hatom) == H_SYM) {
+                    if (e_ob->l_outstore[j].use_polybuffers) {
+                        name = earsbufobj_output_get_symbol_unique(e_ob, j, h, &e_ob->l_outstore[j].stored_buf[h].l_status);
+                        e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED; // e_ob->l_outstore[j].polybuffer_status;
+                    } else if (subelem && hatom_gettype(&subelem->l_hatom) == H_SYM) {
                         name = hatom_getsym(&subelem->l_hatom);
                         e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                     } else if (outstoresize == 1 && elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
                         name = hatom_getsym(&elem->l_hatom);
                         e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                     } else {
-                        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY)
-                                e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
-                        else {
+                        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+                            e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
+                        } else {
                             name = earsbufobj_output_get_symbol_unique(e_ob, j, h, &e_ob->l_outstore[j].stored_buf[h].l_status);
                         }
                     }
@@ -664,7 +721,12 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
             }
         }
     }
+    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+        object_warn((t_object *)e_ob, "Polybuffer output is incompatible with dynamic naming.");
+        object_warn((t_object *)e_ob, "    Switching to ordinary buffer output.");
+    }
     object_attr_setdisabled((t_object *)e_ob, gensym("blocking"), 1);
+    object_attr_setdisabled((t_object *)e_ob, gensym("poly"), 1);
     e_ob->l_is_creating = 0;
 }
 
@@ -727,7 +789,24 @@ t_max_err earsbufobj_setattr_outname(t_earsbufobj *e_ob, t_object *attr, long ar
                     llll_appendsym(outnames_ll, e_ob->l_outstore[i].stored_buf[0].l_name);
                 }
             } else {
-                if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
+                if (e_ob->l_outstore[j].use_polybuffers) {
+                    if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
+                        t_symbol *s = hatom_getsym(&elem->l_hatom);
+                        e_ob->l_outstore[j].polybuffer_name = s;
+                        e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
+                        if (!ears_polybuffer_symbol_is_polybuffer(s)) {
+                            ears_polybuffer_make(s, true);
+                        } else {
+                            ears_polybuffer_retain(ears_polybuffer_getobject(s), s);
+                        }
+                    } else {
+                        t_symbol *s = symbol_unique();
+                        e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                        e_ob->l_outstore[j].polybuffer_name = s;
+                        ears_polybuffer_make(s, true);
+                        s = ears_buffer_name_get_for_polybuffer(e_ob->l_outstore[j].polybuffer_name, 1);
+                    }
+                } else if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
                     e_ob->l_outstore[i].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                     s = hatom_getsym(&elem->l_hatom);
                 } else {
@@ -813,12 +892,16 @@ void earsbufobj_free(t_earsbufobj *e_ob)
     bach_freeptr(e_ob->l_instore);
 
     for (i = 0; i < e_ob->l_numbufouts; i++) {
-        for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs; j++) {
-            if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
-                earsbufobj_release_generated_outnames(e_ob);
-            } else {
-                if (e_ob->l_outstore[i].stored_buf[j].l_name && e_ob->l_outstore[i].stored_buf[j].l_buf)
-                    earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, i, j);
+        if (e_ob->l_outstore[i].use_polybuffers) {
+            earsbufobj_polybuffer_release(e_ob, EARSBUFOBJ_OUT, i);
+        } else {
+            for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs; j++) {
+                if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+                    earsbufobj_release_generated_outnames(e_ob);
+                } else {
+                    if (e_ob->l_outstore[i].stored_buf[j].l_name && e_ob->l_outstore[i].stored_buf[j].l_buf)
+                        earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, i, j);
+                }
             }
         }
         bach_freeptr(e_ob->l_outstore[i].stored_buf);
@@ -867,7 +950,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
 }
 
 
-long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out where)
+long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out where, bool ignore_polybuffers)
 {
     long i, sum = 0;
     switch (where) {
@@ -877,8 +960,10 @@ long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out w
             break;
             
         case EARSBUFOBJ_OUT:
-            for (i = 0; i < e_ob->l_numbufouts; i++)
-                sum += e_ob->l_outstore[i].num_stored_bufs;
+            for (i = 0; i < e_ob->l_numbufouts; i++) {
+                if (!(ignore_polybuffers && e_ob->l_outstore[i].use_polybuffers))
+                    sum += e_ob->l_outstore[i].num_stored_bufs;
+            }
             break;
             
         default:
@@ -890,15 +975,20 @@ long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out w
 
 void earsbufobj_open(t_earsbufobj *e_ob)
 {
-    long sum = earsbufobj_get_num_stored_buffers(e_ob, EARSBUFOBJ_OUT);
+    long sum = earsbufobj_get_num_stored_buffers(e_ob, EARSBUFOBJ_OUT, true);
     if (sum > EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK)
         object_warn((t_object *)e_ob, "More than %ld buffers stored as output. Only first %ld buffers shown", EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK, EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK);
     
     long i, j, s = 0;
     for (i = 0; i < e_ob->l_numbufouts && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; i++) {
-        for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; j++, s++) {
-            //            t_symbol *fee = gensym("fee");
-            buffer_view(earsbufobj_get_outlet_buffer_obj(e_ob, i, j));
+        if (e_ob->l_outstore[i].use_polybuffers) {
+            t_object *polybuffer = ears_polybuffer_getobject(e_ob->l_outstore[i].polybuffer_name);
+            object_method(polybuffer, gensym("open"));
+        } else  {
+            for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; j++, s++) {
+                //            t_symbol *fee = gensym("fee");
+                buffer_view(earsbufobj_get_outlet_buffer_obj(e_ob, i, j));
+            }
         }
     }
 }
@@ -1115,6 +1205,31 @@ void earsbufobj_class_add_blocking_attr(t_class *c)
     // The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 }
 
+
+t_max_err earsbufobj_setattr_poly(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (!e_ob->l_is_creating)
+            object_error((t_object *)e_ob, "The poly attribute can only be set in the object box.");
+        else if (atom_gettype(argv) == A_LONG)
+            e_ob->l_output_polybuffers = atom_getlong(argv);
+    }
+    return MAX_ERR_NONE;
+}
+
+
+void earsbufobj_class_add_poly_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "poly", 0, t_earsbufobj, l_output_polybuffers);
+    CLASS_ATTR_STYLE_LABEL(c,"poly",0,"enumindex","Output Polybuffers");
+    CLASS_ATTR_ENUMINDEX(c,"poly", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
+    CLASS_ATTR_BASIC(c, "poly", 0);
+    CLASS_ATTR_CATEGORY(c, "poly", 0, "Behavior");
+    // @description Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
+    // - 0 (default) means that no polybuffer is created (individual buffers are output); <br />
+    // - 1 means that a polybuffer is created and its name is output; <br />
+    // - 2 means that a polybuffer is created and the individual names of its buffers are output.
+}
 
 
 t_max_err earsbufobj_setattr_ampunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
@@ -1743,14 +1858,20 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
             
         case EARSBUFOBJ_NAMING_STATIC:
         {
-            t_llllelem *el = earsbufobj_generated_names_llll_getsymbol(e_ob->l_generated_outnames, outstore_idx, buffer_idx, 0);
-            if (el && hatom_gettype(&el->l_hatom) == H_SYM) {
-                sym = hatom_getsym(&el->l_hatom);
-                if (status) *status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
-            } else {
-                sym = symbol_unique();
+            if (e_ob->l_outstore[outstore_idx].use_polybuffers) {
+                sym = ears_buffer_name_get_for_polybuffer(e_ob->l_outstore[outstore_idx].polybuffer_name, buffer_idx+1);
                 earsbufobj_generated_names_llll_subssymbol(e_ob->l_generated_outnames, sym, outstore_idx, buffer_idx, 0);
                 if (status) *status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+            } else {
+                t_llllelem *el = earsbufobj_generated_names_llll_getsymbol(e_ob->l_generated_outnames, outstore_idx, buffer_idx, 0);
+                if (el && hatom_gettype(&el->l_hatom) == H_SYM) {
+                    sym = hatom_getsym(&el->l_hatom);
+                    if (status) *status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
+                } else {
+                    sym = symbol_unique();
+                    earsbufobj_generated_names_llll_subssymbol(e_ob->l_generated_outnames, sym, outstore_idx, buffer_idx, 0);
+                    if (status) *status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                }
             }
         }
             break;
@@ -1945,28 +2066,26 @@ void earsbufobj_outlet_buffer_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_ato
     if (outnum >= 0 && outnum < e_ob->l_ob.l_numouts) {
         long store = earsbufobj_outlet_to_bufstore(e_ob, outnum);
         if (e_ob->l_outstore[store].num_stored_bufs > 0) {
-            t_atom *a = (t_atom *)bach_newptr(e_ob->l_outstore[store].num_stored_bufs * sizeof(t_atom));
-            long j, c = 0;
-            for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
-                t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
-                if (name) {
-                    atom_setsym(a+c, name);
-                    c++;
+            if (e_ob->l_outstore[store].use_polybuffers && e_ob->l_output_polybuffers == 1) {
+                t_symbol *name = e_ob->l_outstore[store].polybuffer_name;
+                llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, name, 0, NULL);
+            } else {
+                t_atom *a = (t_atom *)bach_newptr(e_ob->l_outstore[store].num_stored_bufs * sizeof(t_atom));
+                long j, c = 0;
+                for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
+                    t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
+                    if (name) {
+                        atom_setsym(a+c, name);
+                        c++;
+                    }
                 }
-            }
-            
-            if (c > 0) {
-                llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), c - 1, a + 1);
                 
-/*
-                if (c == 1)
-                    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), 0, NULL);
-                else
-                    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, _sym_list, c, a);
- */
+                if (c > 0) {
+                    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), c - 1, a + 1);
+                }
+                
+                bach_freeptr(a);
             }
-            
-            bach_freeptr(a);
         }
     }
 }
@@ -3194,9 +3313,9 @@ t_max_err earsbufobj_store_buffer_in_dictionary(t_earsbufobj *e_ob, t_buffer_obj
                     block_size = num_atoms > EARS_EMBED_BLOCK_SIZE ? EARS_EMBED_BLOCK_SIZE : num_atoms;
                     sprintf(entryname, "block_%010" ATOM_LONG_FMT_MODIFIER "d", count++);
                     
-                    
                     for (long i = 0; i < block_size; i++) {
-                        atom_setfloat(av + i, cursor[i]);
+//                        atom_setfloat(av + i, cursor[i]);
+                        atom_setlong(av + i, *((t_int32 *)&(cursor[i])));
                     }
                     
                     dictionary_appendatoms(dict, gensym(entryname), block_size, av);
@@ -3228,7 +3347,7 @@ t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dicti
     t_symbol *name = NULL;
     t_max_err err = MAX_ERR_NONE;
 
-    long ac = 0, count;
+    long ac = 0;
     t_atom *av = NULL;
     long whole_numsamps = 0;
     t_float *whole_samps, *this_whole_samps;
@@ -3249,7 +3368,7 @@ t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dicti
         earsbufobj_mutex_unlock(e_ob);
         object_error((t_object *)e_ob, "Mismatch in number of samples.");
         return MAX_ERR_GENERIC;
-    } else if (name != ears_buffer_get_name((t_object *)e_ob, buf)) {
+    } else if (name != ears_buffer_get_name((t_object *)e_ob, buf) && e_ob->l_bufouts_naming != EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED) {
         earsbufobj_mutex_unlock(e_ob);
         object_error((t_object *)e_ob, "Mismatch in buffer name.");
         return MAX_ERR_GENERIC;
@@ -3266,7 +3385,9 @@ t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dicti
             sprintf(entryname, "block_%010ld", i);
             dictionary_getatoms(dict, gensym(entryname), &ac, &av);
             for (long j = 0; j < ac; j++) {
-                this_whole_samps[j] = (float)(t_atom_float)atom_getfloat(av+j);
+                long val = (t_int32)atom_getlong(av+j);
+                this_whole_samps[j] = *((float *)(&val));
+//                this_whole_samps[j] = (float)(t_atom_float)atom_getfloat(av+j);
             }
             whole_numsamps += ac;
             this_whole_samps += ac;

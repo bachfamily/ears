@@ -9,6 +9,7 @@
 #include <vector>
 #include "ext_globalsymbol.h"
 
+
 t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable)
 {
     if (buffername) {
@@ -26,7 +27,7 @@ t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable)
         return (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 1, &a);
     } else {
         if (EARS_ALLOCATIONVERBOSE)
-            post("--- ears allocation: Making auto-named buffer");;
+            post("--- ears allocation: Making auto-named buffer");
 
         return (t_buffer_obj *)object_new_typed(CLASS_BOX, gensym("buffer~"), 0, NULL);
     }
@@ -92,6 +93,87 @@ t_max_err ears_buffer_free(t_buffer_obj *buffer)
 {
     return object_free((t_object *)buffer);
 }
+
+
+
+
+
+
+t_object *ears_polybuffer_make(t_symbol *polybuffername, bool add_to_ears_hashtable)
+{
+    if (polybuffername) {
+        t_atom a;
+        atom_setsym(&a, polybuffername);
+
+        if (EARS_ALLOCATIONVERBOSE)
+            post("--- ears allocation: Making polybuffer '%s'", polybuffername->s_name);
+
+        if (add_to_ears_hashtable) {
+            ears_hashtab_store(polybuffername);
+            ears_hashtab_inccount(polybuffername);
+        }
+        
+        return (t_object *)object_new_typed(CLASS_BOX, gensym("polybuffer~"), 1, &a);
+    } else {
+        if (EARS_ALLOCATIONVERBOSE)
+            post("--- ears allocation: Making auto-named polybuffer");
+
+        return (t_object *)object_new_typed(CLASS_BOX, gensym("polybuffer~"), 0, NULL);
+    }
+}
+
+
+t_max_err ears_polybuffer_retain(t_buffer_obj *polybuffer, t_symbol *polybuffername)
+{
+    t_max_err err = MAX_ERR_NONE;
+
+    if (EARS_ALLOCATIONVERBOSE)
+        post("--- ears allocation: Retaining polybuffer '%s'", polybuffername->s_name);
+    ears_hashtab_inccount(polybuffername);
+    err = object_retain((t_object *)polybuffer);
+    return err;
+}
+
+
+t_max_err ears_polybuffer_release(t_buffer_obj *polybuffer, t_symbol *polybuffername)
+{
+    long polybuffer_count = object_attr_getlong(polybuffer, _sym_count);
+    t_max_err err = object_free((t_object *)polybuffer);
+    
+    // now we handle the ears-only reference count
+    t_atom_long count = 0;
+    t_hashtab *ht = ears_hashtab_get();
+    if (ht) {
+        t_max_err err = hashtab_lookuplong(ht, polybuffername, &count);
+        if (err == MAX_ERR_NONE) {
+            if (count > 1) {
+                if (EARS_ALLOCATIONVERBOSE)
+                    post("--- ears allocation: Releasing polybuffer '%s': now has ears-wide count %ld", polybuffername->s_name, count-1);
+                hashtab_storelong(ht, polybuffername, count-1); // decrease reference count
+            } else {
+                if (EARS_ALLOCATIONVERBOSE)
+                    post("--- ears allocation: Releasing polybuffer '%s': ears-wide count is now 0.", polybuffername->s_name);
+                hashtab_chuckkey(ht, polybuffername);
+                for (long i = 1; i <= polybuffer_count; i++) {
+                    t_symbol *name = ears_buffer_name_get_for_polybuffer(polybuffername, i);
+                    t_buffer_obj *buf = ears_buffer_getobject(name);
+                    if (buf && name) {
+                        ears_buffer_release(buf, name);
+                    }
+                }
+            }
+        }
+    }
+    
+    return err;
+}
+
+
+
+
+
+
+
 
 t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf)
 {

@@ -78,6 +78,16 @@
 				used name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
+			</description>
+		</method>
 		<method name="write">
 			<arg name="bufferindex" optional="1" type="int" />
 			<arg name="filename_or_path" optional="1" type="symbol" />
@@ -236,8 +246,25 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="category" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Assemble Buffers One by One" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
+			<digest>
+				Blocking Mode
+			</digest>
+			<description>
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="compensate" get="1" set="1" type="int" size="1">
@@ -279,7 +306,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade In Curve" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -307,6 +333,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Amount" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -321,7 +348,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Fade" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Fade Out Curve" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -441,7 +467,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Oversampling for Antialiasing" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -469,7 +494,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pan Mode" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -499,6 +523,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Per-Voice Panning" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -527,6 +552,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Multichannel Spread" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -598,7 +624,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Velocity" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Velocity Mapping Range" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

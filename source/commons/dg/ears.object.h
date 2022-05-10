@@ -43,6 +43,9 @@ typedef struct earsbufobj_store
     long                        num_stored_bufs;
     t_earsbufobj_stored_buffer  *stored_buf;
     long                        max_num_stored_bufs; // currently can only be 0 (=no limit) or 1 (=single buffer)
+    bool                        use_polybuffers;
+    t_symbol                    *polybuffer_name;
+    e_earsbufobj_bufstatus      polybuffer_status;
 } t_earsbufobj_store;
 
 
@@ -127,14 +130,15 @@ typedef struct _earsbufobj
     t_atom                  a_numframes;
     double                  a_overlap;
     t_symbol                *a_wintype;
-    char                    a_winnorm; //< if set, window is normalized to have area of 1 and then scaled by a factor of 2
+    char                    a_winnorm; ///< if set, window is normalized to have area of 1 and then scaled by a factor of 2
     long                    a_zeropadding;
     char                    a_zerophase;
     char                    a_lastframetoendoffile;
     char                    a_winstartfromzero;
     
     char                    l_slopemapping; ///< Slope mapping (one of the #e_slope_mapping)
-
+    char                    l_output_polybuffers; ///< Use polybuffers at output? 0 = no (default), 1 = yes, and only output a single name, 2 = yes, but output each buffer with its separate name
+    
     t_systhread_mutex       l_mutex;        ///< A mutex
     
     long                    l_flags;        ///< A combination of the e_earsbufobj_flag
@@ -333,6 +337,8 @@ void ears_hashtab_inccount(t_symbol *name);
 void ears_hashtab_store(t_symbol *name);
 t_atom_long ears_hashtab_getcount(t_symbol *name);
 void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx);
+void earsbufobj_polybuffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store);
+t_symbol *ears_buffer_name_get_for_polybuffer(t_symbol *polybuffername, long index);
 
 // spectrogram table
 t_hashtab *ears_hashtab_spectrograms_get();
@@ -359,6 +365,7 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
 void earsbufobj_add_common_methods(t_class *c, long flags = 0);
 void earsbufobj_class_add_outname_attr(t_class *c);
 void earsbufobj_class_add_blocking_attr(t_class *c);
+void earsbufobj_class_add_poly_attr(t_class *c);
 void earsbufobj_class_add_timeunit_attr(t_class *c);
 void earsbufobj_class_add_antimeunit_attr(t_class *c);
 void earsbufobj_class_add_ampunit_attr(t_class *c);

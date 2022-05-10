@@ -127,6 +127,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_pitchunit_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_LONG(c, "transients", 0, t_buf_rubberband, e_transients);
     CLASS_ATTR_STYLE_LABEL(c,"transients",0,"enumindex","Transient Type");
     CLASS_ATTR_ENUMINDEX(c,"transients", 0, "Crisp Mixed Smooth");

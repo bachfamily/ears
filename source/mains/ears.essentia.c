@@ -195,6 +195,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_winstartfromzero_attr(c);
     earsbufobj_class_add_winnormalized_attr(c);
 
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_DOUBLE(c, "envattack", 0, t_buf_essentia, a_envattacktime);
     CLASS_ATTR_STYLE_LABEL(c,"envattack",0,"text","Envelope Attack Time");
     CLASS_ATTR_CATEGORY(c, "envattack", 0, "Envelopes");

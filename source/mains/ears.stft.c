@@ -117,6 +117,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_wintype_attr(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
     
+    earsbufobj_class_add_poly_attr(c);
+
     CLASS_ATTR_LONG(c, "polar",    0,    t_buf_stft, polar);
     CLASS_ATTR_STYLE_LABEL(c, "polar", 0, "onoff", "Polar Output");
     CLASS_ATTR_BASIC(c, "polar", 0);

@@ -107,6 +107,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
+    earsbufobj_class_add_poly_attr(c);
+
     
     CLASS_ATTR_CHAR(c, "rms",	0,	t_buf_normalize, rms_mode);
     CLASS_ATTR_STYLE_LABEL(c, "rms", 0, "onoff", "Use Root Mean Square");

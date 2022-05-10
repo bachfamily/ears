@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 158.0, 100.0, 951.0, 609.0 ],
+		"rect" : [ 392.0, 100.0, 951.0, 609.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -3414,7 +3414,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 392.0, 126.0, 951.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3445,15 +3445,175 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-29",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 555.5, 514.5, 34.0, 23.0 ],
+									"text" : "print"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-33",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 555.5, 444.5, 114.0, 23.0 ],
+									"text" : "earsBufDrumLoop"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-34",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 555.5, 479.5, 290.0, 23.0 ],
+									"text" : "ears.split~ chunks 250 @mode duration @poly 2"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-24",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 549.5, 413.0, 320.0, 21.0 ],
+									"text" : "@poly 2 outputs the list of individual buffers",
+									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-22",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 413.0, 320.0, 21.0 ],
+									"text" : "@poly 1 outputs the polybuffer name",
+									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
-									"id" : "obj-18",
+									"id" : "obj-32",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 94.0, 453.5, 197.0, 40.0 ],
+									"patching_rect" : [ 310.5, 486.5, 150.0, 40.0 ],
+									"text" : "Double click to open polybuffer view"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-31",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 387.0, 320.0, 21.0 ],
+									"text" : "Polybuffers can be output by using the \"poly\" attribute:",
+									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-30",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 112.0, 309.0, 21.0 ],
+									"text" : "Polybuffers are automatically parsed at input:",
+									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-25",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 131.5, 444.5, 177.0, 40.0 ],
+									"text" : "Split into chunks and organize into a polybuffer"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-26",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 530.0, 34.0, 23.0 ],
+									"text" : "print"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-27",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 10.0, 460.0, 114.0, 23.0 ],
+									"text" : "earsBufDrumLoop"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-28",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 10.0, 495.0, 290.0, 23.0 ],
+									"text" : "ears.split~ chunks 250 @mode duration @poly 1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-18",
+									"linecount" : 4,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 363.375, 254.5, 132.0, 69.0 ],
 									"text" : "Quick way of getting all the buffers in a polybuffer"
 								}
 
@@ -3461,11 +3621,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-15",
+									"linecount" : 3,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.625, 518.0, 359.0, 23.0 ]
+									"patching_rect" : [ 186.0, 309.0, 178.0, 52.0 ],
+									"text" : "earsHelpCommonPolybuf.1 earsHelpCommonPolybuf.2 earsHelpCommonPolybuf.3"
 								}
 
 							}
@@ -3476,7 +3638,11 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.625, 462.0, 75.0, 23.0 ],
+									"patching_rect" : [ 279.0, 263.0, 75.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"embed" : 0
+									}
+,
 									"text" : "ears.reg~ ="
 								}
 
@@ -3488,7 +3654,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.625, 425.5, 157.0, 23.0 ],
+									"patching_rect" : [ 279.0, 226.5, 157.0, 23.0 ],
 									"text" : "earsHelpCommonPolybuf"
 								}
 
@@ -3500,7 +3666,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 486.0, 397.0, 187.0, 23.0 ],
+									"patching_rect" : [ 530.0, 187.0, 187.0, 23.0 ],
 									"text" : "ears.format~ @numchannels 2"
 								}
 
@@ -3512,11 +3678,11 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-11",
-									"linecount" : 2,
+									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 277.0, 388.5, 197.0, 40.0 ],
+									"patching_rect" : [ 400.0, 129.0, 121.0, 69.0 ],
 									"text" : "Of course you can also use single buffers too:"
 								}
 
@@ -3529,7 +3695,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 486.0, 518.0, 345.5, 38.0 ]
+									"patching_rect" : [ 530.0, 273.5, 345.5, 38.0 ]
 								}
 
 							}
@@ -3540,7 +3706,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 486.0, 473.0, 44.0, 23.0 ],
+									"patching_rect" : [ 530.0, 243.5, 44.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -3552,7 +3718,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 486.0, 354.0, 330.0, 23.0 ],
+									"patching_rect" : [ 530.0, 152.0, 330.0, 23.0 ],
 									"text" : "earsHelpCommonPolybuf.1 earsHelpCommonPolybuf.3"
 								}
 
@@ -3566,7 +3732,7 @@
 									"numinlets" : 3,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 486.0, 435.0, 65.0, 23.0 ],
+									"patching_rect" : [ 530.0, 215.5, 65.0, 23.0 ],
 									"text" : "ears.mix~"
 								}
 
@@ -3579,7 +3745,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 9.625, 295.0, 345.5, 38.0 ]
+									"patching_rect" : [ 10.0, 236.5, 191.5, 42.0 ]
 								}
 
 							}
@@ -3590,7 +3756,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 456.0, 166.0, 154.0, 23.0 ],
+									"patching_rect" : [ 388.0, 14.0, 154.0, 23.0 ],
 									"text" : "loadmess bang @defer 1"
 								}
 
@@ -3602,7 +3768,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 456.0, 198.0, 360.0, 23.0 ],
+									"patching_rect" : [ 388.0, 46.0, 360.0, 23.0 ],
 									"text" : "append drumLoop.aif, append anton.aif, append cherokee.aif"
 								}
 
@@ -3617,7 +3783,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 174.625, 143.5, 197.0, 69.0 ],
+									"patching_rect" : [ 175.0, 132.5, 197.0, 69.0 ],
 									"text" : "If you send as symbol a polybuffer symbol, ears will automatically substitute all its buffers and process them"
 								}
 
@@ -3629,7 +3795,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.625, 250.0, 44.0, 23.0 ],
+									"patching_rect" : [ 10.0, 206.5, 44.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -3641,7 +3807,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
-									"patching_rect" : [ 456.0, 228.0, 225.0, 23.0 ],
+									"patching_rect" : [ 388.0, 76.0, 225.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"embed" : 0
 									}
@@ -3684,7 +3850,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.625, 163.0, 157.0, 23.0 ],
+									"patching_rect" : [ 10.0, 152.0, 157.0, 23.0 ],
 									"text" : "earsHelpCommonPolybuf"
 								}
 
@@ -3698,7 +3864,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.625, 205.0, 65.0, 23.0 ],
+									"patching_rect" : [ 10.0, 178.5, 65.0, 23.0 ],
 									"text" : "ears.join~"
 								}
 
@@ -3757,8 +3923,36 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-28", 0 ],
+									"source" : [ "obj-27", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-26", 0 ],
+									"source" : [ "obj-28", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-19", 0 ],
 									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-34", 0 ],
+									"source" : [ "obj-33", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-29", 0 ],
+									"source" : [ "obj-34", 0 ]
 								}
 
 							}
@@ -3975,7 +4169,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 158.0, 126.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -6005,6 +6199,10 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 264.5, 527.0, 64.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"embed" : 0
+									}
+,
 									"text" : "ears.reg~"
 								}
 
@@ -6507,6 +6705,10 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 633.0, 377.5, 64.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"embed" : 0
+									}
+,
 									"text" : "ears.reg~"
 								}
 
@@ -7133,6 +7335,10 @@
 			}
 , 			{
 				"name" : "ears.rubberband~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.split~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
