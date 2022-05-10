@@ -104,7 +104,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "highpass", 0, t_buf_onepole, highpass);
     CLASS_ATTR_STYLE_LABEL(c,"highpass",0,"onoff","Highpass Filter");

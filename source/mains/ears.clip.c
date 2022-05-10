@@ -111,7 +111,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     
     class_register(CLASS_BOX, c);

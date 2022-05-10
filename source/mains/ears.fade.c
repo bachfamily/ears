@@ -111,7 +111,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "fadeintype", 0, t_buf_fade, fadein_type);
     CLASS_ATTR_STYLE_LABEL(c,"fadeintype",0,"enumindex","Fade In Type");

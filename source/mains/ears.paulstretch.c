@@ -114,7 +114,7 @@ int C74_EXPORT main(void)
 
     earsbufobj_class_add_framesize_attr(c);
 
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "spectral", 0, t_buf_paulstretch, e_spectral);
     CLASS_ATTR_STYLE_LABEL(c,"spectral",0,"onoff","Frequency Domain");

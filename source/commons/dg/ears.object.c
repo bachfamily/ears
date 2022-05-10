@@ -726,7 +726,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
         object_warn((t_object *)e_ob, "    Switching to ordinary buffer output.");
     }
     object_attr_setdisabled((t_object *)e_ob, gensym("blocking"), 1);
-    object_attr_setdisabled((t_object *)e_ob, gensym("poly"), 1);
+    object_attr_setdisabled((t_object *)e_ob, gensym("polyout"), 1);
     e_ob->l_is_creating = 0;
 }
 
@@ -1206,11 +1206,11 @@ void earsbufobj_class_add_blocking_attr(t_class *c)
 }
 
 
-t_max_err earsbufobj_setattr_poly(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+t_max_err earsbufobj_setattr_polyout(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
         if (!e_ob->l_is_creating)
-            object_error((t_object *)e_ob, "The poly attribute can only be set in the object box.");
+            object_error((t_object *)e_ob, "The polyout attribute can only be set in the object box.");
         else if (atom_gettype(argv) == A_LONG)
             e_ob->l_output_polybuffers = atom_getlong(argv);
     }
@@ -1218,13 +1218,14 @@ t_max_err earsbufobj_setattr_poly(t_earsbufobj *e_ob, void *attr, long argc, t_a
 }
 
 
-void earsbufobj_class_add_poly_attr(t_class *c)
+void earsbufobj_class_add_polyout_attr(t_class *c)
 {
-    CLASS_ATTR_CHAR(c, "poly", 0, t_earsbufobj, l_output_polybuffers);
-    CLASS_ATTR_STYLE_LABEL(c,"poly",0,"enumindex","Output Polybuffers");
-    CLASS_ATTR_ENUMINDEX(c,"poly", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
-    CLASS_ATTR_BASIC(c, "poly", 0);
-    CLASS_ATTR_CATEGORY(c, "poly", 0, "Behavior");
+    CLASS_ATTR_CHAR(c, "polyout", 0, t_earsbufobj, l_output_polybuffers);
+    CLASS_ATTR_STYLE_LABEL(c,"polyout",0,"enumindex","Output Polybuffers");
+    CLASS_ATTR_ENUMINDEX(c,"polyout", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
+    CLASS_ATTR_BASIC(c, "polyout", 0);
+    CLASS_ATTR_ACCESSORS(c, "polyout", NULL, earsbufobj_setattr_polyout);
+    CLASS_ATTR_CATEGORY(c, "polyout", 0, "Behavior");
     // @description Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
     // - 0 (default) means that no polybuffer is created (individual buffers are output); <br />
     // - 1 means that a polybuffer is created and its name is output; <br />

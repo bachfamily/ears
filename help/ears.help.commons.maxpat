@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 392.0, 100.0, 951.0, 609.0 ],
+		"rect" : [ 392.0, 100.0, 866.0, 609.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -491,7 +491,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1124,7 +1124,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2014,7 +2014,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2324,7 +2324,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3414,7 +3414,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 392.0, 126.0, 951.0, 583.0 ],
+						"rect" : [ 392.0, 126.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3475,8 +3475,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 555.5, 479.5, 290.0, 23.0 ],
-									"text" : "ears.split~ chunks 250 @mode duration @poly 2"
+									"patching_rect" : [ 555.5, 479.5, 308.0, 23.0 ],
+									"text" : "ears.split~ chunks 250 @mode duration @polyout 2"
 								}
 
 							}
@@ -3489,7 +3489,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 549.5, 413.0, 320.0, 21.0 ],
-									"text" : "@poly 2 outputs the list of individual buffers",
+									"text" : "@polyout 2 outputs the list of individual buffers",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -3503,7 +3503,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 413.0, 320.0, 21.0 ],
-									"text" : "@poly 1 outputs the polybuffer name",
+									"text" : "@polyout 1 outputs the polybuffer name",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -3518,7 +3518,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 310.5, 486.5, 150.0, 40.0 ],
+									"patching_rect" : [ 326.5, 486.5, 150.0, 40.0 ],
 									"text" : "Double click to open polybuffer view"
 								}
 
@@ -3531,8 +3531,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 387.0, 320.0, 21.0 ],
-									"text" : "Polybuffers can be output by using the \"poly\" attribute:",
+									"patching_rect" : [ 10.0, 387.0, 338.0, 21.0 ],
+									"text" : "Polybuffers can be output by using the \"polyout\" attribute:",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -3598,8 +3598,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 10.0, 495.0, 290.0, 23.0 ],
-									"text" : "ears.split~ chunks 250 @mode duration @poly 1"
+									"patching_rect" : [ 10.0, 495.0, 308.0, 23.0 ],
+									"text" : "ears.split~ chunks 250 @mode duration @polyout 1"
 								}
 
 							}
@@ -4169,7 +4169,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -4748,7 +4748,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -5288,7 +5288,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -5950,7 +5950,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -6601,7 +6601,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 951.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 866.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

@@ -109,7 +109,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
 
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     //    earsbufobj_class_add_blocking_attr(c); <<< not working
     //    earsbufobj_class_add_timeunit_attr(c);

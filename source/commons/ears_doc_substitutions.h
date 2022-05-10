@@ -308,7 +308,7 @@ CLASS_ATTR_ACCESSORS(c, "blocking", NULL, earsbufobj_setattr_blocking);
 // The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 
 
-#define earsbufobj_class_add_poly_attr
+#define earsbufobj_class_add_polyout_attr
 CLASS_ATTR_CHAR(c, "poly", 0, t_earsbufobj, l_output_polybuffers);
 CLASS_ATTR_STYLE_LABEL(c,"poly",0,"enumindex","Output Polybuffers");
 CLASS_ATTR_ENUMINDEX(c,"poly", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");

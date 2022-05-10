@@ -168,7 +168,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_LLLL(c, "wet", 0, t_buf_freeverb, e_wet, buf_freeverb_getattr_wet, buf_freeverb_setattr_wet);
     CLASS_ATTR_STYLE_LABEL(c,"wet",0,"text","Wet");

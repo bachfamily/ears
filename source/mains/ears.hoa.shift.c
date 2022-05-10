@@ -126,7 +126,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_angleunit_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoashift, dimension);
     CLASS_ATTR_STYLE_LABEL(c,"dimension",0,"enum","Dimension");

@@ -154,7 +154,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
-    earsbufobj_class_add_poly_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "nativemp3",	0,	t_buf_read, native_mp3_handling);
     CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
