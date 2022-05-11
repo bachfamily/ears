@@ -236,6 +236,10 @@ void ears_buffer_set_size_samps_do(t_object *ob, t_symbol *s, long ac, t_atom *a
 
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
+    if (num_frames == 0) {
+        object_warn(ob, "Warning: buffer is resized at zero size!");
+    }
+    
     t_atom a[2];
     atom_setlong(a, num_frames);
     atom_setobj(a, buf);
@@ -259,6 +263,10 @@ t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_
 
 t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
+    if (num_frames == 0) {
+        object_warn(ob, "Warning: buffer is resized at zero size!");
+    }
+
     long curr_num_frames = ears_buffer_get_size_samps(ob, buf);
     if (num_frames < curr_num_frames) {
         ears_buffer_crop_inplace(ob, buf, 0, num_frames);
@@ -290,6 +298,9 @@ void ears_buffer_set_size_and_numchannels_do(t_object *ob, t_symbol *s, long ac,
 // ONE NEEDS TO MAKE SURE that this function is called when the samples of buf ARE NOT LOCKED!!!!
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels)
 {
+    if (num_frames == 0 || numchannels == 0) {
+        object_warn(ob, "Warning: buffer is resized at zero size!");
+    }
     t_atom a[3];
     atom_setlong(a, num_frames);
     atom_setlong(a+1, numchannels);

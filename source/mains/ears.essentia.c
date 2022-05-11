@@ -1256,10 +1256,16 @@ t_ears_err buf_essentia_set_essentia(t_buf_essentia *x, t_llll *args)
         object_error((t_object *)x, "Wrong arguments!");
         return EARS_ERR_GENERIC;
     }
-    earsbufobj_mutex_lock((t_earsbufobj *)x);
     
     long new_num_features = args->l_size;
     
+    if (new_num_features == 0) {
+        object_error((t_object *)x, "No features defined!");
+        return EARS_ERR_GENERIC;
+    }
+
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+
     for (long i = 0; i < x->num_features; i++)
         llll_free(x->algorithm_args[i]);
     x->num_features = new_num_features;
@@ -1655,6 +1661,7 @@ t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buf
 
 void buf_essentia_bang(t_buf_essentia *x)
 {
+    
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
@@ -1747,7 +1754,6 @@ void buf_essentia_bang(t_buf_essentia *x)
         }
     }
      
-    
     for (long i = 0; i < x->num_features; i++)
         llll_free(res[i]);
     bach_freeptr(res);

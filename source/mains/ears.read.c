@@ -961,8 +961,7 @@ t_max_err buf_read_AIFF_native(t_buf_read *x, t_buffer_obj *outbuf, const char *
             if (num_samps <= 0 || channels <= 0)
                 return MAX_ERR_GENERIC;
             
-            ears_buffer_set_numchannels((t_object *)x, outbuf, channels);
-            ears_buffer_set_size_samps((t_object *)x, outbuf, num_samps);
+            ears_buffer_set_size_and_numchannels((t_object *)x, outbuf, num_samps, channels);
             
             if (start_samp > 0)
                 AIFF_Seek(ref, start_samp);
