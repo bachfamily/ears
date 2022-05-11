@@ -390,9 +390,9 @@ void buf_write_bang(t_buf_write *x)
                 settings.format = sampleformat;
             }
             
-//            ears_buffer_write(buf, filename, (t_object *)x, &settings);
+            ears_buffer_write(buf, filename, (t_object *)x, &settings);
             
-            /*
+            
             t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get((t_object *)x, buf);
             if ((x->write_spectral_annotations && data) || (mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL))
                 buf_write_markers_and_spectralannotation(x, filename,
@@ -403,7 +403,6 @@ void buf_write_bang(t_buf_write *x)
 
             if (tag_el && hatom_gettype(&tag_el->l_hatom) == H_LLLL)
                 buf_write_tags(x, filename, hatom_getllll(&tag_el->l_hatom));
-*/
             
             llll_appendsym(fullpaths, get_conformed_resolved_path(filename));
             

@@ -3246,9 +3246,11 @@ void earsbufobj_stopprogress(t_earsbufobj *e_ob)
 
 void earsbufobj_updateprogress(t_earsbufobj *e_ob, t_atom_float progress)
 {
-    t_atom av;
-    atom_setfloat(&av, progress);
-    defer(e_ob, (method)earsbufobj_updateprogress_do, NULL, 1, &av);
+    if (e_ob->l_blocking == 0) {
+        t_atom av;
+        atom_setfloat(&av, progress);
+        defer(e_ob, (method)earsbufobj_updateprogress_do, NULL, 1, &av);
+    }
 }
 
 void earsbufobj_init_progress(t_earsbufobj *e_ob, long num_buffers)
