@@ -242,7 +242,7 @@ t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_
     
     t_atom a[2];
     atom_setlong(a, num_frames);
-    atom_setobj(a, buf);
+    atom_setobj(a+1, buf);
     
     if (num_frames != ears_buffer_get_size_samps(ob, buf)) {
         if (((t_earsbufobj *)ob)->l_blocking == 1) {
