@@ -24,7 +24,8 @@
 	Assembles an output buffer from a sequence of incoming buffers
  
 	@discussion
-    This module is related to <o>ears.mix~</o>, but should be preferred to it,
+    This module is related to <o>ears.mix~</o> (and, with the tail-onset
+    <m>mode</m>, to the <o>ears.join~</o> object), but should be preferred to them,
     for instance in combination with <o>ears.read~</o> with <m>iter</m> 1 attribute set,
     in order to optimize memory allocation. Indeed, <o>ears.mix~</o> needs all the buffers
     to be allocated before mixing, while <o>ears.assemble~</o> will do this with one buffer at a time.
@@ -37,7 +38,7 @@
 	buffer, assemble, mix, superpose, merge
  
 	@seealso
-	ears.mix~, ears.read~
+	ears.mix~, ears.join, ears.read~
 	
 	@owner
 	Daniele Ghisi
@@ -51,6 +52,11 @@
 #include "ears.object.h"
 
 
+enum {
+    EARS_ASSEMBLE_ONSETMODE_STANDARD = 0,
+    EARS_ASSEMBLE_ONSETMODE_INTERONSETINTERVAL = 1,
+    EARS_ASSEMBLE_ONSETMODE_TAILONSETINTERVAL = 2
+};
 
 typedef struct _buf_assemble {
     t_earsbufobj       e_ob;
@@ -58,7 +64,7 @@ typedef struct _buf_assemble {
     char               normalization_mode;
     char               interp_offsets;
     double             last_offset_samps;
-    char               use_delta_offsets;
+    char               onset_mode;
 
     char               assembly_line_status; // 0 = new, 1 = first being constructed, 2 = under construction, 3 = done
     
@@ -145,8 +151,10 @@ int C74_EXPORT main(void)
     // 0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 = Overload Protection Only, only
     // normalizes to 1. if some samples exceed in modulo 1.
 
-    CLASS_ATTR_CHAR(c, "delta", 0, t_buf_assemble, use_delta_offsets);
-    CLASS_ATTR_STYLE_LABEL(c,"delta",0,"onoff","Use Inter-Onset Intervals");
+    CLASS_ATTR_CHAR(c, "mode", 0, t_buf_assemble, onset_mode);
+    CLASS_ATTR_STYLE_LABEL(c,"mode",0,"onoff","Onset Mode");
+    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Standard Inter-Onset Intervals Tail-Onset Intervals");
+    CLASS_ATTR_BASIC(c, "mode", 0);
     // @description Toggles the ability to use inter-onset intervals instead of onsets to define
     // the position of the buffers to be assembled.
 
@@ -198,7 +206,7 @@ t_buf_assemble *buf_assemble_new(t_symbol *s, short argc, t_atom *argv)
         x->xfade_left = x->xfade_right = 0;
         x->xfade_amount_mode = EARS_assemble_XFADE_AMOUNT_MS;
 */
-        x->use_delta_offsets = 0;
+        x->onset_mode = EARS_ASSEMBLE_ONSETMODE_STANDARD;
         x->gains = llll_get();
         x->offsets = llll_get();
         x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
@@ -214,9 +222,10 @@ t_buf_assemble *buf_assemble_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
-        // @arg 1 @name default_ioi @optional 1 @type number
-        // @digest Default inter-offset interval
-        // @description Sets a default inter-offset interval
+        // @arg 1 @name default_interval @optional 1 @type number
+        // @digest Default time interval
+        // @description Sets a default time interval: either an inter-onset interval
+        // or a tail-onset interval (depending on the <m>mode</m> attribute)
         
         if (args && args->l_head && is_hatom_number(&args->l_head->l_hatom)) {
             x->default_ioi = hatom_getdouble(&args->l_head->l_hatom);
@@ -282,11 +291,17 @@ void buf_assemble_once(t_buf_assemble *x)
             llll_appenddouble(gains_linear, 1.);
         
         if (offset_el) {
-            if (x->use_delta_offsets) {
-                double diff_samps = earsbufobj_time_to_fsamps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
-                offset_samps = x->last_offset_samps + diff_samps;
-            } else {
-                offset_samps = earsbufobj_time_to_fsamps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+            switch (x->onset_mode) {
+                case EARS_ASSEMBLE_ONSETMODE_INTERONSETINTERVAL:
+                    offset_samps = x->last_offset_samps + earsbufobj_time_to_fsamps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                    break;
+                case EARS_ASSEMBLE_ONSETMODE_TAILONSETINTERVAL:
+                    offset_samps = x->curr_length_samps + earsbufobj_time_to_fsamps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                    break;
+                case EARS_ASSEMBLE_ONSETMODE_STANDARD:
+                default:
+                    offset_samps = earsbufobj_time_to_fsamps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                    break;
             }
             offset_samps = MAX(0, offset_samps);
             x->last_offset_samps = offset_samps;
@@ -303,18 +318,27 @@ void buf_assemble_once(t_buf_assemble *x)
             llll_appenddouble(gains_linear, 1.);
         
         if (offset_el) {
-            if (x->use_delta_offsets) {
-                double diff_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
-                offset_samps = x->last_offset_samps + diff_samps;
-            } else {
-                offset_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+            switch (x->onset_mode) {
+                case EARS_ASSEMBLE_ONSETMODE_INTERONSETINTERVAL:
+                    offset_samps = x->last_offset_samps + earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                    break;
+                case EARS_ASSEMBLE_ONSETMODE_TAILONSETINTERVAL:
+                    offset_samps = x->curr_length_samps + earsbufobj_time_to_fsamps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                    break;
+                case EARS_ASSEMBLE_ONSETMODE_STANDARD:
+                default:
+                    offset_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&offset_el->l_hatom), buf);
+                    break;
             }
+            
             offset_samps = MAX(0, offset_samps);
             x->last_offset_samps = offset_samps;
         } else {
             long default_ioi_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, x->default_ioi, buf);
-            if (x->use_delta_offsets && x->assembly_line_status == 2) {
+            if (x->onset_mode == EARS_ASSEMBLE_ONSETMODE_INTERONSETINTERVAL && x->assembly_line_status == 2) {
                 offset_samps = x->last_offset_samps + default_ioi_samps;
+            } else if (x->onset_mode == EARS_ASSEMBLE_ONSETMODE_TAILONSETINTERVAL && x->assembly_line_status == 2) {
+                offset_samps = x->curr_length_samps + default_ioi_samps;
             } else {
                 offset_samps = x->last_offset_samps;
             }
@@ -363,14 +387,14 @@ void buf_assemble_anything(t_buf_assemble *x, t_symbol *msg, long ac, t_atom *av
                         t_buffer_obj *from = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
                         t_buffer_obj *to = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
 
-                        ears_buffer_copy_format((t_object *)x, from, to);
-                        ears_buffer_clear((t_object *)x, to);
-                        
                         x->curr_length_samps = 0;
                         x->last_offset_samps = 0;
                         
-                        long numframes = EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC * ears_buffer_get_sr((t_object *)x, to);
-                        ears_buffer_set_size_samps((t_object *)x, to, numframes);
+                        long numframes = EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC * ears_buffer_get_sr((t_object *)x, from);
+
+                        ears_buffer_copy_format_and_set_size_samps((t_object *)x, from, to, numframes);
+                        ears_buffer_clear((t_object *)x, to);
+                        
                         x->allocated_samps = numframes;
                         x->assembly_line_status = 1;
                     }

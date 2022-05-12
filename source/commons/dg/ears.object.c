@@ -722,8 +722,12 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
         }
     }
     if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
-        object_warn((t_object *)e_ob, "Polybuffer output is incompatible with dynamic naming.");
-        object_warn((t_object *)e_ob, "    Switching to ordinary buffer output.");
+        object_warn((t_object *)e_ob, "Polybuffer output is currently incompatible with dynamic naming.");
+        object_warn((t_object *)e_ob, "    Switching to default static buffer output.");
+    }
+    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+        object_warn((t_object *)e_ob, "Polybuffer output is currently incompatible with copying names.");
+        object_warn((t_object *)e_ob, "    Switching to default static buffer output.");
     }
     object_attr_setdisabled((t_object *)e_ob, gensym("blocking"), 1);
     object_attr_setdisabled((t_object *)e_ob, gensym("polyout"), 1);

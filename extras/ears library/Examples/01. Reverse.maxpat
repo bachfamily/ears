@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 2,
-			"revision" : 2,
+			"minor" : 3,
+			"revision" : 0,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 344.0, 162.0, 798.0, 533.0 ],
+		"rect" : [ 298.0, 138.0, 798.0, 533.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,18 +39,6 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
-				"box" : 				{
-					"id" : "obj-25",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 171.0, 282.0, 62.0, 22.0 ],
-					"text" : "ears.pan~"
-				}
-
-			}
-, 			{
 				"box" : 				{
 					"fontsize" : 18.0,
 					"id" : "obj-22",
@@ -532,10 +520,6 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ears.pan~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
 				"name" : "ears.read~.mxo",
 				"type" : "iLaX"
 			}

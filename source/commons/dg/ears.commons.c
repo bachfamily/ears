@@ -237,7 +237,7 @@ void ears_buffer_set_size_samps_do(t_object *ob, t_symbol *s, long ac, t_atom *a
 t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
     if (num_frames == 0) {
-        object_warn(ob, "Warning: buffer is resized at zero size!");
+//        object_warn(ob, "Warning: buffer is resized at zero size!");
     }
     
     t_atom a[2];
@@ -264,7 +264,7 @@ t_ears_err ears_buffer_set_size_samps(t_object *ob, t_buffer_obj *buf, long num_
 t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, long num_frames)
 {
     if (num_frames == 0) {
-        object_warn(ob, "Warning: buffer is resized at zero size!");
+//        object_warn(ob, "Warning: buffer is resized at zero size!");
     }
 
     long curr_num_frames = ears_buffer_get_size_samps(ob, buf);
@@ -299,7 +299,7 @@ void ears_buffer_set_size_and_numchannels_do(t_object *ob, t_symbol *s, long ac,
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels)
 {
     if (num_frames == 0 || numchannels == 0) {
-        object_warn(ob, "Warning: buffer is resized at zero size!");
+//        object_warn(ob, "Warning: buffer is resized at zero size!");
     }
     t_atom a[3];
     atom_setlong(a, num_frames);
@@ -628,14 +628,12 @@ t_ears_err ears_buffer_copy_format_and_set_size_samps(t_object *ob, t_buffer_obj
     double orig_sr = buffer_getsamplerate(orig);          // sample rate of the buffer in samples per second
 
     t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
+    t_atom_long    dest_num_frames = buffer_getframecount(dest);
     double dest_sr = buffer_getsamplerate(dest);
-    
-    long orig_num_frames = buffer_getframecount(orig);
-
     
     if (dest_sr != orig_sr)
         ears_buffer_set_sr(ob, dest, orig_sr);
-    if (dest_channelcount != orig_channelcount || num_frames != orig_num_frames) {
+    if (dest_channelcount != orig_channelcount || num_frames != dest_num_frames) {
         ears_buffer_set_size_and_numchannels(ob, dest, num_frames, orig_channelcount);
     }
     
