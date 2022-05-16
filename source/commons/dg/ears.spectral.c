@@ -146,7 +146,7 @@ long optimize_windowsize(long n)
 }
 
 
-t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double stretchfactor, long framesize_samps, char spectral)
+t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double stretchfactor, long framesize_samps, char spectral, bool precise_output_time)
 {
     
     if (!source || !dest)
@@ -189,9 +189,15 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
         
         // compute the displacement inside the input file
         double start_pos = 0.;
-        double displace_pos = (framesize_samps*0.5)/stretchfactor;
-        
-        t_atom_long outframecount = ((long)(ceil(framecount/displace_pos)-1))* half_framesize_samps + framesize_samps;
+        double displace_pos = 0;
+        t_atom_long outframecount = 0;
+        if (precise_output_time) {
+            outframecount = long(round(stretchfactor * framecount));
+            displace_pos = (double)framecount / (((double)(outframecount - framesize_samps))/half_framesize_samps + 1);
+        } else {
+            displace_pos = (framesize_samps*0.5)/stretchfactor; //Dx = framesize / 2*f
+            outframecount = ((long)(ceil(framecount/displace_pos)-1))* half_framesize_samps + framesize_samps;
+        }
         
         if (source == dest) { // inplace operation!
             ears_buffer_set_size_samps(ob, source, outframecount);
@@ -206,12 +212,15 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
 //            window[i] = pow(1 - pow(rescale(i, 0, framesize_samps - 1, -1., 1.), 2.), 1.25); // < this was the previously used window
         
         float *dest_sample = buffer_locksamples(dest);
-        long dest_sample_size = outframecount * channelcount;
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
+            t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
+            t_atom_long    dest_framecount   = buffer_getframecount(dest);
+            long dest_sample_size = dest_framecount * dest_channelcount;
+
             // fft buffers
             long nfft = framesize_samps;
             kiss_fft_cpx *fin = (kiss_fft_cpx *)bach_newptrclear(framesize_samps * sizeof(kiss_fft_cpx));
@@ -220,17 +229,17 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
             kiss_fft_cfg cfginv = kiss_fft_alloc(nfft, true, NULL, NULL);
 
             // clearing destination buffer
-            for (long c = 0; c < channelcount; c++)
-                for (long i = 0; i < outframecount; i++)
-                    dest_sample[i * channelcount + c] = 0;
+            for (long c = 0; c < dest_channelcount; c++)
+                for (long i = 0; i < dest_framecount; i++)
+                    dest_sample[i * dest_channelcount + c] = 0;
             
             long n = 0;
             while (true) {
                 // get the windowed buffer
                 long istart_pos=(long)(floor(start_pos));
-                for (long c = 0; c < channelcount; c++) {
+                for (long c = 0; c < dest_channelcount; c++) {
                     for (long i = 0; i < framesize_samps; i++)
-                        fin[i].r = (istart_pos+i >= framecount ? 0. : orig_sample_wk[(istart_pos+i)*channelcount + c]) * window[i];
+                        fin[i].r = (istart_pos+i >= dest_framecount ? 0. : orig_sample_wk[(istart_pos+i)*channelcount + c]) * window[i];
                     
                     if (spectral) {
                         // performing FFT
@@ -250,7 +259,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
                     
                     // then overlap-adding the window
                     for (long i = 0; i < framesize_samps; i++) {
-                        long ii = (i + (n * half_framesize_samps)) * channelcount + c;
+                        long ii = (i + (n * half_framesize_samps)) * dest_channelcount + c;
                         if (ii < dest_sample_size)
                             dest_sample[ii] += fin[i].r;
                     }
@@ -258,7 +267,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
                 
                 start_pos += displace_pos;
                 n++;
-                if (start_pos >= framecount)
+                if (start_pos >= dest_framecount)
                     break;
 
             }

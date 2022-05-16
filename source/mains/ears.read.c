@@ -333,6 +333,8 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         }
     }
     
+    x->formatsyms[idx] = _llllobj_sym_unknown;
+    
     if (filepath) {
         t_symbol *sampleformat = _llllobj_sym_unknown;
         
@@ -436,7 +438,7 @@ void buf_read_iter(t_buf_read *x, t_llll *files)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
 
-    x->formatsyms = (t_symbol **)bach_resizeptr(x->formatsyms, 1 * sizeof(t_symbol *));
+    x->formatsyms = (t_symbol **)bach_resizeptrclear(x->formatsyms, 1 * sizeof(t_symbol *));
     
     if (files && files->l_head) {
         long count = 0;

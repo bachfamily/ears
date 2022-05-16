@@ -140,10 +140,9 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, outchannelcount);
         } else {
             orig_sample_wk = orig_sample;
-            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
+            ears_buffer_copy_format(ob, source, dest, true);
+            ears_buffer_set_size_and_numchannels(ob, dest, framecount, outchannelcount);
         }
-        
-        
 
         if (order == 0) {
             // special case, not much to do
@@ -199,6 +198,8 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             } else {
+                outchannelcount = ears_buffer_get_numchannels(ob, dest);
+                framecount = ears_buffer_get_size_samps(ob, dest);
                 for (long i = 0; i < framecount; i++) {
                     bool changed = false;
                     if (coord1_is_envelope) {
@@ -234,6 +235,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                         encoder.setElevation(e);
                         encoder.setRadius(d);
                     }
+                    // only channel 0 is used. Should we downmix to mono instead?
                     encoder.process(&orig_sample_wk[channelcount * i], &dest_sample[outchannelcount * i]);
                 }
                 

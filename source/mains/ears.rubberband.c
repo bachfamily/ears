@@ -123,6 +123,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
+    earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_pitchunit_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
@@ -281,9 +282,9 @@ int C74_EXPORT main(void)
     
     CLASS_ATTR_LONG(c, "blocksize", 0, t_buf_rubberband, e_blocksize);
     CLASS_ATTR_STYLE_LABEL(c,"blocksize",0,"text","Block Size");
-    CLASS_ATTR_DEFAULT(c, "blocksize", 0, "20");
+    CLASS_ATTR_DEFAULT(c, "blocksize", 0, "1024");
     // @description Sets the block size for granular processes such as envelopes.
-    // The unit depends on the <m>timeunit</m> attribute.
+    // The unit depends on the <m>antimeunit</m> attribute.
 
     
     class_register(CLASS_BOX, c);
@@ -340,7 +341,7 @@ t_buf_rubberband *buf_rubberband_new(t_symbol *s, short argc, t_atom *argv)
         x->e_smoothing = 0;
         x->e_formant = 0;
         x->e_pitchmode = 2;
-        x->e_blocksize = 20;
+        x->e_blocksize = 1024;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -359,6 +360,8 @@ t_buf_rubberband *buf_rubberband_new(t_symbol *s, short argc, t_atom *argv)
         // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
         
         x->e_pitchshift_env = llll_from_text_buf("1.");
+
+        x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
 
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
@@ -504,7 +507,7 @@ void buf_rubberband_bang(t_buf_rubberband *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-        t_llll *ts_env = earsbufobj_pitch_llllelem_to_cents_and_samples((t_earsbufobj *)x, ts_el, in);
+        t_llll *ts_env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, ts_el, in);
         t_llll *ps_env = earsbufobj_pitch_llllelem_to_cents_and_samples((t_earsbufobj *)x, ps_el, in);
 
         if (ts_env->l_size == 0) {
@@ -516,7 +519,7 @@ void buf_rubberband_bang(t_buf_rubberband *x)
             if (in != out)
                 ears_buffer_clone((t_object *)x, in, out);
         } else {
-            ears_buffer_rubberband((t_object *)x, in, out, ts_env, ps_env, buf_rubberband_get_options(x), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_blocksize, in), earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+            ears_buffer_rubberband((t_object *)x, in, out, ts_env, ps_env, buf_rubberband_get_options(x), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_blocksize, in, false, true), earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(ts_env);
