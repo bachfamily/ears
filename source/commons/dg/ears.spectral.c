@@ -237,9 +237,9 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
             while (true) {
                 // get the windowed buffer
                 long istart_pos=(long)(floor(start_pos));
-                for (long c = 0; c < dest_channelcount; c++) {
+                for (long c = 0; c < channelcount; c++) {
                     for (long i = 0; i < framesize_samps; i++)
-                        fin[i].r = (istart_pos+i >= dest_framecount ? 0. : orig_sample_wk[(istart_pos+i)*channelcount + c]) * window[i];
+                        fin[i].r = (istart_pos+i >= framecount ? 0. : orig_sample_wk[(istart_pos+i)*channelcount + c]) * window[i];
                     
                     if (spectral) {
                         // performing FFT
@@ -267,7 +267,7 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
                 
                 start_pos += displace_pos;
                 n++;
-                if (start_pos >= dest_framecount)
+                if (start_pos >= framecount)
                     break;
 
             }

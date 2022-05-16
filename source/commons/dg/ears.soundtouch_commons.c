@@ -149,7 +149,7 @@ t_ears_err ears_buffer_soundtouch(t_object *ob, t_buffer_obj *source, t_buffer_o
         if (source == dest) { // inplace operation!
             ears_buffer_set_size_samps(ob, source, outframecount);
         } else {
-            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, outframecount);
         }
         
         float *dest_sample = buffer_locksamples(dest);

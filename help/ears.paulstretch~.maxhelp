@@ -128,7 +128,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u833000776",
+									"buffername" : "u843000523",
 									"id" : "obj-14",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -250,7 +250,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u733000573",
+									"buffername" : "u447000533",
 									"id" : "obj-21",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -690,7 +690,7 @@
 							}
 , 							{
 								"box" : 								{
-									"addpoints" : [ 0.0, 1.0, 0, 0.503703703703704, 100.0, 0, 1.0, 1.0, 0 ],
+									"addpoints" : [ 0.0, 1.0, 0, 0.511111111111111, 10.0, 0, 1.0, 1.0, 0 ],
 									"domain" : 1.0,
 									"id" : "obj-13",
 									"maxclass" : "function",
@@ -699,13 +699,13 @@
 									"outlettype" : [ "float", "", "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 494.0, 183.500014999999991, 147.0, 69.0 ],
-									"range" : [ 1.0, 100.0 ]
+									"range" : [ 1.0, 10.0 ]
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u348000554",
+									"buffername" : "u320000577",
 									"id" : "obj-9",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -773,14 +773,14 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 161.5, 167.500014999999991, 131.0, 23.0 ],
-									"text" : "[[0 1.] [0.2 10.] [1. 2.]]"
+									"patching_rect" : [ 161.5, 167.500014999999991, 110.0, 23.0 ],
+									"text" : "[[0 1.] [1. 10. 0.2]]"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u909000560",
+									"buffername" : "u717000583",
 									"id" : "obj-21",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1288,7 +1288,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u619001255",
+									"buffername" : "u793000792",
 									"id" : "obj-13",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1380,7 +1380,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u665001217",
+									"buffername" : "u827000615",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

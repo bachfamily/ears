@@ -519,7 +519,7 @@ void buf_rubberband_bang(t_buf_rubberband *x)
             if (in != out)
                 ears_buffer_clone((t_object *)x, in, out);
         } else {
-            ears_buffer_rubberband((t_object *)x, in, out, ts_env, ps_env, buf_rubberband_get_options(x), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_blocksize, in, false, true), earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+            ears_buffer_rubberband((t_object *)x, in, out, ts_env, ps_env, buf_rubberband_get_options(x), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_blocksize, in, false, true), earsbufobj_get_slope_mapping((t_earsbufobj *)x), x->e_ob.l_timeunit != EARS_TIMEUNIT_DURATION_RATIO);
         }
         
         llll_free(ts_env);
