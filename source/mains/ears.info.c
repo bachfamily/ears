@@ -382,7 +382,7 @@ t_buf_info *buf_info_new(t_symbol *s, short argc, t_atom *argv)
                 llll_free(args);
                 return NULL;
             }
-            outlet_str[x->num_outlets] = 'l';
+            outlet_str[x->num_outlets] = 'z';
             x->num_outlets++;
         }
         outlet_str[x->num_outlets] = 0;

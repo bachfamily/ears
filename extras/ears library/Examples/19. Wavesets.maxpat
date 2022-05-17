@@ -48,7 +48,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 636.365452110767365, 302.833336472511292, 178.0, 25.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Scramble locally wavesets"
 				}
 
@@ -471,7 +470,7 @@
 						"versionnumber" : 80105
 					}
 ,
-					"text" : "bach.expr ($f1 < 0) && ($f2 > 0) @out m"
+					"text" : "bach.expr ($f1 < 0) && ($f2 >= 0) @out m"
 				}
 
 			}

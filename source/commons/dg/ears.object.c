@@ -83,11 +83,43 @@ long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob)
     return e_ob->l_curr_proxy;
 }
 
+bool earsbufobj_buffer_is_part_of_polybuffer(t_earsbufobj *e_ob, t_symbol *buffername)
+{
+    // find position for dot
+    long len = strlen(buffername->s_name);
+    long dotpos = -1;
+    for (long i = 0; i < len; i++) {
+        if (buffername->s_name[i] == '.') {
+            dotpos = i;
+            break;
+        }
+    }
+    
+    if (dotpos <= 0)
+        return false;
+    
+    for (long i = dotpos+1; i < len; i++) {
+        if (!isdigit(buffername->s_name[i]))
+            return false;
+    }
+    
+    char potentialpolybuffername[MAX_SYM_LENGTH+1];
+    snprintf_zero(potentialpolybuffername, dotpos+1, "%s", buffername->s_name);
+    if (ears_polybuffer_symbol_is_polybuffer(gensym(potentialpolybuffername)))
+        return true;
+    
+    return false;
+
+}
+
 void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx)
 {
     t_object *buf = earsbufobj_get_stored_buffer_obj(e_ob, where, store, bufferidx);
     t_symbol *name = earsbufobj_get_stored_buffer_name(e_ob, where, store, bufferidx);
     
+    if (earsbufobj_buffer_is_part_of_polybuffer(e_ob, name))
+        return;
+
     if (name && buf) {
         if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
             if (EARS_ALLOCATIONVERBOSE)
@@ -95,6 +127,19 @@ void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, lo
         } else {
             ears_buffer_release(buf, name);
         }
+    }
+}
+
+void earsbufobj_buffer_free(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx)
+{
+    t_object *buf = earsbufobj_get_stored_buffer_obj(e_ob, where, store, bufferidx);
+    t_symbol *name = earsbufobj_get_stored_buffer_name(e_ob, where, store, bufferidx);
+
+    if (earsbufobj_buffer_is_part_of_polybuffer(e_ob, name))
+        return;
+
+    if (buf) {
+        ears_buffer_free(buf);
     }
 }
 
@@ -108,6 +153,7 @@ void earsbufobj_polybuffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where
             if (EARS_ALLOCATIONVERBOSE)
                 post("--- ears allocation: Polybuffer %s will be kept in memory (dynamic mode)", name->s_name);
         } else {
+            
             ears_polybuffer_release(obj, name);
         }
     }
@@ -123,7 +169,7 @@ void ears_hashtab_inccount(t_symbol *name)
             t_max_err err = hashtab_lookuplong(ht, name, &count);
             if (err == MAX_ERR_NONE) {
                 if (EARS_ALLOCATIONVERBOSE)
-                    post("--- ears allocation: Incrementing ears-wide count for buffer %s: now has count %ld", name->s_name, count+1);
+                    post("--- ears allocation: Incrementing ears-wide count for '%s': now has count %ld", name->s_name, count+1);
                 hashtab_storelong(ht, name, count+1); // increase reference count
             }
         }
@@ -140,7 +186,7 @@ void ears_hashtab_clipcount(t_symbol *name)
             if (err == MAX_ERR_NONE) {
                 if (count != 0) count = 1;
                 if (EARS_ALLOCATIONVERBOSE)
-                    post("--- ears allocation: Clipping count for buffer %s: now has ears-wide count %ld", name->s_name, count+1);
+                    post("--- ears allocation: Clipping count for '%s': now has ears-wide count %ld", name->s_name, count+1);
                 hashtab_storelong(ht, name, count); // increase reference count
             }
         }
@@ -154,7 +200,7 @@ void ears_hashtab_store(t_symbol *name)
         t_hashtab *ht = ears_hashtab_get();
         if (ht) {
             if (EARS_ALLOCATIONVERBOSE)
-                post("--- ears allocation: Storing buffer %s in hash table (with count = 0)", name->s_name);
+                post("--- ears allocation: Storing '%s' in hash table (with count = 0)", name->s_name);
             hashtab_storelong(ht, name, 0);
         }
     }
@@ -211,13 +257,26 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
     }
 
     // is it a polybuffer buffer?
+    bool from_polybuf = false;
     if (where == EARSBUFOBJ_OUT && e_ob->l_outstore[store_index].use_polybuffers) {
         t_symbol *polybuffer_name = e_ob->l_outstore[store_index].polybuffer_name;
         t_object *polybuffer_obj = polybuffer_name ? ears_polybuffer_getobject(polybuffer_name) : NULL;
         if (polybuffer_obj) {
             long polybuffer_count = object_attr_getlong(polybuffer_obj, _sym_count);
+            from_polybuf = true;
             for (long i = polybuffer_count; i <= buffer_index; i++) {
                 object_method_long(polybuffer_obj, gensym("appendempty"), 1000, NULL);
+                if (EARS_ALLOCATIONVERBOSE)
+                    post("--- ears allocation: Buffer %s.%ld inside polybuffer has been created via 'appendempty'.", polybuffer_name->s_name, i+1);
+/*                t_symbol *newbuffer_sym = ears_buffer_name_get_for_polybuffer(polybuffer_name, i+1);
+                t_buffer_obj *newbuffer_obj = ears_buffer_getobject(newbuffer_sym);
+                if (newbuffer_sym && newbuffer_obj) {
+                    ears_hashtab_store(newbuffer_sym);
+                    ears_hashtab_inccount(newbuffer_sym);
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Retaining buffer '%s'", newbuffer_sym->s_name);
+                    object_retain((t_object *)newbuffer_obj);
+                } */
             }
         }
     }
@@ -254,7 +313,8 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
         
         t_llll *generated_outnames = earsbufobj_generated_names_llll_getlist(e_ob->l_generated_outnames, store_index, buffer_index);
         
-        ears_buffer_retain(*buf, buf_name, generated_outnames); // we retain the buffer
+        if (!earsbufobj_buffer_is_part_of_polybuffer(e_ob, buf_name))
+            ears_buffer_retain(*buf, buf_name, generated_outnames); // we retain the buffer
         
         *name = buf_name;
     }
@@ -301,6 +361,43 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                 }
             }
     } else if (new_size < store->num_stored_bufs) {
+        if (type == EARSBUFOBJ_OUT) {
+            
+            if (store->use_polybuffers) {
+            /*    // now, that's a bit of a drag. We seem to have no way to delete only parts of the buffers in the polybuffer
+                // we had used "appendempty" to create them, so we have no direct ownership of them
+                // the only think we can do is to clear the polybuffer completely and recreate the necessary buffers.
+                // again, a bit of a drag.
+                // This is also worrying because somewhere else the same buffers may be in use. We are clearing all the buffers
+                // single-handedly but that's not swell. What would be a better choice?
+                t_object *polybuffer_obj = ears_polybuffer_getobject(store->polybuffer_name);
+                if (polybuffer_obj) {
+                    for (i = 0; i < store->num_stored_bufs; i++) {
+                        earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                    }
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Clearing polybuffer %s", store->polybuffer_name->s_name);
+                    object_method(polybuffer_obj, gensym("clear"));
+                }
+                for (i = 0; i < new_size; i++) {
+                    t_symbol *s = NULL;
+                    store->stored_buf[i].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                    s = earsbufobj_output_get_symbol_unique(e_ob, store_idx, i, &store->stored_buf[i].l_status);
+                    if (s)
+                        earsbufobj_buffer_link(e_ob, type, store_idx, i, s);
+             }
+             // This above is wrong. We cannot free the buffers, they can be used somewhere else!!!
+             */
+                for (i = new_size; i < store->num_stored_bufs; i++) {
+                    earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                }
+
+            } else {
+                for (i = new_size; i < store->num_stored_bufs; i++) {
+                    earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                }
+            }
+        }
         store->stored_buf = (t_earsbufobj_stored_buffer *)bach_resizeptr(store->stored_buf, MAX(1, new_size) * sizeof(t_earsbufobj_stored_buffer));
         store->num_stored_bufs = new_size;
     }
@@ -340,7 +437,7 @@ long earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long stor
     return count;
 }
 
-long substitute_polybuffers(t_llll *ll)
+long substitute_polybuffers(t_earsbufobj *e_ob, t_llll *ll)
 {
     if (!ll)
         return 1;
@@ -358,6 +455,11 @@ long substitute_polybuffers(t_llll *ll)
                     t_symbol *s = hatom_getsym(&el->l_hatom);
                     t_object *pbuf = ears_polybuffer_getobject(s);
                     if (pbuf) {
+                        object_attach_byptr_register(e_ob, pbuf, CLASS_NOBOX);
+                        t_llll *temp = llll_get();
+                        llll_appendobj(temp, pbuf);
+                        llll_appendsym(temp, s);
+                        llll_appendllll(e_ob->l_polybuffers_attached, temp);
                         long count = object_attr_getlong(pbuf, _sym_count);
                         for (long i = 1; i <= count; i++){
                             llll_insertsym_before(ears_buffer_name_get_for_polybuffer(s, i), el);
@@ -403,7 +505,7 @@ t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_s
     t_llll *ll = llllobj_parse_llll((t_object *) e_ob, type, msg, ac, av, LLLL_PARSE_CLONE);
 
     // checking whether any of the symbols is a POLYbuffer, and in this case substituting it with all its buffers
-    substitute_polybuffers(ll);
+    substitute_polybuffers(e_ob, ll);
 
     return ll;
 }
@@ -489,6 +591,8 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
 {
     ears_hashtabs_setup();
 
+    e_ob->l_polybuffers_attached = llll_get();
+    
     e_ob->l_is_creating = 1;
 
     /// attributes (these must be done before the actual initialization)
@@ -602,15 +706,11 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
     for (int i = 0; i < strlen(out_types_wk); i++)
         if (out_types_wk[i] == 'a') count_a++;
     
-    // dirty, just working UP TO 2 'a' outlets (TO BE REFINED)
-    if (count_a == 0)
-        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk);
-    else if (count_a == 1)
-        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL);
-    else if (count_a == 2)
-        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL, NULL);
-    else
+    if (count_a > 0) {
         object_error((t_object *)e_ob, "Unimplemented feature.");
+    }
+    
+    llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk);
 
     /*
     e_ob->l_outlet = (void **) bach_newptr((max_out_len + 1) * sizeof (void *));
@@ -683,8 +783,9 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                 for (h = 0; h < outstoresize; h++) {
                     t_symbol *name = NULL;
                     if (e_ob->l_outstore[j].use_polybuffers) {
-                        name = earsbufobj_output_get_symbol_unique(e_ob, j, h, &e_ob->l_outstore[j].stored_buf[h].l_status);
-                        e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED; // e_ob->l_outstore[j].polybuffer_status;
+                        name = NULL; // we do not create an initial buffer at startup if we are in polybuffer mode.
+//                        name = earsbufobj_output_get_symbol_unique(e_ob, j, h, &e_ob->l_outstore[j].stored_buf[h].l_status);
+//                        e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED; // e_ob->l_outstore[j].polybuffer_status;
                     } else if (subelem && hatom_gettype(&subelem->l_hatom) == H_SYM) {
                         name = hatom_getsym(&subelem->l_hatom);
                         e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
@@ -872,7 +973,8 @@ void earsbufobj_free(t_earsbufobj *e_ob)
     long i, j;
     
     ears_is_freeing = true;
-    
+
+
     for (i = e_ob->l_numins - 1; i > 0; i--)
         object_free_debug(e_ob->l_proxy[i]);
     bach_freeptr(e_ob->l_proxy);
@@ -896,17 +998,18 @@ void earsbufobj_free(t_earsbufobj *e_ob)
     bach_freeptr(e_ob->l_instore);
 
     for (i = 0; i < e_ob->l_numbufouts; i++) {
-        if (e_ob->l_outstore[i].use_polybuffers) {
-            earsbufobj_polybuffer_release(e_ob, EARSBUFOBJ_OUT, i);
-        } else {
-            for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs; j++) {
-                if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
-                    earsbufobj_release_generated_outnames(e_ob);
-                } else {
-                    if (e_ob->l_outstore[i].stored_buf[j].l_name && e_ob->l_outstore[i].stored_buf[j].l_buf)
-                        earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, i, j);
-                }
+        for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs; j++) {
+            if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+                earsbufobj_release_generated_outnames(e_ob);
+            } else {
+                if (e_ob->l_outstore[i].stored_buf[j].l_name && e_ob->l_outstore[i].stored_buf[j].l_buf)
+                    earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, i, j);
             }
+        }
+        if (e_ob->l_outstore[i].use_polybuffers) {
+            e_ob->l_releasing_polybuffer = true;
+            earsbufobj_polybuffer_release(e_ob, EARSBUFOBJ_OUT, i);
+            e_ob->l_releasing_polybuffer = false;
         }
         bach_freeptr(e_ob->l_outstore[i].stored_buf);
     }
@@ -918,7 +1021,9 @@ void earsbufobj_free(t_earsbufobj *e_ob)
     
     llll_free(e_ob->l_outnames);
     llll_free(e_ob->l_generated_outnames);
-    
+
+    llll_free(e_ob->l_polybuffers_attached);
+
     if (e_ob->l_mutex)
         systhread_mutex_free_debug(e_ob->l_mutex);
 
@@ -930,8 +1035,94 @@ void bsc(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
     e_ob->l_buffer_size_changed = 1;
 }
 
+bool buffer_is_part_of_polybuffer(t_symbol *buffername, t_symbol *polybuffername)
+{
+    long polybufname_len = strlen(polybuffername->s_name);
+    long bufname_len = strlen(buffername->s_name);
+    if (!(bufname_len >= polybufname_len + 2))
+        return false;
+    
+    if (strncmp(buffername->s_name, polybuffername->s_name, polybufname_len) != 0)
+        return false;
+    if (buffername->s_name[polybufname_len] != '.')
+        return false;
+    
+    for (long i = polybufname_len+1; i < bufname_len; i++)
+        if (!isdigit(buffername->s_name[i]))
+            return false;
+    
+    return true;
+}
+
+t_llllelem *earsbufobj_object_to_polybuffer(t_earsbufobj *e_ob, void *potential_polybufferobject, t_symbol **polybuffername)
+{
+    for (t_llllelem *el = e_ob->l_polybuffers_attached->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+            t_llll *ll = hatom_getllll(&el->l_hatom);
+            if (ll && ll->l_size == 2) {
+                t_object *obj = (t_object *)hatom_getobj(&ll->l_head->l_hatom);
+                if (obj == potential_polybufferobject) {
+                    *polybuffername = hatom_getsym(&ll->l_head->l_next->l_hatom);
+                    return el;
+                }
+            }
+        }
+    }
+    return NULL;
+}
+
 t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
+    if (msg == gensym("free")) {
+        if (e_ob->l_releasing_polybuffer) // same object that called
+            return MAX_ERR_NONE;
+        
+        t_symbol *polybufname = NULL;
+        t_llllelem *el = earsbufobj_object_to_polybuffer(e_ob, sender, &polybufname);
+        if (el) {
+            t_object *polybuffer_obj = (t_object *)sender;
+            t_symbol *polybuffer_name = polybufname;
+            
+//            if (calling_obj == (t_object *)e_ob)
+//                return MAX_ERR_NONE;
+            
+            // this is delicate. I don't know how to handle this otherwise.
+            // The fact is: if we free a polybuffer without freeing the buffer inside, things don't seem to work any longer for them (crashes at object_free())
+            // So before we free a polybuffer we also want to free all the references to the buffers it contains.
+            // Here we check if there are polybuffer references in the stores, if so, replace them with standard buffers.
+            for (long store_idx = 0; store_idx < e_ob->l_numbufins; store_idx++) {
+                for (long i = 0; i < e_ob->l_instore[store_idx].num_stored_bufs; i++) {
+                    t_symbol *s = earsbufobj_get_stored_buffer_name(e_ob, EARSBUFOBJ_IN, store_idx, i);
+                    if (s && buffer_is_part_of_polybuffer(s, polybuffer_name)) {
+                        t_symbol *new_s = symbol_unique();
+                        if (new_s) {
+                            if (EARS_ALLOCATIONVERBOSE)
+                                post("--- ears allocation: A polybuffer is being freed, so we have to replace buffer '%s' used elsewhere", s->s_name);
+                            earsbufobj_buffer_link(e_ob, EARSBUFOBJ_IN, store_idx, i, new_s); //< the release of the old buffer is here inside
+                        }
+                    }
+                }
+            }
+            for (long store_idx = 0; store_idx < e_ob->l_numbufouts; store_idx++) {
+                for (long i = 0; i < e_ob->l_outstore[store_idx].num_stored_bufs; i++) {
+                    t_symbol *s = earsbufobj_get_stored_buffer_name(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                    if (s && buffer_is_part_of_polybuffer(s, polybuffer_name)) {
+                        t_symbol *new_s = symbol_unique();
+                        if (new_s) {
+                            if (EARS_ALLOCATIONVERBOSE)
+                                post("--- ears allocation: A polybuffer is being freed, so we have to replace buffer '%s' used elsewhere", s->s_name);
+                            earsbufobj_buffer_link(e_ob, EARSBUFOBJ_OUT, store_idx, i, new_s); //< the release of the old buffer is here inside
+                        }
+                    }
+                }
+            }
+            
+            llll_destroyelem(el);
+        }
+        
+        return MAX_ERR_NONE;
+    }
+    
     if (msg == gensym("buffer_modified")) {
 //        post("buffer modified");
         switch (e_ob->l_blocking) {
@@ -1521,7 +1712,8 @@ void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob)
             t_object *buf = ears_buffer_getobject(s);
             if (buf) {
 //                ears_hashtab_clipcount(s);
-                ears_buffer_release(buf, s);
+                if (!earsbufobj_buffer_is_part_of_polybuffer(e_ob, s))
+                    ears_buffer_release(buf, s);
             }
         }
     }
@@ -1963,10 +2155,49 @@ void earsbufobj_refresh_outlet_names(t_earsbufobj *e_ob, char force_refresh_even
 
 
 
+void earsbufobj_outlet_anything_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s, ac-1, av+1);
+    bach_freeptr(av);
+}
+
 void earsbufobj_outlet_anything(t_earsbufobj *e_ob, long outnum, t_symbol *s, long ac, t_atom *av)
 {
-    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s, ac, av);
+    if (e_ob->l_blocking == 0) {
+        t_atom *new_av = (t_atom *)bach_newptr((ac + 1) * sizeof(t_atom));
+        atom_setlong(new_av, outnum);
+        for (long i = 0; i < ac; i++)
+            new_av[i+1] = av[i];
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_outlet_anything_do, s, ac+1, new_av);
+    } else {
+        llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s, ac, av);
+    }
 }
+
+
+
+void earsbufobj_outlet_int_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    long n = atom_getlong(av+1);
+    llllobj_outlet_int((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, n);
+}
+
+void earsbufobj_outlet_int(t_earsbufobj *e_ob, long outnum, long n)
+{
+    if (e_ob->l_blocking == 0) {
+        t_atom av[2];
+        atom_setlong(av, outnum);
+        atom_setlong(av+1, n);
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_outlet_int_do, NULL, 2, av);
+    } else {
+        llllobj_outlet_int((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, n);
+    }
+}
+
 
 void earsbufobj_outlet_symbol_list_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
 {

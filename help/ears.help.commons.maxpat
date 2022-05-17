@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 3,
-			"revision" : 0,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -53,7 +53,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -485,7 +485,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -607,7 +607,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "list" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 452.0, 434.0, 80.0, 23.0 ],
 									"text" : "ears.info~ sr"
 								}
@@ -745,7 +745,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "list" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 31.0, 245.0, 80.0, 23.0 ],
 									"text" : "ears.info~ sr"
 								}
@@ -769,7 +769,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "list" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 467.0, 245.0, 80.0, 23.0 ],
 									"text" : "ears.info~ sr"
 								}
@@ -793,7 +793,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "list" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 283.0, 245.0, 80.0, 23.0 ],
 									"text" : "ears.info~ sr"
 								}
@@ -1118,7 +1118,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1216,7 +1216,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
-									"outlettype" : [ "list", "list" ],
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 802.25, 461.5, 127.0, 23.0 ],
 									"text" : "ears.info~ sr audiosr"
 								}
@@ -1617,7 +1617,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 9,
-									"outlettype" : [ "list", "list", "list", "list", "list", "list", "list", "list", "list" ],
+									"outlettype" : [ "", "", "", "", "", "", "", "", "" ],
 									"patching_rect" : [ 27.25, 317.5, 649.0, 23.0 ],
 									"text" : "ears.info~ spectral numchannels numsamples sr audiosr spectype binsize binoffset binunit"
 								}
@@ -2008,7 +2008,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2318,7 +2318,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2533,7 +2533,7 @@
 										"appversion" : 										{
 											"major" : 8,
 											"minor" : 3,
-											"revision" : 0,
+											"revision" : 1,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -3408,13 +3408,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 976.0, 583.0 ],
+						"rect" : [ 194.0, 126.0, 976.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3444,6 +3444,18 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-20",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 343.0, 387.0, 235.0, 21.0 ],
+									"text" : "(EXPERIMENTAL FEATURE)",
+									"textcolor" : [ 0.533333333333333, 0.011764705882353, 0.011764705882353, 1.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-29",
 									"maxclass" : "newobj",
@@ -4163,7 +4175,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4199,6 +4211,18 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-31",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 209.0, 84.0, 235.0, 21.0 ],
+									"text" : "(EXPERIMENTAL FEATURE)",
+									"textcolor" : [ 0.533333333333333, 0.011764705882353, 0.011764705882353, 1.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-32",
 									"maxclass" : "button",
@@ -4742,7 +4766,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -5282,13 +5306,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 194.0, 126.0, 976.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 976.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -5402,13 +5426,13 @@
 									"maxclass" : "bpatcher",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"offset" : [ 0.0, -800.0 ],
+									"offset" : [ 0.0, -375.0 ],
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
 											"minor" : 3,
-											"revision" : 0,
+											"revision" : 1,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -5532,8 +5556,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 649.5, 719.0, 50.0, 23.0 ],
-													"text" : "phases"
+													"patching_rect" : [ 649.5, 719.0, 50.0, 23.0 ]
 												}
 
 											}
@@ -5545,8 +5568,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 503.5, 719.0, 50.0, 23.0 ],
-													"text" : "mags"
+													"patching_rect" : [ 503.5, 719.0, 50.0, 23.0 ]
 												}
 
 											}
@@ -5695,8 +5717,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 49.0, 1057.5, 250.0, 23.0 ],
-													"text" : "u384007652 u515007679 u584007681"
+													"patching_rect" : [ 49.0, 1057.5, 250.0, 23.0 ]
 												}
 
 											}
@@ -5779,7 +5800,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 9.0, 844.0, 539.0, 50.0 ],
+													"patching_rect" : [ 9.0, 844.0, 543.0, 50.0 ],
 													"text" : "Each time a new evaluation is requested, a NEW buffer is created, and assigned a name.\nBeware: this may creates a lot of buffers. Before starting a cycle, thus, be sure to recycle the names you no longer need, by sending a \"reset\" message (hence looping the \"name cycle\"). "
 												}
 
@@ -5793,8 +5814,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 470.5, 595.5, 108.0, 23.0 ],
-													"text" : "mybuf1 mybuf2"
+													"patching_rect" : [ 470.5, 595.5, 108.0, 23.0 ]
 												}
 
 											}
@@ -5833,8 +5853,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 17.5, 678.5, 92.0, 23.0 ],
-													"text" : "u759000788"
+													"patching_rect" : [ 17.5, 678.5, 92.0, 23.0 ]
 												}
 
 											}
@@ -6405,7 +6424,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -7056,7 +7075,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -7152,7 +7171,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "list" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 633.0, 407.5, 80.0, 23.0 ],
 									"text" : "ears.info~ sr"
 								}

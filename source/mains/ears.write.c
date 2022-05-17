@@ -279,7 +279,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4444", "aa", NULL);
+        earsbufobj_setup((t_earsbufobj *)x, "E4444", "zz", NULL);
 
         llll_free(args);
     }

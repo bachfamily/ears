@@ -252,7 +252,7 @@ typedef struct _ears_envelope_iterator
 t_ears_spectralbuf_metadata spectralbuf_metadata_get_empty();
 
 
-// BUFFER LIFECYCLE
+/// BUFFER LIFECYCLE
 
 // This one is the core function that creates new buffers when needed. It's a wrapper of object_new_typed()
 t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable = false); // create a new buffer
@@ -260,14 +260,14 @@ t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll 
 t_max_err ears_buffer_release(t_buffer_obj *buffer, t_symbol *buffername); // currently equivalent to ears_buffer_free()
 t_max_err ears_buffer_free(t_buffer_obj *buffer);
 
-// POLYBUFFER STUFF
+/// POLYBUFFER STUFF
 t_object *ears_polybuffer_make(t_symbol *polybuffername, bool add_to_ears_hashtable);
 t_max_err ears_polybuffer_release(t_buffer_obj *polybuffer, t_symbol *polybuffername);
 t_max_err ears_polybuffer_retain(t_buffer_obj *polybuffer, t_symbol *polybuffername);
 
 
 
-// BUFFER MANIPULATION
+/// BUFFER MANIPULATION
 
 t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long start_sample, long end_sample);
 t_ears_err ears_buffer_crop_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double start_ms, double end_ms);

@@ -146,6 +146,9 @@ typedef struct _earsbufobj
     char                    l_is_creating;  ///< 1 when object is being created (in the method "new"), 0 otherwise;
     long                    l_curr_proxy;  ///< Filled with the number of the proxy being used
     char                    l_buffer_size_changed; ///< 1 when buffer size has changed
+    char                    l_releasing_polybuffer;
+    
+    t_llll                  *l_polybuffers_attached;
 } t_earsbufobj;
 
 
@@ -340,17 +343,21 @@ void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, lo
 void earsbufobj_polybuffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store);
 t_symbol *ears_buffer_name_get_for_polybuffer(t_symbol *polybuffername, long index);
 
-// spectrogram table
+/// polybuffer utils
+t_llllelem *earsbufobj_object_to_polybuffer(t_earsbufobj *e_ob, void *potential_polybufferobject, t_symbol **polybuffername);
+bool earsbufobj_buffer_is_part_of_polybuffer(t_earsbufobj *e_ob, t_symbol *buffername);
+
+/// spectrogram table
 t_hashtab *ears_hashtab_spectrograms_get();
 long ears_hashtab_spectrograms_store(t_symbol *buffername, void *data);
 void *ears_hashtab_spectrograms_retrieve(t_symbol *buffername);
 
 
-// Proxy mechanism
+/// Proxy mechanism
 long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob);
 
 
-// Handling generated out names
+/// Handling generated out names
 t_llll *earsbufobj_generated_names_llll_getlist(t_llll *ll, long pos1, long pos2);
 t_llllelem *earsbufobj_generated_names_llll_getsymbol(t_llll *ll, long pos1, long pos2, long pos3);
 void earsbufobj_generated_names_llll_subssymbol(t_llll *ll, t_symbol *sym, long pos1, long pos2, long pos3);
@@ -429,6 +436,7 @@ void earsbufobj_outlet_anything(t_earsbufobj *e_ob, long outnum, t_symbol *s, lo
 void earsbufobj_outlet_symbol_list(t_earsbufobj *e_ob, long outnum, long numsymbols, t_symbol **s);
 void earsbufobj_outlet_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll);
 void earsbufobj_outlet_bang(t_earsbufobj *e_ob, long outnum);
+void earsbufobj_outlet_int(t_earsbufobj *e_ob, long outnum, long n);
 void earsbufobj_shoot_llll(t_earsbufobj *e_ob, long outnum);
 void earsbufobj_gunload_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll);
 
