@@ -386,11 +386,28 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                     if (s)
                         earsbufobj_buffer_link(e_ob, type, store_idx, i, s);
              }
-             // This above is wrong. We cannot free the buffers, they can be used somewhere else!!!
              */
-                for (i = new_size; i < store->num_stored_bufs; i++) {
-                    earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                // we delete the polybuffer, and will make it again.
+                // I have found no other way to interact with the <o>polybuffer~</o> object to only delete its last N buffers
+                // It seems impossible to interact with its child buffers as if they were ordinary buffers (object_retain(), object_free()) and
+                // rather it seems that we have to send messages to the polybuffer instead.
+                t_symbol *polybuffer_name = e_ob->l_outstore[store_idx].polybuffer_name;
+                e_ob->l_releasing_polybuffer = true;
+                earsbufobj_polybuffer_release(e_ob, EARSBUFOBJ_OUT, store_idx);
+                e_ob->l_releasing_polybuffer = false;
+
+                if (!ears_polybuffer_symbol_is_polybuffer(polybuffer_name)) {
+                    ears_polybuffer_make(polybuffer_name, true);
+                } else {
+                    ears_polybuffer_retain(ears_polybuffer_getobject(polybuffer_name), polybuffer_name);
                 }
+                
+                for (long i = 0; i < new_size; i++) {
+                    t_symbol *s = earsbufobj_output_get_symbol_unique(e_ob, store_idx, i, &store->stored_buf[i].l_status);
+                    if (s)
+                        earsbufobj_buffer_link(e_ob, EARSBUFOBJ_OUT, store_idx, i, s);
+                }
+
 
             } else {
                 for (i = new_size; i < store->num_stored_bufs; i++) {
