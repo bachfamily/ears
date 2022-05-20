@@ -141,12 +141,12 @@ CLASS_ATTR_BASIC(c, "envampunit", 0);
 #define earsbufobj_class_add_timeunit_attr
 CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
 CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Relative");
+CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Duration Ratio Duration Difference (ms) Duration Difference (samps)");
 CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
 CLASS_ATTR_BASIC(c, "timeunit", 0);
 CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
-// @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-// The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+// @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+// The default varies depending on the modules.
 
 #define earsbufobj_class_add_antimeunit_attr
 CLASS_ATTR_CHAR(c, "antimeunit", 0, t_earsbufobj, l_antimeunit);
@@ -156,7 +156,6 @@ CLASS_ATTR_ACCESSORS(c, "antimeunit", NULL, earsbufobj_setattr_antimeunit);
 CLASS_ATTR_BASIC(c, "antimeunit", 0);
 CLASS_ATTR_CATEGORY(c, "antimeunit", 0, "Units");
 // @description Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-// The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
 
 
 #define earsbufobj_class_add_envtimeunit_attr

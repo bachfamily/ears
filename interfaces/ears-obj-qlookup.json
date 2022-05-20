@@ -644,6 +644,7 @@
     ],
     "seealso": [
       "ears.mix~",
+      "ears.join",
       "ears.read~"
     ]
   },
@@ -717,6 +718,22 @@
     "seealso": [
       "ears.mixdown~",
       "ears.gain~"
+    ]
+  },
+  "ears.iter~": {
+    "digest": "Iterate over buffer samples",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "iter",
+      "iterate"
+    ],
+    "seealso": [
+      "ears.collect~",
+      "ears.expr~"
     ]
   },
   "ears.paulfreeze~": {
@@ -1136,6 +1153,26 @@
     "seealso": [
       "ears.read~",
       "ears.gain~"
+    ]
+  },
+  "ears.seamcarve~": {
+    "digest": "Content-aware timestretch",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "seamcarve",
+      "carve",
+      "seam",
+      "timestretch",
+      "content",
+      "preserve"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.soundtouch~"
     ]
   },
   "ears.offset~": {

@@ -312,7 +312,6 @@
 			</digest>
 			<description>
 				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />

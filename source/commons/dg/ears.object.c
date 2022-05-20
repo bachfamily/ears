@@ -387,6 +387,7 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                         earsbufobj_buffer_link(e_ob, type, store_idx, i, s);
              }
              */
+                /*
                 // we delete the polybuffer, and will make it again.
                 // I have found no other way to interact with the <o>polybuffer~</o> object to only delete its last N buffers
                 // It seems impossible to interact with its child buffers as if they were ordinary buffers (object_retain(), object_free()) and
@@ -401,13 +402,15 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                 } else {
                     ears_polybuffer_retain(ears_polybuffer_getobject(polybuffer_name), polybuffer_name);
                 }
-                
+                */
+                object_method(ears_polybuffer_getobject(e_ob->l_outstore[store_idx].polybuffer_name), gensym("clear"));
+
                 for (long i = 0; i < new_size; i++) {
                     t_symbol *s = earsbufobj_output_get_symbol_unique(e_ob, store_idx, i, &store->stored_buf[i].l_status);
                     if (s)
                         earsbufobj_buffer_link(e_ob, EARSBUFOBJ_OUT, store_idx, i, s);
                 }
-
+                 
 
             } else {
                 for (i = new_size; i < store->num_stored_bufs; i++) {
@@ -1528,12 +1531,12 @@ void earsbufobj_class_add_timeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
     CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Relative");
+    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Duration Ratio Millisecond Difference Samples Difference");
     CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
     CLASS_ATTR_BASIC(c, "timeunit", 0);
     CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
-    // @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-    // The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+    // @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+    // The default varies depending on the modules.
 }
 
 
@@ -2576,6 +2579,14 @@ double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buff
             return value;
             break;
 
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return (size_ms + (1000. * value / buffer_getsamplerate(buf))) / size_ms;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return (size_ms + value) / size_ms;
+            break;
+
         case EARS_TIMEUNIT_NUM_INTERVALS:
             return 1./value;
             break;
@@ -2597,6 +2608,92 @@ double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buff
 
 
 
+double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+{
+    double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
+            return (1000. / buffer_getsamplerate(buf)) * value - size_ms;
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return value * size_ms - size_ms;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return value * (1000. / buffer_getsamplerate(buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return value;
+            break;
+
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            return size_ms * 1./value - size_ms;
+            break;
+
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            return size_ms * 1./(value-1) - size_ms;
+            break;
+
+        case EARS_TIMEUNIT_SECONDS:
+            return (value * 1000. - size_ms);
+            break;
+
+        case EARS_TIMEUNIT_MS:
+        default:
+            return value - size_ms;
+            break;
+    }
+}
+
+
+double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis, bool use_original_size_samps)
+{
+    double size_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
+    if (ears_buffer_is_spectral((t_object *)e_ob, buf) && use_original_size_samps) {
+        double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)e_ob, buf) * 1./ears_buffer_get_sr((t_object *)e_ob, buf);
+        size_samps *= hopsize_samps;
+    }
+    double sr = ears_buffer_is_spectral((t_object *)e_ob, buf) ? ears_spectralbuf_get_original_audio_sr((t_object *)e_ob, buf) : ears_buffer_get_sr((t_object *)e_ob, buf);
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
+            return value - size_samps;
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return value * size_samps - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return value / (1000. / sr);
+            break;
+            
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            return size_samps * 1./value - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            return size_samps * 1./(value-1) - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_SECONDS:
+            return value * 1000 * sr / 1000. - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_MS:
+        default:
+            return value * buffer_getsamplerate(buf) / 1000. - size_samps;
+            break;
+    }
+}
+
+
+
 double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
 {
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
@@ -2606,6 +2703,14 @@ double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf
             
         case EARS_TIMEUNIT_DURATION_RATIO:
             return ears_buffer_get_size_ms((t_object *)e_ob, buf) * value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return ears_buffer_get_size_ms((t_object *)e_ob, buf) + value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return ears_samps_to_ms(ears_buffer_get_size_samps((t_object *)e_ob, buf) + value, buffer_getsamplerate(buf));
             break;
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -2638,6 +2743,14 @@ double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj 
             
         case EARS_TIMEUNIT_DURATION_RATIO:
             res = ears_buffer_get_size_samps((t_object *)e_ob, buf) * value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            res = ears_buffer_get_size_samps((t_object *)e_ob, buf) + ears_ms_to_fsamps(value, buffer_getsamplerate(buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            res = ears_buffer_get_size_samps((t_object *)e_ob, buf) + value;
             break;
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -2677,6 +2790,15 @@ double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_ob
             return earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
             break;
             
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return earsbufobj_time_to_durationdifference_ms(e_ob, value, buf, is_envelope, is_analysis);
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return earsbufobj_time_to_durationdifference_samps(e_ob, value, buf, is_envelope, is_analysis);
+            break;
+
+
         case EARS_TIMEUNIT_NUM_INTERVALS:
             return 1./earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
             break;
@@ -2848,6 +2970,14 @@ double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit fr
             return earsbufobj_time_to_durationratio(&e_ob, value, buf, false);
             break;
             
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return earsbufobj_time_to_durationdifference_samps(&e_ob, value, buf, false);
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return earsbufobj_time_to_durationdifference_ms(&e_ob, value, buf, false);
+            break;
+            
         case EARS_TIMEUNIT_NUM_INTERVALS:
             return 1./earsbufobj_time_to_durationratio(&e_ob, value, buf, false);
             break;
@@ -2890,6 +3020,14 @@ long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf)
             return ears_buffer_get_size_samps((t_object *)e_ob, buf) * atom_getfloat(v);
             break;
 
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return ears_buffer_get_size_samps((t_object *)e_ob, buf) + atom_getfloat(v);
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return ears_buffer_get_size_samps((t_object *)e_ob, buf) + ears_ms_to_samps(atom_getfloat(v), buffer_getsamplerate(buf));
+            break;
+
         case EARS_TIMEUNIT_NUM_INTERVALS:
             return ears_buffer_get_size_samps((t_object *)e_ob, buf) * (1./atom_getfloat(v));
             break;
@@ -2918,6 +3056,14 @@ void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf,
             
         case EARS_TIMEUNIT_DURATION_RATIO:
             atom_setfloat(a, ((float)samps)/ears_buffer_get_size_samps((t_object *)e_ob, buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            atom_setfloat(a, ((float)samps) - ears_buffer_get_size_samps((t_object *)e_ob, buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            atom_setfloat(a, ears_samps_to_ms(((float)samps) - ears_buffer_get_size_samps((t_object *)e_ob, buf), buffer_getsamplerate(buf)));
             break;
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -3087,6 +3233,19 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
                 case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -3415,6 +3574,20 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
                 }
                     break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
                 case EARS_TIMEUNIT_NUM_INTERVALS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
@@ -3467,19 +3640,14 @@ t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_l
     for (t_llllelem *el = out->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             switch (e_ob->l_timeunit) {
-                case EARS_TIMEUNIT_MS:
-                case EARS_TIMEUNIT_SAMPS:
-                case EARS_TIMEUNIT_SECONDS:
-                case EARS_TIMEUNIT_NUM_ONSETS:
-                case EARS_TIMEUNIT_NUM_INTERVALS:
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                    break;
+                default:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, earsbufobj_time_to_durationratio(e_ob, hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), buf));
                 }
-                    break;
-                case EARS_TIMEUNIT_DURATION_RATIO:
-                default:
                     break;
             }
             switch (e_ob->l_envtimeunit) {
@@ -3504,6 +3672,20 @@ t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_l
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
                 }
                     break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
                 case EARS_TIMEUNIT_NUM_INTERVALS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
@@ -3524,15 +3706,10 @@ t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_l
         } else {
 
             switch (e_ob->l_timeunit) {
-                case EARS_TIMEUNIT_MS:
-                case EARS_TIMEUNIT_SAMPS:
-                case EARS_TIMEUNIT_SECONDS:
-                case EARS_TIMEUNIT_NUM_ONSETS:
-                case EARS_TIMEUNIT_NUM_INTERVALS:
-                    hatom_setdouble(&el->l_hatom, earsbufobj_time_to_durationratio(e_ob, hatom_getdouble(&el->l_hatom), buf));
-                    break;
                 case EARS_TIMEUNIT_DURATION_RATIO:
+                    break;
                 default:
+                    hatom_setdouble(&el->l_hatom, earsbufobj_time_to_durationratio(e_ob, hatom_getdouble(&el->l_hatom), buf));
                     break;
             }
         }

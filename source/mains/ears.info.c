@@ -144,7 +144,7 @@ long sym2info(t_symbol *s)
     if (s == gensym("rms"))
         return EARS_BUF_INFO_RMS;
 
-    if (s == gensym("length") || s == gensym("duration"))
+    if (s == gensym("length") || s == gensym("duration") || s == gensym("durms") || s == gensym("ms"))
         return EARS_BUF_INFO_DURATION;
 
     if (s == gensym("numchannels"))
@@ -153,7 +153,7 @@ long sym2info(t_symbol *s)
     if (s == gensym("sr"))
         return EARS_BUF_INFO_SR;
 
-    if (s == gensym("numsamples"))
+    if (s == gensym("numsamples") || s == gensym("numsamps") || s == gensym("dursamps"))
         return EARS_BUF_INFO_NUMSAMPLES;
 
     if (s == gensym("spectral"))

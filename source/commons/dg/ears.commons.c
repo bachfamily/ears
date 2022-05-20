@@ -678,10 +678,10 @@ t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_ob
     t_atom_long	dest_channelcount = buffer_getchannelcount(dest);	
     double dest_sr = buffer_getsamplerate(dest);
 
+    if (dest_sr != orig_sr)
+        ears_buffer_set_sr(ob, dest, orig_sr);
     
     if (!dont_change_buffer_size) {
-        if (dest_sr != orig_sr)
-            ears_buffer_set_sr(ob, dest, orig_sr);
         if (dest_channelcount != orig_channelcount)
             ears_buffer_set_numchannels(ob, dest, orig_channelcount);
     }
@@ -5481,4 +5481,108 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
 
 
 
+
+t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long group, double normalize)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    if (howmany <= 0)
+        return EARS_ERR_GENERIC;
+
+    t_ears_err err = EARS_ERR_NONE;
+    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample_wk = NULL;
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);
+        t_atom_long    framecount   = buffer_getframecount(source);
+        
+        
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
+            buffer_unlocksamples(source);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
+        }
+        
+        ears_buffer_set_size_and_numchannels(ob, dest, howmany * framecount, channelcount);
+        
+        float *dest_sample = buffer_locksamples(dest);
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
+            t_atom_long    dest_framecount   = buffer_getframecount(dest);
+            
+            if (dest_channelcount != channelcount) { // should never happen
+                channelcount = MIN(dest_channelcount, channelcount);
+                dest_channelcount = channelcount;
+            }
+
+            for (long c = 0; c < channelcount; c++) {
+                long pivot = 0;
+                long group_count = 0;
+                long dest_cur = 0;
+                double max_abs = 0.;
+                for (long f = 1; f < framecount; f++) {
+                    if (orig_sample[(f-1)*channelcount+c] < 0 && orig_sample[f*channelcount+c] >= 0) { // positive zero crossing
+                        group_count++;
+                        if (group_count % group == 0) {
+                            // zero crossing found at index f
+                            for (long n = 0; n < howmany; n++) {
+                                for (long j = pivot; j < f; j++) {
+                                    if (dest_cur >= dest_framecount) {
+                                        long foo = 0;
+                                        foo++;
+                                    } else {
+                                        if (normalize == 0 || max_abs == 0)
+                                            dest_sample[(dest_cur++) * dest_channelcount + c] = orig_sample[j * channelcount + c];
+                                        else // could be optimized
+                                            dest_sample[(dest_cur++) * dest_channelcount + c] = (1-normalize)*orig_sample[j * channelcount + c] + normalize*orig_sample[j * channelcount + c]*(1./max_abs);
+                                    }
+                                }
+                            }
+                            pivot = f;
+                            max_abs = 0.;
+                        }
+                    } else {
+                        max_abs = MAX(max_abs, abs(orig_sample[(f-1)*channelcount+c]));
+                    }
+                }
+                // last portion
+                for (long n = 0; n < howmany; n++) {
+                    for (long j = pivot; j < framecount; j++) {
+                        if (dest_cur >= dest_framecount) {
+                            long foo = 0;
+                            foo++;
+                        } else {
+                            if (normalize == 0 || max_abs == 0)
+                                dest_sample[(dest_cur++) * dest_channelcount + c] = orig_sample[j * channelcount + c];
+                            else // could be optimized
+                                dest_sample[(dest_cur++) * dest_channelcount + c] = (1-normalize)*orig_sample[j * channelcount + c] + normalize*orig_sample[j * channelcount + c]*(1./max_abs);
+                        }
+                    }
+                }
+            }
+            
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        }
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
 

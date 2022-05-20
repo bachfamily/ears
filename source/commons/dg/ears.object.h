@@ -466,6 +466,8 @@ double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj 
 long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
 double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
 double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
+double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false, bool use_original_size_samps = false);
+double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis = false);
 double earsbufobj_pitch_to_cents(t_earsbufobj *e_ob, double value);
 double earsbufobj_pitch_to_hz(t_earsbufobj *e_ob, double value);
 double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope = false, bool is_analysis = false); // generic one

@@ -350,7 +350,7 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
     
     long numoutputchannels = num_input_buffers;
     int framesize_samps = fullspectrum ? numinputchannels : 2 * (numinputchannels - 1);
-    long outframecount = numinputframes * hopsize_samps + (framesize_samps - hopsize_samps);
+    long outframecount = numinputframes * hopsize_samps + MAX(0, framesize_samps - hopsize_samps);
     
     ears_buffer_set_sr(ob, dest, audio_sr);
     ears_buffer_set_size_and_numchannels(ob, dest, outframecount, numoutputchannels);

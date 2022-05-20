@@ -66,7 +66,8 @@ typedef enum {
     EARS_ERR_ZERO_AMP =     -9,  ///< Zero amplitude buffer (e.g. for normalization)
     EARS_ERR_NO_FILE =      -10,  ///< Can't find file
     EARS_ERR_ESSENTIA =     -11,  ///< Essentia error
-    EARS_ERR_INVALID_MODE = -12  ///< Invalid mode
+    EARS_ERR_INVALID_MODE = -12,  ///< Invalid mode
+    EARS_ERR_SIZE_MISMATCH = -13  ///< Size mismatch
 } e_ears_errorcodes;
 
 static bool ears_is_freeing = false;
@@ -393,6 +394,9 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
                                 double threshold_dB, double ratio, double kneewidth_dB,
                                 double attack_time_samps, double release_time_samps,
                                 double makeup_dB);
+
+// Waveset stuff
+t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long group, double normalize);
 
 // GET properties
 t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf);

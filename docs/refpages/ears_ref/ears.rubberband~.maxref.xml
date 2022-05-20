@@ -281,6 +281,20 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="antimeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Analysis Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="blocking" get="1" set="1" type="int" size="1">
 			<digest>
 				Blocking Mode
@@ -305,10 +319,10 @@
 			</digest>
 			<description>
 				Sets the block size for granular processes such as envelopes.
-				The unit depends on the <m>timeunit</m> attribute.
+				The unit depends on the <m>antimeunit</m> attribute.
 			</description>
 			<attributelist>
-				<attribute name="default" get="1" set="1" type="int" size="1" value="20" />
+				<attribute name="default" get="1" set="1" type="int" size="1" value="1024" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Block Size" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
@@ -484,6 +498,7 @@
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="int" size="1" value="2" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Shift Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -546,7 +561,6 @@
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Smoothing" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -583,8 +597,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+				The default varies depending on the modules.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />

@@ -152,11 +152,13 @@ int C74_EXPORT main(void)
     // normalizes to 1. if some samples exceed in modulo 1.
 
     CLASS_ATTR_CHAR(c, "mode", 0, t_buf_assemble, onset_mode);
-    CLASS_ATTR_STYLE_LABEL(c,"mode",0,"onoff","Onset Mode");
-    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Standard Inter-Onset Intervals Tail-Onset Intervals");
+    CLASS_ATTR_STYLE_LABEL(c,"mode",0,"enumindex","Onset Mode");
+    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Onsets Inter-Onset Intervals Tail-Onset Intervals");
     CLASS_ATTR_BASIC(c, "mode", 0);
-    // @description Toggles the ability to use inter-onset intervals instead of onsets to define
-    // the position of the buffers to be assembled.
+    // @description Sets the type of information that comes through the right inlet: <br />
+    // 0: Onsets; <br />
+    // 1: Inter-Onset Intervals; <br />
+    // 2: Tail-Onset Intervals (use it to have assemble work like <o>ears.join~</o>).
 
     
     CLASS_ATTR_CHAR(c, "interp", 0, t_buf_assemble, interp_offsets);

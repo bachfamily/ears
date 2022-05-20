@@ -38,6 +38,7 @@
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
 <refpage name='ears.out~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
+<refpage name='ears.iter~.maxref.xml'/>
 <refpage name='ears.paulfreeze~.maxref.xml'/>
 <refpage name='ears.cqt~.maxref.xml'/>
 <refpage name='ears.dynamics~.maxref.xml'/>
@@ -60,6 +61,7 @@
 <refpage name='ears.peaks~.maxref.xml'/>
 <refpage name='ears.trim~.maxref.xml'/>
 <refpage name='ears.normalize~.maxref.xml'/>
+<refpage name='ears.seamcarve~.maxref.xml'/>
 <refpage name='ears.offset~.maxref.xml'/>
 <refpage name='ears.vamp~.maxref.xml'/>
 <refpage name='ears.soundtouch~.maxref.xml'/>

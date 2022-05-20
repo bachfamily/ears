@@ -41,6 +41,12 @@ const char *ears_timeunit_to_abbrev(e_ears_timeunit u)
         case EARS_TIMEUNIT_DURATION_RATIO:
             return "[durratio]";
             break;
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return "[durdiffms]";
+            break;
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return "[durdiffsamps]";
+            break;
         default:
             return "[]";
             break;
@@ -98,8 +104,12 @@ e_ears_timeunit ears_timeunit_from_symbol(t_symbol *s)
         return EARS_TIMEUNIT_MS;
     if (s == gensym("s") || s == gensym("sec") || s == gensym("second") || s == gensym("seconds"))
         return EARS_TIMEUNIT_SECONDS;
-    if (s == gensym("perc") || s == gensym("percentage") || s == gensym("ratio") || s == gensym("durationratio") || s == gensym("relative"))
+    if (s == gensym("ratio") || s == gensym("durationratio") || s == gensym("duration ratio") || s == gensym("relative"))
         return EARS_TIMEUNIT_DURATION_RATIO;
+    if (s == gensym("msdiff") || s == gensym("durationdiffms") || s == gensym("duration difference ms"))
+        return EARS_TIMEUNIT_DURATION_DIFFERENCE_MS;
+    if (s == gensym("samplesdiff") || s == gensym("sampsdiff") || s == gensym("durationdiffsamps") || s == gensym("duration difference samps"))
+        return EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS;
     if (s == gensym("numdivisions") || s == gensym("intervals") || s == gensym("divisions") || s == gensym("numintervals"))
         return EARS_TIMEUNIT_NUM_INTERVALS;
     if (s == gensym("numpoints") || s == gensym("points") || s == gensym("onsets") || s == gensym("numonsets"))
@@ -324,6 +334,20 @@ void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envt
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps - ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps - hatom_getdouble(&sub_ll->l_head->l_hatom));
                 }
                     break;
                 case EARS_TIMEUNIT_NUM_INTERVALS:

@@ -33,7 +33,7 @@
 				Stretch factor or envelope
 			</digest>
 			<description>
-				Sets the stretch factor, either as a single number or as an llll
+				Sets the stretch factor, either as a single number (depending on the <m>timeunit</m> attribute) or as an llll
 				containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>]
 				[<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
 				where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
@@ -270,7 +270,6 @@
 			</digest>
 			<description>
 				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
@@ -409,8 +408,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+				The default varies depending on the modules.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
@@ -441,7 +440,7 @@
 		<entry name ="Inlet 2 (float/list/llll)">
 			<description>
 				Stretch factor or envelope.
-				Sets the stretch factor, either as a single number or as an llll
+				Sets the stretch factor, either as a single number (depending on the <m>timeunit</m> attribute) or as an llll
 				containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>]
 				[<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
 				where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
