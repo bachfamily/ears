@@ -159,7 +159,7 @@
 		1E1132B42836E31D00667741 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E1132B82836E31D00667741 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E1132B92836E31D00667741 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
-		1E1132C12836E34400667741 /* ears.seamcarve.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E1132C02836E34400667741 /* ears.seamcarve.c */; };
+		1E1132C12836E34400667741 /* ears.seamstretch.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E1132C02836E34400667741 /* ears.seamstretch.c */; };
 		1E1249BB21777AE40040B2EA /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E1249BF21777AE40040B2EA /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E1249C021777AE40040B2EA /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
@@ -1930,9 +1930,9 @@
 		1E0E73272525E56D0026FD5C /* ears.hoa.rotate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.hoa.rotate.c; path = ../mains/ears.hoa.rotate.c; sourceTree = "<group>"; };
 		1E10D57522F18A90004BBFAC /* ears.rubberband~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.rubberband~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E10D57722F18AE3004BBFAC /* ears.rubberband.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.rubberband.c; path = ../mains/ears.rubberband.c; sourceTree = SOURCE_ROOT; };
-		1E1132BE2836E31D00667741 /* ears.seamcarve~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.seamcarve~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E1132BE2836E31D00667741 /* ears.seamstretch~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.seamstretch~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E1132BF2836E31D00667741 /* ears.waveset~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.waveset~ copy-Info.plist"; path = "/Users/danieleghisi/Documents/Max 8/Packages/ears/source/xcode/ears.waveset~ copy-Info.plist"; sourceTree = "<absolute>"; };
-		1E1132C02836E34400667741 /* ears.seamcarve.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.seamcarve.c; path = ../mains/ears.seamcarve.c; sourceTree = "<group>"; };
+		1E1132C02836E34400667741 /* ears.seamstretch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.seamstretch.c; path = ../mains/ears.seamstretch.c; sourceTree = "<group>"; };
 		1E1249C521777AE40040B2EA /* ears.rot~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.rot~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E1249C721777B090040B2EA /* ears.rot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.rot.c; path = ../mains/ears.rot.c; sourceTree = SOURCE_ROOT; };
 		1E12D0F827600A8900DBA8B6 /* ears.dynamics~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.dynamics~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3168,7 +3168,7 @@
 				1E88BEFF2813DA0E00E72644 /* ears.soundtouch~.mxo */,
 				1EED72942833ED3700253F82 /* ears.iter~.mxo */,
 				1EF2EAEE28365779009E11B4 /* ears.waveset~.mxo */,
-				1E1132BE2836E31D00667741 /* ears.seamcarve~.mxo */,
+				1E1132BE2836E31D00667741 /* ears.seamstretch~.mxo */,
 			);
 			name = Products;
 			sourceTree = SOURCE_ROOT;
@@ -3648,7 +3648,7 @@
 				1EC7AA65253C4F9800D72895 /* ears.roll.toreaper.c */,
 				1E1249C721777B090040B2EA /* ears.rot.c */,
 				1E10D57722F18AE3004BBFAC /* ears.rubberband.c */,
-				1E1132C02836E34400667741 /* ears.seamcarve.c */,
+				1E1132C02836E34400667741 /* ears.seamstretch.c */,
 				1E21AC1D2177D9480007E4C8 /* ears.slice.c */,
 				1E88BF012813DA7400E72644 /* ears.soundtouch.c */,
 				1E21A49026148C62001E5BCC /* ears.specshow.c */,
@@ -4627,9 +4627,9 @@
 			productReference = 1E10D57522F18A90004BBFAC /* ears.rubberband~.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
-		1E1132AF2836E31D00667741 /* ears.seamcarve~ */ = {
+		1E1132AF2836E31D00667741 /* ears.seamstretch~ */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1E1132BB2836E31D00667741 /* Build configuration list for PBXNativeTarget "ears.seamcarve~" */;
+			buildConfigurationList = 1E1132BB2836E31D00667741 /* Build configuration list for PBXNativeTarget "ears.seamstretch~" */;
 			buildPhases = (
 				1E1132B22836E31D00667741 /* Headers */,
 				1E1132B32836E31D00667741 /* Resources */,
@@ -4642,9 +4642,9 @@
 			dependencies = (
 				1E1132B02836E31D00667741 /* PBXTargetDependency */,
 			);
-			name = "ears.seamcarve~";
+			name = "ears.seamstretch~";
 			productName = iterator;
-			productReference = 1E1132BE2836E31D00667741 /* ears.seamcarve~.mxo */;
+			productReference = 1E1132BE2836E31D00667741 /* ears.seamstretch~.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
 		1E1249B621777AE40040B2EA /* ears.rot~ */ = {
@@ -6250,7 +6250,7 @@
 				1EC7AA52253C4E7700D72895 /* ears.roll.toreaper~ */,
 				1E1249B621777AE40040B2EA /* ears.rot~ */,
 				1E10D55C22F18A90004BBFAC /* ears.rubberband~ */,
-				1E1132AF2836E31D00667741 /* ears.seamcarve~ */,
+				1E1132AF2836E31D00667741 /* ears.seamstretch~ */,
 				1E21AC0C2177D91D0007E4C8 /* ears.slice~ */,
 				1E88BEB62813DA0E00E72644 /* ears.soundtouch~ */,
 				1E21A47F26148C50001E5BCC /* ears.specshow~ */,
@@ -7589,7 +7589,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1E1132C12836E34400667741 /* ears.seamcarve.c in Sources */,
+				1E1132C12836E34400667741 /* ears.seamstretch.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8361,7 +8361,7 @@
 		};
 		1E1132C32836EF7C00667741 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1E1132AF2836E31D00667741 /* ears.seamcarve~ */;
+			target = 1E1132AF2836E31D00667741 /* ears.seamstretch~ */;
 			targetProxy = 1E1132C22836EF7C00667741 /* PBXContainerItemProxy */;
 		};
 		1E1249B721777AE40040B2EA /* PBXTargetDependency */ = {
@@ -9610,7 +9610,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.waveset~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -9648,7 +9647,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.waveset~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -14336,7 +14334,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.gain~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -14374,7 +14371,6 @@
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
 				);
-				INFOPLIST_FILE = "ears.gain~ copy-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -15630,7 +15626,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;
 		};
-		1E1132BB2836E31D00667741 /* Build configuration list for PBXNativeTarget "ears.seamcarve~" */ = {
+		1E1132BB2836E31D00667741 /* Build configuration list for PBXNativeTarget "ears.seamstretch~" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1E1132BC2836E31D00667741 /* Development */,

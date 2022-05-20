@@ -429,6 +429,26 @@
       "ears.hoa.rotate~"
     ]
   },
+  "ears.seamstretch~": {
+    "digest": "Content-aware timestretch",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "seamstretch",
+      "carve",
+      "seam",
+      "timestretch",
+      "content",
+      "preserve"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.soundtouch~"
+    ]
+  },
   "ears.fromsamps~": {
     "digest": "Create a buffer from an llll",
     "module": "ears",
@@ -1153,26 +1173,6 @@
     "seealso": [
       "ears.read~",
       "ears.gain~"
-    ]
-  },
-  "ears.seamcarve~": {
-    "digest": "Content-aware timestretch",
-    "module": "ears",
-    "category": [
-      "ears time and pitch"
-    ],
-    "keywords": [
-      "buffer",
-      "seamcarve",
-      "carve",
-      "seam",
-      "timestretch",
-      "content",
-      "preserve"
-    ],
-    "seealso": [
-      "ears.rubberband~",
-      "ears.soundtouch~"
     ]
   },
   "ears.offset~": {

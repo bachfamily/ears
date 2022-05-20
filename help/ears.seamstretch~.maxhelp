@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 363.0, 100.0, 886.0, 556.0 ],
+		"rect" : [ 99.0, 100.0, 856.0, 553.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 363.0, 126.0, 886.0, 530.0 ],
+						"rect" : [ 0.0, 26.0, 856.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -90,6 +90,32 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"hidden" : 1,
+									"id" : "obj-18",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 404.0, 92.0, 93.0, 23.0 ],
+									"text" : "loadmess 0.95"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"format" : 6,
+									"id" : "obj-5",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 329.0, 93.0, 50.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"attr" : "energy",
 									"id" : "obj-13",
 									"maxclass" : "attrui",
@@ -104,12 +130,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-10",
-									"linecount" : 4,
+									"linecount" : 6,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 578.0, 302.0, 191.0, 65.0 ],
-									"text" : "in red: the energy function at the very first iteration\n\nin blue: the found seams"
+									"patching_rect" : [ 578.0, 302.0, 191.0, 94.0 ],
+									"text" : "in red: the energy function at the very first iteration\n\nin blue: the found seams\n(only works for first few seams)e"
 								}
 
 							}
@@ -232,7 +258,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 49.0, 227.0, 299.0, 23.0 ],
-									"text" : "ears.seamcarve~ 0.95"
+									"text" : "ears.seamstretch~ 0.95"
 								}
 
 							}
@@ -266,13 +292,13 @@
 									"filename" : "helpname.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.seamcarve~" ],
+									"jsarguments" : [ "ears.seamstretch~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 354.775970458984375, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 387.584014892578125, 57.599853515625 ]
 								}
 
 							}
@@ -295,6 +321,14 @@
 								"patchline" : 								{
 									"destination" : [ "obj-4", 0 ],
 									"source" : [ "obj-16", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-5", 0 ],
+									"hidden" : 1,
+									"source" : [ "obj-18", 0 ]
 								}
 
 							}
@@ -325,6 +359,13 @@
 									"destination" : [ "obj-8", 0 ],
 									"order" : 1,
 									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-7", 2 ],
+									"source" : [ "obj-5", 0 ]
 								}
 
 							}
@@ -398,13 +439,13 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 299.0, 205.0, 184.0, 22.0 ],
+					"patching_rect" : [ 299.0, 205.0, 191.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"filename" : "helpstarter.js",
 						"parameter_enable" : 0
 					}
 ,
-					"text" : "js helpstarter.js ears.seamcarve~"
+					"text" : "js helpstarter.js ears.seamstretch~"
 				}
 
 			}
@@ -427,7 +468,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 886.0, 530.0 ],
+						"rect" : [ 99.0, 126.0, 856.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -603,7 +644,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 676.0, 370.5, 165.0, 84.0 ],
-									"presentation_linecount" : 5,
 									"text" : "Use the \"msdiff\" or \"sampsdiff\" time units if you want to remove a fixed amount of time"
 								}
 
@@ -615,8 +655,8 @@
 									"numinlets" : 3,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 488.0, 456.5, 246.0, 23.0 ],
-									"text" : "ears.seamcarve~ -1500 @timeunit msdiff"
+									"patching_rect" : [ 488.0, 456.5, 253.0, 23.0 ],
+									"text" : "ears.seamstretch~ -1500 @timeunit msdiff"
 								}
 
 							}
@@ -651,7 +691,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 116.5, 485.25, 36.0 ],
+									"patching_rect" : [ 10.0, 116.5, 487.0, 36.0 ],
 									"text" : "ears.seamcarve~ operates in the frequency domain and rearranges portions of the spectrograms by preserving their overall content (see \"visualizing seams\" tab)"
 								}
 
@@ -666,8 +706,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 342.0, 307.5, 96.0, 54.0 ],
-									"presentation_linecount" : 3,
+									"patching_rect" : [ 342.0, 307.5, 97.0, 54.0 ],
 									"text" : "Timestretch factor (see timeunit)"
 								}
 
@@ -816,7 +855,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 10.0, 363.0, 299.0, 23.0 ],
-									"text" : "ears.seamcarve~ 0.7"
+									"text" : "ears.seamstretch~ 0.5"
 								}
 
 							}
@@ -894,7 +933,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.seamcarve~", 90 ],
+									"jsarguments" : [ "ears.seamstretch~", 90 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
@@ -1163,13 +1202,13 @@
 					"filename" : "helpname.js",
 					"id" : "obj-4",
 					"ignoreclick" : 1,
-					"jsarguments" : [ "ears.seamcarve~" ],
+					"jsarguments" : [ "ears.seamstretch~" ],
 					"maxclass" : "jsui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 10.0, 10.0, 354.775970458984375, 57.599853515625 ]
+					"patching_rect" : [ 10.0, 10.0, 387.584014892578125, 57.599853515625 ]
 				}
 
 			}
@@ -1192,7 +1231,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 886.0, 530.0 ],
+						"rect" : [ 0.0, 26.0, 856.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1258,7 +1297,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.seamcarve~.mxo",
+				"name" : "ears.seamstretch~.mxo",
 				"type" : "iLaX"
 			}
 , 			{

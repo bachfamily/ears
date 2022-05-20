@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.seamcarve.c
+	ears.seamstretch.c
  
 	@name
-	ears.seamcarve~
+	ears.seamstretch~
  
 	@realname
-	ears.seamcarve~
+	ears.seamstretch~
  
 	@type
 	object
@@ -30,7 +30,7 @@
     ears time and pitch
  
 	@keywords
-	buffer, seamcarve, carve, seam, timestretch, content, preserve
+	buffer, seamstretch, carve, seam, timestretch, content, preserve
  
 	@seealso
 	ears.rubberband~, ears.soundtouch~
@@ -47,29 +47,29 @@
 #include "ears.object.h"
 #include "ears.spectral.h"
 
-typedef struct _buf_seamcarve {
+typedef struct _buf_seamstretch {
     t_earsbufobj       e_ob;
     long               e_energy_mode;
     double             e_howmuch;
-} t_buf_seamcarve;
+} t_buf_seamstretch;
 
 
 
 // Prototypes
-t_buf_seamcarve*         buf_seamcarve_new(t_symbol *s, short argc, t_atom *argv);
-void			buf_seamcarve_free(t_buf_seamcarve *x);
-void			buf_seamcarve_bang(t_buf_seamcarve *x);
-void			buf_seamcarve_anything(t_buf_seamcarve *x, t_symbol *msg, long ac, t_atom *av);
+t_buf_seamstretch*         buf_seamstretch_new(t_symbol *s, short argc, t_atom *argv);
+void			buf_seamstretch_free(t_buf_seamstretch *x);
+void			buf_seamstretch_bang(t_buf_seamstretch *x);
+void			buf_seamstretch_anything(t_buf_seamstretch *x, t_symbol *msg, long ac, t_atom *av);
 
-void buf_seamcarve_assist(t_buf_seamcarve *x, void *b, long m, long a, char *s);
-void buf_seamcarve_inletinfo(t_buf_seamcarve *x, void *b, long a, char *t);
+void buf_seamstretch_assist(t_buf_seamstretch *x, void *b, long m, long a, char *s);
+void buf_seamstretch_inletinfo(t_buf_seamstretch *x, void *b, long a, char *t);
 
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
-EARSBUFOBJ_ADD_IO_METHODS(seamcarve)
+EARSBUFOBJ_ADD_IO_METHODS(seamstretch)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
@@ -87,10 +87,10 @@ int C74_EXPORT main(void)
     
     t_class *c;
     
-    CLASS_NEW_CHECK_SIZE(c, "ears.seamcarve~",
-                         (method)buf_seamcarve_new,
-                         (method)buf_seamcarve_free,
-                         sizeof(t_buf_seamcarve),
+    CLASS_NEW_CHECK_SIZE(c, "ears.seamstretch~",
+                         (method)buf_seamstretch_new,
+                         (method)buf_seamstretch_free,
+                         sizeof(t_buf_seamstretch),
                          (method)NULL,
                          A_GIMME,
                          0L);
@@ -100,10 +100,10 @@ int C74_EXPORT main(void)
     // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a parameter (depending on the <m>mode</m>).
     // For "repeat" mode, the parameter is the number of repetitions.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(seamcarve)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(seamstretch)
 
-    // @method number @digest Set seamcarve
-    // @description A number in the second inlet sets the seamcarve parameter (depending on the <m>ampunit</m>).
+    // @method number @digest Set seamstretch
+    // @description A number in the second inlet sets the seamstretch parameter (depending on the <m>ampunit</m>).
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
@@ -111,7 +111,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
 
 
-    CLASS_ATTR_LONG(c, "energy", 0, t_buf_seamcarve, e_energy_mode);
+    CLASS_ATTR_LONG(c, "energy", 0, t_buf_seamstretch, e_energy_mode);
     CLASS_ATTR_STYLE_LABEL(c,"energy",0,"enumindex","Energy Function");
     CLASS_ATTR_ENUMINDEX(c,"energy", 0, "Magnitude Gradient Magnitude");
     CLASS_ATTR_BASIC(c, "energy", 0);
@@ -125,7 +125,7 @@ int C74_EXPORT main(void)
     return 0;
 }
 
-void buf_seamcarve_assist(t_buf_seamcarve *x, void *b, long m, long a, char *s)
+void buf_seamstretch_assist(t_buf_seamstretch *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0)
@@ -147,19 +147,19 @@ void buf_seamcarve_assist(t_buf_seamcarve *x, void *b, long m, long a, char *s)
     }
 }
 
-void buf_seamcarve_inletinfo(t_buf_seamcarve *x, void *b, long a, char *t)
+void buf_seamstretch_inletinfo(t_buf_seamstretch *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
 
-t_buf_seamcarve *buf_seamcarve_new(t_symbol *s, short argc, t_atom *argv)
+t_buf_seamstretch *buf_seamstretch_new(t_symbol *s, short argc, t_atom *argv)
 {
-    t_buf_seamcarve *x;
+    t_buf_seamstretch *x;
     long true_ac = attr_args_offset(argc, argv);
     
-    x = (t_buf_seamcarve*)object_alloc_debug(s_tag_class);
+    x = (t_buf_seamstretch*)object_alloc_debug(s_tag_class);
     if (x) {
         x->e_howmuch = 0;
         x->e_energy_mode = EARS_SEAM_CARVE_MODE_MAGNITUDE;
@@ -194,14 +194,14 @@ t_buf_seamcarve *buf_seamcarve_new(t_symbol *s, short argc, t_atom *argv)
 }
 
 
-void buf_seamcarve_free(t_buf_seamcarve *x)
+void buf_seamstretch_free(t_buf_seamstretch *x)
 {
     earsbufobj_free((t_earsbufobj *)x);
 }
 
 
 
-void buf_seamcarve_bang(t_buf_seamcarve *x)
+void buf_seamstretch_bang(t_buf_seamstretch *x)
 {
     long num_buffers = MIN(earsbufobj_get_instore_size((t_earsbufobj *)x, 0), earsbufobj_get_instore_size((t_earsbufobj *)x, 1));
     
@@ -211,6 +211,7 @@ void buf_seamcarve_bang(t_buf_seamcarve *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 2, 2, true);
 
     if (num_buffers > 0) {
+        earsbufobj_updateprogress((t_earsbufobj *)x, 0.);
         earsbufobj_mutex_lock((t_earsbufobj *)x);
         t_buffer_obj *in_amps[num_buffers]; // @ANDREA: I KNOW...
         t_buffer_obj *out_amps[num_buffers]; // @ANDREA: I KNOW...
@@ -226,14 +227,15 @@ void buf_seamcarve_bang(t_buf_seamcarve *x)
         }
 
         long delta_samps = earsbufobj_time_to_durationdifference_samps((t_earsbufobj *)x, x->e_howmuch, in_amps[0], false, false, true);
-        double framesize_samps = 1*(ears_buffer_get_numchannels((t_object *)x, in_amps[0])-1);
+        double framesize_samps = 2*(ears_buffer_get_numchannels((t_object *)x, in_amps[0])-1);
         double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps[0]) * 1./ears_buffer_get_sr((t_object *)x, in_amps[0]);
         long delta_frames = (long)round(delta_samps / hopsize_samps);
 
-        ears_buffer_spectral_seam_carve((t_object *)x, num_buffers, in_amps, in_phases, out_amps, out_phases, energy_map, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode);
+        ears_buffer_spectral_seam_carve((t_object *)x, num_buffers, in_amps, in_phases, out_amps, out_phases, energy_map, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress);
         
         earsbufobj_mutex_unlock((t_earsbufobj *)x);
-        
+        earsbufobj_updateprogress((t_earsbufobj *)x, 1.);
+
         earsbufobj_outlet_buffer((t_earsbufobj *)x, 2);
         earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
         earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
@@ -241,7 +243,7 @@ void buf_seamcarve_bang(t_buf_seamcarve *x)
 }
 
 
-void buf_seamcarve_anything(t_buf_seamcarve *x, t_symbol *msg, long ac, t_atom *av)
+void buf_seamstretch_anything(t_buf_seamstretch *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
 
@@ -258,7 +260,7 @@ void buf_seamcarve_anything(t_buf_seamcarve *x, t_symbol *msg, long ac, t_atom *
             earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
             
             if (inlet == 0) {
-                buf_seamcarve_bang(x);
+                buf_seamstretch_bang(x);
             }
         } else {
             if (parsed->l_head) {

@@ -49,6 +49,7 @@
 
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
 
+typedef void *(*updateprogress_fn)(void *, double progress);
 
 
 /** Standard values returned by function calls with a return type of #t_ears_err
