@@ -51,6 +51,8 @@ typedef struct _buf_seamstretch {
     t_earsbufobj       e_ob;
     long               e_energy_mode;
     double             e_howmuch;
+    
+    double             e_temp;
 } t_buf_seamstretch;
 
 
@@ -110,7 +112,11 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
 
-
+/*
+    CLASS_ATTR_DOUBLE(c, "temp", 0, t_buf_seamstretch, e_temp);
+    CLASS_ATTR_STYLE_LABEL(c,"temp",0,"number","Temp");
+*/
+    
     CLASS_ATTR_LONG(c, "energy", 0, t_buf_seamstretch, e_energy_mode);
     CLASS_ATTR_STYLE_LABEL(c,"energy",0,"enumindex","Energy Function");
     CLASS_ATTR_ENUMINDEX(c,"energy", 0, "Magnitude Gradient Magnitude");
@@ -231,7 +237,7 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
         double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps[0]) * 1./ears_buffer_get_sr((t_object *)x, in_amps[0]);
         long delta_frames = (long)round(delta_samps / hopsize_samps);
 
-        ears_buffer_spectral_seam_carve((t_object *)x, num_buffers, in_amps, in_phases, out_amps, out_phases, energy_map, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress);
+        ears_buffer_spectral_seam_carve((t_object *)x, num_buffers, in_amps, in_phases, out_amps, out_phases, energy_map, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_temp);
         
         earsbufobj_mutex_unlock((t_earsbufobj *)x);
         earsbufobj_updateprogress((t_earsbufobj *)x, 1.);

@@ -612,8 +612,9 @@ double unwrapped_phase_avg(double phase1, double phase2)
     return phase1*0.5 + phase2*0.5;
 }
 
-t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress)
+t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, double temp)
 {
+    bool ALWAYS_COUPLES = false;
     
     if (num_channels == 0)
         return EARS_ERR_NO_BUFFER;
@@ -624,6 +625,11 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     }
     
     long num_frames = ears_buffer_get_size_samps(ob, amplitudes[0]);
+    
+    if (ALWAYS_COUPLES) {
+        if (delta_num_frames % 2 != 0)
+            delta_num_frames -= 1;
+    }
     
     if (delta_num_frames + num_frames <= 0) {
         object_warn(ob, "No more frames left; empty output buffer!");
@@ -776,12 +782,14 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         }
         carve[num_bins - 1] = curr_min_arg;
         for (long b = num_bins - 2; b >= 0; b--) {
-            long cb = carve[b+1];
+            carve[b] = carve[num_bins-1];
+/*            long cb = carve[b+1];
             double v1 = energymap[cb*num_bins + b];
             double v2 = energymap[(cb > 0 ? cb-1 : cb)*num_bins + b];
             double v3 = energymap[(cb < num_frames-1 ? cb+1 : cb)*num_bins + b];
-            carve[b] = argmin3(v1, v2, v3, cb, cb > 0 ? cb-1 : cb, cb < num_frames-1 ? cb+1 : cb);
+            carve[b] = argmin3(v1, v2, v3, cb, cb > 0 ? cb-1 : cb, cb < num_frames-1 ? cb+1 : cb);*/
         }
+        
         
         // writing carving data to output buffer
         if (true) {
@@ -804,7 +812,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         if (delta_num_frames > 0) {
             // adding a seam
             for (long i = 0; i < num_bins; i++) {
-                double phase_shift = -fmod(TWOPI * ((double)i) * hopsize_samps / framesize_samps, TWOPI);
+                double phase_shift = -fmod(TWOPI * ((double)i) * temp * hopsize_samps / framesize_samps, TWOPI);
                 for (long c = 0; c < num_channels; c++) {
                     long pivot_f = carve[i];
                     for (long f = num_frames; f >= pivot_f; f--) {
@@ -821,26 +829,39 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             num_frames++;
             delta_num_frames--;
         } else {
-            // deleting a seam
-            for (long i = 0; i < num_bins; i++) {
-                // TODO: ISSUE WITH PHASE SHIFT...
-//                double phase_shift = -fmod(TWOPI * ((double)i) * hopsize_samps / framesize_samps, TWOPI);
-                double phase_shift = 0; // WHY IS phase_shift = 0 better than the line above? It makes no sense....
-                for (long c = 0; c < num_channels; c++) {
-                    long pivot_f = carve[i];
-                    for (long f = pivot_f; f < num_frames; f++) {
-                        amps_samples[c][f*num_bins + i] = amps_samples[c][(f+1)*num_bins + i];
-                        phases_samples[c][f*num_bins + i] = phases_samples[c][(f+1)*num_bins + i] + phase_shift; // shifting phases to account for time translation
-                    }
-                    if (pivot_f > 0) {
-//                        phases_samples[c][pivot_f*num_bins + i] = unwrapped_phase_avg(deleted_phase, phases_samples[c][pivot_f*num_bins + i]); // TODO: phases!?!
-//                        amps_samples[c][pivot_f*num_bins + i] = (amps_samples[c][(pivot_f+1)*num_bins + i] + amps_samples[c][(pivot_f-1)*num_bins + i])/2.;
+            // TEST
+            if (ALWAYS_COUPLES) {
+                for (long i = 0; i < num_bins; i++) {
+                    for (long c = 0; c < num_channels; c++) {
+                        long pivot_f = carve[i];
+                        for (long f = pivot_f; f < num_frames; f++) {
+                            amps_samples[c][f*num_bins + i] = amps_samples[c][(f+2)*num_bins + i];
+                            phases_samples[c][f*num_bins + i] = phases_samples[c][(f+2)*num_bins + i];
+                        }
                     }
                 }
-            }
 
-            num_frames--;
-            delta_num_frames++;
+                num_frames -= 2;
+                delta_num_frames += 2;
+            } else {
+                
+                // deleting a seam
+                for (long i = 0; i < num_bins; i++) {
+                    // TODO: ISSUE WITH PHASE SHIFT...
+                    //double phase_shift = -fmod(TWOPI * ((double)i) * temp * hopsize_samps / framesize_samps, TWOPI);
+                    double phase_shift = 0; // WHY IS phase_shift = 0 better than the line above? Something is off here.
+                    for (long c = 0; c < num_channels; c++) {
+                        long pivot_f = carve[i];
+                        for (long f = pivot_f; f < num_frames; f++) {
+                            amps_samples[c][f*num_bins + i] = amps_samples[c][(f+1)*num_bins + i];
+                            phases_samples[c][f*num_bins + i] = phases_samples[c][(f+1)*num_bins + i] + phase_shift; // shifting phases to account for time translation
+                        }
+                    }
+                }
+                
+                num_frames--;
+                delta_num_frames++;
+            }
         }
         
         firsttime = false;

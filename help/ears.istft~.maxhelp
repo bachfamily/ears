@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 5,
+			"minor" : 3,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 39.0, 79.0, 784.0, 524.0 ],
+		"rect" : [ 39.0, 100.0, 784.0, 524.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -52,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 784.0, 498.0 ],
+						"rect" : [ 39.0, 126.0, 784.0, 498.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -96,6 +96,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 84.0, 218.0, 150.0, 23.0 ]
 								}
 
@@ -109,7 +110,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 434.0, 176.0, 203.0, 54.0 ],
+									"patching_rect" : [ 361.0, 165.0, 203.0, 54.0 ],
 									"text" : "the cable is deliberately disconnected from the phase outlet"
 								}
 
@@ -218,8 +219,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 270.0, 341.0, 23.0 ],
-									"text" : "ears.istft~ earsBufResynth @griffinlim 1 @wintype square"
+									"patching_rect" : [ 15.0, 270.0, 349.0, 23.0 ],
+									"text" : "ears.istft~ earsBufResynth @griffinlim 10 @wintype square"
 								}
 
 							}
@@ -270,8 +271,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 15.0, 151.0, 432.0, 23.0 ],
-									"text" : "ears.stft~ @winsize 2048 @hopsize 1024 @timeunit samps @downmix 1"
+									"patching_rect" : [ 15.0, 151.0, 341.0, 23.0 ],
+									"text" : "ears.stft~ @framesize 2048 @hopsize 1024 @downmix 0"
 								}
 
 							}
@@ -338,13 +339,15 @@
 						"lines" : [ 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 1 ],
-									"source" : [ "obj-11", 1 ]
+									"order" : 0,
+									"source" : [ "obj-11", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 0 ],
+									"order" : 1,
 									"source" : [ "obj-11", 0 ]
 								}
 
@@ -352,13 +355,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 1 ],
-									"source" : [ "obj-12", 1 ]
+									"order" : 0,
+									"source" : [ "obj-12", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 0 ],
+									"order" : 1,
 									"source" : [ "obj-12", 0 ]
 								}
 
@@ -441,14 +446,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 39.0, 105.0, 784.0, 498.0 ],
+						"rect" : [ 0.0, 26.0, 784.0, 498.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -862,8 +867,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -974,7 +979,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "earsBufResynth",
-									"chanoffset" : 0,
 									"id" : "obj-9",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1326,8 +1330,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1383,13 +1387,25 @@
  ],
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
-				"name" : "helpname.js",
+				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.istft~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.stft~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
-				"name" : "helpdetails.js",
+				"name" : "helpname.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
@@ -1399,18 +1415,6 @@
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.stft~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.istft~.mxo",
-				"type" : "iLaX"
 			}
  ],
 		"autosave" : 0
