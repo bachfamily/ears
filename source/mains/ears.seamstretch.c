@@ -112,10 +112,10 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
 
-/*
+
     CLASS_ATTR_DOUBLE(c, "temp", 0, t_buf_seamstretch, e_temp);
     CLASS_ATTR_STYLE_LABEL(c,"temp",0,"number","Temp");
-*/
+
     
     CLASS_ATTR_LONG(c, "energy", 0, t_buf_seamstretch, e_energy_mode);
     CLASS_ATTR_STYLE_LABEL(c,"energy",0,"enumindex","Energy Function");
@@ -232,7 +232,7 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
             out_phases[count] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, count);
         }
 
-        long delta_samps = earsbufobj_time_to_durationdifference_samps((t_earsbufobj *)x, x->e_howmuch, in_amps[0], false, false, true);
+        long delta_samps = earsbufobj_time_to_durationdifference_samps((t_earsbufobj *)x, x->e_howmuch, in_amps[0], EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS);
         double framesize_samps = 2*(ears_buffer_get_numchannels((t_object *)x, in_amps[0])-1);
         double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps[0]) * 1./ears_buffer_get_sr((t_object *)x, in_amps[0]);
         long delta_frames = (long)round(delta_samps / hopsize_samps);

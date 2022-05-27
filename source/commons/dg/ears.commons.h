@@ -9,7 +9,7 @@
 #ifndef _EARS_BUF_COMMONS_H_
 #define _EARS_BUF_COMMONS_H_
 
-#define EARS_ALLOCATIONVERBOSE true
+#define EARS_ALLOCATIONVERBOSE false
 
 #define EARS_ERROR_BUF_CANT_READ "Can't read from buffer"
 #define EARS_ERROR_BUF_CANT_WRITE "Can't write to buffer"
@@ -400,9 +400,9 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
 t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long group, double normalize);
 
 // GET properties
-t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf);
+t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers = false);
 double ears_buffer_get_size_ms(t_object *ob, t_buffer_obj *buf);
-t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf);
+t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers = false);
 t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_buffer_get_sampleformat(t_object *ob, t_buffer_obj *buf);
 

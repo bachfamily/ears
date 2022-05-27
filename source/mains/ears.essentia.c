@@ -1616,8 +1616,8 @@ t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buf
     t_ears_essentia_analysis_params params = earsbufobj_get_essentia_analysis_params((t_earsbufobj *)x, buf);
 
     params.envelope_rectify = 1;
-    params.envelope_attack_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envattacktime, buf, true, false);
-    params.envelope_release_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envreleasetime, buf, true, false);
+    params.envelope_attack_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envattacktime, buf, EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE);
+    params.envelope_release_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envreleasetime, buf, EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE);
     
     params.summarization = (e_ears_analysis_summarization) x->summarization;
     params.summarizationweight = (e_ears_analysis_summarizationweight) x->summarizationweight;

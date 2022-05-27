@@ -106,9 +106,9 @@ e_ears_timeunit ears_timeunit_from_symbol(t_symbol *s)
         return EARS_TIMEUNIT_SECONDS;
     if (s == gensym("ratio") || s == gensym("durationratio") || s == gensym("duration ratio") || s == gensym("relative"))
         return EARS_TIMEUNIT_DURATION_RATIO;
-    if (s == gensym("msdiff") || s == gensym("durationdiffms") || s == gensym("duration difference ms"))
+    if (s == gensym("deltams") || s == gensym("msdiff") || s == gensym("durationdiffms") || s == gensym("duration difference ms"))
         return EARS_TIMEUNIT_DURATION_DIFFERENCE_MS;
-    if (s == gensym("samplesdiff") || s == gensym("sampsdiff") || s == gensym("durationdiffsamps") || s == gensym("duration difference samps"))
+    if (s == gensym("deltasamps") || s == gensym("deltasamples") || s == gensym("samplesdiff") || s == gensym("sampsdiff") || s == gensym("durationdiffsamps") || s == gensym("duration difference samps"))
         return EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS;
     if (s == gensym("numdivisions") || s == gensym("intervals") || s == gensym("divisions") || s == gensym("numintervals"))
         return EARS_TIMEUNIT_NUM_INTERVALS;

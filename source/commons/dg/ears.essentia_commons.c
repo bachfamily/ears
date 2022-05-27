@@ -45,8 +45,8 @@ t_ears_essentia_analysis_params earsbufobj_get_essentia_analysis_params(t_earsbu
         params.hopsize_samps = (params.duration_samps * 1.) / (atom_getlong(&e_ob->a_numframes) - 1);
         params.framesize_samps = round(params.hopsize_samps * e_ob->a_overlap);
     } else {
-        params.framesize_samps = earsbufobj_time_to_samps(e_ob, e_ob->a_framesize, buf, false, true);
-        params.hopsize_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)e_ob, e_ob->a_hopsize, buf, false, true);
+        params.framesize_samps = earsbufobj_time_to_samps(e_ob, e_ob->a_framesize, buf, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
+        params.hopsize_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)e_ob, e_ob->a_hopsize, buf, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
     }
     params.framesize_samps = 2 * (params.framesize_samps / 2);     // ensure framesize is even
     if (params.hopsize_samps <= 0) {
@@ -310,8 +310,42 @@ t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, 
 }
 
 
-
 t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    // Reconstruct via Griffin-Lim
+    t_buffer_obj *phases = ears_buffer_make(NULL);
+    t_buffer_obj *amps = ears_buffer_make(NULL);
+    
+    ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
+    
+    // initialize audio
+    float *tempout_sample = buffer_locksamples(dest);
+    if (tempout_sample) {
+        t_atom_long    channelcount = buffer_getchannelcount(dest); // must be 1
+        t_atom_long    framecount   = buffer_getframecount(dest); // must be outframecount
+        
+        for (long j = 0; j < framecount*channelcount; j++)
+            tempout_sample[j] = random_double_in_range(-1, 1);
+        buffer_unlocksamples(dest);
+    }
+    
+    for (int n = 0; n < params->numGriffinLimIterations; n++) {
+        // reconstruction spectrogram
+        std::vector<Real> samples = ears_buffer_get_sample_vector_channel(ob, dest, 0);
+        ears_vector_stft(ob, samples, audio_sr, amps, phases, polar, fullspectrum, params, angleunit);
+        
+        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
+        ears_specbuffer_istft(ob, 1, &amplitudes, &phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
+    }
+    
+    ears_buffer_free(amps);
+    ears_buffer_free(phases);
+    return err;
+}
+
+t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -563,8 +597,9 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
                     }
                 } else {
                     t_buffer_obj *tempout = ears_buffer_make(NULL);
+                    ears_buffer_copy_format(ob, dest, tempout);
 
-                    ears_griffin_lim(ob, source1[c], tempout, polar, fullspectrum,params, angleunit, audio_sr, outframecount);
+                    ears_griffin_lim(ob, source1[c], tempout, polar, fullspectrum, params, angleunit, audio_sr, outframecount);
                     
                     float *tempout_sample = buffer_locksamples(tempout);
                     if (!tempout_sample) {

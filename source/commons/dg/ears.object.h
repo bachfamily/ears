@@ -74,6 +74,17 @@ typedef enum _earsbufobj_blocking
 } e_earsbufobj_blocking;
 
 
+
+typedef enum _earsbufobj_timeunit_conversion_flags
+{
+    EARSBUFOBJ_CONVERSION_FLAG_NONE = 0,        ///< Conversion is made via timeunit attribute
+    EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE = 1,  ///< Conversion is to be made with envtimeunit attribute
+    EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS = 2,  ///< Conversion is to be made with antimeunit attribute
+    EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS = 4,  ///< Conversion uses the original audio sample rate for spectral buffers
+} e_earsbufobj_timeunit_conversion_flags;
+
+
+
 typedef struct _earsbufobj
 {
     t_llllobj_object        l_ob;            ///< the t_object from which we inherit
@@ -175,6 +186,7 @@ t_earstaskdata * buf_ ## NAME ## _create_taskdata(t_earsbufobj *e_ob, t_symbol *
     t_earstaskdata *data = (t_earstaskdata *)sysmem_newptr(sizeof(t_earstaskdata));\
     data->e_ob = e_ob;\
     if (s == _llllobj_sym_bach_llll) {\
+        post("This could be a probblem. Check."); \
         llllobj_get_retained_native_llll_from_args(ac, av);\
     }\
     data->s = s;\
@@ -461,16 +473,16 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
 
 
 
-//// BUFFER UNIT CONVERSIONS
-double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
-long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
-double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
-double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false);
-double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope = false, bool is_analysis = false, bool use_original_size_samps = false);
-double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis = false);
+//// UNIT CONVERSIONS
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //bool is_envelope = false, bool is_analysis = false);
+long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope = false, bool is_analysis = false);
+double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope = false, bool is_analysis = false);
+double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope = false, bool is_analysis = false);
+double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope = false, bool is_analysis = false, bool use_original_audio_sr_for_spectral_buffers = false);
+double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope, bool is_analysis = false);
 double earsbufobj_pitch_to_cents(t_earsbufobj *e_ob, double value);
 double earsbufobj_pitch_to_hz(t_earsbufobj *e_ob, double value);
-double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope = false, bool is_analysis = false); // generic one
+double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope = false, bool is_analysis = false); // generic one
 double earsbufobj_freq_to_hz(t_earsbufobj *e_ob, double value);
 double earsbufobj_freq_to_midi(t_earsbufobj *e_ob, double value);
 double earsbufobj_freq_to_cents(t_earsbufobj *e_ob, double value);

@@ -228,7 +228,7 @@ void buf_paulfreeze_bang(t_buf_paulfreeze *x)
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
         long onset_samps = 0, jitter_samps = 0;
-        long framesize_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, false, true);
+        long framesize_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
         long duration_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&del->l_hatom), in);
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             t_llll *ll = hatom_getllll(&el->l_hatom);

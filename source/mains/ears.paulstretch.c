@@ -226,9 +226,9 @@ void buf_paulstretch_bang(t_buf_paulstretch *x)
             if (in != out)
                 ears_buffer_clone((t_object *)x, in, out);
         } if (env->l_depth == 1 && env->l_head) {
-            ears_buffer_paulstretch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, hatom_getdouble(&env->l_head->l_hatom), in), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, false, true), x->e_spectral, x->e_ob.l_timeunit != EARS_TIMEUNIT_DURATION_RATIO);
+            ears_buffer_paulstretch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, hatom_getdouble(&env->l_head->l_hatom), in), earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS), x->e_spectral, x->e_ob.l_timeunit != EARS_TIMEUNIT_DURATION_RATIO);
         } else {
-            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, false, true), x->e_spectral, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_timeunit)x->e_ob.l_timeunit);
+            ears_buffer_paulstretch_envelope((t_object *)x, in, out, env, earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS), x->e_spectral, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_timeunit)x->e_ob.l_timeunit);
         }
         
         llll_free(env);

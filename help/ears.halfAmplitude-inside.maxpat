@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 3,
-			"revision" : 0,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 207.0, 623.0, 482.0, 177.0 ],
+		"rect" : [ 1004.0, 174.0, 482.0, 177.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -45,7 +45,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 79.0, 58.0, 263.0, 24.0 ],
+					"patching_rect" : [ 122.0, 57.0, 263.0, 24.0 ],
 					"text" : "You can do all kind of signal processing here"
 				}
 
@@ -58,7 +58,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 91.0, 95.0, 344.0, 24.0 ],
-					"presentation_linecount" : 2,
 					"text" : "ears.out~ objects send audio to the outlets of ears.process~"
 				}
 
@@ -125,17 +124,7 @@
 				}
 
 			}
- ],
-		"dependency_cache" : [ 			{
-				"name" : "ears.in~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.out~.mxo",
-				"type" : "iLaX"
-			}
- ],
-		"autosave" : 0
+ ]
 	}
 
 }

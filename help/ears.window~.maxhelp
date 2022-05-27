@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 5,
+			"minor" : 3,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 683.0, 488.0 ],
+		"rect" : [ 34.0, 104.0, 683.0, 488.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -71,14 +71,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 683.0, 462.0 ],
+						"rect" : [ 34.0, 130.0, 683.0, 462.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -135,6 +135,7 @@
 , 							{
 								"box" : 								{
 									"bubble" : 1,
+									"bubblepoint" : 1.0,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-23",
@@ -142,7 +143,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 589.0, 343.056961059570312, 89.0, 40.0 ],
+									"patching_rect" : [ 503.0, 311.556961059570312, 89.0, 40.0 ],
 									"text" : "In-place operation"
 								}
 
@@ -168,8 +169,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 412.0, 351.556961059570312, 175.0, 23.0 ],
-									"text" : "ears.window~ = @wintype tri"
+									"patching_rect" : [ 412.0, 351.556961059570312, 218.0, 23.0 ],
+									"text" : "ears.window~ = @wintype triangular"
 								}
 
 							}
@@ -218,8 +219,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 412.0, 160.0, 164.0, 23.0 ],
-									"text" : "ears.window~ @wintype tri"
+									"patching_rect" : [ 412.0, 160.0, 207.0, 23.0 ],
+									"text" : "ears.window~ @wintype triangular"
 								}
 
 							}
@@ -404,7 +405,7 @@
 									"fontsize" : 13.0,
 									"id" : "obj-14",
 									"maxclass" : "newobj",
-									"numinlets" : 1,
+									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 17.0, 161.0, 130.0, 23.0 ],
@@ -590,8 +591,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -647,13 +648,25 @@
  ],
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
-				"name" : "helpname.js",
+				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.envelope~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.window~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
-				"name" : "helpdetails.js",
+				"name" : "helpname.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
@@ -663,18 +676,6 @@
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.envelope~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.window~.mxo",
-				"type" : "iLaX"
 			}
  ],
 		"autosave" : 0

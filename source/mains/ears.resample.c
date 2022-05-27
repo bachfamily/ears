@@ -220,7 +220,7 @@ void buf_resample_bang(t_buf_resample *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->window_width, in, false, true);
+        long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->window_width, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
         
         if (in != out) 
             ears_buffer_clone((t_object *)x, in, out);

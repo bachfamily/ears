@@ -188,33 +188,30 @@ t_max_err ears_polybuffer_release(t_buffer_obj *polybuffer, t_symbol *polybuffer
 
 
 
-t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf)
+t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers)
 {
+    if (use_original_audio_sr_for_spectral_buffers && ears_buffer_is_spectral(ob, buf)) {
+        // TODO: check
+        double hopsize_samps = ears_spectralbuf_get_original_audio_sr(ob, buf) * 1./ears_buffer_get_sr(ob, buf);
+        return buffer_getframecount(buf) * hopsize_samps;
+    }
+
     return buffer_getframecount(buf);
-/*
-    t_buffer_info info;
-    buffer_getinfo(buf, &info);
-    return info.b_frames; */
 }
 
 
 double ears_buffer_get_size_ms(t_object *ob, t_buffer_obj *buf)
 {
     return ears_samps_to_ms(buffer_getframecount(buf), buffer_getsamplerate(buf));
-/*
-    t_buffer_info info;
-    buffer_getinfo(buf, &info);
-    return ears_samps_to_ms(info.b_frames, info.b_sr);
- */
 }
 
 
-t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf)
+t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers)
 {
+    if (use_original_audio_sr_for_spectral_buffers && ears_buffer_is_spectral(ob, buf))
+        return ears_spectralbuf_get_original_audio_sr(ob, buf);
+    
     return buffer_getsamplerate(buf);
-/*    t_buffer_info info;
-    buffer_getinfo(buf, &info);
-    return info.b_sr; */
 }
 
 t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf)

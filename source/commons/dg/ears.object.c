@@ -1531,7 +1531,7 @@ void earsbufobj_class_add_timeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
     CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Duration Ratio Millisecond Difference Samples Difference");
+    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Duration Ratio Milliseconds Difference Samples Difference");
     CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
     CLASS_ATTR_BASIC(c, "timeunit", 0);
     CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
@@ -2040,12 +2040,8 @@ void earsbufobj_generated_names_llll_subssymbol(t_llll *ll, t_symbol *sym, long 
     
     t_llll *sizes = llll_get();
     llll_appendlong(sizes, 1);
-
+    
     llll_multisubs(ll, address, subs_model, sizes);
-
-    llll_free(address);
-    llll_free(subs_model);
-    llll_free(sizes);
 }
 
 
@@ -2567,8 +2563,10 @@ void earsbufobj_mutex_unlock(t_earsbufobj *e_ob)
 
 
 
-double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
     double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
@@ -2608,8 +2606,10 @@ double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buff
 
 
 
-double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
     double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
@@ -2648,14 +2648,13 @@ double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value
 }
 
 
-double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis, bool use_original_size_samps)
+double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
-    double size_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
-    if (ears_buffer_is_spectral((t_object *)e_ob, buf) && use_original_size_samps) {
-        double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)e_ob, buf) * 1./ears_buffer_get_sr((t_object *)e_ob, buf);
-        size_samps *= hopsize_samps;
-    }
-    double sr = ears_buffer_is_spectral((t_object *)e_ob, buf) ? ears_spectralbuf_get_original_audio_sr((t_object *)e_ob, buf) : ears_buffer_get_sr((t_object *)e_ob, buf);
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
+    bool use_original_audio_sr_for_spectral_buffers = flags & EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS;
+    double size_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf, use_original_audio_sr_for_spectral_buffers);
+    double sr = ears_buffer_get_sr((t_object *)e_ob, buf, use_original_audio_sr_for_spectral_buffers);
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
             return value - size_samps;
@@ -2694,8 +2693,10 @@ double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double va
 
 
 
-double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
             return ears_samps_to_ms(value, buffer_getsamplerate(buf));
@@ -2733,8 +2734,10 @@ double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf
 }
 
 // TO DO: handle negative values
-double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
     double res = 0;
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
@@ -2746,7 +2749,7 @@ double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj 
             break;
 
         case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
-            res = ears_buffer_get_size_samps((t_object *)e_ob, buf) + ears_ms_to_fsamps(value, buffer_getsamplerate(buf));
+            res = ears_buffer_get_size_samps((t_object *)e_ob, buf) + ears_ms_to_fsamps(value, ears_buffer_get_sr((t_object *)e_ob, buf));
             break;
 
         case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
@@ -2762,58 +2765,58 @@ double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj 
             break;
 
         case EARS_TIMEUNIT_SECONDS:
-            res = ears_ms_to_fsamps(value*1000., buffer_getsamplerate(buf));
+            res = ears_ms_to_fsamps(value*1000., ears_buffer_get_sr((t_object *)e_ob, buf));
             break;
 
         case EARS_TIMEUNIT_MS:
         default:
-            res = ears_ms_to_fsamps(value, buffer_getsamplerate(buf));
+            res = ears_ms_to_fsamps(value, ears_buffer_get_sr((t_object *)e_ob, buf));
             break;
     }
     return res;
 }
 
-long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
-    return round(earsbufobj_time_to_fsamps(e_ob, value, buf, is_envelope, is_analysis));
+    return round(earsbufobj_time_to_fsamps(e_ob, value, buf, flags));
 }
 
 
-double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope, bool is_analysis)
+double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, long flags)
 {
     switch (new_timeunit) {
         case EARS_TIMEUNIT_SAMPS:
-            return earsbufobj_time_to_fsamps(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_fsamps(e_ob, value, buf, flags);
             break;
             
         case EARS_TIMEUNIT_DURATION_RATIO:
-            return earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_durationratio(e_ob, value, buf, flags);
             break;
             
         case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
-            return earsbufobj_time_to_durationdifference_ms(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_durationdifference_ms(e_ob, value, buf, flags);
             break;
 
         case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
-            return earsbufobj_time_to_durationdifference_samps(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_durationdifference_samps(e_ob, value, buf, flags);
             break;
 
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
-            return 1./earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
+            return 1./earsbufobj_time_to_durationratio(e_ob, value, buf, flags);
             break;
 
         case EARS_TIMEUNIT_NUM_ONSETS:
-            return 1 + (1./earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis));
+            return 1 + (1./earsbufobj_time_to_durationratio(e_ob, value, buf, flags));
             break;
 
         case EARS_TIMEUNIT_SECONDS:
-            return earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis)/1000.;
+            return earsbufobj_time_to_ms(e_ob, value, buf, flags)/1000.;
             break;
 
         case EARS_TIMEUNIT_MS:
         default:
-            return earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_ms(e_ob, value, buf, flags);
             break;
     }
 }

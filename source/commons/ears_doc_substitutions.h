@@ -308,11 +308,12 @@ CLASS_ATTR_ACCESSORS(c, "blocking", NULL, earsbufobj_setattr_blocking);
 
 
 #define earsbufobj_class_add_polyout_attr
-CLASS_ATTR_CHAR(c, "poly", 0, t_earsbufobj, l_output_polybuffers);
-CLASS_ATTR_STYLE_LABEL(c,"poly",0,"enumindex","Output Polybuffers");
-CLASS_ATTR_ENUMINDEX(c,"poly", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
-CLASS_ATTR_BASIC(c, "poly", 0);
-CLASS_ATTR_CATEGORY(c, "poly", 0, "Behavior");
+CLASS_ATTR_CHAR(c, "polyout", 0, t_earsbufobj, l_output_polybuffers);
+CLASS_ATTR_STYLE_LABEL(c,"polyout",0,"enumindex","Output Polybuffers");
+CLASS_ATTR_ENUMINDEX(c,"polyout", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
+CLASS_ATTR_BASIC(c, "polyout", 0);
+CLASS_ATTR_ACCESSORS(c, "polyout", NULL, earsbufobj_setattr_polyout);
+CLASS_ATTR_CATEGORY(c, "polyout", 0, "Behavior");
 // @description Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
 // - 0 (default) means that no polybuffer is created (individual buffers are output); <br />
 // - 1 means that a polybuffer is created and its name is output; <br />
