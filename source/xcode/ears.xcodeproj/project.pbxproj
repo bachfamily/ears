@@ -9988,7 +9988,6 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
-					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
@@ -10027,7 +10026,6 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
-					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
@@ -13940,7 +13938,6 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
-					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
@@ -13979,7 +13976,6 @@
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
-					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";

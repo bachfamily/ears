@@ -38,6 +38,8 @@
 	Daniele Ghisi
  */
 
+//#define EARS_STFT_USE_ESSENTIA
+
 #include "ext.h"
 #include "ext_obex.h"
 #include "llllobj.h"
@@ -45,9 +47,10 @@
 #include "bach_math_utilities.h"
 #include "ears.object.h"
 #include "ears.spectral.h"
-#include "ears.essentia_commons.h"
 
-//#define EARS_STFT_USE_ESSENTIA
+#ifdef EARS_STFT_USE_ESSENTIA
+#include "ears.essentia_commons.h"
+#endif
 
 typedef struct _buf_stft {
     t_earsbufobj       e_ob;
@@ -56,6 +59,7 @@ typedef struct _buf_stft {
     long polar_output;
     long fullspectrum;
     long downmix;
+    long unitary;
 } t_buf_stft;
 
 
@@ -120,7 +124,11 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
+#ifdef EARS_STFT_USE_ESSENTIA
+    earsbufobj_class_add_wintype_attr_essentia(c);
+#else
     earsbufobj_class_add_wintype_attr(c);
+#endif
     earsbufobj_class_add_winstartfromzero_attr(c);
     
     earsbufobj_class_add_polyout_attr(c);
@@ -146,7 +154,13 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c, "downmix", 0, "onoff", "Downmix to Mono");
     CLASS_ATTR_BASIC(c, "downmix", 0);
     // @description Toggles the ability to downmix all the channels into one. If this flag is not set, then
-    // one buffer per channel is output. By default downmix is 1.
+    // one buffer per channel is output. By default downmix is off.
+
+    CLASS_ATTR_LONG(c, "unitary",    0,    t_buf_stft, unitary);
+    CLASS_ATTR_STYLE_LABEL(c,"unitary",0,"onoff","Unitary");
+    CLASS_ATTR_BASIC(c, "unitary", 0);
+    // @description Toggles the unitary normalization of the Fourier Transform (so that the
+    // if coincides with its inverse up to conjugation).
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -187,7 +201,8 @@ t_buf_stft *buf_stft_new(t_symbol *s, short argc, t_atom *argv)
         x->polar_input = 0;
         x->polar_output = 1;
         x->fullspectrum = 0;
-        x->downmix = 1;
+        x->downmix = 0;
+        x->unitary = 1;
         
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
@@ -254,7 +269,7 @@ void buf_stft_bang(t_buf_stft *x)
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                              x->e_ob.a_wintype->s_name,
-                             x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero);
+                             x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
 #endif
             
         } else if (num_channels > 0){
@@ -277,7 +292,7 @@ void buf_stft_bang(t_buf_stft *x)
                                  earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                                  earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                                  x->e_ob.a_wintype->s_name,
-                                 x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero);
+                                 x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
 #endif
             }
         } else {

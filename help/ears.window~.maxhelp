@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 104.0, 683.0, 488.0 ],
+		"rect" : [ 34.0, 100.0, 683.0, 488.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 34.0, 130.0, 683.0, 462.0 ],
+						"rect" : [ 34.0, 126.0, 683.0, 462.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -128,7 +128,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 216.0, 135.5, 75.0, 23.0 ],
-									"text" : "loadmess 1"
+									"text" : "loadmess 4"
 								}
 
 							}
@@ -188,7 +188,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u478001042",
+									"buffername" : "u664000892",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -279,7 +279,7 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-10",
-									"items" : [ "hamming", ",", "hann", ",", "hannnsgcq", ",", "triangular", ",", "square", ",", "blackmanharris62", ",", "blackmanharris70", ",", "blackmanharris74", ",", "blackmanharris92" ],
+									"items" : [ "rectangular", ",", "triangular", ",", "sine", ",", "hann", ",", "hamming", ",", "blackman", ",", "nuttall", ",", "blackmannuttall", ",", "blackmanharris", ",", "gaussian" ],
 									"maxclass" : "umenu",
 									"numinlets" : 1,
 									"numoutlets" : 3,
@@ -312,8 +312,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 244.0, 88.0, 23.0 ],
-									"text" : "ears.window~"
+									"patching_rect" : [ 17.0, 244.0, 182.0, 23.0 ],
+									"text" : "ears.window~ @wintype hann"
 								}
 
 							}
@@ -331,7 +331,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u714000774",
+									"buffername" : "u309001218",
 									"id" : "obj-9",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

@@ -840,7 +840,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                         for (long j = 0; j < fftsize; j++)
                             fin[j].r *= sqrt(2*ears_ACN_to_order(c) + 1);
 
-                        bach_fft_kiss(cfg, fftsize, false, fin, fout);
+                        bach_fft_kiss(cfg, fftsize, false, fin, fout, false);
 
                         std::vector<std::complex<float>> this_component_spectrum(fftsize);
                         for (long j = 0; j < fftsize; j++) {
@@ -864,7 +864,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                             fout[j].i = shifter_output[c][j].imag();
                         }
 
-                        bach_fft_kiss(cfginv, fftsize, true, fout, fin);
+                        bach_fft_kiss(cfginv, fftsize, true, fout, fin, false);
 
                         // applying window again
                         for (long j = 0; j < fftsize; j++)

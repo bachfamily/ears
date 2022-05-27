@@ -125,7 +125,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
-    earsbufobj_class_add_wintype_attr(c);
+    earsbufobj_class_add_wintype_attr_essentia(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
 
 

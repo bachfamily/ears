@@ -54,7 +54,7 @@ typedef struct _buf_fft {
     long            polar_input;
     long            polar_output;
     long            fullspectrum;
-
+    long            unitary;
 } t_buf_fft;
 
 
@@ -133,6 +133,13 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "fullspectrum", 0);
     // @description Output full spectrum; if not set, it will output the first half of the spectrum only.
 
+    CLASS_ATTR_LONG(c, "unitary",    0,    t_buf_fft, unitary);
+    CLASS_ATTR_STYLE_LABEL(c,"unitary",0,"onoff","Unitary");
+    CLASS_ATTR_BASIC(c, "unitary", 0);
+    // @description Toggles the unitary normalization of the Fourier Transform (so that the
+    // if coincides with its inverse up to conjugation).
+
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -178,6 +185,7 @@ t_buf_fft *buf_fft_new(t_symbol *s, short argc, t_atom *argv)
         x->polar_input = 0;
         x->polar_output = 0;
         x->fullspectrum = 1;
+        x->unitary = 1;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
@@ -222,7 +230,7 @@ void buf_fft_bang(t_buf_fft *x)
         t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, count);
 
-        ears_buffer_fft((t_object *)x, in1, in2, out1, out2, x->polar_input, x->polar_output, x->inverse, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit);
+        ears_buffer_fft((t_object *)x, in1, in2, out1, out2, x->polar_input, x->polar_output, x->inverse, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->unitary);
 
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }

@@ -400,6 +400,7 @@ void earsbufobj_class_add_hopsize_attr(t_class *c);
 void earsbufobj_class_add_numframes_attr(t_class *c);
 void earsbufobj_class_add_overlap_attr(t_class *c);
 void earsbufobj_class_add_wintype_attr(t_class *c);
+void earsbufobj_class_add_wintype_attr_essentia(t_class *c);
 void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
 void earsbufobj_class_add_winnormalized_attr(t_class *c);
 void earsbufobj_class_add_zerophase_attr(t_class *c);

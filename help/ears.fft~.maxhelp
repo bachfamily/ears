@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 784.0, 470.0 ],
+						"rect" : [ 100.0, 126.0, 784.0, 470.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -89,6 +89,35 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-16",
+									"linecount" : 4,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 487.0, 236.900146484375, 196.0, 69.0 ],
+									"presentation_linecount" : 5,
+									"text" : "If toggled, the FFT is normalized so that it coincides with its inverse up to conjugation"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "unitary",
+									"id" : "obj-11",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 333.25, 259.900146484375, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
@@ -129,7 +158,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u765001349",
+									"buffername" : "u257003361",
 									"id" : "obj-13",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -183,7 +212,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u040001363",
+									"buffername" : "u621003375",
 									"id" : "obj-25",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -273,7 +302,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u819001358",
+									"buffername" : "u571003370",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -356,6 +385,22 @@
 								"patchline" : 								{
 									"destination" : [ "obj-6", 0 ],
 									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"order" : 1,
+									"source" : [ "obj-11", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"order" : 0,
+									"source" : [ "obj-11", 0 ]
 								}
 
 							}
@@ -529,7 +574,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 784.0, 470.0 ],
+						"rect" : [ 0.0, 26.0, 784.0, 470.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -805,7 +850,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u671001382",
+									"buffername" : "u398003394",
 									"id" : "obj-25",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -841,7 +886,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u603001385",
+									"buffername" : "u663003397",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

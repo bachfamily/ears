@@ -310,7 +310,7 @@ t_ears_err ears_vector_stft_essentia(t_object *ob, std::vector<Real> samples, do
 }
 
 
-t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
+t_ears_err ears_griffin_lim_essentia(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -599,7 +599,7 @@ t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, 
                     t_buffer_obj *tempout = ears_buffer_make(NULL);
                     ears_buffer_copy_format(ob, dest, tempout);
 
-                    ears_griffin_lim(ob, source1[c], tempout, polar, fullspectrum, params, angleunit, audio_sr, outframecount);
+                    ears_griffin_lim_essentia(ob, source1[c], tempout, polar, fullspectrum, params, angleunit, audio_sr, outframecount);
                     
                     float *tempout_sample = buffer_locksamples(tempout);
                     if (!tempout_sample) {

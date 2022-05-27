@@ -1889,7 +1889,7 @@ void earsbufobj_class_add_numframes_attr(t_class *c)
     // is ignored and inferred from <m>numframes</m>.
 }
 
-void earsbufobj_class_add_wintype_attr(t_class *c)
+void earsbufobj_class_add_wintype_attr_essentia(t_class *c)
 {
     CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
     CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
@@ -1900,6 +1900,19 @@ void earsbufobj_class_add_wintype_attr(t_class *c)
     // Available windows are the ones allowed by the Essentia library:
     // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
 }
+
+void earsbufobj_class_add_wintype_attr(t_class *c)
+{
+    CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+    CLASS_ATTR_ENUM(c,"wintype", 0, "rectangular triangular sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian");
+    CLASS_ATTR_BASIC(c, "wintype", 0);
+    CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+    // @description Sets the window type.
+    // Available windows are:
+    // "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian"
+}
+
 
 void earsbufobj_class_add_winnormalized_attr(t_class *c)
 {

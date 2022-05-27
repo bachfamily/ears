@@ -38,14 +38,20 @@
 	Daniele Ghisi
  */
 
+//#define EARS_WINDOW_USE_ESSENTIA
+
 #include "ext.h"
 #include "ext_obex.h"
 #include "llllobj.h"
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
-#include "ears.essentia_commons.h"
 
+#ifdef EARS_WINDOW_USE_ESSENTIA
+#include "ears.essentia_commons.h"
+#else
+#include "ears.spectral.h"
+#endif
 
 typedef struct _buf_window {
     t_earsbufobj       e_ob;
@@ -75,7 +81,9 @@ EARSBUFOBJ_ADD_IO_METHODS(window)
 
 int C74_EXPORT main(void)
 {
+#ifdef EARS_STFT_USE_ESSENTIA
     ears_essentia_init();
+#endif
     common_symbols_init();
     llllobj_common_symbols_init();
     
@@ -109,7 +117,11 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
 
     
+#ifdef EARS_WINDOW_USE_ESSENTIA
+    earsbufobj_class_add_wintype_attr_essentia(c);
+#else
     earsbufobj_class_add_wintype_attr(c);
+#endif
     earsbufobj_class_add_winnormalized_attr(c);
     earsbufobj_class_add_zerophase_attr(c);
     earsbufobj_class_add_zeropadding_attr(c);
@@ -191,7 +203,11 @@ void buf_window_bang(t_buf_window *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 //        ears_buffer_apply_window((t_object *)x, in, out, x->window_type);
+#ifdef EARS_WINDOW_USE_ESSENTIA
         ears_buffer_apply_window_essentia((t_object *)x, in, out, x->e_ob.a_wintype, x->e_ob.a_winnorm, x->e_ob.a_zeropadding, x->e_ob.a_zerophase);
+#else
+        ears_buffer_apply_window((t_object *)x, in, out, x->e_ob.a_wintype);
+#endif
 
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
