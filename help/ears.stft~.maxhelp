@@ -320,13 +320,41 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-40",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 200.0, 223.5, 186.0, 25.0 ],
+									"presentation_linecount" : 2,
+									"text" : "Polar output (defaults to on)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "polarout",
+									"id" : "obj-26",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 48.0, 223.5, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"hidden" : 1,
 									"id" : "obj-39",
 									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 639.0, 141.0, 139.0, 50.0 ],
+									"patching_rect" : [ 650.0, 141.0, 139.0, 50.0 ],
 									"text" : "If not set, every channel will become an analysis buffer"
 								}
 
@@ -341,7 +369,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 542.0, 139.0, 96.0, 54.0 ],
+									"patching_rect" : [ 553.0, 139.0, 96.0, 54.0 ],
 									"text" : "Downmix channels to mono"
 								}
 
@@ -355,7 +383,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 390.0, 154.5, 150.0, 23.0 ]
+									"patching_rect" : [ 401.0, 154.5, 150.0, 23.0 ]
 								}
 
 							}
@@ -562,7 +590,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 587.0, 206.0, 96.0, 40.0 ],
+									"patching_rect" : [ 602.0, 206.0, 96.0, 40.0 ],
 									"text" : "Analysis parameters"
 								}
 
@@ -618,7 +646,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 386.0, 239.0, 199.0, 23.0 ]
+									"patching_rect" : [ 401.0, 239.0, 199.0, 23.0 ]
 								}
 
 							}
@@ -631,7 +659,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 386.0, 196.5, 199.0, 23.0 ]
+									"patching_rect" : [ 401.0, 196.5, 199.0, 23.0 ]
 								}
 
 							}
@@ -644,7 +672,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 386.0, 219.5, 199.0, 23.0 ]
+									"patching_rect" : [ 401.0, 219.5, 199.0, 23.0 ]
 								}
 
 							}
@@ -654,18 +682,17 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-23",
-									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 200.0, 201.5, 119.0, 40.0 ],
-									"text" : "Polar output (defaults to on)"
+									"patching_rect" : [ 200.0, 201.5, 178.0, 25.0 ],
+									"text" : "Polar input (defaults to off)"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"attr" : "polar",
+									"attr" : "polarin",
 									"id" : "obj-20",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
@@ -899,6 +926,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-9", 0 ],
 									"source" : [ "obj-25", 3 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-26", 0 ]
 								}
 
 							}

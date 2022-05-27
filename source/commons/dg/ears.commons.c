@@ -3,7 +3,6 @@
 #include "llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
-#include "ears.windows.h"
 #include "ears.mp3.h"
 #include "ears.wavpack.h"
 #include <vector>
@@ -2049,63 +2048,6 @@ t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_ob
 
 
 
-// also supports inplace operations
-t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type)
-{
-    if (!source || !dest)
-        return EARS_ERR_NO_BUFFER;
-    
-    if (!window_type)
-        return EARS_ERR_GENERIC;
-
-    t_ears_err err = EARS_ERR_NONE;
-    
-    if (source != dest) {
-        ears_buffer_copy_format(ob, source, dest);
-    }
-    
-    float *orig_sample = buffer_locksamples(source);
-    
-    if (!orig_sample) {
-        err = EARS_ERR_CANT_READ;
-        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
-    } else {
-        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
-        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
-        
-        float *win = (float *)bach_newptr(framecount * sizeof(float));
-        if (ears_get_window(win, window_type->s_name, framecount)) {
-            err = EARS_ERR_GENERIC;
-            object_error((t_object *)ob, "Unknown window type.");
-        }
-        
-        if (source == dest) { // inplace operation!
-            for (long i = 0; i < framecount; i++)
-                for (long c = 0; c < channelcount; c++)
-                    orig_sample[i*channelcount + c] *= win[i];
-            buffer_setdirty(source);
-        } else {
-            ears_buffer_set_size_samps(ob, dest, framecount);
-            float *dest_sample = buffer_locksamples(dest);
-            if (!dest_sample) {
-                err = EARS_ERR_CANT_WRITE;
-                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            } else {
-                for (long i = 0; i < framecount; i++)
-                    for (long c = 0; c < channelcount; c++)
-                        dest_sample[i*channelcount + c] = orig_sample[i*channelcount + c] * win[i];
-            }
-            
-            buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
-        }
-        
-        bach_freeptr(win);
-        buffer_unlocksamples(source);
-    }
-    
-    return err;
-}
 
 
 

@@ -233,7 +233,7 @@ void buf_istft_bang(t_buf_istft *x)
         
         t_ears_essentia_analysis_params params = buf_istft_get_params(x, in1[0]);
         
-        ears_specbuffer_istft((t_object *)x, num_buffers, in1, in2, dest, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr);
+        ears_specbuffer_istft_essentia((t_object *)x, num_buffers, in1, in2, dest, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr);
     }
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

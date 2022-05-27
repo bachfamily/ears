@@ -1,5 +1,5 @@
 #include "ears.essentia_commons.h"
-#include "ears.windows.h"
+#include "ears.spectral.h"
 
 using namespace essentia;
 using namespace standard;
@@ -179,7 +179,7 @@ t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source,
 
 
 
-t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit)
+t_ears_err ears_vector_stft_essentia(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar_output, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit)
 {
     // we approximate the hopsize to the nearest sample. Otherwise the overlap add gives troubles...
     long hopsize_samps = (long)params->hopsize_samps;
@@ -273,7 +273,7 @@ t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, 
                         }
                     }
                     
-                    if (polar) {
+                    if (polar_output) {
                         for (long b = 0; b < numbins; b++) {
                             dest_sample1[actual_framecount*numbins + b] = std::abs(fftdata[b]);
                             dest_sample2[actual_framecount*numbins + b] = ears_radians_to_angle(std::arg(fftdata[b]), angleunit);
@@ -334,10 +334,10 @@ t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj
     for (int n = 0; n < params->numGriffinLimIterations; n++) {
         // reconstruction spectrogram
         std::vector<Real> samples = ears_buffer_get_sample_vector_channel(ob, dest, 0);
-        ears_vector_stft(ob, samples, audio_sr, amps, phases, polar, fullspectrum, params, angleunit);
+        ears_vector_stft_essentia(ob, samples, audio_sr, amps, phases, polar, fullspectrum, params, angleunit);
         
         // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
-        ears_specbuffer_istft(ob, 1, &amplitudes, &phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
+        ears_specbuffer_istft_essentia(ob, 1, &amplitudes, &phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
     }
     
     ears_buffer_free(amps);
@@ -381,11 +381,11 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
     
     for (int n = 0; n < params->numGriffinLimIterations; n++) {
         // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
-        ears_specbuffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
+        ears_specbuffer_istft_essentia(ob, 1, &amplitudes, &estimate_phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
 
         // reconstruction spectrogram
         std::vector<Real> samples = ears_buffer_get_sample_vector_channel(ob, dest, 0);
-        ears_vector_stft(ob, samples, audio_sr, estimate_amps, estimate_phases, polar, fullspectrum, params, angleunit);
+        ears_vector_stft_essentia(ob, samples, audio_sr, estimate_amps, estimate_phases, polar, fullspectrum, params, angleunit);
         
         // apply momentum
         float *estimate_amps_sample = buffer_locksamples(estimate_amps);
@@ -420,7 +420,7 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
         }
     }
 
-    ears_specbuffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
+    ears_specbuffer_istft_essentia(ob, 1, &amplitudes, &estimate_phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
     bach_freeptr(previous_real);
     bach_freeptr(previous_imag);
 
@@ -433,7 +433,7 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
 
 
 // framesize_samps is inferred, the one contained in #params is ignored
-t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double force_sr)
+t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double force_sr)
 {
     t_ears_err err = EARS_ERR_NONE;
 

@@ -32,7 +32,7 @@
 	buffer, fft, fourier, transform, spectrum
  
 	@seealso
-	ears.window~, ears.spectrogram~
+	ears.stft~, ears.istft~, ears.window~, ears.spectrogram~
 	
 	@owner
 	Daniele Ghisi
@@ -51,7 +51,8 @@ typedef struct _buf_fft {
     t_earsbufobj       e_ob;
 
     long            inverse;
-    long            polar;
+    long            polar_input;
+    long            polar_output;
     long            fullspectrum;
 
 } t_buf_fft;
@@ -115,11 +116,18 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "inv", 0);
     // @description Perform the inverse FFT, instead of the direct one.
     
-    CLASS_ATTR_LONG(c, "polar",    0,    t_buf_fft, polar);
-    CLASS_ATTR_STYLE_LABEL(c, "polar", 0, "onoff", "Polar Input And Output");
-    CLASS_ATTR_BASIC(c, "polar", 0);
-    // @description Input and output data in polar coordinates, instead of cartesian ones.
+    CLASS_ATTR_LONG(c, "polarin",    0,    t_buf_fft, polar_input);
+    CLASS_ATTR_STYLE_LABEL(c, "polarin", 0, "onoff", "Polar Input");
+    CLASS_ATTR_BASIC(c, "polarin", 0);
+    // @description Input data in polar coordinates, instead of cartesian ones.
+    // Default is 0.
 
+    CLASS_ATTR_LONG(c, "polarout",    0,    t_buf_fft, polar_output);
+    CLASS_ATTR_STYLE_LABEL(c, "polarout", 0, "onoff", "Polar Output");
+    CLASS_ATTR_BASIC(c, "polarout", 0);
+    // @description Output data in polar coordinates, instead of cartesian ones.
+    // Default is 1.
+    
     CLASS_ATTR_LONG(c, "fullspectrum",    0,    t_buf_fft, fullspectrum);
     CLASS_ATTR_STYLE_LABEL(c, "fullspectrum", 0, "onoff", "Full Spectrum");
     CLASS_ATTR_BASIC(c, "fullspectrum", 0);
@@ -135,19 +143,19 @@ void buf_fft_assist(t_buf_fft *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0)
-            sprintf(s, x->polar ? "symbol: Buffer Containing Magnitudes" : "symbol: Buffer Containing Real/x Parts");
+            sprintf(s, x->polar_input ? "symbol: Buffer Containing Magnitudes" : "symbol: Buffer Containing Real/x Parts");
         // @in 0 @type symbol @digest Buffer containing input magnitudes or real (x) parts
         // @description Depending on the object "polar" attribute, the first inlet expects a buffer containing either the incoming
         //                magnitudes, or the incoming real parts of the samples
         else
-            sprintf(s, x->polar ? "symbol: Buffer Containing Phases" : "symbol: Buffer Containing Imaginary/y Parts");
+            sprintf(s, x->polar_input ? "symbol: Buffer Containing Phases" : "symbol: Buffer Containing Imaginary/y Parts");
         // @in 1 @type symbol @digest Buffer containing input phases or imaginary (y) parts
         // @description Depending on the object "polar" attribute, the second inlet expects a buffer containing either the incoming
         //                phases (in the <m>angleunit</m> coordinate), or the incoming imaginary parts of the samples
     } else {
         switch (a) {
-            case 0: sprintf(s, x->polar ? "symbol: Buffer Containing FFT Magnitudes" : "symbol: Buffer Containing FFT Real/x Parts");    break; // @out 0 @type symbol @digest Buffer containing output magnitudes or real (x) parts
-            case 1: sprintf(s, x->polar ? "symbol: Buffer Containing FFT Phases" : "symbol: Buffer Containing FFT Imaginary/y Parts");    break; // @out 1 @type symbol @digest Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts
+            case 0: sprintf(s, x->polar_output ? "symbol: Buffer Containing FFT Magnitudes" : "symbol: Buffer Containing FFT Real/x Parts");    break; // @out 0 @type symbol @digest Buffer containing output magnitudes or real (x) parts
+            case 1: sprintf(s, x->polar_output ? "symbol: Buffer Containing FFT Phases" : "symbol: Buffer Containing FFT Imaginary/y Parts");    break; // @out 1 @type symbol @digest Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts
         }
     }
 }
@@ -167,7 +175,8 @@ t_buf_fft *buf_fft_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_fft*)object_alloc_debug(s_tag_class);
     if (x) {
         x->inverse = 0;
-        x->polar = 0;
+        x->polar_input = 0;
+        x->polar_output = 0;
         x->fullspectrum = 1;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
@@ -213,7 +222,7 @@ void buf_fft_bang(t_buf_fft *x)
         t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, count);
 
-        ears_buffer_fft((t_object *)x, in1, in2, out1, out2, x->polar, x->inverse, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit);
+        ears_buffer_fft((t_object *)x, in1, in2, out1, out2, x->polar_input, x->polar_output, x->inverse, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit);
 
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
