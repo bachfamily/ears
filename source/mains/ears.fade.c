@@ -106,11 +106,13 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(fade)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
-    
+    earsbufobj_class_add_polyout_attr(c);
+
     CLASS_ATTR_CHAR(c, "fadeintype", 0, t_buf_fade, fadein_type);
     CLASS_ATTR_STYLE_LABEL(c,"fadeintype",0,"enumindex","Fade In Type");
     CLASS_ATTR_ENUMINDEX(c,"fadeintype", 0, "None Linear Sine Curve S-Curve");
@@ -221,6 +223,9 @@ void buf_fade_bang(t_buf_fade *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -229,8 +234,11 @@ void buf_fade_bang(t_buf_fade *x)
         long fadeout = earsbufobj_time_to_samps((t_earsbufobj *)x, x->fadeout, in);
         
         ears_buffer_fade((t_object *)x, in, out, fadein, fadeout, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type, x->fadein_curve, x->fadeout_curve, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
-    
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

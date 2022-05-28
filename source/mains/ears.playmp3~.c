@@ -1,12 +1,12 @@
 /**
  @file
- ears.playmp3~.c
+ ears.utils.playmp3~.c
  
  @name
- ears.playmp3~
+ ears.utils.playmp3~
  
  @realname
- ears.playmp3~
+ ears.utils.playmp3~
  
  @type
  object
@@ -140,7 +140,7 @@ void ext_main(void *r)
     // Additional arguments provide the starting and ending point in milliseconds for playback.
     // @marg 0 @name start_ms @optional 1 @type float
     // @marg 1 @name end_ms @optional 1 @type float
-	t_class *c = class_new("ears.playmp3~", (method)playmp3_new, (method)playmp3_free, (long)sizeof(t_playmp3), 0L, A_GIMME, 0);
+	t_class *c = class_new("ears.utils.playmp3~", (method)playmp3_new, (method)playmp3_free, (long)sizeof(t_playmp3), 0L, A_GIMME, 0);
 
 	class_addmethod(c, (method)playmp3_dsp64,		"dsp64",	A_CANT, 0);
 	class_addmethod(c, (method)playmp3_assist,      "assist",	A_CANT, 0);

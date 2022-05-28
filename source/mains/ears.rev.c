@@ -99,9 +99,11 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(rev)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     
-    
+    earsbufobj_class_add_polyout_attr(c);
+
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -167,6 +169,8 @@ void buf_rev_bang(t_buf_rev *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -175,7 +179,10 @@ void buf_rev_bang(t_buf_rev *x)
             ears_buffer_clone((t_object *)x, in, out);
 
         ears_buffer_rev_inplace((t_object *)x, out);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
+    
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

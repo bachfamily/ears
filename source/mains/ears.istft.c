@@ -38,6 +38,8 @@
 	Daniele Ghisi
  */
 
+//#define EARS_STFT_USE_ESSENTIA
+
 #include "ext.h"
 #include "ext_obex.h"
 #include "llllobj.h"
@@ -45,14 +47,20 @@
 #include "bach_math_utilities.h"
 #include "ears.object.h"
 #include "ears.spectral.h"
+
+#ifdef EARS_STFT_USE_ESSENTIA
 #include "ears.essentia_commons.h"
+#endif
+
 
 typedef struct _buf_istft {
     t_earsbufobj       e_ob;
 
-    long polar;
-    long fullspectrum;
-    
+    long            polar_input;
+    long            polar_output;
+    long            fullspectrum;
+    long            unitary;
+
     double             sr;
 
     long               a_numGriffinLimIterations;
@@ -82,7 +90,11 @@ EARSBUFOBJ_ADD_IO_METHODS(istft)
 
 int C74_EXPORT main(void)
 {
+    
+#ifdef EARS_STFT_USE_ESSENTIA
     ears_essentia_init();
+#endif
+    
     common_symbols_init();
     llllobj_common_symbols_init();
     
@@ -108,11 +120,16 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(istft)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
 
+#ifdef EARS_STFT_USE_ESSENTIA
+    earsbufobj_class_add_wintype_attr_essentia(c);
+#else
     earsbufobj_class_add_wintype_attr(c);
+#endif
     earsbufobj_class_add_winstartfromzero_attr(c);
 
     CLASS_ATTR_LONG(c, "griffinlim", 0, t_buf_istft, a_numGriffinLimIterations);
@@ -127,16 +144,28 @@ int C74_EXPORT main(void)
     CLASS_ATTR_CATEGORY(c, "sr", 0, "Synthesis");
     // @description Sets the sample rate. Leave 0 to infer it from the input STFT buffers.
     
-    CLASS_ATTR_LONG(c, "polar",    0,    t_buf_istft, polar);
-    CLASS_ATTR_STYLE_LABEL(c, "polar", 0, "onoff", "Polar Output");
-    CLASS_ATTR_BASIC(c, "polar", 0);
-    // @description Output data in polar coordinates, instead of cartesian ones.
+    CLASS_ATTR_LONG(c, "polarin",    0,    t_buf_istft, polar_input);
+    CLASS_ATTR_STYLE_LABEL(c, "polarin", 0, "onoff", "Polar Input");
+    CLASS_ATTR_BASIC(c, "polarin", 0);
+    // @description Input data in polar coordinates, instead of cartesian ones.
     // Default is 1.
+
+    CLASS_ATTR_LONG(c, "polarout",    0,    t_buf_istft, polar_output);
+    CLASS_ATTR_STYLE_LABEL(c, "polarout", 0, "onoff", "Polar Output");
+    CLASS_ATTR_BASIC(c, "polarout", 0);
+    // @description Output data in polar coordinates, instead of cartesian ones.
+    // Default is 0.
 
     CLASS_ATTR_LONG(c, "fullspectrum",    0,    t_buf_istft, fullspectrum);
     CLASS_ATTR_STYLE_LABEL(c, "fullspectrum", 0, "onoff", "Full Spectrum");
     CLASS_ATTR_BASIC(c, "fullspectrum", 0);
     // @description Output full spectrum; if not set, it will output the first half of the spectrum only.
+
+    CLASS_ATTR_LONG(c, "unitary",    0,    t_buf_istft, unitary);
+    CLASS_ATTR_STYLE_LABEL(c,"unitary",0,"onoff","Unitary");
+    CLASS_ATTR_BASIC(c, "unitary", 0);
+    // @description Toggles the unitary normalization of the Fourier Transform (so that the
+    // if coincides with its inverse up to conjugation).
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -149,13 +178,13 @@ void buf_istft_assist(t_buf_istft *x, void *b, long m, long a, char *s)
     if (m == ASSIST_INLET) {
             // @in 0 @type symbol @digest Buffer containing audio
             // @description Source audio buffer
-        sprintf(s, x->polar ? "symbol: Source Buffer or Buffer with Magnitude Bins" : "symbol: Source Buffer or Buffer with Real/x Bins");
+        sprintf(s, x->polar_input ? "symbol: Source Buffer or Buffer with Magnitude Bins" : "symbol: Source Buffer or Buffer with Real/x Bins");
     } else {
         // @out 0 @type symbol @digest Buffer containing output magnitudes or real (x) parts, one bin per channel
         // @out 1 @type symbol @digest Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel
         switch (a) {
-            case 0: sprintf(s, x->polar ? "symbol: Buffer Containing STFT Magnitudes" : "symbol: Buffer Containing STFT Real/x Parts");    break;
-            case 1: sprintf(s, x->polar ? "symbol: Buffer Containing STFT Phases" : "symbol: Buffer Containing STFT Imaginary/y Parts");    break;
+            case 0: sprintf(s, x->polar_output ? "symbol: Buffer Containing STFT Magnitudes" : "symbol: Buffer Containing STFT Real/x Parts");    break;
+            case 1: sprintf(s, x->polar_output ? "symbol: Buffer Containing STFT Phases" : "symbol: Buffer Containing STFT Imaginary/y Parts");    break;
         }
     }
 }
@@ -174,9 +203,11 @@ t_buf_istft *buf_istft_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_istft*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->polar = 1;
+        x->polar_input = 1;
+        x->polar_output = 0;
         x->fullspectrum = 0;
         x->sr = 0;
+        x->unitary = 1;
         
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
@@ -205,6 +236,7 @@ void buf_istft_free(t_buf_istft *x)
     earsbufobj_free((t_earsbufobj *)x);
 }
 
+#ifdef EARS_STFT_USE_ESSENTIA
 
 t_ears_essentia_analysis_params buf_istft_get_params(t_buf_istft *x, t_buffer_obj *buf)
 {
@@ -213,6 +245,7 @@ t_ears_essentia_analysis_params buf_istft_get_params(t_buf_istft *x, t_buffer_ob
     params.numGriffinLimIterations = x->a_numGriffinLimIterations;
     return params;
 }
+#endif
 
 void buf_istft_bang(t_buf_istft *x)
 {
@@ -230,9 +263,17 @@ void buf_istft_bang(t_buf_istft *x)
             in2[i] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 1, i);
         }
         
+#ifdef EARS_STFT_USE_ESSENTIA
+
         t_ears_essentia_analysis_params params = buf_istft_get_params(x, in1[0]);
         
-        ears_specbuffer_istft((t_object *)x, num_buffers, in1, in2, dest, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr);
+        ears_specbuffer_istft_essentia((t_object *)x, num_buffers, in1, in2, dest, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr);
+#else
+        
+        ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, NULL, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : NULL, x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary, x->a_numGriffinLimIterations);
+        
+#endif
+        
     }
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

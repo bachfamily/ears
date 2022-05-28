@@ -1,5 +1,5 @@
 #include "ears.essentia_commons.h"
-#include "ears.windows.h"
+#include "ears.spectral.h"
 
 using namespace essentia;
 using namespace standard;
@@ -45,8 +45,8 @@ t_ears_essentia_analysis_params earsbufobj_get_essentia_analysis_params(t_earsbu
         params.hopsize_samps = (params.duration_samps * 1.) / (atom_getlong(&e_ob->a_numframes) - 1);
         params.framesize_samps = round(params.hopsize_samps * e_ob->a_overlap);
     } else {
-        params.framesize_samps = earsbufobj_time_to_samps(e_ob, e_ob->a_framesize, buf, false, true);
-        params.hopsize_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)e_ob, e_ob->a_hopsize, buf, false, true);
+        params.framesize_samps = earsbufobj_time_to_samps(e_ob, e_ob->a_framesize, buf, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
+        params.hopsize_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)e_ob, e_ob->a_hopsize, buf, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
     }
     params.framesize_samps = 2 * (params.framesize_samps / 2);     // ensure framesize is even
     if (params.hopsize_samps <= 0) {
@@ -140,34 +140,36 @@ t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source,
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
         
-        float *win = (float *)bach_newptr(framecount * sizeof(float));
-        if (ears_essentia_get_window(win, window_type->s_name, framecount, normalized, zeropadding, zerophase)) {
-            err = EARS_ERR_GENERIC;
-            object_error((t_object *)ob, "Unknown window type.");
-        }
-        
-        if (source == dest) { // inplace operation!
-            for (long i = 0; i < framecount; i++)
-                for (long c = 0; c < channelcount; c++)
-                    orig_sample[i*channelcount + c] *= win[i];
-            buffer_setdirty(source);
-        } else {
-            ears_buffer_set_size_samps(ob, dest, framecount);
-            float *dest_sample = buffer_locksamples(dest);
-            if (!dest_sample) {
-                err = EARS_ERR_CANT_WRITE;
-                object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            } else {
-                for (long i = 0; i < framecount; i++)
-                    for (long c = 0; c < channelcount; c++)
-                        dest_sample[i*channelcount + c] = orig_sample[i*channelcount + c] * win[i];
+        if (framecount > 0) {
+            float *win = (float *)bach_newptr(framecount * sizeof(float));
+            if (ears_essentia_get_window(win, window_type->s_name, framecount, normalized, zeropadding, zerophase)) {
+                err = EARS_ERR_GENERIC;
+                object_error((t_object *)ob, "Unknown window type.");
             }
             
-            buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            if (source == dest) { // inplace operation!
+                for (long i = 0; i < framecount; i++)
+                    for (long c = 0; c < channelcount; c++)
+                        orig_sample[i*channelcount + c] *= win[i];
+                buffer_setdirty(source);
+            } else {
+                ears_buffer_set_size_samps(ob, dest, framecount);
+                float *dest_sample = buffer_locksamples(dest);
+                if (!dest_sample) {
+                    err = EARS_ERR_CANT_WRITE;
+                    object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+                } else {
+                    for (long i = 0; i < framecount; i++)
+                        for (long c = 0; c < channelcount; c++)
+                            dest_sample[i*channelcount + c] = orig_sample[i*channelcount + c] * win[i];
+                }
+                
+                buffer_setdirty(dest);
+                buffer_unlocksamples(dest);
+            }
+            
+            bach_freeptr(win);
         }
-        
-        bach_freeptr(win);
         buffer_unlocksamples(source);
     }
     
@@ -177,7 +179,7 @@ t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source,
 
 
 
-t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit)
+t_ears_err ears_vector_stft_essentia(t_object *ob, std::vector<Real> samples, double sr, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar_output, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit)
 {
     // we approximate the hopsize to the nearest sample. Otherwise the overlap add gives troubles...
     long hopsize_samps = (long)params->hopsize_samps;
@@ -271,7 +273,7 @@ t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, 
                         }
                     }
                     
-                    if (polar) {
+                    if (polar_output) {
                         for (long b = 0; b < numbins; b++) {
                             dest_sample1[actual_framecount*numbins + b] = std::abs(fftdata[b]);
                             dest_sample2[actual_framecount*numbins + b] = ears_radians_to_angle(std::arg(fftdata[b]), angleunit);
@@ -308,12 +310,130 @@ t_ears_err ears_vector_stft(t_object *ob, std::vector<Real> samples, double sr, 
 }
 
 
+t_ears_err ears_griffin_lim_essentia(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    // Reconstruct via Griffin-Lim
+    t_buffer_obj *phases = ears_buffer_make(NULL);
+    t_buffer_obj *amps = ears_buffer_make(NULL);
+    
+    ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
+    
+    // initialize audio
+    float *tempout_sample = buffer_locksamples(dest);
+    if (tempout_sample) {
+        t_atom_long    channelcount = buffer_getchannelcount(dest); // must be 1
+        t_atom_long    framecount   = buffer_getframecount(dest); // must be outframecount
+        
+        for (long j = 0; j < framecount*channelcount; j++)
+            tempout_sample[j] = random_double_in_range(-1, 1);
+        buffer_unlocksamples(dest);
+    }
+    
+    for (int n = 0; n < params->numGriffinLimIterations; n++) {
+        // reconstruction spectrogram
+        std::vector<Real> samples = ears_buffer_get_sample_vector_channel(ob, dest, 0);
+        ears_vector_stft_essentia(ob, samples, audio_sr, amps, phases, polar, fullspectrum, params, angleunit);
+        
+        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
+        ears_specbuffer_istft_essentia(ob, 1, &amplitudes, &phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
+    }
+    
+    ears_buffer_free(amps);
+    ears_buffer_free(phases);
+    return err;
+}
 
+t_ears_err ears_griffin_lim_essentia_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    // Reconstruct via Griffin-Lim
+    t_buffer_obj *estimate_phases = ears_buffer_make(NULL);
+    t_buffer_obj *estimate_amps = ears_buffer_make(NULL);
+    
+    double momentum = 0.9;
+    long bincount = ears_buffer_get_numchannels(ob, amplitudes);
+    long wincount = ears_buffer_get_size_samps(ob, amplitudes);
+    
+    ears_buffer_copy_format(ob, dest, dest);
+    ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
+    ears_buffer_copy_format(ob, amplitudes, estimate_phases);
+    ears_buffer_set_size_and_numchannels(ob, estimate_phases, wincount, bincount);
+    ears_buffer_copy_format(ob, amplitudes, estimate_amps);
+    ears_buffer_set_size_and_numchannels(ob, estimate_amps, wincount, bincount);
+    
+    float *previous_real = (float *)bach_newptrclear((wincount + 10) * bincount * sizeof(float));
+    float *previous_imag = (float *)bach_newptrclear((wincount + 10) * bincount * sizeof(float));
+
+    // initialize audio
+    float *estimate_phases_sample = buffer_locksamples(estimate_phases);
+    if (estimate_phases_sample) {
+        t_atom_long    channelcount = buffer_getchannelcount(estimate_phases); // must be 1
+        t_atom_long    framecount   = buffer_getframecount(estimate_phases); // must be outframecount
+        
+        for (long j = 0; j < framecount*channelcount; j++)
+            estimate_phases_sample[j] = random_double_in_range(0, TWOPI); // initial random phase
+//                            tempout_sample[j] = random_double_in_range(-1, 1); // white noise?
+        buffer_unlocksamples(estimate_phases);
+    }
+    
+    for (int n = 0; n < params->numGriffinLimIterations; n++) {
+        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
+        ears_specbuffer_istft_essentia(ob, 1, &amplitudes, &estimate_phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
+
+        // reconstruction spectrogram
+        std::vector<Real> samples = ears_buffer_get_sample_vector_channel(ob, dest, 0);
+        ears_vector_stft_essentia(ob, samples, audio_sr, estimate_amps, estimate_phases, polar, fullspectrum, params, angleunit);
+        
+        // apply momentum
+        float *estimate_amps_sample = buffer_locksamples(estimate_amps);
+        float *estimate_phases_sample = buffer_locksamples(estimate_phases);
+        if (estimate_phases_sample && estimate_amps_sample) {
+            t_atom_long    amps_channelcount = buffer_getchannelcount(estimate_amps); // must be bincount
+            t_atom_long    amps_framecount   = buffer_getframecount(estimate_amps); // must be outframecount
+            t_atom_long    phases_channelcount = buffer_getchannelcount(estimate_phases); // must be bincount
+            t_atom_long    phases_framecount   = buffer_getframecount(estimate_phases); // must be outframecount
+
+            if (amps_channelcount != bincount || phases_channelcount != bincount || amps_framecount != phases_framecount || amps_framecount > wincount + 10) {
+                object_error(ob, "Error!");
+                buffer_unlocksamples(estimate_amps);
+                buffer_unlocksamples(estimate_phases);
+                break;
+            }
+            
+            for (long j = 0; j < amps_framecount * bincount; j++) {
+                // convert into polar coordinates
+                double real = estimate_amps_sample[j] * cos(estimate_phases_sample[j]);
+                double imag = estimate_amps_sample[j] * sin(estimate_phases_sample[j]);
+                double newreal = real - (momentum/(1+momentum)) * previous_real[j];
+                double newimag = imag - (momentum/(1+momentum)) * previous_imag[j];
+                estimate_amps_sample[j] = sqrt(newreal*newreal + newimag * newimag);
+                estimate_phases_sample[j] = atan2(newimag, newreal);
+                previous_real[j] = real;
+                previous_imag[j] = imag;
+
+            }
+            buffer_unlocksamples(estimate_amps);
+            buffer_unlocksamples(estimate_phases);
+        }
+    }
+
+    ears_specbuffer_istft_essentia(ob, 1, &amplitudes, &estimate_phases, dest, polar, fullspectrum, params, angleunit, audio_sr);
+    bach_freeptr(previous_real);
+    bach_freeptr(previous_imag);
+
+    ears_buffer_free(estimate_amps);
+    ears_buffer_free(estimate_phases);
+    
+    return EARS_ERR_NONE;
+}
 
 
 
 // framesize_samps is inferred, the one contained in #params is ignored
-t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double force_sr)
+t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double force_sr)
 {
     t_ears_err err = EARS_ERR_NONE;
 
@@ -348,7 +468,7 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
     
     long numoutputchannels = num_input_buffers;
     int framesize_samps = fullspectrum ? numinputchannels : 2 * (numinputchannels - 1);
-    long outframecount = numinputframes * hopsize_samps + (framesize_samps - hopsize_samps);
+    long outframecount = numinputframes * hopsize_samps + MAX(0, framesize_samps - hopsize_samps);
     
     ears_buffer_set_sr(ob, dest, audio_sr);
     ears_buffer_set_size_and_numchannels(ob, dest, outframecount, numoutputchannels);
@@ -476,35 +596,12 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
                         dest_sample[i * numoutputchannels + c] = 0;
                     }
                 } else {
-                    // Reconstruct via Griffin-Lim
-                    t_buffer_obj *phases = ears_buffer_make(NULL);
-                    t_buffer_obj *amps = ears_buffer_make(NULL);
-                    t_buffer_obj *tempout = ears_buffer_make(NULL); 
-
+                    t_buffer_obj *tempout = ears_buffer_make(NULL);
                     ears_buffer_copy_format(ob, dest, tempout);
-                    ears_buffer_set_size_and_numchannels(ob, tempout, outframecount, 1);
+
+                    ears_griffin_lim_essentia(ob, source1[c], tempout, polar, fullspectrum, params, angleunit, audio_sr, outframecount);
                     
-                    // initialize audio
                     float *tempout_sample = buffer_locksamples(tempout);
-                    if (tempout_sample) {
-                        t_atom_long    channelcount = buffer_getchannelcount(tempout); // must be 1
-                        t_atom_long    framecount   = buffer_getframecount(tempout); // must be outframecount
-                        
-                        for (long j = 0; j < framecount*channelcount; j++)
-                            tempout_sample[j] = random_double_in_range(-1, 1);
-                        buffer_unlocksamples(tempout);
-                    }
-                    
-                    for (int n = 0; n < params->numGriffinLimIterations; n++) {
-                        // reconstruction spectrogram
-                        std::vector<Real> samples = ears_buffer_get_sample_vector_channel(ob, tempout, 0);
-                        ears_vector_stft(ob, samples, audio_sr, amps, phases, polar, fullspectrum, params, angleunit);
-
-                        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
-                        ears_specbuffer_istft(ob, 1, &source1[c], &phases, tempout, polar, fullspectrum, params, angleunit, audio_sr);
-                    }
-
-                    tempout_sample = buffer_locksamples(tempout);
                     if (!tempout_sample) {
                         err = EARS_ERR_CANT_WRITE;
                         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -522,9 +619,7 @@ t_ears_err ears_specbuffer_istft(t_object *ob, long num_input_buffers, t_buffer_
                         }
                         buffer_unlocksamples(tempout);
                     }
-                    
-                    ears_buffer_free(amps);
-                    ears_buffer_free(phases);
+
                     ears_buffer_free(tempout);
                 }
             }

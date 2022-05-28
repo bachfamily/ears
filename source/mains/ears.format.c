@@ -94,6 +94,20 @@ DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_format, bins, buf_format_setattr_bins);
 /**********************************************************************/
 // Class Definition and Life Cycle
 
+t_max_err buf_format_setattr_spectype(t_buf_format *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_SYM) {
+            x->spectype = atom_getsym(argv);
+            object_attr_setdisabled((t_object *)x, gensym("hopsize"), x->spectype == _sym_none);
+            object_attr_setdisabled((t_object *)x, gensym("framesize"), x->spectype == _sym_none);
+            object_attr_setdisabled((t_object *)x, gensym("overlap"), x->spectype == _sym_none);
+            object_attr_setdisabled((t_object *)x, gensym("antimeunit"), x->spectype == _sym_none);
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
 int C74_EXPORT main(void)
 {
     common_symbols_init();
@@ -121,9 +135,16 @@ int C74_EXPORT main(void)
 
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_polyout_attr(c);
     
+    earsbufobj_class_add_antimeunit_attr(c);
+    earsbufobj_class_add_hopsize_attr(c);
+    earsbufobj_class_add_framesize_attr(c);
+    earsbufobj_class_add_overlap_attr(c);
+
     earsbufobj_class_add_resamplingfiltersize_attr(c);
 
     CLASS_ATTR_LONG(c, "numchannels",	0,	t_buf_format, numchannels);
@@ -174,6 +195,7 @@ int C74_EXPORT main(void)
     
     CLASS_ATTR_SYM(c, "spectype",    0,    t_buf_format, spectype);
     CLASS_ATTR_STYLE_LABEL(c, "spectype", 0, "text", "Spectral Type");
+    CLASS_ATTR_ACCESSORS(c, "spectype", NULL, buf_format_setattr_spectype);
     CLASS_ATTR_CATEGORY(c, "spectype", 0, "Spectral Type");
     // @description Sets the spectral type for spectral buffers.
     // A "keep" symbol means: don't change; a "none" symbol means: turn to ordinary buffer.
@@ -262,6 +284,8 @@ t_buf_format *buf_format_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
+        x->e_ob.a_hopsize = 0; // means: no change
+        
         attr_args_process(x, argc, argv);
 
         earsbufobj_setup((t_earsbufobj *)x, "E", "E", names);
@@ -296,21 +320,36 @@ void buf_format_bang(t_buf_format *x)
     double binsize = x->binsize;
     double binoffset = x->binoffset;
     t_llll *bins = x->bins;
+    double hopsize = x->e_ob.a_hopsize;
+    double framesize = x->e_ob.a_framesize;
+    long must_be_spectral = (spectype != _llllobj_sym_empty_symbol && spectype != _llllobj_sym_none && spectype != gensym("keep"));
+
+    if (num_buffers == 0) {
+        // this is allowed if we use format as a pure generator
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, 1, false);
+        num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
+    }
+    
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        if (in != out)
+        if (in == NULL) { // this is allowed if we use format as a pure generator
+            ears_buffer_setempty((t_object *)x, out, 1);
+        } else if (in != out) {
             ears_buffer_clone((t_object *)x, in, out);
+        }
         
         if (sr >= 0) {
-            if (sr == 0)
+            if (sr == 0) {
                 sr = ears_get_current_Max_sr();
+            }
             double curr_sr = ears_buffer_get_sr((t_object *)x, out);
             if (curr_sr != sr) {
                 if (x->resample)
@@ -325,6 +364,11 @@ void buf_format_bang(t_buf_format *x)
             ears_buffer_convert_size((t_object *)x, out, duration_samps);
         }
         
+        if (numchannels <= 0 && must_be_spectral && framesize > 0) {
+            double framesize_samps = earsbufobj_time_to_fsamps((t_earsbufobj *)x, framesize, out, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS | EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS);
+            numchannels = framesize_samps/2 + 1;
+        }
+        
         if (numchannels > 0) {
             long curr_num_channels = ears_buffer_get_numchannels((t_object *)x, out);
             if (curr_num_channels != numchannels)
@@ -332,7 +376,6 @@ void buf_format_bang(t_buf_format *x)
         }
         
         // spectral ?
-        long must_be_spectral = (spectype != _llllobj_sym_empty_symbol && spectype != _llllobj_sym_none && spectype != gensym("keep"));
         e_ears_frequnit u = ears_frequnit_from_symbol(x->binunit);
         long is_spectral = ears_buffer_is_spectral((t_object *)x, out);
         if (is_spectral == 0 && must_be_spectral == 1) {
@@ -343,6 +386,22 @@ void buf_format_bang(t_buf_format *x)
                 ears_spectralbuf_metadata_fill(&data, audiosr, binsize, binoffset, u, spectype, bins, false);
             }
             ears_spectralbuf_metadata_set((t_object *)x, out, &data);
+            
+            // should we change the sampling rate?
+            if (sr <= 0 && hopsize > 0) {
+                double orig_audio_sr = ears_spectralbuf_get_original_audio_sr((t_object *)x, out);
+                double hopsize_samps = earsbufobj_time_to_fsamps((t_earsbufobj *)x, hopsize, out, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS |EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS);
+                sr = orig_audio_sr/hopsize_samps;
+                double curr_sr = ears_buffer_get_sr((t_object *)x, out);
+                if (curr_sr != sr) {
+                    if (x->resample)
+                        ears_buffer_convert_sr((t_object *)x, out, sr, x->e_ob.l_resamplingfilterwidth);
+                    else
+                        ears_buffer_set_sr((t_object *)x, out, sr);
+                }
+            }
+
+
         } else if (is_spectral == 1 && must_be_spectral == 0) {
             ears_spectralbuf_metadata_remove((t_object *)x, out);
         } else {
@@ -362,8 +421,51 @@ void buf_format_bang(t_buf_format *x)
                     llll_free(data->bins);
                     data->bins = llll_clone(bins);
                 }
+                
+                // should we change the sampling rate?
+                if (sr <= 0 && hopsize > 0) {
+                    double orig_audio_sr = ears_spectralbuf_get_original_audio_sr((t_object *)x, out);
+                    double hopsize_samps = earsbufobj_time_to_fsamps((t_earsbufobj *)x, hopsize, out, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS | EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS);
+                    sr = orig_audio_sr/hopsize_samps;
+                    double curr_sr = ears_buffer_get_sr((t_object *)x, out);
+                    if (curr_sr != sr) {
+                        if (x->resample)
+                            ears_buffer_convert_sr((t_object *)x, out, sr, x->e_ob.l_resamplingfilterwidth);
+                        else
+                            ears_buffer_set_sr((t_object *)x, out, sr);
+                    }
+                }
+
             }
         }
+        
+        if (ears_buffer_is_spectral((t_object *)x, out)) {
+            t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get((t_object *)x, out);
+            if (spectype == gensym("stft")) {
+                if (data->binsize < 0)
+                    data->binsize = ears_spectralbuf_get_original_audio_sr((t_object *)x, out)/(2*(ears_buffer_get_numchannels((t_object *)x, out)-1));
+                if (data->binoffset < 0)
+                    data->binoffset = 0;
+                if (data->binunit == EARS_FREQUNIT_UNKNOWN)
+                    data->binunit = EARS_FREQUNIT_HERTZ;
+            } else if (spectype == gensym("tempogram")) {
+//                if (data->binsize < 0)
+//                    data->binsize = ears_spectralbuf_get_original_audio_sr((t_object *)x, out)/(2*(ears_buffer_get_numchannels((t_object *)x, out)-1));
+                if (data->binoffset < 0)
+                    data->binoffset = 0;
+                if (data->binunit == EARS_FREQUNIT_UNKNOWN)
+                    data->binunit = EARS_FREQUNIT_BPM;
+            } else if (spectype == gensym("stft")) {
+//                if (data->binsize < 0)
+//                    data->binsize = ears_spectralbuf_get_original_audio_sr((t_object *)x, out)/(2*(ears_buffer_get_numchannels((t_object *)x, out)-1));
+                if (data->binoffset < 0)
+                    data->binoffset = 0;
+                if (data->binunit == EARS_FREQUNIT_UNKNOWN)
+                    data->binunit = EARS_FREQUNIT_CENTS;
+            }
+        }
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

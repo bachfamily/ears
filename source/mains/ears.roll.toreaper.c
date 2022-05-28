@@ -200,6 +200,7 @@ int C74_EXPORT main(void)
     class_addmethod(c, (method)buf_roll_toreaper_open,                    "open", 0);
 
     
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     
     CLASS_STICKY_ATTR(c,"category",0,"Export");

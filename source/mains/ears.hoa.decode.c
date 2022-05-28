@@ -143,8 +143,11 @@ int C74_EXPORT main(void)
     // @description A number in the second inlet sets the hoadecode parameter (depending on the <m>ampunit</m>).
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "binaural", 0, t_buf_hoadecode, binaural);
     CLASS_ATTR_STYLE_LABEL(c,"binaural",0,"onoff","Binaural Decoding");
@@ -255,7 +258,8 @@ void buf_hoadecode_bang(t_buf_hoadecode *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-    
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_atom_float  ls_az[EARS_HOA_MAX_LOUDSPEAKERS];
     t_atom_float  ls_el[EARS_HOA_MAX_LOUDSPEAKERS];
     for (long i = 0; i < x->num_loudspeakers; i++) {
@@ -277,6 +281,8 @@ void buf_hoadecode_bang(t_buf_hoadecode *x)
             ears_buffer_hoa_decode_binaural((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->block_size_samps);
         else
             ears_buffer_hoa_decode((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->num_loudspeakers, ls_az, ls_el);
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

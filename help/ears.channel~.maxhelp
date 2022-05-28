@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 5,
+			"minor" : 3,
+			"revision" : 0,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 506.0, 473.0 ],
+		"rect" : [ 100.0, 100.0, 493.0, 473.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -52,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 506.0, 447.0 ],
+						"rect" : [ 0.0, 26.0, 493.0, 447.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -89,6 +89,75 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-13",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 276.5, 263.0, 131.0, 40.0 ],
+									"presentation_linecount" : 2,
+									"text" : "Same, with polybuffer output"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-12",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"patching_rect" : [ 42.0, 311.0, 136.0, 23.0 ],
+									"saved_object_attributes" : 									{
+										"embed" : 0
+									}
+,
+									"text" : "polybuffer~ mypolybuf"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-9",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 192.5, 345.0, 34.0, 23.0 ],
+									"text" : "print"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 192.5, 275.0, 78.0, 23.0 ],
+									"text" : "earshelpbuf"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-8",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 192.5, 310.0, 246.0, 23.0 ],
+									"text" : "ears.channel~ mypolybuf @all 1 @poly 1"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-7",
 									"maxclass" : "number",
@@ -122,8 +191,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 154.0, 100.0, 131.0, 69.0 ],
-									"presentation_linecount" : 4,
+									"patching_rect" : [ 154.0, 100.0, 135.0, 69.0 ],
 									"text" : "Output all channels of the incoming buffer as separate buffers"
 								}
 
@@ -212,11 +280,24 @@
 								}
 
 							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-8", 0 ],
+									"source" : [ "obj-6", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-9", 0 ],
+									"source" : [ "obj-8", 0 ]
+								}
+
+							}
  ]
 					}
 ,
 					"patching_rect" : [ 35.0, 119.0, 124.0, 22.0 ],
-					"presentation_linecount" : 4,
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -261,14 +342,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 506.0, 447.0 ],
+						"rect" : [ 100.0, 126.0, 493.0, 447.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -628,14 +709,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 506.0, 447.0 ],
+						"rect" : [ 0.0, 26.0, 493.0, 447.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -685,7 +766,15 @@
  ],
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
-				"name" : "helpname.js",
+				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.channel~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "helpargs.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
@@ -697,7 +786,7 @@
 				"implicit" : 1
 			}
 , 			{
-				"name" : "helpargs.js",
+				"name" : "helpname.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
@@ -707,14 +796,6 @@
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.channel~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
 			}
  ],
 		"autosave" : 0

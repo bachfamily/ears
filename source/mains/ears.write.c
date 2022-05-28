@@ -279,7 +279,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4444", "aa", NULL);
+        earsbufobj_setup((t_earsbufobj *)x, "E4444", "zz", NULL);
 
         llll_free(args);
     }
@@ -392,6 +392,7 @@ void buf_write_bang(t_buf_write *x)
             
             ears_buffer_write(buf, filename, (t_object *)x, &settings);
             
+            
             t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get((t_object *)x, buf);
             if ((x->write_spectral_annotations && data) || (mk_el && hatom_gettype(&mk_el->l_hatom) == H_LLLL))
                 buf_write_markers_and_spectralannotation(x, filename,
@@ -402,7 +403,7 @@ void buf_write_bang(t_buf_write *x)
 
             if (tag_el && hatom_gettype(&tag_el->l_hatom) == H_LLLL)
                 buf_write_tags(x, filename, hatom_getllll(&tag_el->l_hatom));
-
+            
             llll_appendsym(fullpaths, get_conformed_resolved_path(filename));
             
             if (orig_format)
@@ -726,7 +727,7 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                             tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                         } else {
                             long l = strlen(s->s_name);
-                            char *s_frameid = bach_newptr((l + 1) * sizeof(char));
+                            char *s_frameid = (char *)bach_newptr((l + 1) * sizeof(char));
                             for (long i = 0; i < l; i++)
                                 s_frameid[i] = toupper(s->s_name[i]);
                             s_frameid[l] = 0;

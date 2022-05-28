@@ -178,6 +178,7 @@ int C74_EXPORT main(void)
     llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
@@ -190,9 +191,11 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
-    earsbufobj_class_add_wintype_attr(c);
+    earsbufobj_class_add_wintype_attr_essentia(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
     earsbufobj_class_add_winnormalized_attr(c);
+
+//    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_DOUBLE(c, "envattack", 0, t_buf_essentia, a_envattacktime);
     CLASS_ATTR_STYLE_LABEL(c,"envattack",0,"text","Envelope Attack Time");
@@ -1253,17 +1256,23 @@ t_ears_err buf_essentia_set_essentia(t_buf_essentia *x, t_llll *args)
         object_error((t_object *)x, "Wrong arguments!");
         return EARS_ERR_GENERIC;
     }
-    earsbufobj_mutex_lock((t_earsbufobj *)x);
     
     long new_num_features = args->l_size;
     
+    if (new_num_features == 0) {
+        object_error((t_object *)x, "No features defined!");
+        return EARS_ERR_GENERIC;
+    }
+
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+
     for (long i = 0; i < x->num_features; i++)
         llll_free(x->algorithm_args[i]);
     x->num_features = new_num_features;
-    x->features = (long *)bach_resizeptr(x->features, new_num_features * sizeof(long));
-    x->features_numoutputs = (long *)bach_resizeptr(x->features_numoutputs, new_num_features * sizeof(long));
-    x->temporalmodes = (long *)bach_resizeptr(x->temporalmodes, new_num_features * sizeof(long));
-    x->algorithm_args = (t_llll **)bach_resizeptr(x->algorithm_args, new_num_features * sizeof(t_llll *));
+    x->features = (long *)bach_resizeptr(x->features, MAX(new_num_features, 1) * sizeof(long));
+    x->features_numoutputs = (long *)bach_resizeptr(x->features_numoutputs, MAX(new_num_features, 1) * sizeof(long));
+    x->temporalmodes = (long *)bach_resizeptr(x->temporalmodes, MAX(new_num_features, 1) * sizeof(long));
+    x->algorithm_args = (t_llll **)bach_resizeptr(x->algorithm_args, MAX(new_num_features, 1) * sizeof(t_llll *));
     for (long i = 0; i < new_num_features; i++)
         x->algorithm_args[i] = llll_get();
     
@@ -1282,8 +1291,8 @@ t_ears_err buf_essentia_set_essentia(t_buf_essentia *x, t_llll *args)
         tot_num_outlets += x->features_numoutputs[i];
     }
 
-    x->outlet_featureidx = (long *)bach_resizeptr(x->outlet_featureidx, tot_num_outlets * sizeof(long));
-    x->outlet_featureoutputidx = (long *)bach_resizeptr(x->outlet_featureoutputidx, tot_num_outlets * sizeof(long));
+    x->outlet_featureidx = (long *)bach_resizeptr(x->outlet_featureidx, MAX(tot_num_outlets, 1) * sizeof(long));
+    x->outlet_featureoutputidx = (long *)bach_resizeptr(x->outlet_featureoutputidx, MAX(tot_num_outlets, 1) * sizeof(long));
 
     x->num_outlets = tot_num_outlets;
     
@@ -1607,8 +1616,8 @@ t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buf
     t_ears_essentia_analysis_params params = earsbufobj_get_essentia_analysis_params((t_earsbufobj *)x, buf);
 
     params.envelope_rectify = 1;
-    params.envelope_attack_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envattacktime, buf, true, false);
-    params.envelope_release_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envreleasetime, buf, true, false);
+    params.envelope_attack_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envattacktime, buf, EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE);
+    params.envelope_release_time_samps = (Real)earsbufobj_time_to_fsamps((t_earsbufobj *)x, x->a_envreleasetime, buf, EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE);
     
     params.summarization = (e_ears_analysis_summarization) x->summarization;
     params.summarizationweight = (e_ears_analysis_summarizationweight) x->summarizationweight;
@@ -1652,6 +1661,7 @@ t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buf
 
 void buf_essentia_bang(t_buf_essentia *x)
 {
+    
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
@@ -1663,6 +1673,7 @@ void buf_essentia_bang(t_buf_essentia *x)
     }
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     Pool options;
     setExtractorDefaultOptions(options);
@@ -1728,17 +1739,21 @@ void buf_essentia_bang(t_buf_essentia *x)
                     llll_appendllll_clone(res[o], x->extractors_lib.extractors[feat_idx].result[map]);
             }
         }
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     
     for (long o = x->num_outlets - 1; o >= 0; o--) {
         long feat_idx = x->outlet_featureidx[o];
-        if (x->temporalmodes[feat_idx] == EARS_ANALYSIS_TEMPORALMODE_BUFFER)
+        if (x->temporalmodes[feat_idx] == EARS_ANALYSIS_TEMPORALMODE_BUFFER) {
             earsbufobj_outlet_buffer((t_earsbufobj *)x, o);
-        else
+        } else {
             earsbufobj_outlet_llll((t_earsbufobj *)x, o, res[o]);
+        }
     }
-    
+     
     for (long i = 0; i < x->num_features; i++)
         llll_free(res[i]);
     bach_freeptr(res);

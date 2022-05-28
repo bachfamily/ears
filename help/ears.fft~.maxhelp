@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 5,
+			"minor" : 3,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 92.0, 784.0, 496.0 ],
+		"rect" : [ 100.0, 100.0, 784.0, 496.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -52,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 118.0, 784.0, 470.0 ],
+						"rect" : [ 100.0, 126.0, 784.0, 470.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -93,13 +93,41 @@
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
+									"id" : "obj-16",
+									"linecount" : 4,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 487.0, 236.900146484375, 196.0, 69.0 ],
+									"presentation_linecount" : 5,
+									"text" : "If toggled, the FFT is normalized so that it coincides with its inverse up to conjugation"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "unitary",
+									"id" : "obj-11",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 333.25, 259.900146484375, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
 									"id" : "obj-10",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 589.0, 383.900146484375, 117.0, 40.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Reconstruction error"
 								}
 
@@ -130,7 +158,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u746000546",
+									"buffername" : "u257003361",
 									"id" : "obj-13",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -160,6 +188,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 166.25, 259.900146484375, 150.0, 23.0 ]
 								}
 
@@ -183,7 +212,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u403000560",
+									"buffername" : "u621003375",
 									"id" : "obj-25",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -251,7 +280,7 @@
 								"box" : 								{
 									"id" : "obj-6",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 10.0, 200.0, 182.0, 23.0 ],
@@ -273,7 +302,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u295000555",
+									"buffername" : "u571003370",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -356,6 +385,22 @@
 								"patchline" : 								{
 									"destination" : [ "obj-6", 0 ],
 									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"order" : 1,
+									"source" : [ "obj-11", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"order" : 0,
+									"source" : [ "obj-11", 0 ]
 								}
 
 							}
@@ -522,8 +567,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -560,6 +605,19 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"attr" : "polarout",
+									"id" : "obj-11",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 404.47998046875, 240.0, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-34",
 									"linecount" : 2,
 									"maxclass" : "comment",
@@ -587,13 +645,14 @@
 							}
 , 							{
 								"box" : 								{
-									"attr" : "polar",
+									"attr" : "polarin",
 									"id" : "obj-23",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 404.47998046875, 232.900146484375, 150.0, 23.0 ]
+									"parameter_enable" : 0,
+									"patching_rect" : [ 404.47998046875, 220.900146484375, 150.0, 23.0 ]
 								}
 
 							}
@@ -620,6 +679,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 400.47998046875, 165.80029296875, 150.0, 23.0 ]
 								}
 
@@ -691,7 +751,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 123.0, 160.0, 146.0, 25.0 ],
+									"patching_rect" : [ 224.0, 158.0, 146.0, 25.0 ],
 									"text" : "Extract little portion"
 								}
 
@@ -724,7 +784,7 @@
 								"box" : 								{
 									"id" : "obj-6",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 15.0, 190.0, 182.0, 23.0 ],
@@ -739,8 +799,8 @@
 									"numinlets" : 3,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 158.0, 99.0, 23.0 ],
-									"text" : "ears.crop~ 0 10"
+									"patching_rect" : [ 15.0, 158.0, 207.0, 23.0 ],
+									"text" : "ears.crop~ 2048 @timeunit samps"
 								}
 
 							}
@@ -790,7 +850,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u358000588",
+									"buffername" : "u398003394",
 									"id" : "obj-25",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -826,7 +886,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u824000591",
+									"buffername" : "u663003397",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -896,7 +956,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 15.0, 240.0, 182.0, 23.0 ],
-									"text" : "ears.fft~ @polar 1"
+									"text" : "ears.fft~ @polarout 1"
 								}
 
 							}
@@ -921,6 +981,14 @@
 								"patchline" : 								{
 									"destination" : [ "obj-6", 0 ],
 									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"midpoints" : [ 413.97998046875, 272.0, 390.239990234375, 272.0, 390.239990234375, 229.0, 24.5, 229.0 ],
+									"source" : [ "obj-11", 0 ]
 								}
 
 							}
@@ -1057,8 +1125,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1114,13 +1182,41 @@
  ],
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
-				"name" : "helpname.js",
+				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.crop~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.expr~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.fft~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.normalize~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.unpack~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.window~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
-				"name" : "helpdetails.js",
+				"name" : "helpname.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
@@ -1130,34 +1226,6 @@
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
 				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.fft~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.crop~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.window~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.normalize~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.expr~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.unpack~.mxo",
-				"type" : "iLaX"
 			}
  ],
 		"autosave" : 0

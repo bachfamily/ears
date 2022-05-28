@@ -9,7 +9,7 @@
 <refpage name='ears.tovector~.maxref.xml'/>
 <refpage name='ears.process~.maxref.xml'/>
 <refpage name='ears.join~.maxref.xml'/>
-<refpage name='ears.playmp3~.maxref.xml'/>
+<refpage name='ears.utils.playmp3~.maxref.xml'/>
 <refpage name='ears.model.sine.synthesis~.maxref.xml'/>
 <refpage name='ears.crop~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
@@ -22,6 +22,7 @@
 <refpage name='ears.unpack~.maxref.xml'/>
 <refpage name='ears.processinfo~.maxref.xml'/>
 <refpage name='ears.hoa.mirror~.maxref.xml'/>
+<refpage name='ears.seamstretch~.maxref.xml'/>
 <refpage name='ears.fromsamps~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
 <refpage name='ears.onepole~.maxref.xml'/>
@@ -38,6 +39,7 @@
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
 <refpage name='ears.out~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
+<refpage name='ears.iter~.maxref.xml'/>
 <refpage name='ears.paulfreeze~.maxref.xml'/>
 <refpage name='ears.cqt~.maxref.xml'/>
 <refpage name='ears.dynamics~.maxref.xml'/>

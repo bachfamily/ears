@@ -165,6 +165,7 @@ int C74_EXPORT main(void)
     llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
@@ -458,16 +459,17 @@ void buf_vamp_bang(t_buf_vamp *x)
     }
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     t_llll **res = (t_llll **)bach_newptr(num_plugins * sizeof(t_llll *));
     t_buffer_obj **res_buf = (t_buffer_obj **)bach_newptr(num_plugins * sizeof(t_buffer_obj *));
     for (long i = 0; i < num_plugins; i++)
         res[i] = llll_get();
-
-    for (long p = 0; p < x->n_numplugins; p++) {
-        for (long count = 0; count < num_buffers; count++) {
-            t_buffer_obj *buf = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
-            if (buf) {
+    
+    for (long count = 0; count < num_buffers; count++) {
+        t_buffer_obj *buf = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        if (buf) {
+            for (long p = 0; p < x->n_numplugins; p++) {
                 t_llll *out_features = NULL;
                 t_buffer_obj *featuresbuf = (x->n_plugins[p].n_temporalmode == EARS_ANALYSIS_TEMPORALMODE_BUFFER) ? earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, earsbufobj_outlet_to_bufstore((t_earsbufobj *)x, p), count) : NULL;
                 t_ears_err err = ears_vamp_run_plugin((t_earsbufobj *)x, buf, x->n_plugins[p].n_soname->s_name, x->n_plugins[p].n_identifier->s_name, x->n_plugins[p].n_outputIndex, &out_features, featuresbuf, x->n_plugins[p].n_temporalmode, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_analysis_summarization) x->n_summarization, x->n_autoframehopsize ? 0 : ears_convert_timeunit(x->e_ob.a_framesize, buf, (e_ears_timeunit)x->e_ob.l_antimeunit, EARS_TIMEUNIT_SAMPS), x->n_autoframehopsize ? 0 : ears_convert_timeunit(x->e_ob.a_hopsize, buf, (e_ears_timeunit)x->e_ob.l_antimeunit, EARS_TIMEUNIT_SAMPS), x->n_pluginparameters[p]);
@@ -483,6 +485,7 @@ void buf_vamp_bang(t_buf_vamp *x)
                 }
             }
         }
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

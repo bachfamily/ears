@@ -33,7 +33,7 @@
 				Stretch factor or envelope
 			</digest>
 			<description>
-				Sets the stretch factor, either as a single number or as an llll
+				Sets the stretch factor, either as a single number (depending on the <m>timeunit</m> attribute) or as an llll
 				containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>]
 				[<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
 				where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
@@ -108,6 +108,16 @@
 				If the <m>naming</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
 				used name. This is especially useful in combination with iterative mechanisms.
+			</description>
+		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
 			</description>
 		</method>
 		<method name="write">
@@ -260,11 +270,28 @@
 			</digest>
 			<description>
 				Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Analysis Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
+			<digest>
+				Blocking Mode
+			</digest>
+			<description>
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
@@ -332,6 +359,23 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="poly" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Polybuffers
+			</digest>
+			<description>
+				Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
+				- 0 (default) means that no polybuffer is created (individual buffers are output); <br />
+				- 1 means that a polybuffer is created and its name is output; <br />
+				- 2 means that a polybuffer is created and the individual names of its buffers are output.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Polybuffers" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="slopemapping" get="1" set="1" type="int" size="1">
 			<digest>
 				Slope Mapping
@@ -364,8 +408,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+				The default varies depending on the modules.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
@@ -396,7 +440,7 @@
 		<entry name ="Inlet 2 (float/list/llll)">
 			<description>
 				Stretch factor or envelope.
-				Sets the stretch factor, either as a single number or as an llll
+				Sets the stretch factor, either as a single number (depending on the <m>timeunit</m> attribute) or as an llll
 				containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>]
 				[<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
 				where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.

@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 11,
+			"minor" : 3,
+			"revision" : 0,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 88.0, 926.0, 524.0 ],
+		"rect" : [ 441.0, 100.0, 926.0, 524.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -71,14 +71,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 114.0, 926.0, 498.0 ],
+						"rect" : [ 441.0, 126.0, 926.0, 498.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -123,7 +123,6 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u978004423",
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -142,7 +141,6 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u648004421",
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -179,6 +177,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 297.0, 241.0, 160.0, 23.0 ],
 									"text_width" : 106.0
 								}
@@ -192,6 +191,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 297.0, 213.0, 150.0, 23.0 ]
 								}
 
@@ -204,6 +204,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 297.0, 188.0, 150.0, 23.0 ]
 								}
 
@@ -216,6 +217,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 297.0, 132.5, 207.0, 23.0 ]
 								}
 
@@ -380,6 +382,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 297.0, 160.0, 207.0, 23.0 ]
 								}
 
@@ -392,6 +395,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
 									"patching_rect" : [ 297.0, 107.5, 207.0, 23.0 ]
 								}
 
@@ -682,8 +686,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 11,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -739,29 +743,11 @@
  ],
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
-				"name" : "helpname.js",
-				"bootpath" : "C74:/help/resources",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "helpdetails.js",
-				"bootpath" : "C74:/help/resources",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "helpstarter.js",
-				"bootpath" : "C74:/help/resources",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.cqt~.mxo",
+				"name" : "bach.hypercomment.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.hypercomment.mxo",
+				"name" : "ears.cqt~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -775,6 +761,24 @@
 , 			{
 				"name" : "ears.specshow~.mxo",
 				"type" : "iLaX"
+			}
+, 			{
+				"name" : "helpdetails.js",
+				"bootpath" : "C74:/help/resources",
+				"type" : "TEXT",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "helpname.js",
+				"bootpath" : "C74:/help/resources",
+				"type" : "TEXT",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "helpstarter.js",
+				"bootpath" : "C74:/help/resources",
+				"type" : "TEXT",
+				"implicit" : 1
 			}
  ],
 		"autosave" : 0

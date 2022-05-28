@@ -101,8 +101,10 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(biquad)
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
-    
+    earsbufobj_class_add_polyout_attr(c);
+
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -210,6 +212,8 @@ void buf_biquad_bang(t_buf_biquad *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     t_llllelem *el = x->coefficients->l_depth >= 2 ? x->coefficients->l_head : NULL;
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -220,6 +224,8 @@ void buf_biquad_bang(t_buf_biquad *x)
             llll_to_coefficients(coefficients, &a0, &a1, &a2, &b1, &b2);
             ears_buffer_biquad((t_object *)x, in, out, a0, a1, a2, b1, b2);
         }
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

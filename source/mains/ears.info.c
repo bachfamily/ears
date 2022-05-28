@@ -144,7 +144,7 @@ long sym2info(t_symbol *s)
     if (s == gensym("rms"))
         return EARS_BUF_INFO_RMS;
 
-    if (s == gensym("length") || s == gensym("duration"))
+    if (s == gensym("length") || s == gensym("duration") || s == gensym("durms") || s == gensym("ms"))
         return EARS_BUF_INFO_DURATION;
 
     if (s == gensym("numchannels"))
@@ -153,7 +153,7 @@ long sym2info(t_symbol *s)
     if (s == gensym("sr"))
         return EARS_BUF_INFO_SR;
 
-    if (s == gensym("numsamples"))
+    if (s == gensym("numsamples") || s == gensym("numsamps") || s == gensym("dursamps"))
         return EARS_BUF_INFO_NUMSAMPLES;
 
     if (s == gensym("spectral"))
@@ -382,7 +382,7 @@ t_buf_info *buf_info_new(t_symbol *s, short argc, t_atom *argv)
                 llll_free(args);
                 return NULL;
             }
-            outlet_str[x->num_outlets] = 'l';
+            outlet_str[x->num_outlets] = 'z';
             x->num_outlets++;
         }
         outlet_str[x->num_outlets] = 0;
@@ -419,7 +419,8 @@ void buf_info_bang(t_buf_info *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-    
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     long num_outlets = x->num_outlets;
     t_atom *av[LLLL_MAX_OUTLETS];
     
@@ -430,6 +431,7 @@ void buf_info_bang(t_buf_info *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         for (long i = 0; i < num_outlets; i++)
             buf_info_get_analysis(x, in, x->outlet_info[i], av[i]+count);
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
 
     earsbufobj_mutex_unlock((t_earsbufobj *)x);

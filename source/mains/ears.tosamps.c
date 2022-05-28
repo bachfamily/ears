@@ -97,6 +97,7 @@ int C74_EXPORT main(void)
     // organized with one parenthesis level for each channel.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(tosamps)
     
+    earsbufobj_class_add_blocking_attr(c);
     llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
     
     class_register(CLASS_BOX, c);

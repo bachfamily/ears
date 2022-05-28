@@ -112,6 +112,7 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(cqt)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
@@ -122,8 +123,10 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
-    earsbufobj_class_add_wintype_attr(c);
+    earsbufobj_class_add_wintype_attr_essentia(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_LONG(c, "binsperoctave", 0, t_buf_cqt, a_binsPerOctave);
     CLASS_ATTR_STYLE_LABEL(c,"binsperoctave",0,"text","Bins Per Octave");

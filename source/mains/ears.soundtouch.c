@@ -108,9 +108,12 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(soundtouch)
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_pitchunit_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "speech", 0, t_buf_soundtouch, e_speech);
     CLASS_ATTR_STYLE_LABEL(c,"speech",0,"onoff","Speech");
@@ -187,6 +190,8 @@ t_buf_soundtouch *buf_soundtouch_new(t_symbol *s, short argc, t_atom *argv)
         // @description Sets the pitch shift amount (unit defined via the <m>pitchunit</m> attribute).
         
         x->e_pitch_shift = 0.;
+        
+        x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
 
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
@@ -224,11 +229,14 @@ void buf_soundtouch_bang(t_buf_soundtouch *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
-        ears_buffer_soundtouch((t_object *)x, in, out, x->e_stretch_factor, earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->e_pitch_shift)/100., x->e_quick, x->e_no_antialias, x->e_speech);
+        ears_buffer_soundtouch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, x->e_stretch_factor, in), earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->e_pitch_shift)/100., x->e_quick, x->e_no_antialias, x->e_speech);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

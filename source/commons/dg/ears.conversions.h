@@ -18,6 +18,8 @@ typedef enum _ears_timeunit
     EARS_TIMEUNIT_MS = 0,
     EARS_TIMEUNIT_SAMPS = 1,
     EARS_TIMEUNIT_DURATION_RATIO = 2,
+    EARS_TIMEUNIT_DURATION_DIFFERENCE_MS = 3,
+    EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS = 4,
 
     // these are only relevant for Essentia, never exposed
     EARS_TIMEUNIT_SECONDS,

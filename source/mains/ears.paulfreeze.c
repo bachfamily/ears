@@ -106,11 +106,14 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(paulfreeze)
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
 
     earsbufobj_class_add_framesize_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "spectral", 0, t_buf_paulfreeze, e_spectral);
     CLASS_ATTR_STYLE_LABEL(c,"spectral",0,"onoff","Frequency Domain");
@@ -213,6 +216,7 @@ void buf_paulfreeze_bang(t_buf_paulfreeze *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
 
     t_llllelem *el = x->e_onset->l_head;
     t_llllelem *del = x->e_duration->l_head;
@@ -224,7 +228,7 @@ void buf_paulfreeze_bang(t_buf_paulfreeze *x)
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
         long onset_samps = 0, jitter_samps = 0;
-        long framesize_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, false, true);
+        long framesize_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
         long duration_samps = earsbufobj_time_to_samps((t_earsbufobj *)x, hatom_getdouble(&del->l_hatom), in);
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
             t_llll *ll = hatom_getllll(&el->l_hatom);
@@ -246,6 +250,8 @@ void buf_paulfreeze_bang(t_buf_paulfreeze *x)
         }
 
         ears_buffer_paulfreeze((t_object *)x, in, out, onset_samps, framesize_samps, jitter_samps, duration_samps, x->e_spectral);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

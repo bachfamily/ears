@@ -16,6 +16,10 @@ class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
 // the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
 // used name. This is especially useful in combination with iterative mechanisms.
 class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
+// @method stop @digest Abort computation
+// @description When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+// set to 0, the computation is aborted as soon as possible.
+class_addmethod(c, (method)earsbufobj_stop, "stop", 0);
 // @method write @digest Save output as audio file
 // @description See equivalent <o>buffer~</o> method.
 // Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
@@ -137,12 +141,12 @@ CLASS_ATTR_BASIC(c, "envampunit", 0);
 #define earsbufobj_class_add_timeunit_attr
 CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
 CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Relative");
+CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Duration Ratio Duration Difference (ms) Duration Difference (samps)");
 CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
 CLASS_ATTR_BASIC(c, "timeunit", 0);
 CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
-// @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-// The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+// @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+// The default varies depending on the modules.
 
 #define earsbufobj_class_add_antimeunit_attr
 CLASS_ATTR_CHAR(c, "antimeunit", 0, t_earsbufobj, l_antimeunit);
@@ -152,7 +156,6 @@ CLASS_ATTR_ACCESSORS(c, "antimeunit", NULL, earsbufobj_setattr_antimeunit);
 CLASS_ATTR_BASIC(c, "antimeunit", 0);
 CLASS_ATTR_CATEGORY(c, "antimeunit", 0, "Units");
 // @description Sets the unit for analysis values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-// The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
 
 
 #define earsbufobj_class_add_envtimeunit_attr
@@ -255,6 +258,16 @@ CLASS_ATTR_CATEGORY(c, "numframes", 0, "Analysis");
 #define earsbufobj_class_add_wintype_attr
 CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
 CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+CLASS_ATTR_ENUM(c,"wintype", 0, "rectangular triangular sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian sqrthann sqrthamming");
+CLASS_ATTR_BASIC(c, "wintype", 0);
+CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+// @description Sets the window type.
+// Available windows are:
+// "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming"
+
+#define earsbufobj_class_add_wintype_attr_essentia
+CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
+CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
 CLASS_ATTR_ENUM(c,"wintype", 0, "hamming hann hannnsgcq triangular square blackmanharris62 blackmanharris70 blackmanharris74 blackmanharris92");
 CLASS_ATTR_BASIC(c, "wintype", 0);
 CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
@@ -287,4 +300,32 @@ CLASS_ATTR_CHAR(c, "winstartfromzero", 0, t_earsbufobj, a_winstartfromzero);
 CLASS_ATTR_STYLE_LABEL(c,"winstartfromzero",0,"onoff","First Window Starts At Zero");
 CLASS_ATTR_CATEGORY(c, "winstartfromzero", 0, "Analysis");
 // @description If on, the first window is centered at framesize/2; if off (default), the first window is centered at zero.
+
+
+
+#define earsbufobj_class_add_blocking_attr
+CLASS_ATTR_CHAR(c, "blocking", 0, t_earsbufobj, l_blocking);
+CLASS_ATTR_STYLE_LABEL(c,"blocking",0,"enumindex","Blocking Mode");
+CLASS_ATTR_ENUMINDEX(c,"blocking", 0, "Non-Blocking Blocking (Low Priority) Blocking (High Priority)");
+CLASS_ATTR_BASIC(c, "blocking", 0);
+CLASS_ATTR_CATEGORY(c, "blocking", 0, "Behavior");
+CLASS_ATTR_ACCESSORS(c, "blocking", NULL, earsbufobj_setattr_blocking);
+// @description Sets the blocking mode, i.e. the thread to be used for computation: <br />
+// 0: the object uses its own separate thread; <br />
+// 1: the object uses the main thread (default); <br />
+// 2: the object uses its the scheduler thread. <br />
+// The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+
+
+#define earsbufobj_class_add_polyout_attr
+CLASS_ATTR_CHAR(c, "polyout", 0, t_earsbufobj, l_output_polybuffers);
+CLASS_ATTR_STYLE_LABEL(c,"polyout",0,"enumindex","Output Polybuffers");
+CLASS_ATTR_ENUMINDEX(c,"polyout", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
+CLASS_ATTR_BASIC(c, "polyout", 0);
+CLASS_ATTR_ACCESSORS(c, "polyout", NULL, earsbufobj_setattr_polyout);
+CLASS_ATTR_CATEGORY(c, "polyout", 0, "Behavior");
+// @description Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
+// - 0 (default) means that no polybuffer is created (individual buffers are output); <br />
+// - 1 means that a polybuffer is created and its name is output; <br />
+// - 2 means that a polybuffer is created and the individual names of its buffers are output.
 

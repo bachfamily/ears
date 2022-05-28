@@ -96,6 +96,7 @@ int C74_EXPORT main(void)
     
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(filterempty)
     
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
 //    earsbufobj_class_add_outname_attr(c);
 //    earsbufobj_class_add_naming_attr(c);
@@ -165,7 +166,7 @@ t_buf_filterempty *buf_filterempty_new(t_symbol *s, short argc, t_atom *argv)
         
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E", "a", names);
+        earsbufobj_setup((t_earsbufobj *)x, "E", "E", names);
 
         llll_free(args);
         llll_free(names);
@@ -184,28 +185,40 @@ void buf_filterempty_free(t_buf_filterempty *x)
 void buf_filterempty_bang(t_buf_filterempty *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
-    
-//    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-//    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
-    
-    t_symbol **syms = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
-    long num_syms = 0;
-    double ampthresh_linear = earsbufobj_amplitude_to_linear((t_earsbufobj *)x, x->ampthresh);
-     for (long in_count = 0; in_count < num_buffers; in_count++) {
-
-        t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, in_count);
-        double amp = 0;
-        t_ears_err err = ears_buffer_get_maxabs((t_object *)x, in, &amp);
+    if (num_buffers > 0) {
         
-        if (err == EARS_ERR_NONE && amp > ampthresh_linear) {
-            syms[num_syms] = earsbufobj_get_inlet_buffer_name((t_earsbufobj *)x, 0, in_count);
-            num_syms++;
+        //    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+        //    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
+        
+        t_symbol **syms = (t_symbol **)bach_newptr(num_buffers * sizeof(t_symbol));
+        long num_syms = 0;
+        double ampthresh_linear = earsbufobj_amplitude_to_linear((t_earsbufobj *)x, x->ampthresh);
+        
+        
+        
+        earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+        for (long count = 0; count < num_buffers; count++) {
+            
+            t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+            double amp = 0;
+            t_ears_err err = ears_buffer_get_maxabs((t_object *)x, in, &amp);
+            
+            if (err == EARS_ERR_NONE && amp > ampthresh_linear) {
+                syms[num_syms] = earsbufobj_get_inlet_buffer_name((t_earsbufobj *)x, 0, count);
+                num_syms++;
+            }
+            
+            if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
         }
-    }
-    
-    earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 0, num_syms, syms);
+        
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_syms, true);
+        for (long i = 0; i < num_syms; i++)
+            earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, i, syms[i]);
 
-    bach_freeptr(syms);
+        earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
+        
+        bach_freeptr(syms);
+    }
 //    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, out_count, true);
 //    earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }

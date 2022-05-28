@@ -137,7 +137,10 @@ int C74_EXPORT main(void)
     // @description A number in the second, third or fourth inlet respectively sets the yaw, pitch and roll
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoamirror, dimension);
     CLASS_ATTR_STYLE_LABEL(c,"dimension",0,"enum","Dimension");
@@ -223,11 +226,15 @@ void buf_hoamirror_bang(t_buf_hoamirror *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
         ears_buffer_hoa_mirror((t_object *)x, in, out, ears_hoa_get_dimension_as_long(x->dimension), x->axis);
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

@@ -125,6 +125,16 @@
 				used name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
+			</description>
+		</method>
 		<method name="write">
 			<arg name="bufferindex" optional="1" type="int" />
 			<arg name="filename_or_path" optional="1" type="symbol" />

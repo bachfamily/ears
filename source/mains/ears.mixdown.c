@@ -101,8 +101,11 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(mixdown)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     
+    earsbufobj_class_add_polyout_attr(c);
+
     CLASS_ATTR_LONG(c, "numchannels",    0,    t_buf_mixdown, numchannels);
     CLASS_ATTR_BASIC(c, "numchannels", 0);
     CLASS_ATTR_STYLE_LABEL(c, "numchannels", 0, "text", "Number Of Output Channels");
@@ -213,6 +216,8 @@ void buf_mixdown_bang(t_buf_mixdown *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -223,7 +228,11 @@ void buf_mixdown_bang(t_buf_mixdown *x)
             ears_buffer_convert_numchannels((t_object *)x, out, numchannels, (e_ears_channel_convert_modes)channelmode_upmix, (e_ears_channel_convert_modes)channelmode_downmix);
             if (autogain)
                 ears_buffer_gain((t_object *)x, out, out, numchannels*1./curr_num_channels, false);
+        } else {
+            ears_buffer_clone((t_object *)x, in, out);
         }
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
