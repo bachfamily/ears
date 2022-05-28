@@ -643,8 +643,10 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
     if (dest2)
         ears_buffer_set_size_and_numchannels(ob, dest2, outframecount, numoutputchannels);
 
-    
-    
+    ears_buffer_clear(ob, dest1);
+    if (dest2)
+        ears_buffer_clear(ob, dest2);
+
     float *dest1_sample = buffer_locksamples(dest1);
     float *dest2_sample = dest2 ? buffer_locksamples(dest2) : NULL;
     float **source1_sample = (float **)bach_newptr(num_input_buffers * sizeof(float *));
@@ -683,6 +685,8 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
         outframecount = MIN(outframecount, buffer_getframecount(dest1));
         
         memset(dest1_sample, 0, outframecount * numoutputchannels * sizeof(float));
+        if (dest2_sample)
+            memset(dest1_sample, 0, outframecount * numoutputchannels * sizeof(float));
 
         for (long c = 0; c < numoutputchannels; c++) {
             if (source2[c] || numGriffinLimIterations <= 0) {
@@ -1286,8 +1290,10 @@ double unwrapped_phase_avg(double phase1, double phase2)
     return phase1*0.5 + phase2*0.5;
 }
 
-t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, double compensate_phases)
+t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, double compensate_phases, double weighting_amount, double weighting_numframes_stdev)
 {
+    bool verbose = true;
+
     if (num_channels == 0)
         return EARS_ERR_NO_BUFFER;
     
@@ -1339,7 +1345,11 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     t_ears_err err = EARS_ERR_NONE;
     double *energymap = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
 //    double energymap[num_bins][num_alloc_frames]; // @ANDREA, I KNOW...  BUT LET ME DO THIS LIKE THIS, I NEED TO EXPLORE! THEN I'll CHANGE IT; I PROMISE ;-)
-
+    
+    double *weights = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
+    for (long i = 0; i < num_bins * num_alloc_frames; i++)
+        weights[i] = 1.;
+    
     // 1) lock all the samples, cloning them
     long num_amps_locked = 0, num_phases_locked = 0;
     float **amps_samples = (float **)bach_newptr(num_channels * sizeof(float *));
@@ -1405,13 +1415,13 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                 switch (energy_mode) {
                     case EARS_SEAM_CARVE_MODE_MAGNITUDE:
                         for (long c = 0; c < num_channels; c++)
-                            energymap[f*num_bins + b] += amps_samples[c][f*num_bins + b];
+                            energymap[f*num_bins + b] += amps_samples[c][f*num_bins + b] * weights[f * num_bins + b];
                         break;
                         
                     case EARS_SEAM_CARVE_MODE_GRADIENT_MAGNITUDE:
                     default:
                         for (long c = 0; c < num_channels; c++)
-                            energymap[f*num_bins + b] += fabs(amps_samples[c][(f == num_frames - 1 ? f-1 : f+1)*num_bins + b]-amps_samples[c][f*num_bins + b]) + fabs(amps_samples[c][f*num_bins + (b == num_bins - 1 ? b-1 : b+1)]-amps_samples[c][f*num_bins + b]);
+                            energymap[f*num_bins + b] += (fabs(amps_samples[c][(f == num_frames - 1 ? f-1 : f+1)*num_bins + b]-amps_samples[c][f*num_bins + b]) + fabs(amps_samples[c][f*num_bins + (b == num_bins - 1 ? b-1 : b+1)]-amps_samples[c][f*num_bins + b])) * weights[f * num_bins + b];
                         break;
                         
                 }
@@ -1442,6 +1452,9 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         if (delta_num_frames == 0) // we're done
             break;
         
+        // weight by uniformity
+        //
+        
         // 3) find carving
         long carve[num_bins];
         // find minimum at num_bins-1
@@ -1449,11 +1462,15 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         long curr_min_arg = 0;
         for (long f = 1; f < num_frames; f++) {
             if (energymap[f*num_bins + num_bins - 1] < curr_min) {
-                curr_min = energymap[f*num_bins + num_bins - 1] ;
+                curr_min = energymap[f*num_bins + num_bins - 1];
                 curr_min_arg = f;
             }
         }
+        if (verbose) {
+            post("carved index: %ld", curr_min_arg);
+        }
         
+
         bool ONLY_STRAIGHT_CUTS = false; // < this is sometimes set to true just to test
         carve[num_bins - 1] = curr_min_arg;
         for (long b = num_bins - 2; b >= 0; b--) {
@@ -1486,24 +1503,39 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             }
         }
             
-        // 4) apply seam carving
+        // 4) updating weights
+        for (long b = 0; b < num_bins; b++) {
+            for (long f = 0; f < num_frames; f++) {
+                weights[f * num_bins + b] += weighting_amount * exp(-((f-carve[b])*(f - carve[b]))/(2 * weighting_numframes_stdev*weighting_numframes_stdev));
+                //            weights[f] += 1./(weighting_numframes_stdev * abs(f - pivot_upper_f));
+            }
+        }
+        
+        // 5) apply seam carving
         if (delta_num_frames > 0) {
             // adding a seam
             for (long i = 0; i < num_bins; i++) {
-                double phase_shift = -fmod(TWOPI * ((double)i) * compensate_phases * hopsize_samps / framesize_samps, TWOPI);
                 for (long c = 0; c < num_channels; c++) {
                     long pivot_f = carve[i];
+                    double phase_shift = compensate_phases * (pivot_f < num_frames - 1 ? phases_samples[c][(pivot_f + 1)*num_bins + i] - phases_samples[c][pivot_f*num_bins + i] : 0);
                     for (long f = num_frames; f >= pivot_f; f--) {
                         amps_samples[c][(f+1)*num_bins + i] = amps_samples[c][f*num_bins + i];
                         phases_samples[c][(f+1)*num_bins + i] = positive_fmod(phases_samples[c][f*num_bins + i] + phase_shift, TWOPI); // shifting phases to account for time translation
+                        weights[(f+1)*num_bins + i] = weights[f*num_bins + i];
                     }
                     if (pivot_f > 0) {
                         amps_samples[c][pivot_f*num_bins + i] = (amps_samples[c][(pivot_f+1)*num_bins + i] + amps_samples[c][(pivot_f-1)*num_bins + i])/2.;
+                        phases_samples[c][pivot_f*num_bins + i] = random_double_in_range(0, TWOPI); // unwrapped_phase_avg(phases_samples[c][(pivot_f+1)*num_bins + i], phases_samples[c][(pivot_f-1)*num_bins + i]); //
+                        weights[pivot_f*num_bins + i] = (weights[(pivot_f+1)*num_bins + i] + weights[(pivot_f-1)*num_bins + i]);
 //                        phases_samples[c][pivot_f] = // TODO: phases!
+                    } else if (pivot_f == 0) {
+                        amps_samples[c][pivot_f*num_bins + i] = amps_samples[c][(pivot_f+1)*num_bins + i] ;
+                        phases_samples[c][pivot_f*num_bins + i] = random_double_in_range(0, TWOPI);
+                        weights[pivot_f*num_bins + i] = weights[(pivot_f+1)*num_bins + i];
                     }
                 }
             }
-            
+
             num_frames++;
             delta_num_frames--;
         } else {
@@ -1511,8 +1543,6 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             // now this is not ideal: one should work with phase differences, but it's a matter of optimization, and we have worse issues now...
             for (long i = 0; i < num_bins; i++) {
                 // TODO: ISSUE WITH PHASE SHIFT...
-                //double phase_shift = -fmod(TWOPI * ((double)i) * temp * hopsize_samps / framesize_samps, TWOPI);
-                //double phase_shift = 0; // WHY IS phase_shift = 0 better than the line above? Something is off here.
                 for (long c = 0; c < num_channels; c++) {
                     long pivot_f = carve[i];
                     // temp is a parameter just to try from outside whether the phase shift improves things or makes them worse...
@@ -1520,6 +1550,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                     for (long f = pivot_f; f < num_frames; f++) {
                         amps_samples[c][f*num_bins + i] = amps_samples[c][(f+1)*num_bins + i];
                         phases_samples[c][f*num_bins + i] = positive_fmod(phases_samples[c][(f+1)*num_bins + i] - phase_shift, TWOPI); // shifting phases to account for time translation
+                        weights[f*num_bins + i] = weights[(f+1)*num_bins + i];
                     }
                 }
             }
@@ -1546,6 +1577,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     }
     
     bach_freeptr(energymap);
+    bach_freeptr(weights);
     
     for (long c = 0; c < num_channels; c++) {
         ears_buffer_copy_format_and_set_size_samps(ob, amplitudes[c], out_amplitudes[c], num_out_frames);

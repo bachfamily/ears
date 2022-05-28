@@ -52,6 +52,9 @@ typedef struct _buf_seamstretch {
     long               e_energy_mode;
     t_llll             *e_howmuch;
     
+    double             e_weighting_amount;
+    double             e_weighting_stdev;
+    
     long             e_compensate_phases;
 } t_buf_seamstretch;
 
@@ -132,6 +135,19 @@ int C74_EXPORT main(void)
     // @description Sets the normalization mode for the output buffer:
     // 0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 = Overload Protection Only, only
     // normalizes to 1. if some samples exceed in modulo 1.
+
+    CLASS_ATTR_DOUBLE(c, "uniformity", 0, t_buf_seamstretch, e_weighting_amount);
+    CLASS_ATTR_STYLE_LABEL(c,"uniformity",0,"text","Force Uniformity");
+    CLASS_ATTR_BASIC(c, "uniformity", 0);
+    // @description Sets the amount of uniformity enforced by the algorithm. Zero means: no constraint for the seams:
+    // whichever is in ; 1 means: enforce uniformity by penalizing seams in similar position position as previous ones
+    // (via the uniformitywintime attribute)
+
+    CLASS_ATTR_DOUBLE(c, "uniformitytimeinfluence", 0, t_buf_seamstretch, e_weighting_stdev);
+    CLASS_ATTR_STYLE_LABEL(c,"uniformitytimeinfluence",0,"text","Uniformity Time Influence");
+    // @description Sets the influence of uniformity constraints in the <m>antimeunit</m> enforced by the uniformity algorithm.
+    // This corresponds to the standard deviation of the penalizing gaussian curve.
+
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -177,6 +193,8 @@ t_buf_seamstretch *buf_seamstretch_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->e_howmuch = llll_from_text_buf("1.");
         x->e_energy_mode = EARS_SEAM_CARVE_MODE_MAGNITUDE;
+        x->e_weighting_amount = 0;
+        x->e_weighting_stdev = 44100; //in the <antimeunit>
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -276,7 +294,7 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
     t_buffer_obj *out_amps = ears_buffer_make(NULL);
     t_buffer_obj *out_phases = ears_buffer_make(NULL);
     t_buffer_obj *tempchannel = ears_buffer_make(NULL);
-    long fullspectrum = 1;
+    long fullspectrum = 0; // must be zero! we're only shifting the lower portion of spectrum
     long unitary = 1;
     
     t_llllelem *el_howmuch = x->e_howmuch->l_head;
@@ -301,16 +319,22 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
             double framesize_samps = 2*(ears_buffer_get_numchannels((t_object *)x, in_amps)-1);
             double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps) * 1./ears_buffer_get_sr((t_object *)x, in_amps);
             long delta_frames = (long)round(delta_samps / hopsize_samps);
+            double weighting_stdev_frames = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_weighting_stdev, in_amps, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS | EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS)/hopsize_samps;
             
-            ears_buffer_spectral_seam_carve((t_object *)x, 1, &in_amps, &in_phases, &out_amps, &out_phases, NULL, NULL, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases);
+//            t_buffer_obj *seam_path = ears_buffer_getobject(gensym("seams"));
+//            t_buffer_obj *outampsok = ears_buffer_getobject(gensym("outamps"));
+//            t_buffer_obj *tempchannelok = ears_buffer_getobject(gensym("tempchannel"));
+
+            ears_buffer_spectral_seam_carve((t_object *)x, 1, &in_amps, &in_phases, &out_amps, &out_phases, NULL, NULL /*seam_path*/, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_weighting_amount, weighting_stdev_frames);
             
             ears_buffer_istft((t_object *)x, 1, &out_amps, &out_phases, tempchannel, NULL,
                               x->e_ob.a_wintype && strncmp(x->e_ob.a_wintype->s_name, "sqrt", 4) == 0 ? x->e_ob.a_wintype->s_name : "rect", true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary, 0);
-            
+
             if (c == 0) {
                 ears_buffer_set_size_and_numchannels((t_object *)x, outbuf, ears_buffer_get_size_samps((t_object *)x, tempchannel), num_in_chans);
             }
             ears_buffer_copychannel((t_object *)x, tempchannel, 0, outbuf, c);
+            buffer_setdirty(outbuf);
         }
         
     }
