@@ -110,7 +110,7 @@ int C74_EXPORT main(void)
     // @method symbol/llll @digest Set window type
     // @description A symbol (or an llll containing a symbol) in the second inlet sets the window type.
     // Available windows are: "rect", "tri", "sine", "hann", "hamming", "blackman", "nuttall",
-    // "blackmannuttall", "blackmanharris", "gaussian"
+    // "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming"
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);

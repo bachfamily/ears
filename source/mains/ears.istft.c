@@ -270,7 +270,7 @@ void buf_istft_bang(t_buf_istft *x)
         ears_specbuffer_istft_essentia((t_object *)x, num_buffers, in1, in2, dest, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr);
 #else
         
-        ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, NULL, x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary, x->a_numGriffinLimIterations);
+        ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, NULL, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : NULL, x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary, x->a_numGriffinLimIterations);
         
 #endif
         

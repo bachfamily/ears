@@ -50,9 +50,9 @@
 typedef struct _buf_seamstretch {
     t_earsbufobj       e_ob;
     long               e_energy_mode;
-    double             e_howmuch;
+    t_llll             *e_howmuch;
     
-    double             e_temp;
+    long             e_compensate_phases;
 } t_buf_seamstretch;
 
 
@@ -112,10 +112,18 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
 
+    earsbufobj_class_add_framesize_attr(c);
+    earsbufobj_class_add_hopsize_attr(c);
+    earsbufobj_class_add_overlap_attr(c);
+    earsbufobj_class_add_wintype_attr(c);
+    earsbufobj_class_add_winstartfromzero_attr(c);
 
-    CLASS_ATTR_DOUBLE(c, "temp", 0, t_buf_seamstretch, e_temp);
-    CLASS_ATTR_STYLE_LABEL(c,"temp",0,"number","Temp");
 
+    
+    CLASS_ATTR_LONG(c, "phasecompensation", 0, t_buf_seamstretch, e_compensate_phases);
+    CLASS_ATTR_STYLE_LABEL(c,"phasecompensation",0,"onoff","Phase Compensation");
+    CLASS_ATTR_BASIC(c, "phasecompensation", 0);
+    // @description Toggles the ability to compensate phase changes.
     
     CLASS_ATTR_LONG(c, "energy", 0, t_buf_seamstretch, e_energy_mode);
     CLASS_ATTR_STYLE_LABEL(c,"energy",0,"enumindex","Energy Function");
@@ -167,7 +175,7 @@ t_buf_seamstretch *buf_seamstretch_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_seamstretch*)object_alloc_debug(s_tag_class);
     if (x) {
-        x->e_howmuch = 0;
+        x->e_howmuch = llll_from_text_buf("1.");
         x->e_energy_mode = EARS_SEAM_CARVE_MODE_MAGNITUDE;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
@@ -184,14 +192,16 @@ t_buf_seamstretch *buf_seamstretch_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
         if (args && args->l_head) {
-            x->e_howmuch = hatom_getdouble(&args->l_head->l_hatom);
+            llll_free(x->e_howmuch);
+            x->e_howmuch = llll_clone(args);
         }
 
         x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
+        x->e_ob.a_wintype = gensym("sqrthann");
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "EE4", "EEE", names);
+        earsbufobj_setup((t_earsbufobj *)x, "E4", "E", names);
 
         llll_free(args);
         llll_free(names);
@@ -206,7 +216,7 @@ void buf_seamstretch_free(t_buf_seamstretch *x)
 }
 
 
-
+/*
 void buf_seamstretch_bang(t_buf_seamstretch *x)
 {
     long num_buffers = MIN(earsbufobj_get_instore_size((t_earsbufobj *)x, 0), earsbufobj_get_instore_size((t_earsbufobj *)x, 1));
@@ -237,7 +247,7 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
         double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps[0]) * 1./ears_buffer_get_sr((t_object *)x, in_amps[0]);
         long delta_frames = (long)round(delta_samps / hopsize_samps);
 
-        ears_buffer_spectral_seam_carve((t_object *)x, num_buffers, in_amps, in_phases, out_amps, out_phases, energy_map, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_temp);
+        ears_buffer_spectral_seam_carve((t_object *)x, num_buffers, in_amps, in_phases, out_amps, out_phases, energy_map, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases);
         
         earsbufobj_mutex_unlock((t_earsbufobj *)x);
         earsbufobj_updateprogress((t_earsbufobj *)x, 1.);
@@ -247,6 +257,77 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
         earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     }
 }
+*/
+
+
+void buf_seamstretch_bang(t_buf_seamstretch *x)
+{
+    long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
+    
+    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
+//    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 2, true);
+
+    earsbufobj_updateprogress((t_earsbufobj *)x, 0.);
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+
+    t_buffer_obj *in_amps = ears_buffer_make(NULL);
+    t_buffer_obj *in_phases = ears_buffer_make(NULL);
+    t_buffer_obj *out_amps = ears_buffer_make(NULL);
+    t_buffer_obj *out_phases = ears_buffer_make(NULL);
+    t_buffer_obj *tempchannel = ears_buffer_make(NULL);
+    long fullspectrum = 1;
+    long unitary = 1;
+    
+    t_llllelem *el_howmuch = x->e_howmuch->l_head;
+    for (long count = 0; count < num_buffers; count++,
+         el_howmuch = el_howmuch && el_howmuch->l_next ? el_howmuch->l_next : el_howmuch) {
+//        t_buffer_obj *energy_map = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
+//        t_buffer_obj *seam_path = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 1);
+        t_buffer_obj *inbuf = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        t_buffer_obj *outbuf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        double howmuch = el_howmuch ? hatom_getdouble(&el_howmuch->l_hatom) : 1.;
+        double audio_sr = ears_buffer_get_sr((t_object *)x, inbuf);
+        
+        long num_in_chans = ears_buffer_get_numchannels((t_object *)x, inbuf);
+        
+        ears_buffer_copy_format((t_object *)x, inbuf, outbuf);
+
+        for (long c = 0; c < num_in_chans; c++) {
+
+            ears_buffer_stft((t_object *)x, inbuf, NULL, c, in_amps, in_phases, x->e_ob.a_framesize, x->e_ob.a_hopsize, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : NULL, false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, x->e_ob.a_winstartfromzero, unitary);
+            
+            long delta_samps = earsbufobj_time_to_durationdifference_samps((t_earsbufobj *)x, howmuch, in_amps, EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS);
+            double framesize_samps = 2*(ears_buffer_get_numchannels((t_object *)x, in_amps)-1);
+            double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps) * 1./ears_buffer_get_sr((t_object *)x, in_amps);
+            long delta_frames = (long)round(delta_samps / hopsize_samps);
+            
+            ears_buffer_spectral_seam_carve((t_object *)x, 1, &in_amps, &in_phases, &out_amps, &out_phases, NULL, NULL, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases);
+            
+            ears_buffer_istft((t_object *)x, 1, &out_amps, &out_phases, tempchannel, NULL,
+                              x->e_ob.a_wintype && strncmp(x->e_ob.a_wintype->s_name, "sqrt", 4) == 0 ? x->e_ob.a_wintype->s_name : "rect", true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary, 0);
+            
+            if (c == 0) {
+                ears_buffer_set_size_and_numchannels((t_object *)x, outbuf, ears_buffer_get_size_samps((t_object *)x, tempchannel), num_in_chans);
+            }
+            ears_buffer_copychannel((t_object *)x, tempchannel, 0, outbuf, c);
+        }
+        
+    }
+
+    ears_buffer_free(in_amps);
+    ears_buffer_free(in_phases);
+    ears_buffer_free(out_amps);
+    ears_buffer_free(out_phases);
+    ears_buffer_free(tempchannel);
+
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+    earsbufobj_updateprogress((t_earsbufobj *)x, 1.);
+    
+//    earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
+    earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
+}
+
 
 
 void buf_seamstretch_anything(t_buf_seamstretch *x, t_symbol *msg, long ac, t_atom *av)
@@ -257,7 +338,7 @@ void buf_seamstretch_anything(t_buf_seamstretch *x, t_symbol *msg, long ac, t_at
     if (!parsed) return;
     
     if (parsed && parsed->l_head) {
-        if (inlet == 1 || inlet == 0) {
+        if (inlet == 0) {
             long num_bufs = llll_get_num_symbols_root(parsed);
             
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, num_bufs, true);
@@ -271,7 +352,8 @@ void buf_seamstretch_anything(t_buf_seamstretch *x, t_symbol *msg, long ac, t_at
         } else {
             if (parsed->l_head) {
                 earsbufobj_mutex_lock((t_earsbufobj *)x);
-                x->e_howmuch = hatom_getdouble(&parsed->l_head->l_hatom);
+                llll_free(x->e_howmuch);
+                x->e_howmuch = llll_clone(parsed);
                 earsbufobj_mutex_unlock((t_earsbufobj *)x);
             }
         }

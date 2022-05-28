@@ -39,7 +39,7 @@ t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer
 /// I suspect something weird happens with kissfft inside essentia...
 t_ears_err ears_buffer_fft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar_input, long polar_output, long inverse, long fullspectrum, e_ears_angleunit angleunit, long unitary);
 t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, long channel, t_buffer_obj *dest1, t_buffer_obj *dest2, long framesize_samps, double hopsize_samps, const char *wintype, long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, long left_aligned_windows, long unitary);
-t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, double force_sr, long left_aligned_windows, long unitary, long numGriffinLimIterations);
+t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest1, t_buffer_obj *dest2, const char *wintype, long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, double force_sr, long left_aligned_windows, long unitary, long numGriffinLimIterations);
 
 
 t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double stretchfactor, long framesize_samps, char spectral = true, bool precise_output_time = false);

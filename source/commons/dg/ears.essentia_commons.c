@@ -345,7 +345,7 @@ t_ears_err ears_griffin_lim_essentia(t_object *ob, t_buffer_obj *amplitudes, t_b
     return err;
 }
 
-t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
+t_ears_err ears_griffin_lim_essentia_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long polar, long fullspectrum, t_ears_essentia_analysis_params *params, e_ears_angleunit angleunit, double audio_sr, long outframecount)
 {
     t_ears_err err = EARS_ERR_NONE;
     
