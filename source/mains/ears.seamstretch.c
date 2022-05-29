@@ -49,12 +49,20 @@
 
 typedef struct _buf_seamstretch {
     t_earsbufobj       e_ob;
-    long               e_energy_mode;
+
     t_llll             *e_howmuch;
-    
+    char               mode;
+
+    // Time-algorithm
+    double             timeblock;
+    double             xfade;
+    char               xfade_type;
+    double             xfade_curve;
+
+    // Spectral algorithm:
+    long               e_energy_mode;
     double             e_weighting_amount;
     double             e_weighting_stdev;
-    
     long             e_compensate_phases;
 } t_buf_seamstretch;
 
@@ -114,6 +122,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
 
     earsbufobj_class_add_framesize_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
@@ -121,21 +130,59 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_wintype_attr(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
 
+    CLASS_ATTR_CHAR(c, "mode", 0, t_buf_seamstretch, mode);
+    CLASS_ATTR_STYLE_LABEL(c,"mode",0,"enumindex","Algorithm Mode");
+    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Time-Domain Frequency-Domain");
+    CLASS_ATTR_BASIC(c, "mode", 0);
+    // @description Sets the working mode: either in the Time-Domain or in the Frequency-Domain (default)
 
+
+    CLASS_ATTR_DOUBLE(c, "timeblock", 0, t_buf_seamstretch, timeblock);
+    CLASS_ATTR_STYLE_LABEL(c,"timeblock",0,"text","Time Block");
+    CLASS_ATTR_BASIC(c, "timeblock", 0);
+    CLASS_ATTR_CATEGORY(c, "timeblock", 0, "Time-Domain Algorithm");
+    // @description Sets the duration of each time block to be removed in the <m>antimeunit</m>
+
+    
+    CLASS_ATTR_CHAR(c, "xfadetype", 0, t_buf_seamstretch, xfade_type);
+    CLASS_ATTR_STYLE_LABEL(c,"xfadetype",0,"enumindex","Crossfade Type");
+    CLASS_ATTR_ENUMINDEX(c,"xfadetype", 0, "None Linear Sine (Equal Power) Curve S-Curve");
+    CLASS_ATTR_BASIC(c, "xfadetype", 0);
+    CLASS_ATTR_CATEGORY(c, "xfadetype", 0, "Time-Domain Algorithm");
+    // @description Sets the cross fade type: 0 = None, 1 = Linear, 2 = Sine (Equal Power, default), 3 = Curve, 4 = S-Curve
+
+    
+    CLASS_ATTR_DOUBLE(c, "xfadecurve", 0, t_buf_seamstretch, xfade_curve);
+    CLASS_ATTR_STYLE_LABEL(c,"xfadecurve",0,"text","Crossfade Curve");
+    CLASS_ATTR_CATEGORY(c, "xfadecurve", 0, "Time-Domain Algorithm");
+    // @description Sets the curve parameter for the crossfade (for fades of type Curve and S-Curve only).
+    // The parameters goes from -1 to 1, 0 being linear (default).
+
+    CLASS_ATTR_DOUBLE(c, "xfade", 0, t_buf_seamstretch, xfade);
+    CLASS_ATTR_STYLE_LABEL(c,"xfade",0,"text","Crossfade Duration");
+    CLASS_ATTR_BASIC(c, "xfade", 0);
+    CLASS_ATTR_CATEGORY(c, "xfade", 0, "Time-Domain Algorithm");
+    // @description Sets the duration of the crossfade, whose unit is set via the <m>antimeunit</m> attribute.
+
+    
+    
     
     CLASS_ATTR_LONG(c, "phasecompensation", 0, t_buf_seamstretch, e_compensate_phases);
     CLASS_ATTR_STYLE_LABEL(c,"phasecompensation",0,"onoff","Phase Compensation");
     CLASS_ATTR_BASIC(c, "phasecompensation", 0);
+    CLASS_ATTR_CATEGORY(c, "phasecompensation", 0, "Frequency-Domain Algorithm");
     // @description Toggles the ability to compensate phase changes.
     
     CLASS_ATTR_LONG(c, "energy", 0, t_buf_seamstretch, e_energy_mode);
     CLASS_ATTR_STYLE_LABEL(c,"energy",0,"enumindex","Energy Function");
     CLASS_ATTR_ENUMINDEX(c,"energy", 0, "Magnitude Gradient Magnitude");
+    CLASS_ATTR_CATEGORY(c, "energy", 0, "Frequency-Domain Algorithm");
     CLASS_ATTR_BASIC(c, "energy", 0);
     // @description Sets the normalization mode for the output buffer:
     // 0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 = Overload Protection Only, only
     // normalizes to 1. if some samples exceed in modulo 1.
 
+    
     CLASS_ATTR_DOUBLE(c, "uniformity", 0, t_buf_seamstretch, e_weighting_amount);
     CLASS_ATTR_STYLE_LABEL(c,"uniformity",0,"text","Force Uniformity");
     CLASS_ATTR_BASIC(c, "uniformity", 0);
@@ -195,6 +242,11 @@ t_buf_seamstretch *buf_seamstretch_new(t_symbol *s, short argc, t_atom *argv)
         x->e_energy_mode = EARS_SEAM_CARVE_MODE_MAGNITUDE;
         x->e_weighting_amount = 0;
         x->e_weighting_stdev = 44100; //in the <antimeunit>
+        x->mode = 1;
+        x->timeblock = 4096; // samps, by default, in the <antimeunit>
+        x->xfade = 4096; // samps, by default, in the <antimeunit>
+        x->xfade_type = EARS_FADE_SINE;
+        x->xfade_curve = 0;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -278,9 +330,11 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
 */
 
 
+
 void buf_seamstretch_bang(t_buf_seamstretch *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
+    long mode = x->mode;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
@@ -288,63 +342,86 @@ void buf_seamstretch_bang(t_buf_seamstretch *x)
 
     earsbufobj_updateprogress((t_earsbufobj *)x, 0.);
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-
-    t_buffer_obj *in_amps = ears_buffer_make(NULL);
-    t_buffer_obj *in_phases = ears_buffer_make(NULL);
-    t_buffer_obj *out_amps = ears_buffer_make(NULL);
-    t_buffer_obj *out_phases = ears_buffer_make(NULL);
-    t_buffer_obj *tempchannel = ears_buffer_make(NULL);
-    long fullspectrum = 0; // must be zero! we're only shifting the lower portion of spectrum
-    long unitary = 1;
     
-    t_llllelem *el_howmuch = x->e_howmuch->l_head;
-    for (long count = 0; count < num_buffers; count++,
-         el_howmuch = el_howmuch && el_howmuch->l_next ? el_howmuch->l_next : el_howmuch) {
-//        t_buffer_obj *energy_map = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
-//        t_buffer_obj *seam_path = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 1);
-        t_buffer_obj *inbuf = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
-        t_buffer_obj *outbuf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
-        double howmuch = el_howmuch ? hatom_getdouble(&el_howmuch->l_hatom) : 1.;
-        double audio_sr = ears_buffer_get_sr((t_object *)x, inbuf);
-        
-        long num_in_chans = ears_buffer_get_numchannels((t_object *)x, inbuf);
-        
-        ears_buffer_copy_format((t_object *)x, inbuf, outbuf);
-
-        for (long c = 0; c < num_in_chans; c++) {
-
-            ears_buffer_stft((t_object *)x, inbuf, NULL, c, in_amps, in_phases, x->e_ob.a_framesize, x->e_ob.a_hopsize, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : NULL, false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, x->e_ob.a_winstartfromzero, unitary);
+    if (mode == 0) { // time-domain
+        t_llllelem *el_howmuch = x->e_howmuch->l_head;
+        for (long count = 0; count < num_buffers; count++,
+             el_howmuch = el_howmuch && el_howmuch->l_next ? el_howmuch->l_next : el_howmuch) {
+            //        t_buffer_obj *energy_map = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
+            //        t_buffer_obj *seam_path = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 1);
+            t_buffer_obj *inbuf = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+            t_buffer_obj *outbuf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
             
-            long delta_samps = earsbufobj_time_to_durationdifference_samps((t_earsbufobj *)x, howmuch, in_amps, EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS);
-            double framesize_samps = 2*(ears_buffer_get_numchannels((t_object *)x, in_amps)-1);
-            double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps) * 1./ears_buffer_get_sr((t_object *)x, in_amps);
-            long delta_frames = (long)round(delta_samps / hopsize_samps);
-            double weighting_stdev_frames = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_weighting_stdev, in_amps, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS | EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS)/hopsize_samps;
+            double howmuch = el_howmuch ? hatom_getdouble(&el_howmuch->l_hatom) : 1.;
             
-//            t_buffer_obj *seam_path = ears_buffer_getobject(gensym("seams"));
-//            t_buffer_obj *outampsok = ears_buffer_getobject(gensym("outamps"));
-//            t_buffer_obj *tempchannelok = ears_buffer_getobject(gensym("tempchannel"));
-
-            ears_buffer_spectral_seam_carve((t_object *)x, 1, &in_amps, &in_phases, &out_amps, &out_phases, NULL, NULL /*seam_path*/, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_weighting_amount, weighting_stdev_frames);
-            
-            ears_buffer_istft((t_object *)x, 1, &out_amps, &out_phases, tempchannel, NULL,
-                              x->e_ob.a_wintype && strncmp(x->e_ob.a_wintype->s_name, "sqrt", 4) == 0 ? x->e_ob.a_wintype->s_name : "rect", true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary, 0);
-
-            if (c == 0) {
-                ears_buffer_set_size_and_numchannels((t_object *)x, outbuf, ears_buffer_get_size_samps((t_object *)x, tempchannel), num_in_chans);
-            }
-            ears_buffer_copychannel((t_object *)x, tempchannel, 0, outbuf, c);
-            buffer_setdirty(outbuf);
+            ears_buffer_squash_waveform((t_object *)x, inbuf, outbuf,
+                                        earsbufobj_time_to_durationdifference_samps((t_earsbufobj *)x, howmuch, inbuf),
+                                        earsbufobj_time_to_samps((t_earsbufobj *)x, x->timeblock, inbuf, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
+                                        earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, inbuf, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
+                                        earsbufobj_time_to_samps((t_earsbufobj *)x, x->xfade, inbuf, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
+                                        (e_ears_fade_types)x->xfade_type, x->xfade_curve, (e_slope_mapping)x->e_ob.l_slopemapping);
         }
         
+
+    } else if (mode == 1) { // frequency-domain
+        
+        t_buffer_obj *in_amps = ears_buffer_make(NULL);
+        t_buffer_obj *in_phases = ears_buffer_make(NULL);
+        t_buffer_obj *out_amps = ears_buffer_make(NULL);
+        t_buffer_obj *out_phases = ears_buffer_make(NULL);
+        t_buffer_obj *tempchannel = ears_buffer_make(NULL);
+        long fullspectrum = 0; // must be zero! we're only shifting the lower portion of spectrum
+        long unitary = 1;
+        
+        t_llllelem *el_howmuch = x->e_howmuch->l_head;
+        for (long count = 0; count < num_buffers; count++,
+             el_howmuch = el_howmuch && el_howmuch->l_next ? el_howmuch->l_next : el_howmuch) {
+            //        t_buffer_obj *energy_map = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
+            //        t_buffer_obj *seam_path = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 1);
+            t_buffer_obj *inbuf = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
+            t_buffer_obj *outbuf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
+            double howmuch = el_howmuch ? hatom_getdouble(&el_howmuch->l_hatom) : 1.;
+            double audio_sr = ears_buffer_get_sr((t_object *)x, inbuf);
+            
+            long num_in_chans = ears_buffer_get_numchannels((t_object *)x, inbuf);
+            
+            ears_buffer_copy_format((t_object *)x, inbuf, outbuf);
+            
+            for (long c = 0; c < num_in_chans; c++) {
+                
+                ears_buffer_stft((t_object *)x, inbuf, NULL, c, in_amps, in_phases, x->e_ob.a_framesize, x->e_ob.a_hopsize, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : NULL, false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, x->e_ob.a_winstartfromzero, unitary);
+                
+                long delta_samps = earsbufobj_time_to_durationdifference_samps((t_earsbufobj *)x, howmuch, in_amps, EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS);
+                double framesize_samps = 2*(ears_buffer_get_numchannels((t_object *)x, in_amps)-1);
+                double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps) * 1./ears_buffer_get_sr((t_object *)x, in_amps);
+                long delta_frames = (long)round(delta_samps / hopsize_samps);
+                double weighting_stdev_frames = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_weighting_stdev, in_amps, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS | EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS)/hopsize_samps;
+                
+                //            t_buffer_obj *seam_path = ears_buffer_getobject(gensym("seams"));
+                //            t_buffer_obj *outampsok = ears_buffer_getobject(gensym("outamps"));
+                //            t_buffer_obj *tempchannelok = ears_buffer_getobject(gensym("tempchannel"));
+                
+                ears_buffer_spectral_seam_carve((t_object *)x, 1, &in_amps, &in_phases, &out_amps, &out_phases, NULL, NULL /*seam_path*/, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_weighting_amount, weighting_stdev_frames);
+                
+                ears_buffer_istft((t_object *)x, 1, &out_amps, &out_phases, tempchannel, NULL,
+                                  x->e_ob.a_wintype && strncmp(x->e_ob.a_wintype->s_name, "sqrt", 4) == 0 ? x->e_ob.a_wintype->s_name : "rect", true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary, 0);
+                
+                if (c == 0) {
+                    ears_buffer_set_size_and_numchannels((t_object *)x, outbuf, ears_buffer_get_size_samps((t_object *)x, tempchannel), num_in_chans);
+                }
+                ears_buffer_copychannel((t_object *)x, tempchannel, 0, outbuf, c);
+                buffer_setdirty(outbuf);
+            }
+            
+        }
+        
+        ears_buffer_free(in_amps);
+        ears_buffer_free(in_phases);
+        ears_buffer_free(out_amps);
+        ears_buffer_free(out_phases);
+        ears_buffer_free(tempchannel);
     }
-
-    ears_buffer_free(in_amps);
-    ears_buffer_free(in_phases);
-    ears_buffer_free(out_amps);
-    ears_buffer_free(out_phases);
-    ears_buffer_free(tempchannel);
-
+    
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     earsbufobj_updateprogress((t_earsbufobj *)x, 1.);
     

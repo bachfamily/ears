@@ -1504,10 +1504,12 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         }
             
         // 4) updating weights
-        for (long b = 0; b < num_bins; b++) {
-            for (long f = 0; f < num_frames; f++) {
-                weights[f * num_bins + b] += weighting_amount * exp(-((f-carve[b])*(f - carve[b]))/(2 * weighting_numframes_stdev*weighting_numframes_stdev));
-                //            weights[f] += 1./(weighting_numframes_stdev * abs(f - pivot_upper_f));
+        if (weighting_amount != 0) {
+            for (long b = 0; b < num_bins; b++) {
+                for (long f = 0; f < num_frames; f++) {
+                    weights[f * num_bins + b] += weighting_amount * exp(-((f-carve[b])*(f - carve[b]))/(2 * weighting_numframes_stdev*weighting_numframes_stdev));
+                    //            weights[f] += 1./(weighting_numframes_stdev * abs(f - pivot_upper_f));
+                }
             }
         }
         

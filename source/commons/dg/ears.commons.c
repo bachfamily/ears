@@ -1819,10 +1819,11 @@ t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *righ
 }
 
 
-t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax)
+t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax, long *ampminsample, long *ampmaxsample)
 {
     t_ears_err err = EARS_ERR_NONE;
     double min = 0, max = 0;
+    long minsample = 0, maxsample = 0;
 
     float *sample = buffer_locksamples(source);
     
@@ -1837,12 +1838,17 @@ t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *am
             err = EARS_ERR_NO_BUFFER;
         } else {
             max = min = sample[0];
+            maxsample = minsample = 0;
             
             for (long i = 0; i < channelcount * framecount; i++) {
-                if (sample[i] > max)
+                if (sample[i] > max) {
                     max = sample[i];
-                if (sample[i] < min)
+                    maxsample = i;
+                }
+                if (sample[i] < min) {
                     min = sample[i];
+                    minsample = i;
+                }
             }
         }
     }
@@ -1853,6 +1859,10 @@ t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *am
         *ampmin = min;
     if (ampmax)
         *ampmax = max;
+    if (ampminsample)
+        *ampminsample = minsample;
+    if (ampmaxsample)
+        *ampmaxsample = maxsample;
     return err;
 }
 
@@ -3604,7 +3614,7 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
 }
 
 
-t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
+t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
                               long *xfade_samples, char also_fade_boundaries,
                               e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping,
                               e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize)
@@ -3667,7 +3677,7 @@ t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sour
         num_channels[i] = buffer_getchannelcount(source[i]);
     }
     
-    /// Calculating total length in samples of dest buffer
+    // Calculating total length in samples of dest buffer
     channelcount = buffer_getchannelcount(source[0]);		// number of floats in a frame
     for (i = 0; i < num_sources; i++) {
         if (i == 0) {
@@ -5525,3 +5535,241 @@ t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buff
     return err;
 }
 
+
+
+t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long winsize_samps)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample_wk = NULL;
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);
+        t_atom_long    framecount   = buffer_getframecount(source);
+        
+        
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
+            buffer_unlocksamples(source);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
+        }
+        
+        ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
+        
+        float *dest_sample = buffer_locksamples(dest);
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
+            t_atom_long    dest_framecount   = buffer_getframecount(dest);
+            
+            if (dest_channelcount != channelcount) { // should never happen
+                channelcount = MIN(dest_channelcount, channelcount);
+                dest_channelcount = channelcount;
+            }
+
+            if (dest_framecount != framecount) { // should never happen
+                framecount = MIN(dest_framecount, framecount);
+                dest_framecount = framecount;
+            }
+
+            // TODO: convolution that can be greatly optimized!!!!
+            for (long c = 0; c < channelcount; c++) {
+                for (long f = 0; f < framecount; f++) {
+                    // computing RMS over the window
+                    double tot = 0.;
+                    long count = 0;
+                    for (long w = f-winsize_samps/2; w < f-(winsize_samps/2)+winsize_samps; w++) {
+                        if (w >= 0 && w < framecount) {
+                            tot += orig_sample[w*channelcount + c] * orig_sample[w*channelcount + c];
+                            count++;
+                        }
+                    }
+                    dest_sample[f * channelcount + c] = sqrt(tot/count);
+                }
+            }
+            
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+        }
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            buffer_unlocksamples(source);
+    }
+    
+    return err;
+}
+
+
+long ears_buffer_get_mono_minindex_weighted(t_object *ob, t_buffer_obj *source, t_buffer_obj *mask)
+{
+    double min = 0;
+    long minsample = -1;
+
+    float *source_sample = buffer_locksamples(source);
+    float *mask_sample = buffer_locksamples(mask);
+
+    if (!source_sample || !mask_sample) {
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        if (framecount == 0) {
+            object_error((t_object *)ob, EARS_ERROR_BUF_EMPTY_BUFFER);
+        } else {
+            min = DBL_MAX;
+            minsample = -1;
+            
+            for (long i = 0; i < framecount; i++) {
+                if (mask_sample[i] == 1 && source_sample[i] < min) {
+                    min = source_sample[i];
+                    minsample = i;
+                }
+            }
+        }
+    }
+    
+    buffer_unlocksamples(source);
+    buffer_unlocksamples(mask);
+    
+    return minsample;
+}
+
+
+t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long delta_num_samps, long framesize_samps, long rms_calc_framesize_samps, long xfade_samples, e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping)
+{
+    long numchannels = ears_buffer_get_numchannels(ob, source);
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (numchannels <= 0) {
+        ears_buffer_clone(ob, source, dest);
+        return EARS_ERR_EMPTY_BUFFER;
+    }
+    
+    t_buffer_obj *source_mono = ears_buffer_make(NULL);
+    t_buffer_obj *envelope = ears_buffer_make(NULL);
+    t_buffer_obj *mask = ears_buffer_make(NULL);
+    
+    ears_buffer_clone(ob, source, source_mono);
+    ears_buffer_convert_numchannels(ob, source_mono, 1, EARS_CHANNELCONVERTMODE_CYCLE, EARS_CHANNELCONVERTMODE_CYCLE);
+    ears_buffer_clone(ob, source, dest);
+
+    ears_buffer_rms_envelope(ob, source_mono, envelope, rms_calc_framesize_samps);
+    ears_buffer_clone(ob, envelope, mask);
+    ears_buffer_fill_inplace(ob, mask, 1.);
+
+    t_buffer_obj *TESTenv = ears_buffer_getobject(gensym("env"));
+    ears_buffer_clone(ob, envelope, TESTenv);
+
+    long orig_num_samps = ears_buffer_get_size_samps(ob, envelope);
+    
+    if (delta_num_samps == 0) {
+        ears_buffer_clone(ob, source, dest);
+    } else if (delta_num_samps < 0 && -delta_num_samps >= orig_num_samps) {
+        ears_buffer_clone(ob, source, dest);
+        ears_buffer_clear(ob, dest);
+    } else if (delta_num_samps < 0) { // squash
+        float *dest_sample = buffer_locksamples(dest);
+        float *mask_sample = buffer_locksamples(mask);
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+            buffer_unlocksamples(dest);
+        } else {
+            
+            long dest_numsamples = ears_buffer_get_size_samps(ob, mask);
+            while (true) {
+                long minsample = ears_buffer_get_mono_minindex_weighted(ob, envelope, mask);
+                if (minsample == -1)
+                    break;
+                
+                long start_f = MIN(MAX(0, minsample - framesize_samps / 2), orig_num_samps);
+                long end_f = MIN(MAX(0, minsample - framesize_samps / 2 + framesize_samps), orig_num_samps);
+                
+                if (start_f > end_f) { // should never happen
+                    object_error(ob, "Internal error!");
+                    break;
+                }
+                
+                for (long f = start_f; f < end_f; f++) {
+                    if (mask_sample[f] == 1)
+                        dest_numsamples--;
+                    mask_sample[f] = 0;
+                }
+                
+                // TODO: in reality we should also account for cross fades between regions.
+
+                if (dest_numsamples < orig_num_samps + delta_num_samps)
+                    break;
+            }
+            
+            // creating regions
+            std::vector<long> regionstartsamp;
+            std::vector<long> regionendsamp;
+            std::vector<long> xfade_samples_reg;
+
+            double curr_mask = 0;
+            for (long f = 0; f < orig_num_samps; f++) {
+                if (curr_mask == 0 && mask_sample[f] == 1) {
+                    // beginning of a region
+                    regionstartsamp.push_back(f);
+                    curr_mask = 1.;
+                } else if (curr_mask == 1 && mask_sample[f] == 0) {
+                    // end of a region
+                    regionendsamp.push_back(f);
+                    curr_mask = 0.;
+                }
+            }
+            if (curr_mask == 1)
+                regionendsamp.push_back(orig_num_samps);
+            
+            if (regionendsamp.size() != regionstartsamp.size()) {
+                object_error(ob, "Internal error!");
+            }
+            
+            long num_regions = MIN(regionstartsamp.size(), regionendsamp.size());
+            t_buffer_obj **chunks = (t_buffer_obj **)bach_newptr(num_regions * sizeof(t_buffer_obj *));
+            for (long r = 0; r < num_regions; r++) {
+                chunks[r] = ears_buffer_make(NULL);
+                xfade_samples_reg.push_back(xfade_samples);
+            }
+            
+            ears_buffer_split(ob, source, chunks, &regionstartsamp[0], &regionendsamp[0], num_regions);
+
+            buffer_setdirty(dest);
+            buffer_unlocksamples(dest);
+
+            ears_buffer_join(ob, chunks, num_regions, dest, &xfade_samples_reg[0], false, fade_type, fade_curve, slopemapping, EARS_RESAMPLINGPOLICY_DONT, 11);
+            
+            for (long r = 0; r < num_regions; r++)
+                ears_buffer_free(chunks[r]);
+            bach_freeptr(chunks);
+        }
+        
+        buffer_unlocksamples(mask);
+
+    } else if (delta_num_samps > 0){
+        object_error(ob, "Time-domain timesquash does not support adding time.");
+        ears_buffer_clone(ob, source, dest);
+        return EARS_ERR_GENERIC;
+    }
+    
+    ears_buffer_free(source_mono);
+    ears_buffer_free(envelope);
+    ears_buffer_free(mask);
+    
+    return err;
+}

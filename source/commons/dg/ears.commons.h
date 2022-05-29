@@ -290,7 +290,7 @@ t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_i
 t_ears_err ears_buffer_fade_ms_inplace(t_object *ob, t_buffer_obj *buf, long fade_in_ms, long fade_out_ms, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping);
 
 
-t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
+t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
                               long *xfade_samples, char also_fade_boundaries,
                               e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping,
                               e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
@@ -353,10 +353,12 @@ t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *righ
 t_ears_err ears_buffer_slice(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest_left, t_buffer_obj *dest_right, long split_sample);
 t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **dest, long *start_samples, long *end_samples, long num_regions);
 
+t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long delta_num_samps, long framesize_samps, long rms_calc_framesize_samps, long xfade_samples, e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping);
 
-t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax);
+
+t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax, long *ampminsample = NULL, long *ampmaxsample = NULL);
 t_ears_err ears_buffer_get_maxabs(t_object *ob, t_buffer_obj *source, double *maxabs);
-t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms);;
+t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms);
 t_ears_err ears_buffer_extractchannels(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long num_channels, long *channels);
 t_ears_err ears_buffer_extractchannels_from_llll(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *channels);
 
@@ -393,6 +395,9 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
                                 double threshold_dB, double ratio, double kneewidth_dB,
                                 double attack_time_samps, double release_time_samps,
                                 double makeup_dB);
+
+// Envelopes
+t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long winsize_samps);
 
 // Waveset stuff
 t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long group, double normalize);
