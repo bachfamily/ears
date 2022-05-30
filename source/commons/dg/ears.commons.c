@@ -791,6 +791,76 @@ t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val)
 }
 
 
+// fill buffer with random range
+t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, double v_min, double v_max)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+        
+        if (framecount > 0) {
+            for (long i = 0; i < framecount; i++)
+                for (long c = 0; c < channelcount; c++)
+                    sample[i*channelcount + c] = random_double_in_range(v_min, v_max);
+            
+            buffer_setdirty(buf);
+        }
+        
+        buffer_unlocksamples(buf);
+    }
+    return err;
+}
+
+
+// fill buffer with random range
+t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, t_buffer_obj *mask)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    float *sample1 = buffer_locksamples(buf1);
+    float *sample2 = buffer_locksamples(buf2);
+    float *sampleM = buffer_locksamples(mask);
+
+    if (!sample1 || !sample2 || !sampleM) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount1 = buffer_getchannelcount(buf1);
+        t_atom_long    framecount1   = buffer_getframecount(buf1);
+        t_atom_long    channelcount2 = buffer_getchannelcount(buf2);
+        t_atom_long    framecount2   = buffer_getframecount(buf2);
+        t_atom_long    channelcountM = buffer_getchannelcount(mask);
+        t_atom_long    framecountM   = buffer_getframecount(mask);
+
+        if (channelcount1 == channelcount2 && channelcount2 == channelcountM &&
+            framecount1 == framecount2 && framecount2 == framecountM) {
+            
+            for (long i = 0; i < framecount1; i++)
+                for (long c = 0; c < channelcount1; c++)
+                    if (sampleM[i*channelcount1 + c] != 0)
+                        sample1[i*channelcount1 + c] = sample2[i*channelcount1 + c];
+            
+            buffer_setdirty(buf1);
+        } else {
+            object_error(ob, "Size mismatch in spectral buffers.");
+            err = EARS_ERR_GENERIC;
+        }
+        
+        buffer_unlocksamples(buf1);
+        buffer_unlocksamples(buf2);
+        buffer_unlocksamples(mask);
+    }
+    return err;
+}
+
+
+
+
 
 
 double ears_interp_circular_bandlimited(float *in, long num_in_frames, double index, double window_width)

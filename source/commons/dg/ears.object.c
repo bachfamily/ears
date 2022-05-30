@@ -637,6 +637,8 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     atom_setsym(&e_ob->a_numframes, _llllobj_sym_auto);
     e_ob->a_overlap = 2.;
     e_ob->a_wintype = gensym("hann");
+    e_ob->a_wintype_ansyn[0] = gensym("hann");
+    e_ob->a_wintype_ansyn[1] = gensym("sqrt");
     e_ob->a_winnorm = 1;
     e_ob->a_zeropadding = 0;
     e_ob->a_zerophase = true;
@@ -1892,26 +1894,45 @@ void earsbufobj_class_add_numframes_attr(t_class *c)
 void earsbufobj_class_add_wintype_attr_essentia(t_class *c)
 {
     CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
-    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"enum","Window Type");
     CLASS_ATTR_ENUM(c,"wintype", 0, "hamming hann hannnsgcq triangular square blackmanharris62 blackmanharris70 blackmanharris74 blackmanharris92");
     CLASS_ATTR_BASIC(c, "wintype", 0);
     CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
     // @description Sets the window type.
     // Available windows are the ones allowed by the Essentia library:
-    // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
+    // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92". <br />
+    // For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+    // analysis window, the second one being the synthesis window).
 }
+
 
 void earsbufobj_class_add_wintype_attr(t_class *c)
 {
     CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
-    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"enum","Window Type");
     CLASS_ATTR_ENUM(c,"wintype", 0, "rectangular triangular sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian sqrthann sqrthamming");
     CLASS_ATTR_BASIC(c, "wintype", 0);
     CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
     // @description Sets the window type.
     // Available windows are:
-    // "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming"
+    // "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+    // For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+    // analysis window, the second one being the synthesis window).
 }
+
+void earsbufobj_class_add_wintype_attr_ansyn(t_class *c)
+{
+    CLASS_ATTR_SYM_ARRAY(c, "wintype", 0, t_earsbufobj, a_wintype_ansyn, 2);
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+    CLASS_ATTR_BASIC(c, "wintype", 0);
+    CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+    // @description Sets the window type for both analaysis and synthesis (as a couple of symbols).
+    // Available windows are:
+    // "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+    // For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+    // analysis window, the second one being the synthesis window).
+}
+
 
 
 void earsbufobj_class_add_winnormalized_attr(t_class *c)

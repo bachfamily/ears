@@ -23,31 +23,19 @@
 	<inletlist>
 		<inlet id="0" type="INLET_TYPE">
 			<digest>
-				Buffer containing audio
+				Buffer containing input magnitudes or real (x) parts, one bin per channel
 			</digest>
 			<description>
-				Source audio buffer
+			</description>
+		</inlet>
+		<inlet id="1" type="INLET_TYPE">
+			<digest>
+				Buffer containing input phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel
+			</digest>
+			<description>
 			</description>
 		</inlet>
 	</inletlist>
-
-	<!--OUTLETS-->
-	<outletlist>
-		<outlet id="0" type="INLET_TYPE">
-			<digest>
-				Buffer containing output magnitudes or real (x) parts, one bin per channel
-			</digest>
-			<description>
-			</description>
-		</outlet>
-		<outlet id="1" type="INLET_TYPE">
-			<digest>
-				Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel
-			</digest>
-			<description>
-			</description>
-		</outlet>
-	</outletlist>
 
 	<!--ARGUMENTS-->
 	<objarglist>
@@ -293,20 +281,6 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
-		<attribute name="griffinlim" get="1" set="1" type="int" size="1">
-			<digest>
-				Number of Griffin-Lim Iterations
-			</digest>
-			<description>
-				Sets the number of Griffin-Lim iterations used in case no phases are provided.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Synthesis" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number of Griffin-Lim Iterations" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -342,16 +316,16 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="polar" get="1" set="1" type="int" size="1">
+		<attribute name="polarin" get="1" set="1" type="int" size="1">
 			<digest>
-				Polar Output
+				Polar Input
 			</digest>
 			<description>
-				Output data in polar coordinates, instead of cartesian ones.
+				Input data in polar coordinates, instead of cartesian ones.
 				Default is 1.
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Output" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Input" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
@@ -385,6 +359,20 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="unitary" get="1" set="1" type="int" size="1">
+			<digest>
+				Unitary
+			</digest>
+			<description>
+				Toggles the unitary normalization of the Fourier Transform (so that the
+				if coincides with its inverse up to conjugation).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Unitary" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="winstartfromzero" get="1" set="1" type="int" size="1">
 			<digest>
 				First Window Starts At Zero
@@ -405,42 +393,36 @@
 			</digest>
 			<description>
 				Sets the window type.
-				Available windows are the ones allowed by the Essentia library:
-				"hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
+				Available windows are:
+				"rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+				For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+				analysis window, the second one being the synthesis window).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 	</attributelist>
 
 	<!--SEEALSO-->
 	<seealsolist>
-		<seealso name="ears.window~" />
 		<seealso name="ears.stft~" />
+		<seealso name="ears.griffinlim~" />
+		<seealso name="ears.window~" />
 	</seealsolist>
 
 	<misc name = "Input">
 		<entry name ="Inlet 1 (symbol)">
 			<description>
-				Buffer containing audio.
-				Source audio buffer
+				Buffer containing input magnitudes or real (x) parts, one bin per channel.
 			</description>
 		</entry>
-	</misc>
-
-	<misc name = "Output">
-		<entry name ="Outlet 1 (symbol)">
+		<entry name ="Inlet 2 (symbol)">
 			<description>
-				Buffer containing output magnitudes or real (x) parts, one bin per channel.
-			</description>
-		</entry>
-		<entry name ="Outlet 2 (symbol)">
-			<description>
-				Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel.
+				Buffer containing input phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel.
 			</description>
 		</entry>
 	</misc>

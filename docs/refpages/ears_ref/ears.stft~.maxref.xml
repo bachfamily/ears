@@ -23,7 +23,7 @@
 	<inletlist>
 		<inlet id="0" type="INLET_TYPE">
 			<digest>
-				Buffer containing audio
+				Buffer containing input audio
 			</digest>
 			<description>
 				Source audio buffer
@@ -297,7 +297,7 @@
 			</digest>
 			<description>
 				Toggles the ability to downmix all the channels into one. If this flag is not set, then
-				one buffer per channel is output. By default downmix is 1.
+				one buffer per channel is output. By default downmix is off.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Downmix to Mono" />
@@ -404,7 +404,7 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="polar" get="1" set="1" type="int" size="1">
+		<attribute name="polarout" get="1" set="1" type="int" size="1">
 			<digest>
 				Polar Output
 			</digest>
@@ -417,7 +417,7 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
-		<attribute name="poly" get="1" set="1" type="int" size="1">
+		<attribute name="polyout" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Polybuffers
 			</digest>
@@ -447,6 +447,19 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="unitary" get="1" set="1" type="int" size="1">
+			<digest>
+				Unitary
+			</digest>
+			<description>
+				Toggles the unitary normalization of the Fourier Transform (so that the
+				if coincides with its inverse up to conjugation).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Unitary" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="winstartfromzero" get="1" set="1" type="int" size="1">
 			<digest>
 				First Window Starts At Zero
@@ -466,27 +479,30 @@
 			</digest>
 			<description>
 				Sets the window type.
-				Available windows are the ones allowed by the Essentia library:
-				"hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
+				Available windows are:
+				"rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+				For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+				analysis window, the second one being the synthesis window).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 	</attributelist>
 
 	<!--SEEALSO-->
 	<seealsolist>
-		<seealso name="ears.window~" />
 		<seealso name="ears.istft~" />
+		<seealso name="ears.fft~" />
+		<seealso name="ears.window~" />
 	</seealsolist>
 
 	<misc name = "Input">
 		<entry name ="Inlet 1 (symbol)">
 			<description>
-				Buffer containing audio.
+				Buffer containing input audio.
 				Source audio buffer
 			</description>
 		</entry>

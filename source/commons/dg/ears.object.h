@@ -84,6 +84,12 @@ typedef enum _earsbufobj_timeunit_conversion_flags
 } e_earsbufobj_timeunit_conversion_flags;
 
 
+typedef enum _earsbufobj_win_role
+{
+    EARSBUFOBJ_WIN_ANY = 0,
+    EARSBUFOBJ_WIN_ANALYSIS = 1,
+    EARSBUFOBJ_WIN_SYNTHESIS = 2,
+} e_earsbufobj_win_role;
 
 typedef struct _earsbufobj
 {
@@ -141,6 +147,7 @@ typedef struct _earsbufobj
     t_atom                  a_numframes;
     double                  a_overlap;
     t_symbol                *a_wintype;
+    t_symbol                *a_wintype_ansyn[2];  ///< if two symbols are defined, they correspond to analysis and synthesis windows. If just one is defined, that's the only relevant one
     char                    a_winnorm; ///< if set, window is normalized to have area of 1 and then scaled by a factor of 2
     long                    a_zeropadding;
     char                    a_zerophase;
@@ -401,6 +408,7 @@ void earsbufobj_class_add_numframes_attr(t_class *c);
 void earsbufobj_class_add_overlap_attr(t_class *c);
 void earsbufobj_class_add_wintype_attr(t_class *c);
 void earsbufobj_class_add_wintype_attr_essentia(t_class *c);
+void earsbufobj_class_add_wintype_attr_ansyn(t_class *c);
 void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
 void earsbufobj_class_add_winnormalized_attr(t_class *c);
 void earsbufobj_class_add_zerophase_attr(t_class *c);

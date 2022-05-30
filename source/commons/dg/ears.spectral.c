@@ -474,129 +474,8 @@ t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *s
 
 
 
-t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, long unitary, long numGriffinLimIterations)
-{
-    t_ears_err err = EARS_ERR_NONE;
-    
-    // Reconstruct via Griffin-Lim
-    t_buffer_obj *phases = ears_buffer_make(NULL);
-    t_buffer_obj *amps = ears_buffer_make(NULL);
 
-    ears_buffer_set_sr(ob, dest, audio_sr);
-    ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
-    
-    // initialize audio
-    float *tempout_sample = buffer_locksamples(dest);
-    if (tempout_sample) {
-        t_atom_long    channelcount = buffer_getchannelcount(dest); // must be 1
-        t_atom_long    framecount   = buffer_getframecount(dest); // must be outframecount
-        
-        for (long j = 0; j < framecount*channelcount; j++)
-            tempout_sample[j] = random_double_in_range(-1, 1);
-        buffer_unlocksamples(dest);
-    }
-    
-    for (int n = 0; n < numGriffinLimIterations; n++) {
-        // reconstruction spectrogram
-        ears_buffer_stft(ob, dest, NULL, 0, amps, phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, unitary);
-        
-        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
-        ears_buffer_istft(ob, 1, &amplitudes, &phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary, 0);
-    }
-    
-    ears_buffer_free(amps);
-    ears_buffer_free(phases);
-    return err;
-}
-
-
-t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, const char *wintype, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, long unitary, long numGriffinLimIterations)
-{
-    t_ears_err err = EARS_ERR_NONE;
-    
-    // Reconstruct via Griffin-Lim
-    t_buffer_obj *estimate_phases = ears_buffer_make(NULL);
-    t_buffer_obj *estimate_amps = ears_buffer_make(NULL);
-    
-    double momentum = 0.9;
-    long bincount = ears_buffer_get_numchannels(ob, amplitudes);
-    long wincount = ears_buffer_get_size_samps(ob, amplitudes);
-    
-    ears_buffer_set_sr(ob, dest, audio_sr);
-    ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
-    ears_buffer_copy_format(ob, amplitudes, estimate_phases);
-    ears_buffer_set_size_and_numchannels(ob, estimate_phases, wincount, bincount);
-    ears_buffer_copy_format(ob, amplitudes, estimate_amps);
-    ears_buffer_set_size_and_numchannels(ob, estimate_amps, wincount, bincount);
-    
-    float *previous_real = (float *)bach_newptrclear((wincount + 10) * bincount * sizeof(float));
-    float *previous_imag = (float *)bach_newptrclear((wincount + 10) * bincount * sizeof(float));
-
-    // initialize audio
-    float *estimate_phases_sample = buffer_locksamples(estimate_phases);
-    if (estimate_phases_sample) {
-        t_atom_long    channelcount = buffer_getchannelcount(estimate_phases); // must be 1
-        t_atom_long    framecount   = buffer_getframecount(estimate_phases); // must be outframecount
-        
-        for (long j = 0; j < framecount*channelcount; j++)
-            estimate_phases_sample[j] = random_double_in_range(0, TWOPI); // initial random phase
-//                            tempout_sample[j] = random_double_in_range(-1, 1); // white noise?
-        buffer_unlocksamples(estimate_phases);
-    }
-    
-    for (int n = 0; n < numGriffinLimIterations; n++) {
-        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
-        ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, wintype, true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary, 0);
-
-        // reconstruction spectrogram
-        ears_buffer_stft(ob, dest, NULL, 0, estimate_amps, estimate_phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, unitary);
-        
-        // apply momentum
-        float *estimate_amps_sample = buffer_locksamples(estimate_amps);
-        float *estimate_phases_sample = buffer_locksamples(estimate_phases);
-        if (estimate_phases_sample && estimate_amps_sample) {
-            t_atom_long    amps_channelcount = buffer_getchannelcount(estimate_amps); // must be bincount
-            t_atom_long    amps_framecount   = buffer_getframecount(estimate_amps); // must be outframecount
-            t_atom_long    phases_channelcount = buffer_getchannelcount(estimate_phases); // must be bincount
-            t_atom_long    phases_framecount   = buffer_getframecount(estimate_phases); // must be outframecount
-
-            if (amps_channelcount != bincount || phases_channelcount != bincount || amps_framecount != phases_framecount || amps_framecount > wincount + 10) {
-                object_error(ob, "Error!");
-                buffer_unlocksamples(estimate_amps);
-                buffer_unlocksamples(estimate_phases);
-                break;
-            }
-            
-            for (long j = 0; j < amps_framecount * bincount; j++) {
-                // convert into polar coordinates
-                double real = estimate_amps_sample[j] * cos(estimate_phases_sample[j]);
-                double imag = estimate_amps_sample[j] * sin(estimate_phases_sample[j]);
-                double newreal = real - (momentum/(1+momentum)) * previous_real[j];
-                double newimag = imag - (momentum/(1+momentum)) * previous_imag[j];
-                estimate_amps_sample[j] = sqrt(newreal*newreal + newimag * newimag);
-                estimate_phases_sample[j] = atan2(newimag, newreal);
-                previous_real[j] = real;
-                previous_imag[j] = imag;
-
-            }
-            buffer_unlocksamples(estimate_amps);
-            buffer_unlocksamples(estimate_phases);
-        }
-    }
-
-    ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary, 0);
-
-    bach_freeptr(previous_real);
-    bach_freeptr(previous_imag);
-
-    ears_buffer_free(estimate_amps);
-    ears_buffer_free(estimate_phases);
-    
-    return EARS_ERR_NONE;
-}
-
-
-t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest1, t_buffer_obj *dest2, const char *wintype, long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, double force_sr, long left_aligned_windows, long unitary, long numGriffinLimIterations)
+t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest1, t_buffer_obj *dest2, const char *wintype, long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, double force_sr, long left_aligned_windows, long unitary)
 {
     
     t_ears_err err = EARS_ERR_NONE;
@@ -656,19 +535,15 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
     bool all_mags_defined = true;
     
     for (long b = 0; b < num_input_buffers; b++) {
-        source1_sample[b] = buffer_locksamples(source1[b]);
-        source2_sample[b] = source2[b] ? buffer_locksamples(source2[b]) : NULL; // no phases?
+        source1_sample[b] = source1[b] ? buffer_locksamples(source1[b]) : NULL;
+        source2_sample[b] = source2[b] ? buffer_locksamples(source2[b]) : NULL;
         if (!source2[b])
             all_phases_defined = false; //TO DO check source1_sample != NULL
         if (!source1[b])
             all_mags_defined = false;
     }
     
-    if (!all_phases_defined && numGriffinLimIterations <= 0) {
-        object_warn(ob, "Some phases are not defined: you may want to set a number of iterations for a Griffin-Lim reconstruction.");
-    }
-    
-    if (!all_mags_defined) {
+    if (!all_mags_defined || ! all_phases_defined) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
     } else if (!dest1_sample) {
@@ -687,72 +562,55 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
         memset(dest1_sample, 0, outframecount * numoutputchannels * sizeof(float));
         if (dest2_sample)
             memset(dest1_sample, 0, outframecount * numoutputchannels * sizeof(float));
-
+        
         for (long c = 0; c < numoutputchannels; c++) {
-            if (source2[c] || numGriffinLimIterations <= 0) {
-                long fftsize = framesize_samps;
-                
-                kiss_fft_cpx *win = (kiss_fft_cpx *)bach_newptrclear(fftsize * sizeof(kiss_fft_cpx));
-                kiss_fft_cpx *wout = (kiss_fft_cpx *)bach_newptr(fftsize * sizeof(kiss_fft_cpx));
-                kiss_fft_cfg cfg = kiss_fft_alloc(fftsize, 1, NULL, NULL);
-
-                double onset = left_aligned_windows ? -hopsize_samps/2 : 0;
-                for (long f = 0; f < numinputframes; f++, onset += hopsize_samps) {
-                    // input formatting
-                    long b = 0;
-                    for (; b < numinputbins; b++) {
-                        if (polar_input) {
-                            float amp = source1_sample[c][f*numinputbins + b];
-                            float phase = source2_sample[c] ? source2_sample[c][f*numinputbins + b] : 0.;
-                            win[b].r = amp * cos(phase);
-                            win[b].i = amp * sin(phase);
-                        } else {
-                            win[b].r = source1_sample[c][f*numinputbins + b];
-                            win[b].i = source2_sample[c] ? source2_sample[c][f*numinputbins + b] : 0.;
-                        }
+            long fftsize = framesize_samps;
+            
+            kiss_fft_cpx *win = (kiss_fft_cpx *)bach_newptrclear(fftsize * sizeof(kiss_fft_cpx));
+            kiss_fft_cpx *wout = (kiss_fft_cpx *)bach_newptr(fftsize * sizeof(kiss_fft_cpx));
+            kiss_fft_cfg cfg = kiss_fft_alloc(fftsize, 1, NULL, NULL);
+            
+            double onset = left_aligned_windows ? -hopsize_samps/2 : 0;
+            for (long f = 0; f < numinputframes; f++, onset += hopsize_samps) {
+                // input formatting
+                long b = 0;
+                for (; b < numinputbins; b++) {
+                    if (polar_input) {
+                        float amp = source1_sample[c][f*numinputbins + b];
+                        float phase = source2_sample[c] ? source2_sample[c][f*numinputbins + b] : 0.;
+                        win[b].r = amp * cos(phase);
+                        win[b].i = amp * sin(phase);
+                    } else {
+                        win[b].r = source1_sample[c][f*numinputbins + b];
+                        win[b].i = source2_sample[c] ? source2_sample[c][f*numinputbins + b] : 0.;
                     }
-                    for (; b < fftsize; b++) {
-                        // mirroring remaining stuff
-                        if (fftsize-b >= 0 && fftsize-b < numinputbins) {
-                            win[b].r = win[fftsize-b].r;
-                            win[b].i = -win[fftsize-b].i;
-                        } else {
-                            win[b].r = win[b].i = 0.;
-                        }
-                    }
-                    
-                    // inverse
-                    bach_fft_kiss(cfg, fftsize, 1, win, wout, unitary);
-                    
-                    // overlap add
-                    long start_sample = (long)onset;
-                    for (long i = 0; i < fftsize; i++) {
-                        long ii = start_sample + i;
-                        if (ii >= 0 && ii < outframecount) {
-                            dest1_sample[ii * numoutputchannels + c] += wout[i].r * window[i];
-                            if (dest2_sample)
-                                dest2_sample[ii * numoutputchannels + c] += wout[i].i * window[i];
-                        }
+                }
+                for (; b < fftsize; b++) {
+                    // mirroring remaining stuff
+                    if (fftsize-b >= 0 && fftsize-b < numinputbins) {
+                        win[b].r = win[fftsize-b].r;
+                        win[b].i = -win[fftsize-b].i;
+                    } else {
+                        win[b].r = win[b].i = 0.;
                     }
                 }
                 
-            } else {
-                // Griffin Lim
-
-                buffer_unlocksamples(source1[c]);
-                buffer_unlocksamples(dest1);
+                // inverse
+                bach_fft_kiss(cfg, fftsize, 1, win, wout, unitary);
                 
-                t_buffer_obj *tempch = ears_buffer_make(NULL);
-                
-                ears_griffin_lim_2(ob, source1[c], tempch, fullspectrum, angleunit, wintype, framesize_samps, hopsize_samps, audio_sr, outframecount, left_aligned_windows, unitary, numGriffinLimIterations);
-                
-                ears_buffer_copychannel(ob, tempch, 0, dest1, c);
-                ears_buffer_free(tempch);
-                
-                dest1_sample = buffer_locksamples(dest1);
-                source1_sample[c] = buffer_locksamples(source1[c]);
+                // overlap add
+                long start_sample = (long)onset;
+                for (long i = 0; i < fftsize; i++) {
+                    long ii = start_sample + i;
+                    if (ii >= 0 && ii < outframecount) {
+                        dest1_sample[ii * numoutputchannels + c] += wout[i].r * window[i];
+                        if (dest2_sample)
+                            dest2_sample[ii * numoutputchannels + c] += wout[i].i * window[i];
+                    }
+                }
             }
             
+
             if (polar_output) {
                 long outframecount = buffer_getframecount(dest1);
                 for (long ii = 0; ii < outframecount; ii++) {
@@ -791,6 +649,219 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
 
     bach_freeptr(source1_sample);
     bach_freeptr(source2_sample);
+    
+    return err;
+}
+
+
+
+
+
+t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, long unitary, long numGriffinLimIterations)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    // Reconstruct via Griffin-Lim
+    t_buffer_obj *phases = ears_buffer_make(NULL);
+    t_buffer_obj *amps = ears_buffer_make(NULL);
+
+    ears_buffer_set_sr(ob, dest, audio_sr);
+    ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
+    
+    // initialize audio
+    float *tempout_sample = buffer_locksamples(dest);
+    if (tempout_sample) {
+        t_atom_long    channelcount = buffer_getchannelcount(dest); // must be 1
+        t_atom_long    framecount   = buffer_getframecount(dest); // must be outframecount
+        
+        for (long j = 0; j < framecount*channelcount; j++)
+            tempout_sample[j] = random_double_in_range(-1, 1);
+        buffer_unlocksamples(dest);
+    }
+    
+    for (int n = 0; n < numGriffinLimIterations; n++) {
+        // reconstruction spectrogram
+        ears_buffer_stft(ob, dest, NULL, 0, amps, phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, unitary);
+        
+        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
+        ears_buffer_istft(ob, 1, &amplitudes, &phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary);
+    }
+    
+    ears_buffer_free(amps);
+    ears_buffer_free(phases);
+    return err;
+}
+
+
+t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, const char *wintype, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, long unitary, long numGriffinLimIterations)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    // Reconstruct via Griffin-Lim
+    t_buffer_obj *estimate_phases = ears_buffer_make(NULL);
+    t_buffer_obj *estimate_amps = ears_buffer_make(NULL);
+    
+    double momentum = 0.9;
+    long bincount = ears_buffer_get_numchannels(ob, amplitudes);
+    long wincount = ears_buffer_get_size_samps(ob, amplitudes);
+    
+    ears_buffer_set_sr(ob, dest, audio_sr);
+    ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
+    ears_buffer_copy_format(ob, amplitudes, estimate_phases);
+    ears_buffer_set_size_and_numchannels(ob, estimate_phases, wincount, bincount);
+    ears_buffer_copy_format(ob, amplitudes, estimate_amps);
+    ears_buffer_set_size_and_numchannels(ob, estimate_amps, wincount, bincount);
+    
+    float *previous_real = (float *)bach_newptrclear((wincount + 10) * bincount * sizeof(float));
+    float *previous_imag = (float *)bach_newptrclear((wincount + 10) * bincount * sizeof(float));
+
+    // initialize audio
+    float *estimate_phases_sample = buffer_locksamples(estimate_phases);
+    if (estimate_phases_sample) {
+        t_atom_long    channelcount = buffer_getchannelcount(estimate_phases); // must be 1
+        t_atom_long    framecount   = buffer_getframecount(estimate_phases); // must be outframecount
+        
+        for (long j = 0; j < framecount*channelcount; j++)
+            estimate_phases_sample[j] = random_double_in_range(0, TWOPI); // initial random phase
+//                            tempout_sample[j] = random_double_in_range(-1, 1); // white noise?
+        buffer_unlocksamples(estimate_phases);
+    }
+    
+    for (int n = 0; n < numGriffinLimIterations; n++) {
+        // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
+        ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, wintype, true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary);
+
+        // reconstruction spectrogram
+        ears_buffer_stft(ob, dest, NULL, 0, estimate_amps, estimate_phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, unitary);
+        
+        // apply momentum
+        float *estimate_amps_sample = buffer_locksamples(estimate_amps);
+        float *estimate_phases_sample = buffer_locksamples(estimate_phases);
+        if (estimate_phases_sample && estimate_amps_sample) {
+            t_atom_long    amps_channelcount = buffer_getchannelcount(estimate_amps); // must be bincount
+            t_atom_long    amps_framecount   = buffer_getframecount(estimate_amps); // must be outframecount
+            t_atom_long    phases_channelcount = buffer_getchannelcount(estimate_phases); // must be bincount
+            t_atom_long    phases_framecount   = buffer_getframecount(estimate_phases); // must be outframecount
+
+            if (amps_channelcount != bincount || phases_channelcount != bincount || amps_framecount != phases_framecount || amps_framecount > wincount + 10) {
+                object_error(ob, "Error!");
+                buffer_unlocksamples(estimate_amps);
+                buffer_unlocksamples(estimate_phases);
+                break;
+            }
+            
+            for (long j = 0; j < amps_framecount * bincount; j++) {
+                // convert into polar coordinates
+                double real = estimate_amps_sample[j] * cos(estimate_phases_sample[j]);
+                double imag = estimate_amps_sample[j] * sin(estimate_phases_sample[j]);
+                double newreal = real - (momentum/(1+momentum)) * previous_real[j];
+                double newimag = imag - (momentum/(1+momentum)) * previous_imag[j];
+                estimate_amps_sample[j] = sqrt(newreal*newreal + newimag * newimag);
+                estimate_phases_sample[j] = atan2(newimag, newreal);
+                previous_real[j] = real;
+                previous_imag[j] = imag;
+
+            }
+            buffer_unlocksamples(estimate_amps);
+            buffer_unlocksamples(estimate_phases);
+        }
+    }
+
+    ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary);
+
+    bach_freeptr(previous_real);
+    bach_freeptr(previous_imag);
+
+    ears_buffer_free(estimate_amps);
+    ears_buffer_free(estimate_phases);
+    
+    return EARS_ERR_NONE;
+}
+
+
+
+
+
+t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj **orig_amps, t_buffer_obj **reconstructed_phases, t_buffer_obj **phases_mask, t_buffer_obj *dest_signal, const char *analysiswintype, const char *synthesiswintype, long fullspectrum, long left_aligned_windows, long unitary, long num_iterations)
+{
+    
+    t_ears_err err = EARS_ERR_NONE;
+
+    if (num_buffers == 0) {
+        // nothing to do
+        return EARS_ERR_NO_BUFFER;
+    }
+
+    double sr_original = ears_spectralbuf_get_original_audio_sr(ob, orig_amps[0]);
+    double hopsize_samps = ears_ms_to_fsamps(1000./ears_buffer_get_sr(ob, orig_amps[0]), sr_original);
+    double audio_sr = sr_original;
+
+    long numinputframes = ears_buffer_get_size_samps(ob, orig_amps[0]);
+    long numinputbins = ears_buffer_get_numchannels(ob, orig_amps[0]);
+    
+    for (long b = 1; b < num_buffers; b++) {
+        if (ears_buffer_get_size_samps(ob, orig_amps[b]) != numinputframes) {
+            object_error(ob, "All input buffers must have the same number of samples");
+            return EARS_ERR_GENERIC;
+        }
+        if (ears_buffer_get_numchannels(ob, orig_amps[b]) != numinputbins) {
+            object_error(ob, "All input buffers must have the same number of channels");
+            return EARS_ERR_GENERIC;
+        }
+    }
+    
+    int framesize_samps = fullspectrum ? numinputbins : 2 * (numinputbins - 1);
+    
+    if (framesize_samps <= 0) {
+        object_error(ob, "Negative number of frames!");
+        return EARS_ERR_GENERIC;
+    }
+
+    for (long i = 0; i < num_buffers; i++) {
+        t_buffer_obj *candidate_phases_i = ears_buffer_make(NULL);
+        
+/*        ears_buffer_copy_format(ob, orig_amps[i], candidate_phases_i);
+        ears_buffer_set_size_and_numchannels(ob, candidate_phases_i, numinputframes, numinputbins);
+        ears_buffer_clear(ob, candidate_phases_i);
+  */
+        // Reconstruct via Griffin-Lim
+        t_buffer_obj *temp_amps_i = ears_buffer_make(NULL);
+        t_buffer_obj *temp = ears_buffer_make(NULL);
+        ears_buffer_clone(ob, orig_amps[i], candidate_phases_i);
+        ears_buffer_clone(ob, orig_amps[i], temp_amps_i);
+        
+        // initialize phases randomly
+        ears_buffer_random_fill_inplace(ob, candidate_phases_i, 0, TWOPI);
+
+        for (int n = 0; n < num_iterations; n++) {
+            // apply mask, if needed
+            if (phases_mask)
+                ears_buffer_apply_mask(ob, candidate_phases_i, reconstructed_phases[i], phases_mask[i]);
+
+            // inverse stft
+            ears_buffer_istft(ob, 1, &orig_amps[i], &candidate_phases_i, temp, NULL, synthesiswintype, true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, left_aligned_windows, unitary);
+            
+            ears_buffer_stft(ob, temp, NULL, 0, temp_amps_i, candidate_phases_i, framesize_samps, hopsize_samps, analysiswintype, false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, left_aligned_windows, unitary);
+        }
+        
+        if (phases_mask)
+            ears_buffer_apply_mask(ob, candidate_phases_i, reconstructed_phases[i], phases_mask[i]);
+
+        ears_buffer_clone(ob, candidate_phases_i, reconstructed_phases[i]);
+        
+        if (dest_signal) {
+            ears_buffer_istft(ob, 1, &orig_amps[i], &candidate_phases_i, temp, NULL, synthesiswintype, true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, left_aligned_windows, unitary);
+            
+            if (i == 0) {
+                ears_buffer_copy_format(ob, temp, dest_signal);
+                ears_buffer_set_size_and_numchannels(ob, dest_signal, ears_buffer_get_size_samps(ob, temp), num_buffers);
+            }
+            ears_buffer_copychannel(ob, temp, 0, dest_signal, i);
+        }
+        
+        ears_buffer_free(temp_amps_i);
+        ears_buffer_free(temp);
+    }
     
     return err;
 }
@@ -1281,6 +1352,7 @@ long argmin3(double val1, double val2, double val3, long idx1, long idx2, long i
     return idx1;
 }
 
+
 double unwrapped_phase_avg(double phase1, double phase2)
 {
     while (phase2 > phase1 + PI)
@@ -1290,9 +1362,450 @@ double unwrapped_phase_avg(double phase1, double phase2)
     return phase1*0.5 + phase2*0.5;
 }
 
-t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, double compensate_phases, double weighting_amount, double weighting_numframes_stdev)
+// phase_handling = 0: none; 1: compensate; 2: griffin-lim
+t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, long phase_handling, double weighting_amount, double weighting_numframes_stdev,
+   // only used for griffin-lim;
+   long fullspectrum, long winleftalign, long unitary, long num_griffin_lim_iter, const char *analysiswintype, const char *synthesiswintype)
 {
-    bool verbose = true;
+    bool verbose = false;
+
+    if (num_channels == 0)
+        return EARS_ERR_NO_BUFFER;
+    
+    for (long i = 0; i < num_channels; i++) {
+        if (!amplitudes[i] || !phases[i])
+            return EARS_ERR_NO_BUFFER;
+    }
+    
+    long num_frames = ears_buffer_get_size_samps(ob, amplitudes[0]);
+    
+    if (delta_num_frames + num_frames <= 0) {
+        object_warn(ob, "No more frames left; empty output buffer!");
+        for (long i = 0; i < num_channels; i++) {
+            ears_buffer_clear(ob, amplitudes[i]);
+            ears_buffer_clear(ob, phases[i]);
+        }
+        if (seam_path)
+            ears_buffer_clear(ob, seam_path);
+        if (energy_map)
+            ears_buffer_clear(ob, energy_map);
+        return EARS_ERR_GENERIC;
+    }
+    
+    long orig_num_frames = num_frames;
+    long orig_delta_num_frames = delta_num_frames;
+    for (long i = 1; i < num_channels; i++) {
+        if (ears_buffer_get_size_samps(ob, amplitudes[i]) != num_frames) {
+            object_error(ob, "Size mismatch in frame sizes across channels");
+            return EARS_ERR_SIZE_MISMATCH;
+        }
+    }
+
+    long num_bins = ears_buffer_get_numchannels(ob, amplitudes[0]);
+    for (long i = 1; i < num_channels; i++) {
+        if (ears_buffer_get_numchannels(ob, amplitudes[i]) != num_bins) {
+            object_error(ob, "Size mismatch in number of bins across channels");
+            return EARS_ERR_SIZE_MISMATCH;
+        }
+    }
+    
+    long num_out_frames = num_frames + delta_num_frames;
+    long num_alloc_frames = MAX(num_frames, num_out_frames);
+    
+    if (num_out_frames < 0) {
+        object_error(ob, "Carving too many frames, empty buffer.");
+        return EARS_ERR_GENERIC;
+    }
+    
+    t_ears_err err = EARS_ERR_NONE;
+    double *energymap = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
+    double *energymapcumul = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
+//    double energymap[num_bins][num_alloc_frames]; // @ANDREA, I KNOW...  BUT LET ME DO THIS LIKE THIS, I NEED TO EXPLORE! THEN I'll CHANGE IT; I PROMISE ;-)
+    
+    double *weights = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
+    for (long i = 0; i < num_bins * num_alloc_frames; i++)
+        weights[i] = 1.;
+
+    t_buffer_obj *mask_buf = NULL;
+    float *glmask = (float *)bach_newptr(num_bins * num_alloc_frames * sizeof(float));
+    for (long i = 0; i < num_bins * num_alloc_frames; i++)
+        glmask[i] = 1.;
+
+    // 1) lock all the samples, cloning them
+    long num_amps_locked = 0, num_phases_locked = 0;
+    float **amps_samples = (float **)bach_newptr(num_channels * sizeof(float *));
+    float **phases_samples = (float **)bach_newptr(num_channels * sizeof(float *));
+    float *carvingpath_samps = NULL, *energymapout_samps = NULL;
+    for (long c = 0; c < num_channels; c++) {
+        float *temp = buffer_locksamples(amplitudes[c]);
+        if (!temp) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            goto end;
+        }
+        amps_samples[c] = (float *)bach_newptr(num_alloc_frames * num_bins * sizeof(float));
+        bach_copyptr(temp, amps_samples[c], num_alloc_frames * num_bins * sizeof(float));
+        buffer_unlocksamples(amplitudes[c]);
+        num_amps_locked++;
+        
+        temp = buffer_locksamples(phases[c]);
+        if (!temp) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            goto end;
+        }
+        phases_samples[c] = (float *)bach_newptr(num_alloc_frames * num_bins * sizeof(float));
+        bach_copyptr(temp, phases_samples[c], num_alloc_frames * num_bins * sizeof(float));
+        buffer_unlocksamples(phases[c]);
+        num_phases_locked++;
+    }
+    
+    // prepare carving path buffer to contain data
+    if (seam_path) {
+        ears_buffer_copy_format((t_object *)ob, amplitudes[0], seam_path, true);
+        ears_buffer_clear((t_object *)ob, seam_path);
+        ears_buffer_set_size_and_numchannels((t_object *)ob, seam_path, num_alloc_frames, num_bins);
+        carvingpath_samps = buffer_locksamples(seam_path);
+        if (!carvingpath_samps || buffer_getframecount(seam_path) != num_alloc_frames || buffer_getchannelcount(seam_path) != num_bins) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            goto end;
+        }
+    }
+    
+    // prepare energy map buffer to contain data
+    if (energy_map) {
+        ears_buffer_copy_format((t_object *)ob, amplitudes[0], energy_map, true);
+        ears_buffer_clear((t_object *)ob, energy_map);
+        ears_buffer_set_size_and_numchannels((t_object *)ob, energy_map, num_frames, num_bins);
+        energymapout_samps = buffer_locksamples(energy_map);
+        if (!energymapout_samps || buffer_getframecount(energy_map) != num_frames || buffer_getchannelcount(energy_map) != num_bins) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            goto end;
+        }
+    }
+
+    
+    // 1) get energy map
+    for (long b = 0; b < num_bins; b++) {
+        for (long f = 0; f < num_frames; f++) {
+            energymap[f*num_bins + b] = 0;
+            switch (energy_mode) {
+                case EARS_SEAM_CARVE_MODE_MAGNITUDE:
+                    for (long c = 0; c < num_channels; c++)
+                        energymap[f*num_bins + b] += amps_samples[c][f*num_bins + b] * weights[f * num_bins + b];
+                    break;
+                    
+                case EARS_SEAM_CARVE_MODE_GRADIENT_MAGNITUDE:
+                default:
+                    for (long c = 0; c < num_channels; c++)
+                        energymap[f*num_bins + b] += (fabs(amps_samples[c][(f == num_frames - 1 ? f-1 : f+1)*num_bins + b]-amps_samples[c][f*num_bins + b]) + fabs(amps_samples[c][f*num_bins + (b == num_bins - 1 ? b-1 : b+1)]-amps_samples[c][f*num_bins + b])) * weights[f * num_bins + b];
+                    break;
+                    
+            }
+            energymap[f*num_bins + b] /= num_channels; // not really needed though
+        }
+    }
+    
+    // 2) compute cumulative energies
+    for (long f = 0; f < num_frames; f++) {
+        energymapcumul[f*num_bins + 0] = energymap[f*num_bins + 0];
+    }
+    for (long b = 1; b < num_bins; b++) {
+        for (long f = 0; f < num_frames; f++) {
+            energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + MIN(MIN(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1]), energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
+        }
+    }
+    
+    // write energymap to output, but only for the first iteration
+    if (energymapout_samps) {
+        for (long b = 0; b < num_bins; b++) {
+            for (long f = 0; f < num_frames; f++) {
+                energymapout_samps[f * num_bins + b] = energymapcumul[f * num_bins + b];
+            }
+        }
+    }
+    
+    while (true) {
+        
+        if (verbose) {
+            post("weights");
+            t_llll *ll4 = double_array_to_llll(weights, num_bins * num_frames);
+            llll_print(ll4);
+            llll_free(ll4);
+            
+            post("energymap");
+            t_llll *ll1 = double_array_to_llll(energymap, num_bins * num_frames);
+            llll_print(ll1);
+            llll_free(ll1);
+            
+            post("cumulativeenergies");
+            t_llll *ll = double_array_to_llll(energymapcumul, num_bins * num_frames);
+            llll_print(ll);
+            llll_free(ll);
+        }
+
+        
+        if (update_progress) {
+            (update_progress)(ob, 1.-fabs((double)delta_num_frames)/fabs(orig_delta_num_frames));
+        }
+        
+        if (delta_num_frames == 0) // we're done
+            break;
+        
+        // 3) find carving
+        long carve[num_bins];
+        // find minimum at num_bins-1
+        double curr_min = energymapcumul[0*num_bins + num_bins - 1];
+        long curr_min_arg = 0;
+        for (long f = 1; f < num_frames; f++) {
+            if (energymapcumul[f*num_bins + num_bins - 1] < curr_min) {
+                curr_min = energymapcumul[f*num_bins + num_bins - 1];
+                curr_min_arg = f;
+            }
+        }
+
+        bool ONLY_STRAIGHT_CUTS = false; // < this is sometimes set to true just to test
+        carve[num_bins - 1] = curr_min_arg;
+        for (long b = num_bins - 2; b >= 0; b--) {
+            if (ONLY_STRAIGHT_CUTS) {
+                carve[b] = carve[num_bins-1];
+            } else {
+                long cb = carve[b+1];
+                double v1 = energymapcumul[cb*num_bins + b];
+                double v2 = energymapcumul[(cb > 0 ? cb-1 : cb)*num_bins + b];
+                double v3 = energymapcumul[(cb < num_frames-1 ? cb+1 : cb)*num_bins + b];
+                carve[b] = argmin3(v1, v2, v3, cb, cb > 0 ? cb-1 : cb, cb < num_frames-1 ? cb+1 : cb);
+            }
+        }
+        
+        
+        if (verbose) {
+            t_llll *ll = llll_get();
+            for (long b = 0; b < num_bins; b++)
+                llll_appendlong(ll, carve[b]);
+            post("carved indices:");
+            llll_print(ll);
+        }
+
+        // writing carving data to output buffer
+        if (carvingpath_samps) {
+            for (long b = 0; b < num_bins; b++) {
+                long thisframe = carve[b] - carvingpath_samps[carve[b] * num_bins + b];
+                if (thisframe < 0 || thisframe >= num_alloc_frames) {
+                    object_error((t_object *)ob, "Internal error!");
+                }
+                if (delta_num_frames > 0) {
+                    for (long f = thisframe+1; f < num_alloc_frames; f++)
+                        carvingpath_samps[f * num_bins + b] += 1;
+                } else {
+                    for (long f = thisframe; f < num_alloc_frames; f++)
+                        carvingpath_samps[f * num_bins + b] -= 1;
+                }
+            }
+        }
+            
+        // 4) updating weights
+        if (weighting_amount != 0) {
+            for (long b = 0; b < num_bins; b++) {
+                for (long f = MAX(0, (long)(carve[b]-5*weighting_numframes_stdev)); f < MIN(num_frames, (long)(carve[b]+5*weighting_numframes_stdev)); f++) {
+                    weights[f * num_bins + b] += weighting_amount * exp(-((f-carve[b])*(f - carve[b]))/(2 * weighting_numframes_stdev*weighting_numframes_stdev));
+                    //            weights[f] += 1./(weighting_numframes_stdev * abs(f - pivot_upper_f));
+                }
+            }
+        }
+        
+        // 5) apply seam carving
+        if (delta_num_frames > 0) {
+            // adding a seam
+            for (long i = 0; i < num_bins; i++) {
+                for (long c = 0; c < num_channels; c++) {
+                    long pivot_f = carve[i];
+                    double phase_shift = (phase_handling == 1) * (pivot_f < num_frames - 1 ? phases_samples[c][(pivot_f + 1)*num_bins + i] - phases_samples[c][pivot_f*num_bins + i] : 0);
+                    for (long f = num_frames; f >= pivot_f; f--) {
+                        amps_samples[c][(f+1)*num_bins + i] = amps_samples[c][f*num_bins + i];
+                        phases_samples[c][(f+1)*num_bins + i] = positive_fmod(phases_samples[c][f*num_bins + i] + phase_shift, TWOPI); // shifting phases to account for time translation
+                        if (c == num_channels - 1) {
+                            glmask[(f+1)*num_bins + i] = glmask[f*num_bins + i];
+                            weights[(f+1)*num_bins + i] = weights[f*num_bins + i];
+                            energymap[(f+1)*num_bins + i] = energymap[f*num_bins + i];
+                            energymapcumul[(f+1)*num_bins + i] = energymapcumul[f*num_bins + i];
+                        }
+                    }
+                    if (pivot_f > 0) {
+                        amps_samples[c][pivot_f*num_bins + i] = (amps_samples[c][(pivot_f+1)*num_bins + i] + amps_samples[c][(pivot_f-1)*num_bins + i])/2.;
+                        phases_samples[c][pivot_f*num_bins + i] = random_double_in_range(0, TWOPI); // unwrapped_phase_avg(phases_samples[c][(pivot_f+1)*num_bins + i], phases_samples[c][(pivot_f-1)*num_bins + i]); //
+                        if (c == num_channels - 1) {
+                            weights[pivot_f*num_bins + i] = 0.5 * (weights[(pivot_f+1)*num_bins + i] + weights[(pivot_f-1)*num_bins + i]);
+                            energymap[pivot_f*num_bins + i] = 0.5 * (energymap[(pivot_f+1)*num_bins + i] + energymap[(pivot_f-1)*num_bins + i]);
+                            energymapcumul[pivot_f*num_bins + i] = 0.5 * (energymapcumul[(pivot_f+1)*num_bins + i] + energymapcumul[(pivot_f-1)*num_bins + i]);
+                        }
+                    } else if (pivot_f == 0) {
+                        amps_samples[c][pivot_f*num_bins + i] = amps_samples[c][(pivot_f+1)*num_bins + i] ;
+                        phases_samples[c][pivot_f*num_bins + i] = random_double_in_range(0, TWOPI);
+                        if (c == num_channels - 1) {
+                            weights[pivot_f*num_bins + i] = weights[(pivot_f+1)*num_bins + i];
+                            energymap[pivot_f*num_bins + i] = energymap[(pivot_f+1)*num_bins + i];
+                            energymapcumul[pivot_f*num_bins + i] = energymapcumul[(pivot_f+1)*num_bins + i];
+                        }
+                    }
+                    if (c == num_channels - 1) {
+                        glmask[pivot_f*num_bins + i] = glmask[MAX(0, pivot_f-1)*num_bins + i] = glmask[MIN(num_frames-1, pivot_f+1)*num_bins + i] = 0;
+                    }
+                }
+            }
+
+            num_frames++;
+            delta_num_frames--;
+        } else {
+            // deleting a seam
+            for (long i = 0; i < num_bins; i++) {
+                for (long c = 0; c < num_channels; c++) {
+                    long pivot_f = carve[i];
+                    double phase_shift = (phase_handling == 1) * (pivot_f < num_frames - 1 ? phases_samples[c][(pivot_f + 1)*num_bins + i] - phases_samples[c][pivot_f*num_bins + i] : 0);
+                    for (long f = pivot_f; f < num_frames - 1; f++) {
+                        amps_samples[c][f*num_bins + i] = amps_samples[c][(f+1)*num_bins + i];
+                        phases_samples[c][f*num_bins + i] = positive_fmod(phases_samples[c][(f+1)*num_bins + i] - phase_shift, TWOPI); // shifting phases to account for time translation
+                        if (c == num_channels - 1) {
+                            glmask[f*num_bins + i] = glmask[(f+1)*num_bins + i];
+                            weights[f*num_bins + i] = weights[(f+1)*num_bins + i];
+                            energymap[f*num_bins + i] = energymap[(f+1)*num_bins + i];
+                            energymapcumul[f*num_bins + i] = energymapcumul[(f+1)*num_bins + i];
+                        }
+                    }
+                    if (c == num_channels - 1) {
+//                        glmask[MAX(0, pivot_f-1)*num_bins + i] = glmask[MIN(num_frames-1, pivot_f)*num_bins + i] = 0;
+                    }
+
+                }
+            }
+            
+            num_frames--;
+            delta_num_frames++;
+        }
+        
+        // recomputing invalidated region of energy map cumul
+        long inv_f_start = carve[0];
+        long inv_f_end = carve[0] - 1;
+        for (long b = 1; b < num_bins; b++) {
+            inv_f_start -= 1;
+            inv_f_end += 1;
+            
+            inv_f_start = CLAMP(inv_f_start, 0, num_frames-1);
+            inv_f_end = CLAMP(inv_f_end, 0, num_frames-1);
+            for (long f = inv_f_start; f <= inv_f_end; f++) {
+                energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + MIN(MIN(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1]), energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
+            }
+            
+            inv_f_start = MIN(inv_f_start, carve[b]);
+            inv_f_end = MAX(inv_f_end, carve[b]-1);
+        }
+
+    }
+    
+    if (carvingpath_samps) {
+        for (long b = 0; b < num_bins; b++) {
+            long prev = 0;
+            for (long f = 0; f < num_frames; f++) {
+                long temp = carvingpath_samps[f * num_bins + b];
+                if (temp != prev)
+                    carvingpath_samps[f * num_bins + b] = 1;
+                else
+                    carvingpath_samps[f * num_bins + b] = 0;
+                prev = temp;
+            }
+        }
+    }
+    
+    
+    bach_freeptr(energymap);
+    bach_freeptr(energymapcumul);
+    bach_freeptr(weights);
+
+    if (phase_handling == 2) {
+        mask_buf = ears_buffer_make(NULL);
+        ears_buffer_set_size_and_numchannels(ob, mask_buf, num_out_frames, num_bins);
+        float *temp = buffer_locksamples(mask_buf);
+        if (!temp || ears_buffer_get_numchannels(ob, mask_buf) != num_bins || ears_buffer_get_size_samps(ob, mask_buf) != num_out_frames) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            buffer_unlocksamples(mask_buf);
+            ears_buffer_free(mask_buf);
+            mask_buf = NULL;
+        } else {
+            bach_copyptr(glmask, temp, num_out_frames * num_bins * sizeof(float));
+            buffer_unlocksamples(mask_buf);
+        }
+    }
+
+    
+    for (long c = 0; c < num_channels; c++) {
+        ears_buffer_copy_format_and_set_size_samps(ob, amplitudes[c], out_amplitudes[c], num_out_frames);
+        ears_buffer_copy_format_and_set_size_samps(ob, phases[c], out_phases[c], num_out_frames);
+        
+        float *temp = buffer_locksamples(out_amplitudes[c]);
+        if (!temp || ears_buffer_get_numchannels(ob, out_amplitudes[c]) != num_bins || ears_buffer_get_size_samps(ob, out_amplitudes[c]) != num_out_frames) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            goto end;
+        }
+        
+        bach_copyptr(amps_samples[c], temp, num_out_frames * num_bins * sizeof(float));
+        buffer_setdirty(out_amplitudes[c]);
+        buffer_unlocksamples(out_amplitudes[c]);
+        
+        temp = buffer_locksamples(out_phases[c]);
+        if (!temp || ears_buffer_get_numchannels(ob, out_phases[c]) != num_bins || ears_buffer_get_size_samps(ob, out_phases[c]) != num_out_frames) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+            goto end;
+        }
+        bach_copyptr(phases_samples[c], temp, num_out_frames * num_bins * sizeof(float));
+        buffer_setdirty(out_phases[c]);
+        buffer_unlocksamples(out_phases[c]);
+        
+        if (mask_buf) {
+            // griffin lim
+            ears_buffer_griffinlim(ob, 1, &(out_amplitudes[c]), &(out_phases[c]), &mask_buf, NULL, analysiswintype, synthesiswintype, fullspectrum, winleftalign, unitary, num_griffin_lim_iter);
+        }
+    }
+    
+    bach_freeptr(glmask);
+
+    
+    if (seam_path) {
+        buffer_setdirty(seam_path);
+        buffer_unlocksamples(seam_path);
+        ears_buffer_set_size_samps(ob, seam_path, orig_num_frames);
+    }
+//    ears_buffer_set_size_samps_preserve(ob, seam_path, orig_num_frames);
+    if (energy_map) {
+        buffer_setdirty(energy_map);
+        buffer_unlocksamples(energy_map);
+    }
+
+end:
+    for (long c = 0; c < num_amps_locked; c++) {
+        bach_freeptr(amps_samples[c]);
+    }
+    for (long c = 0; c < num_phases_locked; c++) {
+        bach_freeptr(phases_samples[c]);
+    }
+
+    bach_freeptr(amps_samples);
+    bach_freeptr(phases_samples);
+
+    return err;
+}
+
+
+
+
+/*
+t_ears_err ears_buffer_spectral_seam_carve_orig(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, double compensate_phases, double weighting_amount, double weighting_numframes_stdev)
+{
+    bool verbose = false;
 
     if (num_channels == 0)
         return EARS_ERR_NO_BUFFER;
@@ -1408,6 +1921,13 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     }
 
     while (true) {
+        if (verbose) {
+            post("weights");
+            t_llll *ll4 = double_array_to_llll(weights, num_bins * num_frames);
+            llll_print(ll4);
+            llll_free(ll4);
+        }
+
         // 1) get energy map
         for (long b = 0; b < num_bins; b++) {
             for (long f = 0; f < num_frames; f++) {
@@ -1429,11 +1949,26 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             }
         }
         
+        if (verbose) {
+            post("energymap");
+            t_llll *ll1 = double_array_to_llll(energymap, num_bins * num_frames);
+            llll_print(ll1);
+            llll_free(ll1);
+        }
+        
+
         // 2) compute cumulative energies
         for (long b = 1; b < num_bins; b++) {
             for (long f = 0; f < num_frames; f++) {
                 energymap[f*num_bins + b] += MIN(MIN(energymap[(f>0 ? f-1 : f) * num_bins + b-1], energymap[f*num_bins + b-1]), energymap[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
             }
+        }
+        
+        if (verbose) {
+            post("cumulativeenergies");
+            t_llll *ll = double_array_to_llll(energymap, num_bins * num_frames);
+            llll_print(ll);
+            llll_free(ll);
         }
         
         // write energymap to output, but only for the first iteration
@@ -1466,9 +2001,6 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                 curr_min_arg = f;
             }
         }
-        if (verbose) {
-            post("carved index: %ld", curr_min_arg);
-        }
         
 
         bool ONLY_STRAIGHT_CUTS = false; // < this is sometimes set to true just to test
@@ -1485,6 +2017,14 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             }
         }
         
+        if (verbose) {
+            t_llll *ll = llll_get();
+            for (long b = 0; b < num_bins; b++)
+                llll_appendlong(ll, carve[b]);
+            post("carved indices:");
+            llll_print(ll);
+        }
+
         
         // writing carving data to output buffer
         if (carvingpath_samps) {
@@ -1528,7 +2068,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                     if (pivot_f > 0) {
                         amps_samples[c][pivot_f*num_bins + i] = (amps_samples[c][(pivot_f+1)*num_bins + i] + amps_samples[c][(pivot_f-1)*num_bins + i])/2.;
                         phases_samples[c][pivot_f*num_bins + i] = random_double_in_range(0, TWOPI); // unwrapped_phase_avg(phases_samples[c][(pivot_f+1)*num_bins + i], phases_samples[c][(pivot_f-1)*num_bins + i]); //
-                        weights[pivot_f*num_bins + i] = (weights[(pivot_f+1)*num_bins + i] + weights[(pivot_f-1)*num_bins + i]);
+                        weights[pivot_f*num_bins + i] = 0.5*(weights[(pivot_f+1)*num_bins + i] + weights[(pivot_f-1)*num_bins + i]);
 //                        phases_samples[c][pivot_f] = // TODO: phases!
                     } else if (pivot_f == 0) {
                         amps_samples[c][pivot_f*num_bins + i] = amps_samples[c][(pivot_f+1)*num_bins + i] ;
@@ -1549,7 +2089,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                     long pivot_f = carve[i];
                     // temp is a parameter just to try from outside whether the phase shift improves things or makes them worse...
                     double phase_shift = compensate_phases * (pivot_f < num_frames - 1 ? phases_samples[c][(pivot_f + 1)*num_bins + i] - phases_samples[c][pivot_f*num_bins + i] : 0);
-                    for (long f = pivot_f; f < num_frames; f++) {
+                    for (long f = pivot_f; f < num_frames - 1; f++) {
                         amps_samples[c][f*num_bins + i] = amps_samples[c][(f+1)*num_bins + i];
                         phases_samples[c][f*num_bins + i] = positive_fmod(phases_samples[c][(f+1)*num_bins + i] - phase_shift, TWOPI); // shifting phases to account for time translation
                         weights[f*num_bins + i] = weights[(f+1)*num_bins + i];
@@ -1559,8 +2099,9 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             
             num_frames--;
             delta_num_frames++;
+
         }
-        
+
         firsttime = false;
     }
     
@@ -1637,3 +2178,4 @@ end:
 
 
 
+*/

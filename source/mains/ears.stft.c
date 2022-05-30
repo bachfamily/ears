@@ -133,12 +133,6 @@ int C74_EXPORT main(void)
     
     earsbufobj_class_add_polyout_attr(c);
 
-    CLASS_ATTR_LONG(c, "polarin",    0,    t_buf_stft, polar_input);
-    CLASS_ATTR_STYLE_LABEL(c, "polarin", 0, "onoff", "Polar Input");
-    CLASS_ATTR_BASIC(c, "polarin", 0);
-    // @description Input data in polar coordinates, instead of cartesian ones.
-    // Default is 0.
-
     CLASS_ATTR_LONG(c, "polarout",    0,    t_buf_stft, polar_output);
     CLASS_ATTR_STYLE_LABEL(c, "polarout", 0, "onoff", "Polar Output");
     CLASS_ATTR_BASIC(c, "polarout", 0);
@@ -171,9 +165,9 @@ int C74_EXPORT main(void)
 void buf_stft_assist(t_buf_stft *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-            // @in 0 @type symbol @digest Buffer containing audio
+            // @in 0 @type symbol @digest Buffer containing input audio
             // @description Source audio buffer
-        sprintf(s, x->polar_input ? "symbol: Source Buffer or Buffer with Magnitude Bins" : "symbol: Source Buffer or Buffer with Real/x Bins");
+        sprintf(s, "symbol: Source Buffer");
     } else {
         // @out 0 @type symbol @digest Buffer containing output magnitudes or real (x) parts, one bin per channel
         // @out 1 @type symbol @digest Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel
@@ -268,7 +262,7 @@ void buf_stft_bang(t_buf_stft *x)
                              out1, out2,
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
-                             x->e_ob.a_wintype->s_name,
+                             x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect",
                              x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
 #endif
             
@@ -291,7 +285,7 @@ void buf_stft_bang(t_buf_stft *x)
                 ears_buffer_stft((t_object *)x, in, NULL, c, out1, out2,
                                  earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                                  earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
-                                 x->e_ob.a_wintype->s_name,
+                                 x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect",
                                  x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
 #endif
             }

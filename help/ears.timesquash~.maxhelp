@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 83.0, 352.0, 856.0, 553.0 ],
+		"rect" : [ 83.0, 100.0, 856.0, 553.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -55,7 +55,7 @@
 						"parameter_enable" : 0
 					}
 ,
-					"text" : "js helpstarter.js ears.seamstretch~"
+					"text" : "js helpstarter.js ears.timesquash~"
 				}
 
 			}
@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 83.0, 378.0, 856.0, 527.0 ],
+						"rect" : [ 83.0, 126.0, 856.0, 527.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -109,7 +109,57 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"attr" : "phasecompensation",
+									"id" : "obj-13",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 354.0, 108.0, 616.0, 23.0 ],
+									"text" : "/Users/danieleghisi/Dropbox/MusicaMia/2018_ThisIsTheGame/AGP/AGP_vrac/Berio_15_Sinfonia_3.mp3"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-14",
+									"maxclass" : "newobj",
+									"numinlets" : 3,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 309.0, 191.0, 121.0, 23.0 ],
+									"text" : "ears.crop~ = 10000"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-66",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 5,
+									"outlettype" : [ "", "", "", "", "" ],
+									"patching_rect" : [ 309.0, 154.5, 96.0, 23.0 ],
+									"text" : "ears.read~ orig"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "phasehandling",
+									"id" : "obj-4",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 587.0, 378.0, 231.0, 23.0 ],
+									"text_width" : 115.0
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "phasehandling",
 									"id" : "obj-1",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
@@ -117,7 +167,7 @@
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 27.0, 275.5, 231.0, 23.0 ],
-									"text_width" : 162.0
+									"text_width" : 115.0
 								}
 
 							}
@@ -226,7 +276,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 69.5, 394.5, 239.5, 36.0 ],
-									"text" : "Currently ears.seamcarve~ works for compressing time only"
+									"text" : "Currently ears.timesquash~ only works for compressing time"
 								}
 
 							}
@@ -255,7 +305,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 675.5, 381.5, 165.0, 84.0 ],
+									"patching_rect" : [ 675.5, 403.0, 165.0, 84.0 ],
 									"text" : "Use the \"msdiff\" or \"sampsdiff\" time units if you want to remove a fixed amount of time"
 								}
 
@@ -267,8 +317,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 488.0, 470.5, 270.0, 23.0 ],
-									"text" : "ears.seamstretch~ cut 1500 @timeunit msdiff"
+									"patching_rect" : [ 488.0, 489.0, 270.0, 23.0 ],
+									"text" : "ears.timesquash~ cut -1500 @timeunit msdiff"
 								}
 
 							}
@@ -280,7 +330,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 116.5, 487.0, 36.0 ],
-									"text" : "ears.seamcarve~ operates in the frequency domain and rearranges portions of the spectrograms by preserving their overall content (see \"visualizing seams\" tab)"
+									"text" : "ears.timesquash~ compresses time by shifting portions of the spectrogram while preserving the relevant content."
 								}
 
 							}
@@ -442,7 +492,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 10.0, 363.0, 344.0, 23.0 ],
-									"text" : "ears.seamstretch~ cut 0.5 @framesize 512 @hopsize 256"
+									"text" : "ears.timesquash~ cut 0.5 @framesize 512 @hopsize 256"
 								}
 
 							}
@@ -496,7 +546,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.seamstretch~", 90 ],
+									"jsarguments" : [ "ears.timesquash~", 90 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
@@ -601,6 +651,20 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-66", 0 ],
+									"source" : [ "obj-13", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-7", 0 ],
+									"source" : [ "obj-14", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-7", 1 ],
 									"source" : [ "obj-18", 0 ]
 								}
@@ -667,6 +731,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-17", 0 ],
+									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-48", 0 ],
 									"source" : [ "obj-44", 0 ]
 								}
@@ -693,6 +764,13 @@
 								}
 
 							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-66", 0 ]
+								}
+
+							}
  ]
 					}
 ,
@@ -716,13 +794,13 @@
 					"filename" : "helpname.js",
 					"id" : "obj-4",
 					"ignoreclick" : 1,
-					"jsarguments" : [ "ears.seamstretch~" ],
+					"jsarguments" : [ "ears.timesquash~" ],
 					"maxclass" : "jsui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 10.0, 10.0, 387.584014892578125, 57.599853515625 ]
+					"patching_rect" : [ 10.0, 10.0, 371.02398681640625, 57.599853515625 ]
 				}
 
 			}
@@ -799,11 +877,19 @@
 				"type" : "iLaX"
 			}
 , 			{
+				"name" : "ears.crop~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.read~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
 				"name" : "ears.reg~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.seamstretch~.mxo",
+				"name" : "ears.timesquash~.mxo",
 				"type" : "iLaX"
 			}
 , 			{

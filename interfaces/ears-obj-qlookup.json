@@ -13,8 +13,29 @@
       "spectrum"
     ],
     "seealso": [
-      "ears.window~",
-      "ears.istft~"
+      "ears.istft~",
+      "ears.fft~",
+      "ears.window~"
+    ]
+  },
+  "ears.timesquash~": {
+    "digest": "Content-aware timestretch",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "timesquash",
+      "carve",
+      "seam",
+      "timestretch",
+      "content",
+      "preserve"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.soundtouch~"
     ]
   },
   "ears.fromvector~": {
@@ -427,26 +448,6 @@
       "ears.hoa.encode~",
       "ears.hoa.decode~",
       "ears.hoa.rotate~"
-    ]
-  },
-  "ears.seamstretch~": {
-    "digest": "Content-aware timestretch",
-    "module": "ears",
-    "category": [
-      "ears time and pitch"
-    ],
-    "keywords": [
-      "buffer",
-      "seamstretch",
-      "carve",
-      "seam",
-      "timestretch",
-      "content",
-      "preserve"
-    ],
-    "seealso": [
-      "ears.rubberband~",
-      "ears.soundtouch~"
     ]
   },
   "ears.fromsamps~": {
@@ -970,6 +971,29 @@
       "ears.channel~"
     ]
   },
+  "ears.griffinlim~": {
+    "digest": "Reconstruct signal from magnitude spectrum",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "griffinlim",
+      "spectrum",
+      "inverse",
+      "reconstruct",
+      "griffin",
+      "lim",
+      "phases",
+      "phase retrieval"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.istft~",
+      "ears.istft~"
+    ]
+  },
   "ears.py~": {
     "digest": "Offline host for patches operating on buffers",
     "module": "ears",
@@ -1120,6 +1144,8 @@
       "spectrum"
     ],
     "seealso": [
+      "ears.stft~",
+      "ears.istft~",
       "ears.window~",
       "ears.spectrogram~"
     ]
@@ -1248,8 +1274,9 @@
       "inverse"
     ],
     "seealso": [
-      "ears.window~",
-      "ears.stft~"
+      "ears.stft~",
+      "ears.griffinlim~",
+      "ears.window~"
     ]
   },
   "ears.reg~": {

@@ -368,6 +368,8 @@ t_ears_err ears_buffer_repeat_times(t_object *ob, t_buffer_obj *source, t_buffer
 t_ears_err ears_buffer_rev_inplace(t_object *ob, t_buffer_obj *buf);
 t_ears_err ears_buffer_rot_inplace(t_object *ob, t_buffer_obj *buf, long shift_in_samps);
 t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val);
+t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, double v_min, double v_max);
+t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, t_buffer_obj *mask);
 
 // passing messages through
 t_ears_err ears_buffer_send_message(t_object *ob, t_buffer_obj *buf, t_symbol *s, long ac, t_atom *av);

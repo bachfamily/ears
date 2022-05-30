@@ -55,7 +55,7 @@ t_ears_essentia_analysis_params earsbufobj_get_essentia_analysis_params(t_earsbu
     } else if (params.hopsize_samps < 1) {
         object_warn((t_object *)e_ob, "Hop size is smaller than one sample. The number of output frames may differ from what was expected.");
     }
-    params.windowType = e_ob->a_wintype->s_name;
+    params.windowType = e_ob->a_wintype ? e_ob->a_wintype->s_name : "rect";
     params.windowNormalized = e_ob->a_winnorm;
     params.lastFrameToEndOfFile = e_ob->a_lastframetoendoffile;
     params.startFromZero = e_ob->a_winstartfromzero;

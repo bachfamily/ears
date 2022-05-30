@@ -1,8 +1,0 @@
-	[ samples
-		[ filepath s ]
-		[ instrument s ]
-		[ playingstyle s ]
-		[ midipitch i ]
-		[ dynamics i ]
-		[ string i ]
-	]
