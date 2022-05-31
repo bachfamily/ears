@@ -354,7 +354,7 @@ t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *s
         ears_spectralbuf_metadata_set(ob, dest2, &data);
         llll_free(bins);
 
-        long numframes = (long)(ceil(((double)samplecount + 1.) / hopsize_samps));
+        long numframes = 1+(long)(ceil(((double)(samplecount - 1)) / hopsize_samps));
         ears_buffer_set_size_and_numchannels(ob, dest1, numframes, numbins);
         ears_buffer_set_size_and_numchannels(ob, dest2, numframes, numbins);
 
@@ -570,7 +570,7 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
             kiss_fft_cpx *wout = (kiss_fft_cpx *)bach_newptr(fftsize * sizeof(kiss_fft_cpx));
             kiss_fft_cfg cfg = kiss_fft_alloc(fftsize, 1, NULL, NULL);
             
-            double onset = left_aligned_windows ? -hopsize_samps/2 : 0;
+            double onset = left_aligned_windows ? 0 : -framesize_samps/2;
             for (long f = 0; f < numinputframes; f++, onset += hopsize_samps) {
                 // input formatting
                 long b = 0;
@@ -782,7 +782,7 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
 
 
 
-t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj **orig_amps, t_buffer_obj **reconstructed_phases, t_buffer_obj **phases_mask, t_buffer_obj *dest_signal, const char *analysiswintype, const char *synthesiswintype, long fullspectrum, long left_aligned_windows, long unitary, long num_iterations)
+t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj **orig_amps, t_buffer_obj **reconstructed_phases, t_buffer_obj **phases_mask, t_buffer_obj *dest_signal, const char *analysiswintype, const char *synthesiswintype, long fullspectrum, long left_aligned_windows, long unitary, long num_iterations, bool randomize_phases)
 {
     
     t_ears_err err = EARS_ERR_NONE;
@@ -825,13 +825,17 @@ t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj *
         ears_buffer_clear(ob, candidate_phases_i);
   */
         // Reconstruct via Griffin-Lim
+        long orig_num_frames = ears_buffer_get_size_samps(ob, orig_amps[i]);
         t_buffer_obj *temp_amps_i = ears_buffer_make(NULL);
         t_buffer_obj *temp = ears_buffer_make(NULL);
         ears_buffer_clone(ob, orig_amps[i], candidate_phases_i);
         ears_buffer_clone(ob, orig_amps[i], temp_amps_i);
         
         // initialize phases randomly
-        ears_buffer_random_fill_inplace(ob, candidate_phases_i, 0, TWOPI);
+        if (randomize_phases)
+            ears_buffer_random_fill_inplace(ob, candidate_phases_i, 0, TWOPI);
+        else
+            ears_buffer_clone(ob, reconstructed_phases[i], candidate_phases_i);
 
         for (int n = 0; n < num_iterations; n++) {
             // apply mask, if needed
@@ -842,6 +846,10 @@ t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj *
             ears_buffer_istft(ob, 1, &orig_amps[i], &candidate_phases_i, temp, NULL, synthesiswintype, true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, left_aligned_windows, unitary);
             
             ears_buffer_stft(ob, temp, NULL, 0, temp_amps_i, candidate_phases_i, framesize_samps, hopsize_samps, analysiswintype, false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, left_aligned_windows, unitary);
+            
+            // remove final frames that may have been added by istft/stft combo.
+            ears_buffer_crop_inplace(ob, temp_amps_i, 0, orig_num_frames);
+            ears_buffer_crop_inplace(ob, candidate_phases_i, 0, orig_num_frames);
         }
         
         if (phases_mask)
@@ -1365,7 +1373,7 @@ double unwrapped_phase_avg(double phase1, double phase2)
 // phase_handling = 0: none; 1: compensate; 2: griffin-lim
 t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, long phase_handling, double weighting_amount, double weighting_numframes_stdev,
    // only used for griffin-lim;
-   long fullspectrum, long winleftalign, long unitary, long num_griffin_lim_iter, const char *analysiswintype, const char *synthesiswintype)
+   long fullspectrum, long winleftalign, long unitary, long num_griffin_lim_iter, long griffin_lim_invalidate_width, bool griffin_lim_vertical, bool griffin_lim_randomize, const char *analysiswintype, const char *synthesiswintype)
 {
     bool verbose = false;
 
@@ -1650,8 +1658,20 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                             energymapcumul[pivot_f*num_bins + i] = energymapcumul[(pivot_f+1)*num_bins + i];
                         }
                     }
-                    if (c == num_channels - 1) {
-                        glmask[pivot_f*num_bins + i] = glmask[MAX(0, pivot_f-1)*num_bins + i] = glmask[MIN(num_frames-1, pivot_f+1)*num_bins + i] = 0;
+                    if (c == num_channels - 1 && phase_handling == 2) {
+                        long gl_start_f = MAX(0, pivot_f-griffin_lim_invalidate_width);
+                        long gl_end_f = MIN(num_frames,pivot_f+griffin_lim_invalidate_width+1);
+                        if (griffin_lim_vertical) {
+                            for (long j = 0; j < num_bins; j++) {
+                                for (long f = gl_start_f; f < gl_end_f; f++) {
+                                    glmask[f*num_bins + j] = 0;
+                                }
+                            }
+                        } else {
+                            for (long f = gl_start_f; f < gl_end_f; f++) {
+                                glmask[f*num_bins + i] = 0;
+                            }
+                        }
                     }
                 }
             }
@@ -1674,8 +1694,20 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                             energymapcumul[f*num_bins + i] = energymapcumul[(f+1)*num_bins + i];
                         }
                     }
-                    if (c == num_channels - 1) {
-//                        glmask[MAX(0, pivot_f-1)*num_bins + i] = glmask[MIN(num_frames-1, pivot_f)*num_bins + i] = 0;
+                    if (c == num_channels - 1 && phase_handling == 2) {
+                        long gl_start_f = MAX(0, pivot_f-griffin_lim_invalidate_width);
+                        long gl_end_f = MIN(num_frames,pivot_f+griffin_lim_invalidate_width);
+                        if (griffin_lim_vertical) {
+                            for (long j = 0; j < num_bins; j++) {
+                                for (long f = gl_start_f; f < gl_end_f; f++) {
+                                    glmask[f*num_bins + j] = 0;
+                                }
+                            }
+                        } else {
+                            for (long f = gl_start_f; f < gl_end_f; f++) {
+                                glmask[f*num_bins + i] = 0;
+                            }
+                        }
                     }
 
                 }
@@ -1767,7 +1799,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         
         if (mask_buf) {
             // griffin lim
-            ears_buffer_griffinlim(ob, 1, &(out_amplitudes[c]), &(out_phases[c]), &mask_buf, NULL, analysiswintype, synthesiswintype, fullspectrum, winleftalign, unitary, num_griffin_lim_iter);
+            ears_buffer_griffinlim(ob, 1, &(out_amplitudes[c]), &(out_phases[c]), &mask_buf, NULL, analysiswintype, synthesiswintype, fullspectrum, winleftalign, unitary, num_griffin_lim_iter, griffin_lim_randomize);
         }
     }
     

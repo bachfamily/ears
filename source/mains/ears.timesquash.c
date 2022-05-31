@@ -64,6 +64,12 @@ typedef struct _buf_timesquash {
     double             e_weighting_amount;
     double             e_weighting_stdev;
     long             e_compensate_phases;
+    
+    // Griffin-Lim
+    long            e_num_griffin_lim_iter;
+    long            e_griffin_lim_bleed_width;
+    char            e_griffin_lim_vertical;
+    char            e_griffin_lim_randomize;
 } t_buf_timesquash;
 
 
@@ -140,7 +146,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_DOUBLE(c, "timeblock", 0, t_buf_timesquash, timeblock);
     CLASS_ATTR_STYLE_LABEL(c,"timeblock",0,"text","Time Block");
     CLASS_ATTR_BASIC(c, "timeblock", 0);
-    CLASS_ATTR_CATEGORY(c, "timeblock", 0, "Time-Domain Algorithm");
+    CLASS_ATTR_CATEGORY(c, "timeblock", 0, "Time-Domain Algorithm");
     // @description Sets the duration of each time block to be removed in the <m>antimeunit</m>
 
     
@@ -148,20 +154,20 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c,"xfadetype",0,"enumindex","Crossfade Type");
     CLASS_ATTR_ENUMINDEX(c,"xfadetype", 0, "None Linear Sine (Equal Power) Curve S-Curve");
     CLASS_ATTR_BASIC(c, "xfadetype", 0);
-    CLASS_ATTR_CATEGORY(c, "xfadetype", 0, "Time-Domain Algorithm");
+    CLASS_ATTR_CATEGORY(c, "xfadetype", 0, "Time-Domain Algorithm");
     // @description Sets the cross fade type: 0 = None, 1 = Linear, 2 = Sine (Equal Power, default), 3 = Curve, 4 = S-Curve
 
     
     CLASS_ATTR_DOUBLE(c, "xfadecurve", 0, t_buf_timesquash, xfade_curve);
     CLASS_ATTR_STYLE_LABEL(c,"xfadecurve",0,"text","Crossfade Curve");
-    CLASS_ATTR_CATEGORY(c, "xfadecurve", 0, "Time-Domain Algorithm");
+    CLASS_ATTR_CATEGORY(c, "xfadecurve", 0, "Time-Domain Algorithm");
     // @description Sets the curve parameter for the crossfade (for fades of type Curve and S-Curve only).
     // The parameters goes from -1 to 1, 0 being linear (default).
 
     CLASS_ATTR_DOUBLE(c, "xfade", 0, t_buf_timesquash, xfade);
     CLASS_ATTR_STYLE_LABEL(c,"xfade",0,"text","Crossfade Duration");
     CLASS_ATTR_BASIC(c, "xfade", 0);
-    CLASS_ATTR_CATEGORY(c, "xfade", 0, "Time-Domain Algorithm");
+    CLASS_ATTR_CATEGORY(c, "xfade", 0, "Time-Domain Algorithm");
     // @description Sets the duration of the crossfade, whose unit is set via the <m>antimeunit</m> attribute.
 
     
@@ -171,17 +177,15 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c,"phasehandling",0,"enumindex","Phase Handling");
     CLASS_ATTR_ENUMINDEX(c,"phasehandling", 0, "Keep Compensate Griffin-Lim");
     CLASS_ATTR_BASIC(c, "phasehandling", 0);
-    CLASS_ATTR_CATEGORY(c, "phasehandling", 0, "Frequency-Domain Algorithm");
+    CLASS_ATTR_CATEGORY(c, "phasehandling", 0, "Frequency-Domain Algorithm");
     // @description Toggles the ability to compensate phase changes.
     
     CLASS_ATTR_LONG(c, "energy", 0, t_buf_timesquash, e_energy_mode);
     CLASS_ATTR_STYLE_LABEL(c,"energy",0,"enumindex","Energy Function");
     CLASS_ATTR_ENUMINDEX(c,"energy", 0, "Magnitude Gradient Magnitude");
-    CLASS_ATTR_CATEGORY(c, "energy", 0, "Frequency-Domain Algorithm");
+    CLASS_ATTR_CATEGORY(c, "energy", 0, "Frequency-Domain Algorithm");
     CLASS_ATTR_BASIC(c, "energy", 0);
-    // @description Sets the normalization mode for the output buffer:
-    // 0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 = Overload Protection Only, only
-    // normalizes to 1. if some samples exceed in modulo 1.
+    // @description Sets the energy function used for computing seams.
 
     
     CLASS_ATTR_DOUBLE(c, "uniformity", 0, t_buf_timesquash, e_weighting_amount);
@@ -195,6 +199,29 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c,"uniformitytimeinfluence",0,"text","Uniformity Time Influence");
     // @description Sets the influence of uniformity constraints in the <m>antimeunit</m> enforced by the uniformity algorithm.
     // This corresponds to the standard deviation of the penalizing gaussian curve.
+
+    CLASS_ATTR_LONG(c, "glnumiter", 0, t_buf_timesquash, e_num_griffin_lim_iter);
+    CLASS_ATTR_STYLE_LABEL(c,"glnumiter",0,"text","Number of Griffin-Lim Iterations");
+    CLASS_ATTR_CATEGORY(c, "glnumiter", 0, "Phase Retrieval");
+    // @description Sets the number of Griffin-Lim iterations, in case the corresponding method is chosen for <m>phasehandling</m>.
+
+    CLASS_ATTR_LONG(c, "glbleed", 0, t_buf_timesquash, e_griffin_lim_bleed_width);
+    CLASS_ATTR_STYLE_LABEL(c,"glbleed",0,"text","Bleed Extension for Griffin-Lim Algorithm");
+    CLASS_ATTR_CATEGORY(c, "glbleed", 0, "Phase Retrieval");
+    CLASS_ATTR_FILTER_MIN(c, "glbleed", 0);
+    // @description Sets the number of frames of invalidation for the Griffin-Lim Algorithm, in case the corresponding method is chosen for <m>phasehandling</m>.
+
+    CLASS_ATTR_CHAR(c, "glrect", 0, t_buf_timesquash, e_griffin_lim_vertical);
+    CLASS_ATTR_STYLE_LABEL(c,"glrect",0,"onoff","Rectangular Griffin-Lim Regions");
+    CLASS_ATTR_CATEGORY(c, "glrect", 0, "Phase Retrieval");
+    // @description Toggles the ability to invalidate whole rectangular regions whose phases are recomputed via the Griffin-Lim algorithm,
+    // in case the corresponding method is chosen for <m>phasehandling</m>.
+
+    CLASS_ATTR_CHAR(c, "glrandomize", 0, t_buf_timesquash, e_griffin_lim_randomize);
+    CLASS_ATTR_STYLE_LABEL(c,"glrandomize",0,"onoff","Randomize Griffin-Lim Phases");
+    CLASS_ATTR_CATEGORY(c, "glrandomize", 0, "Phase Retrieval");
+    // @description Toggles the ability to randomize the phases of the regions subject to the Griffin-Lim algorithm,
+    // in case the corresponding method is chosen for <m>phasehandling</m>.
 
     
     class_register(CLASS_BOX, c);
@@ -248,6 +275,12 @@ t_buf_timesquash *buf_timesquash_new(t_symbol *s, short argc, t_atom *argv)
         x->xfade = 4096; // samps, by default, in the <antimeunit>
         x->xfade_type = EARS_FADE_SINE;
         x->xfade_curve = 0;
+        
+        x->e_griffin_lim_vertical = 1,
+        x->e_griffin_lim_randomize = 0,
+        x->e_griffin_lim_bleed_width = 4;
+        x->e_num_griffin_lim_iter = 10;
+        x->e_compensate_phases = 2; // griffin-lim
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -369,8 +402,11 @@ void buf_timesquash_bang(t_buf_timesquash *x)
         
         long fullspectrum = 0; // must be zero! we're only shifting the lower portion of spectrum
         long unitary = 1;
-        long num_griffin_lim_iter = 10;
-        
+        long num_griffin_lim_iter = x->e_num_griffin_lim_iter;
+        long griffin_lim_invalidate_width = x->e_griffin_lim_bleed_width;
+        bool griffin_lim_vertical = x->e_griffin_lim_vertical;
+        bool griffin_lim_randomize = x->e_griffin_lim_randomize;
+
         t_llllelem *el_howmuch = x->e_howmuch->l_head;
         for (long count = 0; count < num_buffers; count++,
              el_howmuch = el_howmuch && el_howmuch->l_next ? el_howmuch->l_next : el_howmuch) {
@@ -410,7 +446,7 @@ void buf_timesquash_bang(t_buf_timesquash *x)
                 //            t_buffer_obj *outampsok = ears_buffer_getobject(gensym("outamps"));
                 //            t_buffer_obj *tempchannelok = ears_buffer_getobject(gensym("tempchannel"));
             
-            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, NULL, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_weighting_amount, weighting_stdev_frames, fullspectrum, false, unitary, num_griffin_lim_iter, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"));
+            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, NULL, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_weighting_amount, weighting_stdev_frames, fullspectrum, false, unitary, num_griffin_lim_iter, griffin_lim_invalidate_width, griffin_lim_vertical, griffin_lim_randomize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"));
             
             ears_buffer_istft((t_object *)x, num_in_chans, out_amps, out_phases, outbuf, NULL,
                               x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary);

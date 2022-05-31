@@ -221,7 +221,7 @@ void buf_griffinlim_bang(t_buf_griffinlim *x)
         ears_buffer_griffinlim((t_object *)x, num_buffers, in_amp, out_ph, NULL, dest, 
                                x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect",
                                x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : "rect",
-                               x->fullspectrum, x->e_ob.a_winstartfromzero, x->unitary, x->num_iterations);
+                               x->fullspectrum, x->e_ob.a_winstartfromzero, x->unitary, x->num_iterations, true);
         
     }
     

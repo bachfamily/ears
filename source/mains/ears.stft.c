@@ -55,6 +55,8 @@
 typedef struct _buf_stft {
     t_earsbufobj       e_ob;
 
+    long complex_input;
+    
     long polar_input;
     long polar_output;
     long fullspectrum;
@@ -82,6 +84,18 @@ EARSBUFOBJ_ADD_IO_METHODS(stft)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
+
+t_max_err buf_stft_setattr_cpxin(t_buf_stft *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (!x->e_ob.l_is_creating)
+            object_error((t_object *)x, "The 'cpxin' attribute can only be set in the object box.");
+        else if (atom_gettype(argv) == A_LONG)
+            x->complex_input = atom_getlong(argv);
+    }
+    return MAX_ERR_NONE;
+}
+
 
 int C74_EXPORT main(void)
 {
@@ -133,6 +147,18 @@ int C74_EXPORT main(void)
     
     earsbufobj_class_add_polyout_attr(c);
 
+    CLASS_ATTR_LONG(c, "cpxin",    0,    t_buf_stft, complex_input);
+    CLASS_ATTR_STYLE_LABEL(c, "cpxin", 0, "onoff", "Complex Input");
+    CLASS_ATTR_ACCESSORS(c, "cpxin", NULL, buf_stft_setattr_cpxin);
+    // @description Input complex data instead of real-valued audio samples.
+    // This attribute is static and can only be entered in the object box.
+
+    CLASS_ATTR_LONG(c, "polarin",    0,    t_buf_stft, polar_input);
+    CLASS_ATTR_STYLE_LABEL(c, "polarin", 0, "onoff", "Polar Input");
+    // @description Input data in polar coordinates, instead of cartesian ones.
+    // Default is 0.
+
+    
     CLASS_ATTR_LONG(c, "polarout",    0,    t_buf_stft, polar_output);
     CLASS_ATTR_STYLE_LABEL(c, "polarout", 0, "onoff", "Polar Output");
     CLASS_ATTR_BASIC(c, "polarout", 0);
@@ -148,7 +174,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE_LABEL(c, "downmix", 0, "onoff", "Downmix to Mono");
     CLASS_ATTR_BASIC(c, "downmix", 0);
     // @description Toggles the ability to downmix all the channels into one. If this flag is not set, then
-    // one buffer per channel is output. By default downmix is off.
+    // one buffer per channel is output.
 
     CLASS_ATTR_LONG(c, "unitary",    0,    t_buf_stft, unitary);
     CLASS_ATTR_STYLE_LABEL(c,"unitary",0,"onoff","Unitary");
@@ -165,15 +191,31 @@ int C74_EXPORT main(void)
 void buf_stft_assist(t_buf_stft *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-            // @in 0 @type symbol @digest Buffer containing input audio
-            // @description Source audio buffer
-        sprintf(s, "symbol: Source Buffer");
+        // @out 0 @type symbol @digest Source audio buffer - or input magnitudes, or real (x) parts
+        // @description If the <m>cpxin</m> attribute is not set, the object expects as input a buffer with the original audio content.
+        // If the <m>cpxin</m> attribute is set, then the input expects a buffer with the real part or the magnitudes of the
+        // signal (the cartesian or polar form, depends on the <m>polarin</m> attribute).
+        // @out 1 @type symbol @digest Buffers containing input phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts
+        // @description If the <m>cpxin</m> attribute is set, then the second input expects a buffer with the imaginary part or the phases of the
+        // signal (the cartesian or polar form, depends on the <m>polarin</m> attribute).
+        if (x->complex_input) {
+            switch (a) {
+                case 0: sprintf(s, x->polar_input ? "symbol: Source Buffer Real (x) Parts" : "symbol: Source Buffer Real (x) Parts");    break;
+                case 1: sprintf(s, x->polar_input ? "symbol: Source Buffer Magnitudes" : "symbol: Source Buffer Phases");    break;
+            }
+        } else {
+            sprintf(s, "symbol: Source Buffer");
+        }
     } else {
-        // @out 0 @type symbol @digest Buffer containing output magnitudes or real (x) parts, one bin per channel
-        // @out 1 @type symbol @digest Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel
+        // @out 0 @type symbol @digest Buffers containing output magnitudes or real (x) parts
+        // @description Unless <m>downmix</m> is set, there are as many buffers as channels in the original audio file and each buffer contains
+        // one bin per channel.
+        // @out 1 @type symbol @digest Buffers containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts
+        // @description Unless <m>downmix</m> is set, there are as many buffers as channels in the original audio file and each buffer contains
+        // one bin per channel.
         switch (a) {
-            case 0: sprintf(s, x->polar_output ? "symbol: Buffer Containing STFT Magnitudes" : "symbol: Buffer Containing STFT Real/x Parts");    break;
-            case 1: sprintf(s, x->polar_output ? "symbol: Buffer Containing STFT Phases" : "symbol: Buffer Containing STFT Imaginary/y Parts");    break;
+            case 0: sprintf(s, x->polar_output ? "symbol/list: Buffer(s) Containing STFT Magnitudes" : "symbol/list: Buffer(s) Containing STFT Real/x Parts");    break;
+            case 1: sprintf(s, x->polar_output ? "symbol/list: Buffer(s) Containing STFT Phases" : "symbol/list: Buffer(s) Containing STFT Imaginary/y Parts");    break;
         }
     }
 }
@@ -193,6 +235,8 @@ t_buf_stft *buf_stft_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_stft*)object_alloc_debug(s_tag_class);
     if (x) {
         x->polar_input = 0;
+        x->complex_input = 0;
+        x->polar_input = 0;
         x->polar_output = 1;
         x->fullspectrum = 0;
         x->downmix = 0;
@@ -209,7 +253,10 @@ t_buf_stft *buf_stft_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
 
-        earsbufobj_setup((t_earsbufobj *)x, "e", "EE", names);
+        earsbufobj_setup((t_earsbufobj *)x, x->complex_input ? "ee" : "e", "EE", names);
+
+        object_attr_setdisabled((t_object *)x, gensym("cpxin"), 1);
+        object_attr_setdisabled((t_object *)x, gensym("polarin"), x->complex_input == 0);
 
         llll_free(args);
         llll_free(names);
@@ -234,64 +281,74 @@ t_ears_essentia_analysis_params buf_stft_get_params(t_buf_stft *x, t_buffer_obj 
 
 void buf_stft_bang(t_buf_stft *x)
 {
+    long cpxin = x->complex_input;
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
+    long num_buffers2 = cpxin ? earsbufobj_get_instore_size((t_earsbufobj *)x, 1) : 0;
     long downmix = x->downmix;
-    
-    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
 
-    if (num_buffers > 0) { // must be just 1 buffer
-        t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-        long num_channels = ears_buffer_get_numchannels((t_object *)x, in);
+    if (num_buffers == 0 || (cpxin && num_buffers2 == 0)) {
+        object_error((t_object *)x, "Not all bufferst have been input.");
+        return;
+    }
 
-        if (downmix) {
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 1, true);
-            earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-            
-            t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-            t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
+    t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
+    t_buffer_obj *in2 = cpxin ? earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 1, 0) : NULL;
+    long num_channels = ears_buffer_get_numchannels((t_object *)x, in);
+    long num_channels2 = cpxin ? ears_buffer_get_numchannels((t_object *)x, in2) : 0;
+
+    if (cpxin && num_channels2 != num_channels) {
+        object_error((t_object *)x, "Mismatch in number of buffer channels.");
+        return;
+    }
+
+    if (downmix) {
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 1, true);
+        earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+        
+        t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
+        t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
+        
+#ifdef EARS_STFT_USE_ESSENTIA
+        std::vector<float> data = ears_buffer_get_sample_vector_mono((t_object *)x, in);
+        
+        t_ears_essentia_analysis_params params = buf_stft_get_params(x, in);
+        
+        ears_vector_stft_essentia((t_object *)x, data, ears_buffer_get_sr((t_object *)x, in), out1, out2, x->polar_output, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit);
+#else
+        ears_buffer_stft((t_object *)x, in, in2, -1 /* -1 means downmixing */,
+                         out1, out2,
+                         earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
+                         earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
+                         x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect",
+                         x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
+#endif
+        
+    } else if (num_channels > 0){
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_channels, true);
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, num_channels, true);
+        earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+        
+        for (long c = 0; c < num_channels; c++) {
+            t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, c);
+            t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, c);
             
 #ifdef EARS_STFT_USE_ESSENTIA
-            std::vector<float> data = ears_buffer_get_sample_vector_mono((t_object *)x, in);
+            std::vector<float> data = ears_buffer_get_sample_vector_channel((t_object *)x, in, c);
             
             t_ears_essentia_analysis_params params = buf_stft_get_params(x, in);
-
+            
             ears_vector_stft_essentia((t_object *)x, data, ears_buffer_get_sr((t_object *)x, in), out1, out2, x->polar_output, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit);
 #else
-            ears_buffer_stft((t_object *)x, in, NULL, -1 /* -1 means downmixing */,
-                             out1, out2,
+            ears_buffer_stft((t_object *)x, in, in2, c, out1, out2,
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                              x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect",
                              x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
 #endif
-            
-        } else if (num_channels > 0){
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_channels, true);
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, num_channels, true);
-            earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-            
-            for (long c = 0; c < num_channels; c++) {
-                t_buffer_obj *out1 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, c);
-                t_buffer_obj *out2 = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, c);
-                
-#ifdef EARS_STFT_USE_ESSENTIA
-                std::vector<float> data = ears_buffer_get_sample_vector_channel((t_object *)x, in, c);
-                
-                t_ears_essentia_analysis_params params = buf_stft_get_params(x, in);
-
-                ears_vector_stft_essentia((t_object *)x, data, ears_buffer_get_sr((t_object *)x, in), out1, out2, x->polar_output, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit);
-#else
-                ears_buffer_stft((t_object *)x, in, NULL, c, out1, out2,
-                                 earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
-                                 earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
-                                 x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect",
-                                 x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
-#endif
-            }
-        } else {
-            object_error((t_object *)x, "No channels in buffer!");
         }
+    } else {
+        object_error((t_object *)x, "No channels in buffer!");
     }
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);

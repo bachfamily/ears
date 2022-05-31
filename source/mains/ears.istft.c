@@ -56,6 +56,7 @@
 typedef struct _buf_istft {
     t_earsbufobj       e_ob;
 
+    long            complex_output;
     long            polar_input;
     long            polar_output;
     long            fullspectrum;
@@ -85,6 +86,19 @@ EARSBUFOBJ_ADD_IO_METHODS(istft)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
+
+
+t_max_err buf_istft_setattr_cpxout(t_buf_istft *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (!x->e_ob.l_is_creating)
+            object_error((t_object *)x, "The 'cpxout' attribute can only be set in the object box.");
+        else if (atom_gettype(argv) == A_LONG)
+            x->complex_output = atom_getlong(argv);
+    }
+    return MAX_ERR_NONE;
+}
+
 
 int C74_EXPORT main(void)
 {
@@ -136,6 +150,18 @@ int C74_EXPORT main(void)
     CLASS_ATTR_CATEGORY(c, "sr", 0, "Synthesis");
     // @description Sets the sample rate. Leave 0 to infer it from the input STFT buffers.
     
+    CLASS_ATTR_LONG(c, "cpxout",    0,    t_buf_istft, complex_output);
+    CLASS_ATTR_STYLE_LABEL(c, "cpxout", 0, "onoff", "Complex Output");
+    CLASS_ATTR_ACCESSORS(c, "cpxout", NULL, buf_istft_setattr_cpxout);
+    // @description Output complex data instead of real-valued audio samples.
+    // This attribute is static and can only be entered in the object box.
+
+    CLASS_ATTR_LONG(c, "polarout",    0,    t_buf_istft, polar_output);
+    CLASS_ATTR_STYLE_LABEL(c, "polarout", 0, "onoff", "Polar Output");
+    // @description Output data in polar coordinates, instead of cartesian ones.
+    // Default is 0.
+
+    
     CLASS_ATTR_LONG(c, "polarin",    0,    t_buf_istft, polar_input);
     CLASS_ATTR_STYLE_LABEL(c, "polarin", 0, "onoff", "Polar Input");
     CLASS_ATTR_BASIC(c, "polarin", 0);
@@ -169,6 +195,23 @@ void buf_istft_assist(t_buf_istft *x, void *b, long m, long a, char *s)
             case 1: sprintf(s, x->polar_input ? "symbol: Buffer Containing STFT Phases" : "symbol: Buffer Containing STFT Imaginary/y Parts");    break;
         }
     } else {
+        // @out 0 @type symbol @digest Output audio buffer - or output magnitudes, or real (x) parts
+        // @description If the <m>cpxout</m> attribute is not set, the object outputs a buffer with the reconstructed audio content.
+        // If the <m>cpxout</m> attribute is set, then the output is the first component of the complex signal (in cartesian
+        // or polar form, depending on the <m>polarin</m> attribute).
+        // @out 1 @type symbol @digest Output phases or imaginary (y) parts
+        // @description If the <m>cpxout</m> attribute is set, then the second inlet outputs the second component of the
+        // complex signal (in cartesian
+        // or polar form, depending on the <m>polarin</m> attribute). Phases are output according to the <m>angleunit</m> coordinate.
+        if (x->complex_output) {
+            switch (a) {
+                case 0: sprintf(s, x->polar_output ? "symbol: Output Audio Buffer Magnitudes" : "symbol: Output Audio Buffer Real/x Parts");    break;
+                case 1: sprintf(s, x->polar_output ? "symbol: Output Audio Buffer Phases" : "symbol: Output Audio Buffer Imaginary/x Parts");    break;
+            }
+        } else {
+            sprintf(s, "symbol: Output Audio Buffer");
+        }
+
         sprintf(s, "symbol: Buffer Containing Reconstructed Audio Signal");
     }
 }
@@ -188,6 +231,7 @@ t_buf_istft *buf_istft_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_istft*)object_alloc_debug(s_tag_class);
     if (x) {
         x->polar_input = 1;
+        x->complex_output = 0;
         x->polar_output = 0;
         x->fullspectrum = 0;
         x->sr = 0;
@@ -206,7 +250,7 @@ t_buf_istft *buf_istft_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
 
-        earsbufobj_setup((t_earsbufobj *)x, "EE", "e", names);
+        earsbufobj_setup((t_earsbufobj *)x, "EE", x->complex_output ? "ee" : "e", names);
 
         llll_free(args);
         llll_free(names);
@@ -232,6 +276,7 @@ t_ears_essentia_analysis_params buf_istft_get_params(t_buf_istft *x, t_buffer_ob
 void buf_istft_bang(t_buf_istft *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
+    long cpx = x->complex_output;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     
@@ -239,6 +284,7 @@ void buf_istft_bang(t_buf_istft *x)
         t_buffer_obj *in1[num_buffers];
         t_buffer_obj *in2[num_buffers];
         t_buffer_obj *dest = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
+        t_buffer_obj *dest2 = cpx ? earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0) : NULL;
 
         for (long i = 0; i < num_buffers; i++) {
             in1[i] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, i);
@@ -252,12 +298,14 @@ void buf_istft_bang(t_buf_istft *x)
         ears_specbuffer_istft_essentia((t_object *)x, num_buffers, in1, in2, dest, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr);
 #else
         
-        ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, NULL, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect", x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary);
+        ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, dest2, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect", x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary);
         
 #endif
         
     }
     
+    if (cpx)
+        earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

@@ -680,6 +680,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
         e_ob->l_numins ++;
         if (in_types[i] == 'e' || in_types[i] == 'E')
             e_ob->l_numbufins++;
+        e_ob->l_inlet_types[i] = in_types[i];
     }
     if (e_ob->l_numbufins) {
         e_ob->l_instore = (t_earsbufobj_store *) bach_newptrclear(e_ob->l_numbufins * sizeof(t_earsbufobj_store));
@@ -1400,7 +1401,7 @@ t_max_err earsbufobj_setattr_blocking(t_earsbufobj *e_ob, void *attr, long argc,
 {
     if (argc && argv) {
         if (!e_ob->l_is_creating)
-            object_error((t_object *)e_ob, "The blocking attribute can only be set in the object box.");
+            object_error((t_object *)e_ob, "The 'blocking' attribute can only be set in the object box.");
         else if (atom_gettype(argv) == A_LONG)
             e_ob->l_blocking = atom_getlong(argv);
     }

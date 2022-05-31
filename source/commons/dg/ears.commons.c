@@ -4816,8 +4816,8 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
     
     ears_buffer_copy_format(ob, source[ref_i], dest, true); // we consider the first as "master", but will copy num frames and num channels later on
     
-    /// All buffers have been locked. Now we need to harmonize numchannels and sampsize.
-    /// As a rule: we take the property of the first one.
+    // All buffers have been locked. Now we need to harmonize numchannels and sampsize.
+    // As a rule: we take the property of the first one.
     for (i = 0; i < num_arguments; i++) {
         if (argtype[i] == 0) {
             num_channels[i] = ears_buffer_get_numchannels(ob, (t_buffer_obj *)hatom_getobj(arguments+i)); // it happens that copy_format doesn't work in changing the number of channels

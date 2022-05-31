@@ -97,6 +97,7 @@ typedef struct _earsbufobj
     
     // Inlets
     t_int32                    l_numins;       ///< how many inlets do we have
+    char                    l_inlet_types[LLLL_MAX_INLETS];  ///< types of inlets
     void                    **l_proxy;      ///< inlets
     long                    l_in;           ///< place to store proxy number
     t_int32                    l_numbufins;    ///< how many buffer inlets do we have
@@ -107,7 +108,7 @@ typedef struct _earsbufobj
 //    t_int32                    l_numouts;      ///< how many outlets
 //    void                    **l_outlet;     ///< the outlets
     char                    l_outlet_types[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
-    t_int32                    l_numbufouts;    ///< how many buffer outlets
+    t_int32                 l_numbufouts;    ///< how many buffer outlets
     t_earsbufobj_store      *l_outstore;    ///< the out stores
     t_llll                  *l_outnames;    ///< Output names, could be a level2 list if outlets have multiple buffers
     char                    l_bufouts_naming;   ///< One of the e_earsbufobj_namings.
