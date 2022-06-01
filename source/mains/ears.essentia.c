@@ -424,6 +424,10 @@ const char *ears_essentia_feature_to_description(e_ears_feature feature)
             return "Zero-crossing rate";
             break;
             
+        case EARS_FEATURE_ENERGY:
+            return "Energy";
+            break;
+            
         case EARS_FEATURE_ENERGYBAND:
             return "Energy band";
             break;
@@ -916,6 +920,8 @@ e_ears_feature ears_essentia_feature_from_symbol(t_symbol *sym, long *temporalmo
         return EARS_FEATURE_ZEROCROSSINGRATE;
     if (s == gensym("energyband"))
         return EARS_FEATURE_ENERGYBAND;
+    if (s == gensym("energy"))
+        return EARS_FEATURE_ENERGY;
     if (s == gensym("energybandratio"))
         return EARS_FEATURE_ENERGYBANDRATIO;
     if (s == gensym("mfcc"))
