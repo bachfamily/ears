@@ -9,8 +9,6 @@
 #ifndef _EARS_BUF_COMMONS_H_
 #define _EARS_BUF_COMMONS_H_
 
-#define EARS_ALLOCATIONVERBOSE false
-
 #define EARS_ERROR_BUF_CANT_READ "Can't read from buffer"
 #define EARS_ERROR_BUF_CANT_WRITE "Can't write to buffer"
 #define EARS_ERROR_BUF_NO_BUFFER "No buffer given"
@@ -27,13 +25,14 @@
 #define ears_get_current_Max_sr() (sys_getsr())
 #define EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC 30 // 30 seconds allocation
 
-#define EARS_FROMFILE_NATIVE_MP3_HANDLING
 
+#include "ears.h"
 #include "ext.h"
 #include "ext_obex.h"
 #include "ext_buffer.h"
 #include "ext_strings.h"
 
+#include "llll_commons_ext.h"
 #include "ears.conversions.h" // llllstuff is included in here
 #include "lexpr.h"
 #include "bach_math_utilities.h"
@@ -42,9 +41,13 @@
 #include "notation.h"
 #include "bach_threads.h"
 
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+#ifdef EARS_MP3_SUPPORT
 #include "mpg123.h"
 #endif
+
+#include <vector>
+#include "ext_globalsymbol.h"
+
 
 
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
@@ -410,9 +413,6 @@ double ears_buffer_get_size_ms(t_object *ob, t_buffer_obj *buf);
 t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers = false);
 t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_buffer_get_sampleformat(t_object *ob, t_buffer_obj *buf);
-
-// MPG123 init
-void ears_mpg123_init();
 
 
 // THESE FUNCTIONS ARE ESSENTIALLY ILLEGAL!

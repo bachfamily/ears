@@ -478,6 +478,7 @@
 		1E91FAF51FCB15060075DB7A /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E91FAF61FCB15060075DB7A /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1E91FAFE1FCB151F0075DB7A /* ears.reg.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E91FAFD1FCB151F0075DB7A /* ears.reg.c */; };
+		1E96989428476B290005359F /* ears.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E96989328476B290005359F /* ears.h */; };
 		1E9889CD22B52D6F00E744B7 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E9889D122B52D6F00E744B7 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E9889D222B52D6F00E744B7 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
@@ -2148,6 +2149,7 @@
 		1E8D27131F5C3B4C00BE6205 /* ears.info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.info.c; path = ../mains/ears.info.c; sourceTree = SOURCE_ROOT; };
 		1E91FAFB1FCB15060075DB7A /* ears.reg~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.reg~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E91FAFD1FCB151F0075DB7A /* ears.reg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.reg.c; path = ../mains/ears.reg.c; sourceTree = SOURCE_ROOT; };
+		1E96989328476B290005359F /* ears.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.h; path = ../commons/dg/ears.h; sourceTree = "<group>"; };
 		1E9889D722B52D6F00E744B7 /* ears.offset~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.offset~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E9889DB22B52D8B00E744B7 /* ears.offset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ears.offset.c; path = ../mains/ears.offset.c; sourceTree = SOURCE_ROOT; };
 		1E9E8B3525F2AAED00F54BC3 /* unpack3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unpack3.h; path = ../lib/WavPack/src/unpack3.h; sourceTree = "<group>"; };
@@ -3505,6 +3507,7 @@
 		1EB91C52190C00D400E05E70 /* commons */ = {
 			isa = PBXGroup;
 			children = (
+				1E96989328476B290005359F /* ears.h */,
 				1E88BF032813DAD900E72644 /* ears.soundtouch_commons.c */,
 				1E88BF042813DAD900E72644 /* ears.soundtouch_commons.h */,
 				1E8BA82927D5F89F008A2F84 /* ears.vamp_commons.c */,
@@ -4344,6 +4347,7 @@
 				1EBE3E501D368FB1009B7392 /* ears.object.h in Headers */,
 				1E9E8BAB25F2B97800F54BC3 /* decorr_tables.h in Headers */,
 				1E9E8BCD25F2B97800F54BC3 /* unpack3.h in Headers */,
+				1E96989428476B290005359F /* ears.h in Headers */,
 				1E21E90B21D6836E0044249A /* ears_doc_commons.h in Headers */,
 				1E9E8BCF25F2B97800F54BC3 /* wavpack_version.h in Headers */,
 				1EAD876A2613538B00D8DD59 /* ears.essentia_commons.h in Headers */,
@@ -14021,7 +14025,6 @@
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
-					"$(C74_SYM_LINKER_FLAGS)",
 				);
 				PREBINDING = YES;
 				PRODUCT_NAME = _ears;
@@ -14065,7 +14068,6 @@
 				OTHER_LDFLAGS = (
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
-					"$(C74_SYM_LINKER_FLAGS)",
 				);
 				PREBINDING = YES;
 				PRODUCT_NAME = _ears;

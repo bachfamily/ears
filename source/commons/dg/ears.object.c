@@ -1,4 +1,7 @@
 #include "ears.object.h"
+#ifdef EARS_MP3_SUPPORT
+#include "ears.mp3.h"
+#endif
 
 long ears_check_bach_version()
 {
@@ -122,8 +125,9 @@ void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, lo
 
     if (name && buf) {
         if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
-            if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                 post("--- ears allocation: Buffer %s will be kept in memory (dynamic mode)", name->s_name);
+#endif
         } else {
             ears_buffer_release(buf, name);
         }
@@ -150,8 +154,9 @@ void earsbufobj_polybuffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where
 
     if (name && obj) {
         if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
-            if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                 post("--- ears allocation: Polybuffer %s will be kept in memory (dynamic mode)", name->s_name);
+#endif
         } else {
             
             ears_polybuffer_release(obj, name);
@@ -168,8 +173,9 @@ void ears_hashtab_inccount(t_symbol *name)
         if (ht) {
             t_max_err err = hashtab_lookuplong(ht, name, &count);
             if (err == MAX_ERR_NONE) {
-                if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                     post("--- ears allocation: Incrementing ears-wide count for '%s': now has count %ld", name->s_name, count+1);
+#endif
                 hashtab_storelong(ht, name, count+1); // increase reference count
             }
         }
@@ -185,8 +191,9 @@ void ears_hashtab_clipcount(t_symbol *name)
             t_max_err err = hashtab_lookuplong(ht, name, &count);
             if (err == MAX_ERR_NONE) {
                 if (count != 0) count = 1;
-                if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                     post("--- ears allocation: Clipping count for '%s': now has ears-wide count %ld", name->s_name, count+1);
+#endif
                 hashtab_storelong(ht, name, count); // increase reference count
             }
         }
@@ -199,8 +206,9 @@ void ears_hashtab_store(t_symbol *name)
     if (name) {
         t_hashtab *ht = ears_hashtab_get();
         if (ht) {
-            if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                 post("--- ears allocation: Storing '%s' in hash table (with count = 0)", name->s_name);
+#endif
             hashtab_storelong(ht, name, 0);
         }
     }
@@ -266,8 +274,9 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
             from_polybuf = true;
             for (long i = polybuffer_count; i <= buffer_index; i++) {
                 object_method_long(polybuffer_obj, gensym("appendempty"), 1000, NULL);
-                if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                     post("--- ears allocation: Buffer %s.%ld inside polybuffer has been created via 'appendempty'.", polybuffer_name->s_name, i+1);
+#endif
 /*                t_symbol *newbuffer_sym = ears_buffer_name_get_for_polybuffer(polybuffer_name, i+1);
                 t_buffer_obj *newbuffer_obj = ears_buffer_getobject(newbuffer_sym);
                 if (newbuffer_sym && newbuffer_obj) {
@@ -1119,8 +1128,9 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                     if (s && buffer_is_part_of_polybuffer(s, polybuffer_name)) {
                         t_symbol *new_s = symbol_unique();
                         if (new_s) {
-                            if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                                 post("--- ears allocation: A polybuffer is being freed, so we have to replace buffer '%s' used elsewhere", s->s_name);
+#endif
                             earsbufobj_buffer_link(e_ob, EARSBUFOBJ_IN, store_idx, i, new_s); //< the release of the old buffer is here inside
                         }
                     }
@@ -1132,8 +1142,9 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
                     if (s && buffer_is_part_of_polybuffer(s, polybuffer_name)) {
                         t_symbol *new_s = symbol_unique();
                         if (new_s) {
-                            if (EARS_ALLOCATIONVERBOSE)
+#ifdef EARS_ALLOCATIONVERBOSE
                                 post("--- ears allocation: A polybuffer is being freed, so we have to replace buffer '%s' used elsewhere", s->s_name);
+#endif
                             earsbufobj_buffer_link(e_ob, EARSBUFOBJ_OUT, store_idx, i, new_s); //< the release of the old buffer is here inside
                         }
                     }
@@ -1306,12 +1317,12 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
         
         if (msg == gensym("writemp3")) {
             t_fourcc outtype;
-            t_fourcc filetype = 'MPEG';
+//            t_fourcc filetype = 'MPEG';
             t_symbol *outfilepath = NULL;
             if (parsed && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM)
                 outfilepath = ears_ezresolve_file(hatom_getsym(&parsed->l_head->l_hatom), true, ".mp3");
             else
-                ears_saveasdialog((t_object *)e_ob, "Untitled.mp3", &filetype, 1, &outtype, &outfilepath, true);
+                ears_saveasdialog((t_object *)e_ob, "Untitled.mp3", NULL, 0, &outtype, &outfilepath, true);
             
             if (outfilepath)
                 ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
@@ -1382,7 +1393,7 @@ void earsbufobj_add_common_methods(t_class *c, long flags)
     
     class_addmethod(c, (method)earsbufobj_open, "open", 0);
 
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+#ifdef EARS_MP3_SUPPORT
     ears_mpg123_init();
 #endif
 }

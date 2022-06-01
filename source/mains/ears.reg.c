@@ -45,6 +45,22 @@
 #include "bach_math_utilities.h"
 #include "ears.object.h"
 
+/*
+
+#include <lame/lame.h> // only used to export mp3s
+void ears_test_lame()
+{
+    lame_t lame = lame_init();
+}
+
+#include "mpg123.h"
+void ears_test_mpg123()
+{
+    if (mpg123_init() != MPG123_OK)
+        error("Error while loading mpg123 library.");
+}
+*/
+
 
 
 typedef struct _buf_reg {
@@ -83,6 +99,8 @@ EARSBUFOBJ_ADD_IO_METHODS(reg)
 
 int C74_EXPORT main(void)
 {
+//    ears_test_lame();
+//    ears_test_mpg123();
     common_symbols_init();
     llllobj_common_symbols_init();
     
