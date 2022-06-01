@@ -273,9 +273,6 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
 
 void buf_read_free(t_buf_read *x)
 {
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
-    //    mpg123_exit(); // can't call this here, should call it on Max quit... TO DO!
-#endif
     bach_freeptr(x->formatsyms);
     llll_free(x->filenames);
     earsbufobj_free((t_earsbufobj *)x);
@@ -340,7 +337,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         
         buf_read_addpathsym(x, filepath, idx);
         
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+#ifdef EARS_MP3_SUPPORT
         if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
             sampleformat = gensym("compressed");
             long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
@@ -349,10 +346,12 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
             // (e_ears_timeunit)x->e_ob.l_timeunit);
         } else {
 #endif
-            
+
+#ifdef EARS_WAVPACK_SUPPORT
             if (ears_symbol_ends_with(filepath, ".wv", true)) { // WavPack files
                 ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, start, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx), &sampleformat, (e_ears_timeunit)x->e_ob.l_timeunit);
             } else {
+#endif
                 // THIS IS NOT A SMART MOVE, THOUGH. FOR SIMPLE FILES, THAT REQUIRES TOO MUCH TIME
                 
                 bool handled_natively = false;
@@ -389,12 +388,13 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
                         ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), start_samps, end_samps);
                     }
                 }
+#ifdef EARS_WAVPACK_SUPPORT
             }
+#endif
             
-#ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
+#ifdef EARS_MP3_SUPPORT
         }
 #endif
-        
         // cleaning spectral data
         ears_spectralbuf_metadata_remove((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx));
         

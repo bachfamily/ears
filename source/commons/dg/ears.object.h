@@ -9,6 +9,7 @@
 #ifndef _EARS_BUF_OBJECT_H_
 #define _EARS_BUF_OBJECT_H_
 
+#include "ears.h"
 #include "ears.commons.h"
 #include <vector>
 

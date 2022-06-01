@@ -17,7 +17,8 @@ Dependencies
 
 • bach (https://github.com/bachfamily/bach)
 
-• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libessentia.a
+• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). The essentia library is not needed for the whole project, but for a certain number of its modules (including ears.essentia~, ears.cqt~, ears.tempogram~, ears.peaks~ and all the ears.model.*~).
+If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libessentia.a
 The packaged version of Essentia has been modified to
 1) prevent the collision with functions named "error" (in debugger.h). The naming has been modified to "essentia_error".
 2) allow non-integer hopSize for the frameCutter algorithm
@@ -34,16 +35,17 @@ If you're on an Apple Silicon machine, in principle by running the line above yo
 
 1) first of all make a "clean" copy of the whole library folder, and keep it somewhere
 2) enter the library folder, and then
-    ./waf configure --build-static --fft='KISS' --lightweight="" --arch=arm64 --no-msse
-    ./waf
-    ./waf install
+    MACOSX_DEPLOYMENT_TARGET=10.11 ./waf configure --build-static --fft='KISS' --lightweight="" --arch=arm64 --no-msse
+    MACOSX_DEPLOYMENT_TARGET=10.11 ./waf
+    MACOSX_DEPLOYMENT_TARGET=10.11 ./waf install
     mv /usr/local/lib/libessentia.a /usr/local/lib/libessentia_arm64.a
+I don't see how at this stage the leading MACOSX_DEPLOYMENT_TARGET=10.11 makes any difference but it works in this way, so let's carry on.
 3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.essentia~ in the Xcode project. If you want to build both architecture instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure.
 4) Re-enter the library folder, and then
     arch -x86_64 zsh
-    ./waf configure --build-static --fft='KISS' --lightweight=""
-    ./waf
-    ./waf install
+    MACOSX_DEPLOYMENT_TARGET=10.11 ./waf configure --build-static --fft='KISS' --lightweight=""
+    MACOSX_DEPLOYMENT_TARGET=10.11 ./waf
+    MACOSX_DEPLOYMENT_TARGET=10.11 ./waf install
     cd /usr/local/lib
     lipo libessentia.a libessentia_arm64.a -create -output libessentia.a
 
@@ -76,11 +78,10 @@ The modifications extend the functionalities of the library in order to support 
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
 • the mpg123 library 1.23.4 (released under LGPLv2.1). 
-We have tested with versio 1.29.3 (and, previously with version 1.23.4). It may work with following versions also.
-Download the source code from https://www.mpg123.de, enter the folder, then run
-./configure --enable-static=yes
-make
-make install
+We have tested with versio 1.29.3 (and, previously with version 1.23.4). It may work with following versions also. The source code is, for convenience, also in the source/lib/ folder (if you want to try a later version you can download it from https://www.mpg123.de), but importantly there is an issue in the "make" portion of the procedure if your path has spaces. So first of all make sure you copy the folder in a path position with no spaces, then enter the folder and run
+MACOSX_DEPLOYMENT_TARGET=10.11 ./configure --enable-static=yes
+MACOSX_DEPLOYMENT_TARGET=10.11 make
+MACOSX_DEPLOYMENT_TARGET=10.11 make install
 If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmpg123.a
 If you need to build it for Apple Silicon, you need to
 1. Run the commands above
@@ -95,11 +96,23 @@ If you need to build it for Apple Silicon, you need to
 
 
 • The mp3 LAME library 3.1.00, licensed under the LGPL (If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmp3lame.a)
-On an Apple Silicon machine, you need to have two versions of Homebrew installed, respectively for the ARM64 and Intel architectures. The ARM64 is the default one, which you can install by running in the terminal the commands provided listed the Homebrew site home page. Once you've done this, you can run `brew install lame' as usual.
-  Once you've done this, you must install Homebrew for the Intel architecture. To do so, run `arch -x86_64 zsh' in a terminal. This will open a zsh session under Rosetta 2. Now you have to install Homebrew anew, but the x64 version will be installed in a different location: /usr/local/Homebrew/bin . If you just call the system-wide brew, the arm64 version will be called, so now you have to run `/usr/local/Homebrew/bin/brew install lame'.
-  At this point, you have two architecture-specific versions of the library installed, which you now need to pack in a single fat binary. The arm64 version is in /opt/homebrew/lib, the x86 version is in /usr/local/opt/lame/lib. So we have to run the following line:
-    lipo /usr/local/opt/lame/lib/libmp3lame.a /opt/homebrew/lib/libmp3lame.a -create -output /usr/local/opt/lame/lib/libmp3lame.a
-Now the file that previously contained the x86 version contains the fat binary, while the arm64 files has not been changed. This should allow you to compile everything.
+We have tested with version 3.100. A slightly modified version is included in the repository, containing the only modification needed to compile the library, namely: remove the line containing 'lame_init_old' from the file 'include/libmp3lame.sym'. If you take the version of the library in source/lib/, this is already taken care of, otherwise take care of it, make sure to copy the folder in a path with no spaces in it, then enter the folder and run:
+MACOSX_DEPLOYMENT_TARGET=10.11 ./configure
+MACOSX_DEPLOYMENT_TARGET=10.11 make
+MACOSX_DEPLOYMENT_TARGET=10.11 make install
+If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmp3lame.a
+If you need to build it for Apple Silicon, you need to
+1. Run the commands above
+2. Rename the library (e.g. libmp3lame.arm64)
+3. Open a terminal under Rosetta 2: arch -x86_64 zsh
+4. Clean the temporary build locations (or just recreate a new source code folder)
+5. Run again the commands above
+6. Create a fat bundle out of the two single-platform binaries:
+ cd /usr/local/lib
+ lipo libmp3lame.a libmp3lame.arm64 -create -output libmp3lame.a
+7. Remove libmp3lame.arm64
+
+
 
 • WavPack (released under BSD license)
 You do not need to compile or install the library separately: sources are directly compiled within the project.

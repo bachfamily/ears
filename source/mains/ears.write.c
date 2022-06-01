@@ -38,6 +38,10 @@
 	Daniele Ghisi
  */
 
+#include "ears.h"
+#ifdef EARS_MP3_SUPPORT
+#include "ears.mp3.h"
+#endif
 #include "ext.h"
 #include "ext_obex.h"
 #include "llllobj.h"
@@ -132,7 +136,9 @@ t_max_err buf_write_setattr_format(t_buf_write *x, void *attr, long argc, t_atom
 
 int C74_EXPORT main(void)
 {
+#ifdef EARS_MP3_SUPPORT
     ears_mpg123_init();
+#endif
     common_symbols_init();
     llllobj_common_symbols_init();
     

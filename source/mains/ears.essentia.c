@@ -921,6 +921,8 @@ e_ears_feature ears_essentia_feature_from_symbol(t_symbol *sym, long *temporalmo
     
     if (s == gensym("zerocrossingrate"))
         return EARS_FEATURE_ZEROCROSSINGRATE;
+    if (s == gensym("energy"))
+        return EARS_FEATURE_ENERGY;
     if (s == gensym("energyband"))
         return EARS_FEATURE_ENERGYBAND;
     if (s == gensym("energy"))
