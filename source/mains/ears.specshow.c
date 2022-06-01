@@ -128,6 +128,18 @@ static t_class	*s_buf_specshow_class = NULL;
 /**********************************************************************/
 // Class Definition and Life Cycle
 
+t_max_err buf_specshow_setattr_autoscale(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (is_atom_number(argv)) {
+            x->n_autoscale = atom_getlong(argv);
+            object_attr_setdisabled((t_object *)x, gensym("maxvalue"), x->n_autoscale == 1);
+            object_attr_setdisabled((t_object *)x, gensym("minvalue"), x->n_autoscale == 1);
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
 void ext_main(void *r)
 {
     t_class *c;
@@ -187,14 +199,14 @@ void ext_main(void *r)
     CLASS_ATTR_STYLE_LABEL(c, "minvalue", 0, "text", "Lowest Value");
     CLASS_ATTR_BASIC(c, "minvalue", 0);
     CLASS_ATTR_CATEGORY(c, "minvalue", 0, "Appearance");
-    // @description Sets the value corresponding to <m>mincolor</m>.
+    // @description Sets the value corresponding to <m>mincolor</m> (only if <m>autoscale</m> is off).
     
     CLASS_ATTR_DOUBLE(c, "maxvalue", 0, t_buf_specshow, n_maxvalue);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxvalue", 0, "1.");
     CLASS_ATTR_STYLE_LABEL(c, "maxvalue", 0, "text", "Highest Value");
     CLASS_ATTR_BASIC(c, "maxvalue", 0);
     CLASS_ATTR_CATEGORY(c, "maxvalue", 0, "Appearance");
-    // @description Sets the value corresponding to <m>maxcolor</m>.
+    // @description Sets the value corresponding to <m>maxcolor</m> (only if <m>autoscale</m> is off).
     
     CLASS_ATTR_LONG(c, "maxnumbins", 0, t_buf_specshow, n_maxnumbins);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxnumbins", 0, "0");
@@ -203,8 +215,10 @@ void ext_main(void *r)
     // @description Sets the maximum number of bins displayed (leave 0 for all).
 
     CLASS_ATTR_LONG(c, "autoscale", 0, t_buf_specshow, n_autoscale);
-    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscale", 0, "0");
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscale", 0, "1");
     CLASS_ATTR_STYLE_LABEL(c, "autoscale", 0, "onoff", "Automatically Rescale Range");
+    CLASS_ATTR_ACCESSORS(c, "autoscale", NULL, buf_specshow_setattr_autoscale);
+    CLASS_ATTR_BASIC(c, "autoscale", 0);
     CLASS_ATTR_CATEGORY(c, "autoscale", 0, "Settings");
     // @description Toggles the ability to obtain <m>minvalue</m> and <m>maxvalue</m> automatically
     // from the minimum and maximum values in the input buffer.
@@ -352,7 +366,7 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_last_buffer = NULL;
         x->n_display_start_ms = 0;
         x->n_display_end_ms = -1;
-        x->n_autoscale = 0;
+        x->n_autoscale = 1;
         x->n_buffername = _llllobj_sym_empty_symbol;
 
         x->n_mincolor = get_grey(1.);

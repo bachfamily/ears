@@ -803,6 +803,7 @@ t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val)
 }
 
 
+
 // fill buffer with random range
 t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, double v_min, double v_max)
 {
@@ -821,6 +822,37 @@ t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, doub
                 for (long c = 0; c < channelcount; c++)
                     sample[i*channelcount + c] = random_double_in_range(v_min, v_max);
             
+            buffer_setdirty(buf);
+        }
+        
+        buffer_unlocksamples(buf);
+    }
+    return err;
+}
+
+// reverse channels in a buffer
+t_ears_err ears_buffer_rev_channels_inplace(t_object *ob, t_buffer_obj *buf)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+        
+        if (framecount > 0) {
+            float *temp = (float *)bach_newptr(channelcount * framecount * sizeof(float));
+            sysmem_copyptr(sample, temp, channelcount * framecount * sizeof(float));
+            
+            
+            for (long i = 0; i < framecount; i++)
+                for (long c = 0; c < channelcount; c++)
+                    sample[i*channelcount + c] = temp[i*channelcount + (channelcount - c - 1)];
+            
+            bach_freeptr(temp);
             buffer_setdirty(buf);
         }
         

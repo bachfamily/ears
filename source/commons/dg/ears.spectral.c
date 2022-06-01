@@ -1361,6 +1361,16 @@ long argmin3(double val1, double val2, double val3, long idx1, long idx2, long i
 }
 
 
+double min3(double val1, double val2, double val3)
+{
+    return MIN(MIN(val1, val2), val3);
+}
+
+double ezsq(double val1)
+{
+    return val1*val1;
+}
+
 double unwrapped_phase_avg(double phase1, double phase2)
 {
     while (phase2 > phase1 + PI)
@@ -1371,7 +1381,7 @@ double unwrapped_phase_avg(double phase1, double phase2)
 }
 
 // phase_handling = 0: none; 1: compensate; 2: griffin-lim
-t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, long phase_handling, double weighting_amount, double weighting_numframes_stdev,
+t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, long phase_handling, long use_forward_energy, double weighting_amount, double weighting_numframes_stdev,
    // only used for griffin-lim;
    long fullspectrum, long winleftalign, long unitary, long num_griffin_lim_iter, long griffin_lim_invalidate_width, bool griffin_lim_vertical, bool griffin_lim_randomize, const char *analysiswintype, const char *synthesiswintype)
 {
@@ -1418,7 +1428,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     }
     
     long num_out_frames = num_frames + delta_num_frames;
-    long num_alloc_frames = MAX(num_frames, num_out_frames);
+    long num_alloc_frames = MAX(num_frames, num_out_frames) + 1; // the + 1 is needed to draw seams if needed
     
     if (num_out_frames < 0) {
         object_error(ob, "Carving too many frames, empty buffer.");
@@ -1444,6 +1454,8 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     float **amps_samples = (float **)bach_newptr(num_channels * sizeof(float *));
     float **phases_samples = (float **)bach_newptr(num_channels * sizeof(float *));
     float *carvingpath_samps = NULL, *energymapout_samps = NULL;
+    std::vector<std::vector<int>> seams_idxs;
+    bool need_recompute_cumulative_energy = true;
     for (long c = 0; c < num_channels; c++) {
         float *temp = buffer_locksamples(amplitudes[c]);
         if (!temp) {
@@ -1472,9 +1484,9 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     if (seam_path) {
         ears_buffer_copy_format((t_object *)ob, amplitudes[0], seam_path, true);
         ears_buffer_clear((t_object *)ob, seam_path);
-        ears_buffer_set_size_and_numchannels((t_object *)ob, seam_path, num_alloc_frames, num_bins);
+        ears_buffer_set_size_and_numchannels((t_object *)ob, seam_path, orig_num_frames, num_bins);
         carvingpath_samps = buffer_locksamples(seam_path);
-        if (!carvingpath_samps || buffer_getframecount(seam_path) != num_alloc_frames || buffer_getchannelcount(seam_path) != num_bins) {
+        if (!carvingpath_samps || buffer_getframecount(seam_path) != orig_num_frames || buffer_getchannelcount(seam_path) != num_bins) {
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             goto end;
@@ -1516,26 +1528,54 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         }
     }
     
-    // 2) compute cumulative energies
-    for (long f = 0; f < num_frames; f++) {
-        energymapcumul[f*num_bins + 0] = energymap[f*num_bins + 0];
-    }
-    for (long b = 1; b < num_bins; b++) {
-        for (long f = 0; f < num_frames; f++) {
-            energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + MIN(MIN(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1]), energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
-        }
-    }
-    
     // write energymap to output, but only for the first iteration
     if (energymapout_samps) {
         for (long b = 0; b < num_bins; b++) {
             for (long f = 0; f < num_frames; f++) {
-                energymapout_samps[f * num_bins + b] = energymapcumul[f * num_bins + b];
+                energymapout_samps[f * num_bins + b] = energymap[f * num_bins + b];
             }
         }
     }
     
+    need_recompute_cumulative_energy = true;
     while (true) {
+        
+        // 2) compute cumulative energies
+        if (need_recompute_cumulative_energy) {
+            for (long f = 0; f < num_frames; f++) {
+                if (use_forward_energy) {
+                    double CU = (f > 0 ? ezsq(energymap[(f-1)*num_bins + 0]) : 0)+(f < num_frames - 1 ? ezsq(energymap[(f+1)*num_bins + 0]) : 0);
+                    energymapcumul[f*num_bins + 0] = CU;
+                } else {
+                    energymapcumul[f*num_bins + 0] = energymap[f*num_bins + 0];
+                }
+            }
+            for (long b = 1; b < num_bins; b++) {
+                for (long f = 0; f < num_frames; f++) {
+                    if (use_forward_energy) {
+                        double CU = (f > 0 ? ezsq(energymap[(f-1)*num_bins + b]) : 0)+(f < num_frames - 1 ? ezsq(energymap[(f+1)*num_bins + b]) : 0);
+                        double CL = CU + (b > 0 ? ezsq(energymap[f*num_bins + b-1]) : 0)+(f > 0 ? ezsq(energymap[(f-1)*num_bins + b]) : 0);
+                        double CR = CU + (b > 0 ? ezsq(energymap[f*num_bins + b-1]) : 0) +(f < num_frames - 1 ? ezsq(energymap[(f+1)*num_bins + b]) : 0);
+                        energymapcumul[f*num_bins + b] = min3(
+                                                              (f > 0 && b > 0 ? energymapcumul[(f-1) * num_bins + b-1] + CL : 0),
+                                                              (b > 0 ? energymapcumul[f*num_bins + b-1]  + CU : 0),
+                                                              (f < num_frames - 1 && b > 0 ? energymapcumul[(f+1)*num_bins + b-1]  + CR : 0)
+                                                              );
+                    } else {
+                        energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + min3(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1], energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
+                    }
+                }
+            }
+            need_recompute_cumulative_energy = false;
+            
+            if (energymapout_samps) {
+                for (long b = 0; b < num_bins; b++) {
+                    for (long f = 0; f < num_frames; f++) {
+                        energymapout_samps[f * num_bins + b] = energymapcumul[f * num_bins + b];
+                    }
+                }
+            }
+        }
         
         if (verbose) {
             post("weights");
@@ -1564,9 +1604,11 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         
         // 3) find carving
         long carve[num_bins];
-        // find minimum at num_bins-1
-        double curr_min = energymapcumul[0*num_bins + num_bins - 1];
         long curr_min_arg = 0;
+        double curr_min = 0;
+        // find minimum at num_bins-1
+        curr_min = energymapcumul[0*num_bins + num_bins - 1];
+        curr_min_arg = 0;
         for (long f = 1; f < num_frames; f++) {
             if (energymapcumul[f*num_bins + num_bins - 1] < curr_min) {
                 curr_min = energymapcumul[f*num_bins + num_bins - 1];
@@ -1588,6 +1630,12 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             }
         }
         
+        std::vector<int> this_seam_idxs;
+        for (long b = 0; b < num_bins; b++) {
+            this_seam_idxs.push_back(carve[b]);
+        }
+        seams_idxs.push_back(this_seam_idxs);
+        
         
         if (verbose) {
             t_llll *ll = llll_get();
@@ -1596,7 +1644,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             post("carved indices:");
             llll_print(ll);
         }
-
+/*
         // writing carving data to output buffer
         if (carvingpath_samps) {
             for (long b = 0; b < num_bins; b++) {
@@ -1613,7 +1661,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                 }
             }
         }
-            
+             */
         // 4) updating weights
         if (weighting_amount != 0) {
             for (long b = 0; b < num_bins; b++) {
@@ -1717,27 +1765,55 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             delta_num_frames++;
         }
         
-        // recomputing invalidated region of energy map cumul
-        long inv_f_start = carve[0];
-        long inv_f_end = carve[0] - 1;
-        for (long b = 1; b < num_bins; b++) {
-            inv_f_start -= 1;
-            inv_f_end += 1;
-            
-            inv_f_start = CLAMP(inv_f_start, 0, num_frames-1);
-            inv_f_end = CLAMP(inv_f_end, 0, num_frames-1);
-            for (long f = inv_f_start; f <= inv_f_end; f++) {
-                energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + MIN(MIN(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1]), energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
+        
+        if (use_forward_energy) {
+            need_recompute_cumulative_energy = true;
+        } else {
+            // only recomputing invalidated region of energy map cumul
+            long inv_f_start = carve[0];
+            long inv_f_end = carve[0] - 1;
+            for (long b = 1; b < num_bins; b++) {
+                inv_f_start -= 1;
+                inv_f_end += 1;
+                
+                inv_f_start = CLAMP(inv_f_start, 0, num_frames-1);
+                inv_f_end = CLAMP(inv_f_end, 0, num_frames-1);
+                for (long f = inv_f_start; f <= inv_f_end; f++) {
+                    energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + MIN(MIN(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1]), energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
+                }
+                
+                inv_f_start = MIN(inv_f_start, carve[b]);
+                inv_f_end = MAX(inv_f_end, carve[b]-1);
             }
-            
-            inv_f_start = MIN(inv_f_start, carve[b]);
-            inv_f_end = MAX(inv_f_end, carve[b]-1);
         }
 
     }
     
     if (carvingpath_samps) {
-        for (long b = 0; b < num_bins; b++) {
+// naive implementation for now
+        long num_seams = seams_idxs.size();
+        for (long s = 0; s < num_seams; s++) {
+            for (long b = 0; b < num_bins; b++) {
+                for (long t = s+1; t < num_seams; t++) {
+                    if (seams_idxs[t][b] >= seams_idxs[s][b])
+                        seams_idxs[t][b] += 1;
+                }
+            }
+        }
+        
+        memset(carvingpath_samps, 0, num_bins * orig_num_frames * sizeof(float));
+        
+        for (long s = 0; s < num_seams; s++) {
+            for (long b = 0; b < num_bins; b++) {
+                long f = seams_idxs[s][b];
+                if (f >= 0 && f < orig_num_frames)
+                    carvingpath_samps[f * num_bins + b] = 1;
+                else {
+                    object_error(ob, "Internal error");
+                }
+            }
+        }
+/*        for (long b = 0; b < num_bins; b++) {
             long prev = 0;
             for (long f = 0; f < num_frames; f++) {
                 long temp = carvingpath_samps[f * num_bins + b];
@@ -1747,7 +1823,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                     carvingpath_samps[f * num_bins + b] = 0;
                 prev = temp;
             }
-        }
+        } */
     }
     
     
@@ -1809,7 +1885,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     if (seam_path) {
         buffer_setdirty(seam_path);
         buffer_unlocksamples(seam_path);
-        ears_buffer_set_size_samps(ob, seam_path, orig_num_frames);
+//        ears_buffer_set_size_samps_preserve(ob, seam_path, orig_num_frames);
     }
 //    ears_buffer_set_size_samps_preserve(ob, seam_path, orig_num_frames);
     if (energy_map) {
@@ -1832,382 +1908,3 @@ end:
 }
 
 
-
-
-/*
-t_ears_err ears_buffer_spectral_seam_carve_orig(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, double compensate_phases, double weighting_amount, double weighting_numframes_stdev)
-{
-    bool verbose = false;
-
-    if (num_channels == 0)
-        return EARS_ERR_NO_BUFFER;
-    
-    for (long i = 0; i < num_channels; i++) {
-        if (!amplitudes[i] || !phases[i])
-            return EARS_ERR_NO_BUFFER;
-    }
-    
-    long num_frames = ears_buffer_get_size_samps(ob, amplitudes[0]);
-    
-    if (delta_num_frames + num_frames <= 0) {
-        object_warn(ob, "No more frames left; empty output buffer!");
-        for (long i = 0; i < num_channels; i++) {
-            ears_buffer_clear(ob, amplitudes[i]);
-            ears_buffer_clear(ob, phases[i]);
-        }
-        if (seam_path)
-            ears_buffer_clear(ob, seam_path);
-        if (energy_map)
-            ears_buffer_clear(ob, energy_map);
-        return EARS_ERR_GENERIC;
-    }
-    
-    long orig_num_frames = num_frames;
-    long orig_delta_num_frames = delta_num_frames;
-    for (long i = 1; i < num_channels; i++) {
-        if (ears_buffer_get_size_samps(ob, amplitudes[i]) != num_frames) {
-            object_error(ob, "Size mismatch in frame sizes across channels");
-            return EARS_ERR_SIZE_MISMATCH;
-        }
-    }
-
-    long num_bins = ears_buffer_get_numchannels(ob, amplitudes[0]);
-    for (long i = 1; i < num_channels; i++) {
-        if (ears_buffer_get_numchannels(ob, amplitudes[i]) != num_bins) {
-            object_error(ob, "Size mismatch in number of bins across channels");
-            return EARS_ERR_SIZE_MISMATCH;
-        }
-    }
-    
-    long num_out_frames = num_frames + delta_num_frames;
-    long num_alloc_frames = MAX(num_frames, num_out_frames);
-    
-    if (num_out_frames < 0) {
-        object_error(ob, "Carving too many frames, empty buffer.");
-        return EARS_ERR_GENERIC;
-    }
-    
-    t_ears_err err = EARS_ERR_NONE;
-    double *energymap = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
-//    double energymap[num_bins][num_alloc_frames]; // @ANDREA, I KNOW...  BUT LET ME DO THIS LIKE THIS, I NEED TO EXPLORE! THEN I'll CHANGE IT; I PROMISE ;-)
-    
-    double *weights = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
-    for (long i = 0; i < num_bins * num_alloc_frames; i++)
-        weights[i] = 1.;
-    
-    // 1) lock all the samples, cloning them
-    long num_amps_locked = 0, num_phases_locked = 0;
-    float **amps_samples = (float **)bach_newptr(num_channels * sizeof(float *));
-    float **phases_samples = (float **)bach_newptr(num_channels * sizeof(float *));
-    float *carvingpath_samps = NULL, *energymapout_samps = NULL;
-    bool firsttime = true;
-
-    for (long c = 0; c < num_channels; c++) {
-        float *temp = buffer_locksamples(amplitudes[c]);
-        if (!temp) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            goto end;
-        }
-        amps_samples[c] = (float *)bach_newptr(num_alloc_frames * num_bins * sizeof(float));
-        bach_copyptr(temp, amps_samples[c], num_alloc_frames * num_bins * sizeof(float));
-        buffer_unlocksamples(amplitudes[c]);
-        num_amps_locked++;
-        
-        temp = buffer_locksamples(phases[c]);
-        if (!temp) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            goto end;
-        }
-        phases_samples[c] = (float *)bach_newptr(num_alloc_frames * num_bins * sizeof(float));
-        bach_copyptr(temp, phases_samples[c], num_alloc_frames * num_bins * sizeof(float));
-        buffer_unlocksamples(phases[c]);
-        num_phases_locked++;
-    }
-    
-    // prepare carving path buffer to contain data
-    if (seam_path) {
-        ears_buffer_copy_format((t_object *)ob, amplitudes[0], seam_path, true);
-        ears_buffer_clear((t_object *)ob, seam_path);
-        ears_buffer_set_size_and_numchannels((t_object *)ob, seam_path, num_alloc_frames, num_bins);
-        carvingpath_samps = buffer_locksamples(seam_path);
-        if (!carvingpath_samps || buffer_getframecount(seam_path) != num_alloc_frames || buffer_getchannelcount(seam_path) != num_bins) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            goto end;
-        }
-    }
-    
-    // prepare energy map buffer to contain data
-    if (energy_map) {
-        ears_buffer_copy_format((t_object *)ob, amplitudes[0], energy_map, true);
-        ears_buffer_clear((t_object *)ob, energy_map);
-        ears_buffer_set_size_and_numchannels((t_object *)ob, energy_map, num_frames, num_bins);
-        energymapout_samps = buffer_locksamples(energy_map);
-        if (!energymapout_samps || buffer_getframecount(energy_map) != num_frames || buffer_getchannelcount(energy_map) != num_bins) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            goto end;
-        }
-    }
-
-    while (true) {
-        if (verbose) {
-            post("weights");
-            t_llll *ll4 = double_array_to_llll(weights, num_bins * num_frames);
-            llll_print(ll4);
-            llll_free(ll4);
-        }
-
-        // 1) get energy map
-        for (long b = 0; b < num_bins; b++) {
-            for (long f = 0; f < num_frames; f++) {
-                energymap[f*num_bins + b] = 0;
-                switch (energy_mode) {
-                    case EARS_SEAM_CARVE_MODE_MAGNITUDE:
-                        for (long c = 0; c < num_channels; c++)
-                            energymap[f*num_bins + b] += amps_samples[c][f*num_bins + b] * weights[f * num_bins + b];
-                        break;
-                        
-                    case EARS_SEAM_CARVE_MODE_GRADIENT_MAGNITUDE:
-                    default:
-                        for (long c = 0; c < num_channels; c++)
-                            energymap[f*num_bins + b] += (fabs(amps_samples[c][(f == num_frames - 1 ? f-1 : f+1)*num_bins + b]-amps_samples[c][f*num_bins + b]) + fabs(amps_samples[c][f*num_bins + (b == num_bins - 1 ? b-1 : b+1)]-amps_samples[c][f*num_bins + b])) * weights[f * num_bins + b];
-                        break;
-                        
-                }
-                energymap[f*num_bins + b] /= num_channels; // not really needed though
-            }
-        }
-        
-        if (verbose) {
-            post("energymap");
-            t_llll *ll1 = double_array_to_llll(energymap, num_bins * num_frames);
-            llll_print(ll1);
-            llll_free(ll1);
-        }
-        
-
-        // 2) compute cumulative energies
-        for (long b = 1; b < num_bins; b++) {
-            for (long f = 0; f < num_frames; f++) {
-                energymap[f*num_bins + b] += MIN(MIN(energymap[(f>0 ? f-1 : f) * num_bins + b-1], energymap[f*num_bins + b-1]), energymap[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
-            }
-        }
-        
-        if (verbose) {
-            post("cumulativeenergies");
-            t_llll *ll = double_array_to_llll(energymap, num_bins * num_frames);
-            llll_print(ll);
-            llll_free(ll);
-        }
-        
-        // write energymap to output, but only for the first iteration
-        if (firsttime && energymapout_samps) {
-            for (long b = 0; b < num_bins; b++) {
-                for (long f = 0; f < num_frames; f++) {
-                    energymapout_samps[f * num_bins + b] = energymap[f * num_bins + b];
-                }
-            }
-        }
-        
-        if (update_progress) {
-            (update_progress)(ob, 1.-fabs((double)delta_num_frames)/fabs(orig_delta_num_frames));
-        }
-        
-        if (delta_num_frames == 0) // we're done
-            break;
-        
-        // weight by uniformity
-        //
-        
-        // 3) find carving
-        long carve[num_bins];
-        // find minimum at num_bins-1
-        double curr_min = energymap[0*num_bins + num_bins - 1];
-        long curr_min_arg = 0;
-        for (long f = 1; f < num_frames; f++) {
-            if (energymap[f*num_bins + num_bins - 1] < curr_min) {
-                curr_min = energymap[f*num_bins + num_bins - 1];
-                curr_min_arg = f;
-            }
-        }
-        
-
-        bool ONLY_STRAIGHT_CUTS = false; // < this is sometimes set to true just to test
-        carve[num_bins - 1] = curr_min_arg;
-        for (long b = num_bins - 2; b >= 0; b--) {
-            if (ONLY_STRAIGHT_CUTS) {
-                carve[b] = carve[num_bins-1];
-            } else {
-                long cb = carve[b+1];
-                double v1 = energymap[cb*num_bins + b];
-                double v2 = energymap[(cb > 0 ? cb-1 : cb)*num_bins + b];
-                double v3 = energymap[(cb < num_frames-1 ? cb+1 : cb)*num_bins + b];
-                carve[b] = argmin3(v1, v2, v3, cb, cb > 0 ? cb-1 : cb, cb < num_frames-1 ? cb+1 : cb);
-            }
-        }
-        
-        if (verbose) {
-            t_llll *ll = llll_get();
-            for (long b = 0; b < num_bins; b++)
-                llll_appendlong(ll, carve[b]);
-            post("carved indices:");
-            llll_print(ll);
-        }
-
-        
-        // writing carving data to output buffer
-        if (carvingpath_samps) {
-            for (long b = 0; b < num_bins; b++) {
-                long thisframe = carve[b] - carvingpath_samps[carve[b] * num_bins + b];
-                if (thisframe < 0 || thisframe >= num_alloc_frames) {
-                    object_error((t_object *)ob, "Internal error!");
-                }
-                if (delta_num_frames > 0) {
-                    for (long f = thisframe+1; f < num_alloc_frames; f++)
-                        carvingpath_samps[f * num_bins + b] += 1;
-                } else {
-                    for (long f = thisframe; f < num_alloc_frames; f++)
-                        carvingpath_samps[f * num_bins + b] -= 1;
-                }
-            }
-        }
-            
-        // 4) updating weights
-        if (weighting_amount != 0) {
-            for (long b = 0; b < num_bins; b++) {
-                for (long f = 0; f < num_frames; f++) {
-                    weights[f * num_bins + b] += weighting_amount * exp(-((f-carve[b])*(f - carve[b]))/(2 * weighting_numframes_stdev*weighting_numframes_stdev));
-                    //            weights[f] += 1./(weighting_numframes_stdev * abs(f - pivot_upper_f));
-                }
-            }
-        }
-        
-        // 5) apply seam carving
-        if (delta_num_frames > 0) {
-            // adding a seam
-            for (long i = 0; i < num_bins; i++) {
-                for (long c = 0; c < num_channels; c++) {
-                    long pivot_f = carve[i];
-                    double phase_shift = compensate_phases * (pivot_f < num_frames - 1 ? phases_samples[c][(pivot_f + 1)*num_bins + i] - phases_samples[c][pivot_f*num_bins + i] : 0);
-                    for (long f = num_frames; f >= pivot_f; f--) {
-                        amps_samples[c][(f+1)*num_bins + i] = amps_samples[c][f*num_bins + i];
-                        phases_samples[c][(f+1)*num_bins + i] = positive_fmod(phases_samples[c][f*num_bins + i] + phase_shift, TWOPI); // shifting phases to account for time translation
-                        weights[(f+1)*num_bins + i] = weights[f*num_bins + i];
-                    }
-                    if (pivot_f > 0) {
-                        amps_samples[c][pivot_f*num_bins + i] = (amps_samples[c][(pivot_f+1)*num_bins + i] + amps_samples[c][(pivot_f-1)*num_bins + i])/2.;
-                        phases_samples[c][pivot_f*num_bins + i] = random_double_in_range(0, TWOPI); // unwrapped_phase_avg(phases_samples[c][(pivot_f+1)*num_bins + i], phases_samples[c][(pivot_f-1)*num_bins + i]); //
-                        weights[pivot_f*num_bins + i] = 0.5*(weights[(pivot_f+1)*num_bins + i] + weights[(pivot_f-1)*num_bins + i]);
-//                        phases_samples[c][pivot_f] = // TODO: phases!
-                    } else if (pivot_f == 0) {
-                        amps_samples[c][pivot_f*num_bins + i] = amps_samples[c][(pivot_f+1)*num_bins + i] ;
-                        phases_samples[c][pivot_f*num_bins + i] = random_double_in_range(0, TWOPI);
-                        weights[pivot_f*num_bins + i] = weights[(pivot_f+1)*num_bins + i];
-                    }
-                }
-            }
-
-            num_frames++;
-            delta_num_frames--;
-        } else {
-            // deleting a seam
-            // now this is not ideal: one should work with phase differences, but it's a matter of optimization, and we have worse issues now...
-            for (long i = 0; i < num_bins; i++) {
-                // TODO: ISSUE WITH PHASE SHIFT...
-                for (long c = 0; c < num_channels; c++) {
-                    long pivot_f = carve[i];
-                    // temp is a parameter just to try from outside whether the phase shift improves things or makes them worse...
-                    double phase_shift = compensate_phases * (pivot_f < num_frames - 1 ? phases_samples[c][(pivot_f + 1)*num_bins + i] - phases_samples[c][pivot_f*num_bins + i] : 0);
-                    for (long f = pivot_f; f < num_frames - 1; f++) {
-                        amps_samples[c][f*num_bins + i] = amps_samples[c][(f+1)*num_bins + i];
-                        phases_samples[c][f*num_bins + i] = positive_fmod(phases_samples[c][(f+1)*num_bins + i] - phase_shift, TWOPI); // shifting phases to account for time translation
-                        weights[f*num_bins + i] = weights[(f+1)*num_bins + i];
-                    }
-                }
-            }
-            
-            num_frames--;
-            delta_num_frames++;
-
-        }
-
-        firsttime = false;
-    }
-    
-    if (carvingpath_samps) {
-        for (long b = 0; b < num_bins; b++) {
-            long prev = 0;
-            for (long f = 0; f < num_frames; f++) {
-                long temp = carvingpath_samps[f * num_bins + b];
-                if (temp != prev)
-                    carvingpath_samps[f * num_bins + b] = 1;
-                else
-                    carvingpath_samps[f * num_bins + b] = 0;
-                prev = temp;
-            }
-        }
-    }
-    
-    bach_freeptr(energymap);
-    bach_freeptr(weights);
-    
-    for (long c = 0; c < num_channels; c++) {
-        ears_buffer_copy_format_and_set_size_samps(ob, amplitudes[c], out_amplitudes[c], num_out_frames);
-        ears_buffer_copy_format_and_set_size_samps(ob, phases[c], out_phases[c], num_out_frames);
-        
-        float *temp = buffer_locksamples(out_amplitudes[c]);
-        if (!temp || ears_buffer_get_numchannels(ob, out_amplitudes[c]) != num_bins || ears_buffer_get_size_samps(ob, out_amplitudes[c]) != num_out_frames) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            goto end;
-        }
-        
-        bach_copyptr(amps_samples[c], temp, num_out_frames * num_bins * sizeof(float));
-        buffer_setdirty(out_amplitudes[c]);
-        buffer_unlocksamples(out_amplitudes[c]);
-        
-        temp = buffer_locksamples(out_phases[c]);
-        if (!temp || ears_buffer_get_numchannels(ob, out_phases[c]) != num_bins || ears_buffer_get_size_samps(ob, out_phases[c]) != num_out_frames) {
-            err = EARS_ERR_CANT_WRITE;
-            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
-            goto end;
-        }
-        bach_copyptr(phases_samples[c], temp, num_out_frames * num_bins * sizeof(float));
-        buffer_setdirty(out_phases[c]);
-        buffer_unlocksamples(out_phases[c]);
-    }
-    
-    if (seam_path) {
-        buffer_setdirty(seam_path);
-        buffer_unlocksamples(seam_path);
-        ears_buffer_set_size_samps(ob, seam_path, orig_num_frames);
-    }
-//    ears_buffer_set_size_samps_preserve(ob, seam_path, orig_num_frames);
-    if (energy_map) {
-        buffer_setdirty(energy_map);
-        buffer_unlocksamples(energy_map);
-    }
-
-end:
-    for (long c = 0; c < num_amps_locked; c++) {
-        bach_freeptr(amps_samples[c]);
-    }
-    for (long c = 0; c < num_phases_locked; c++) {
-        bach_freeptr(phases_samples[c]);
-    }
-
-    bach_freeptr(amps_samples);
-    bach_freeptr(phases_samples);
-
-    return err;
-}
-
-
-
-
-
-
-*/

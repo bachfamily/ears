@@ -40,29 +40,43 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
-					"id" : "obj-17",
-					"maxclass" : "message",
-					"numinlets" : 2,
+					"attr" : "wet",
+					"id" : "obj-20",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 118.0, 144.0, 29.5, 22.0 ],
-					"text" : "1."
+					"parameter_enable" : 0,
+					"patching_rect" : [ 80.5, 128.0, 150.0, 22.0 ]
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"id" : "obj-5",
+					"bubble" : 1,
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-2",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 235.5, 119.0, 137.0, 37.0 ],
+					"text" : "Amount of (reverse) reverb"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-14",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
+					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 79.0, 221.0, 60.0, 22.0 ],
-					"saved_object_attributes" : 					{
-						"embed" : 0
-					}
-,
-					"text" : "ears.reg~"
+					"patching_rect" : [ 9.0, 175.0, 263.0, 22.0 ],
+					"text" : "ears.freeverb~ @dry 0. @wet 1. @roomsize 0.7"
 				}
 
 			}
@@ -316,18 +330,6 @@
 			}
 , 			{
 				"box" : 				{
-					"id" : "obj-14",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 9.0, 175.0, 123.0, 22.0 ],
-					"text" : "dg.buf.waves.rverb 1."
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"fontsize" : 32.0,
 					"id" : "obj-3",
 					"maxclass" : "comment",
@@ -388,15 +390,6 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-10", 0 ],
-					"order" : 1,
-					"source" : [ "obj-14", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-5", 0 ],
-					"order" : 0,
 					"source" : [ "obj-14", 0 ]
 				}
 
@@ -417,8 +410,8 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-14", 1 ],
-					"source" : [ "obj-17", 0 ]
+					"destination" : [ "obj-14", 0 ],
+					"source" : [ "obj-20", 0 ]
 				}
 
 			}
@@ -517,51 +510,12 @@
 
 			}
  ],
-		"parameters" : 		{
-			"obj-14::obj-1::obj-3" : [ "vst~", "vst~", 0 ],
-			"parameterbanks" : 			{
-				"0" : 				{
-					"index" : 0,
-					"name" : "",
-					"parameters" : [ "-", "-", "-", "-", "-", "-", "-", "-" ]
-				}
-
-			}
-,
-			"inherited_shortname" : 1
-		}
-,
 		"dependency_cache" : [ 			{
-				"name" : "RVerb (s).maxsnap",
-				"bootpath" : "~/Documents/Max 8/Snapshots",
-				"patcherrelativepath" : "../../../../../Snapshots",
-				"type" : "mx@s",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "dg.buf.waves.rverb.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/dgtools/patchers",
-				"patcherrelativepath" : "../../../../dgtools/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "dg.buf.waves.rverb_in.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/dgtools/patchers",
-				"patcherrelativepath" : "../../../../dgtools/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "ears.in.mxo",
+				"name" : "ears.freeverb~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ears.info~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.in~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -570,18 +524,6 @@
 			}
 , 			{
 				"name" : "ears.offset~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.out~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.process~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.reg~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
