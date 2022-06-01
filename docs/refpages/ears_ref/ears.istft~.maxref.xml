@@ -37,6 +37,30 @@
 		</inlet>
 	</inletlist>
 
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" type="INLET_TYPE">
+			<digest>
+				Output audio buffer - or output magnitudes, or real (x) parts
+			</digest>
+			<description>
+				If the <m>cpxout</m> attribute is not set, the object outputs a buffer with the reconstructed audio content.
+				If the <m>cpxout</m> attribute is set, then the output is the first component of the complex signal (in cartesian
+				or polar form, depending on the <m>polarin</m> attribute).
+			</description>
+		</outlet>
+		<outlet id="1" type="INLET_TYPE">
+			<digest>
+				Output phases or imaginary (y) parts
+			</digest>
+			<description>
+				If the <m>cpxout</m> attribute is set, then the second inlet outputs the second component of the
+				complex signal (in cartesian
+				or polar form, depending on the <m>polarin</m> attribute). Phases are output according to the <m>angleunit</m> coordinate.
+			</description>
+		</outlet>
+	</outletlist>
+
 	<!--ARGUMENTS-->
 	<objarglist>
 		<objarg name="outname" optional="1" type="symbol">
@@ -268,6 +292,20 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="cpxout" get="1" set="1" type="int" size="1">
+			<digest>
+				Complex Output
+			</digest>
+			<description>
+				Output complex data instead of real-valued audio samples.
+				This attribute is static and can only be entered in the object box.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Complex Output" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="fullspectrum" get="1" set="1" type="int" size="1">
 			<digest>
 				Full Spectrum
@@ -326,6 +364,20 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Input" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="polarout" get="1" set="1" type="int" size="1">
+			<digest>
+				Polar Output
+			</digest>
+			<description>
+				Output data in polar coordinates, instead of cartesian ones.
+				Default is 0.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Output" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
@@ -423,6 +475,25 @@
 		<entry name ="Inlet 2 (symbol)">
 			<description>
 				Buffer containing input phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel.
+			</description>
+		</entry>
+	</misc>
+
+	<misc name = "Output">
+		<entry name ="Outlet 1 (symbol)">
+			<description>
+				Output audio buffer - or output magnitudes, or real (x) parts.
+				If the <m>cpxout</m> attribute is not set, the object outputs a buffer with the reconstructed audio content.
+				If the <m>cpxout</m> attribute is set, then the output is the first component of the complex signal (in cartesian
+				or polar form, depending on the <m>polarin</m> attribute).
+			</description>
+		</entry>
+		<entry name ="Outlet 2 (symbol)">
+			<description>
+				Output phases or imaginary (y) parts.
+				If the <m>cpxout</m> attribute is set, then the second inlet outputs the second component of the
+				complex signal (in cartesian
+				or polar form, depending on the <m>polarin</m> attribute). Phases are output according to the <m>angleunit</m> coordinate.
 			</description>
 		</entry>
 	</misc>

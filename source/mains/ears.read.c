@@ -532,7 +532,7 @@ void buf_read_append(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 {
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, NULL, ac, av);
     if (!parsed) return;
-    buf_read_load(x, parsed, x->mustclear ? false : true);
+    buf_read_load(x, parsed, x->mustclear || x->iter ? false : true);
     if (x->mustclear)
         x->mustclear = false;
     llll_free(parsed);

@@ -316,12 +316,10 @@
 				Energy Function
 			</digest>
 			<description>
-				Sets the normalization mode for the output buffer:
-				0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 = Overload Protection Only, only
-				normalizes to 1. if some samples exceed in modulo 1.
+				Sets the energy function used for computing seams.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Energy Function" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
@@ -337,6 +335,60 @@
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frame Size" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="glbleed" get="1" set="1" type="int" size="1">
+			<digest>
+				Bleed Extension for Griffin-Lim Algorithm
+			</digest>
+			<description>
+				Sets the number of frames of invalidation for the Griffin-Lim Algorithm, in case the corresponding method is chosen for <m>phasehandling</m>.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bleed Extension for Griffin-Lim Algorithm" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="glnumiter" get="1" set="1" type="int" size="1">
+			<digest>
+				Number of Griffin-Lim Iterations
+			</digest>
+			<description>
+				Sets the number of Griffin-Lim iterations, in case the corresponding method is chosen for <m>phasehandling</m>.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number of Griffin-Lim Iterations" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="glrandomize" get="1" set="1" type="int" size="1">
+			<digest>
+				Randomize Griffin-Lim Phases
+			</digest>
+			<description>
+				Toggles the ability to randomize the phases of the regions subject to the Griffin-Lim algorithm,
+				in case the corresponding method is chosen for <m>phasehandling</m>.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Randomize Griffin-Lim Phases" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="glrect" get="1" set="1" type="int" size="1">
+			<digest>
+				Rectangular Griffin-Lim Regions
+			</digest>
+			<description>
+				Toggles the ability to invalidate whole rectangular regions whose phases are recomputed via the Griffin-Lim algorithm,
+				in case the corresponding method is chosen for <m>phasehandling</m>.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Rectangular Griffin-Lim Regions" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="hopsize" get="1" set="1" type="float" size="1">
@@ -411,17 +463,17 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="phasecompensation" get="1" set="1" type="int" size="1">
+		<attribute name="phasehandling" get="1" set="1" type="int" size="1">
 			<digest>
-				Phase Compensation
+				Phase Handling
 			</digest>
 			<description>
 				Toggles the ability to compensate phase changes.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Phase Compensation" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Phase Handling" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="slopemapping" get="1" set="1" type="int" size="1">
@@ -444,7 +496,7 @@
 				Sets the duration of each time block to be removed in the <m>antimeunit</m>
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Block" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
@@ -528,7 +580,7 @@
 				Sets the duration of the crossfade, whose unit is set via the <m>antimeunit</m> attribute.
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Duration" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
@@ -542,7 +594,7 @@
 				The parameters goes from -1 to 1, 0 being linear (default).
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Curve" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
@@ -555,7 +607,7 @@
 				Sets the cross fade type: 0 = None, 1 = Linear, 2 = Sine (Equal Power, default), 3 = Curve, 4 = S-Curve
 			</description>
 			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Type" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>

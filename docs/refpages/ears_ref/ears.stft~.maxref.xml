@@ -19,32 +19,24 @@
 		<metadata name="tag">ears spectral</metadata>
 	</metadatalist>
 
-	<!--INLETS-->
-	<inletlist>
-		<inlet id="0" type="INLET_TYPE">
-			<digest>
-				Buffer containing input audio
-			</digest>
-			<description>
-				Source audio buffer
-			</description>
-		</inlet>
-	</inletlist>
-
 	<!--OUTLETS-->
 	<outletlist>
 		<outlet id="0" type="INLET_TYPE">
 			<digest>
-				Buffer containing output magnitudes or real (x) parts, one bin per channel
+				Buffers containing output magnitudes or real (x) parts
 			</digest>
 			<description>
+				Unless <m>downmix</m> is set, there are as many buffers as channels in the original audio file and each buffer contains
+				one bin per channel.
 			</description>
 		</outlet>
 		<outlet id="1" type="INLET_TYPE">
 			<digest>
-				Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel
+				Buffers containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts
 			</digest>
 			<description>
+				Unless <m>downmix</m> is set, there are as many buffers as channels in the original audio file and each buffer contains
+				one bin per channel.
 			</description>
 		</outlet>
 	</outletlist>
@@ -291,13 +283,26 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="cpxin" get="1" set="1" type="int" size="1">
+			<digest>
+				Complex Input
+			</digest>
+			<description>
+				Input complex data instead of real-valued audio samples.
+				This attribute is static and can only be entered in the object box.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Complex Input" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="downmix" get="1" set="1" type="int" size="1">
 			<digest>
 				Downmix to Mono
 			</digest>
 			<description>
 				Toggles the ability to downmix all the channels into one. If this flag is not set, then
-				one buffer per channel is output. By default downmix is off.
+				one buffer per channel is output.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Downmix to Mono" />
@@ -404,6 +409,19 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="polarin" get="1" set="1" type="int" size="1">
+			<digest>
+				Polar Input
+			</digest>
+			<description>
+				Input data in polar coordinates, instead of cartesian ones.
+				Default is 0.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Input" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="polarout" get="1" set="1" type="int" size="1">
 			<digest>
 				Polar Output
@@ -499,24 +517,19 @@
 		<seealso name="ears.window~" />
 	</seealsolist>
 
-	<misc name = "Input">
-		<entry name ="Inlet 1 (symbol)">
-			<description>
-				Buffer containing input audio.
-				Source audio buffer
-			</description>
-		</entry>
-	</misc>
-
 	<misc name = "Output">
 		<entry name ="Outlet 1 (symbol)">
 			<description>
-				Buffer containing output magnitudes or real (x) parts, one bin per channel.
+				Buffers containing output magnitudes or real (x) parts.
+				Unless <m>downmix</m> is set, there are as many buffers as channels in the original audio file and each buffer contains
+				one bin per channel.
 			</description>
 		</entry>
 		<entry name ="Outlet 2 (symbol)">
 			<description>
-				Buffer containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts, one bin per channel.
+				Buffers containing output phases (in the <m>angleunit</m> coordinate) or imaginary (y) parts.
+				Unless <m>downmix</m> is set, there are as many buffers as channels in the original audio file and each buffer contains
+				one bin per channel.
 			</description>
 		</entry>
 	</misc>
