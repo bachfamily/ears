@@ -21,8 +21,8 @@
  Message input for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.in~</o> object inside a patch loaded by ears.process~
- to create a multichannel signal inlet receiving data from the parent patch.
+ Use the <o>ears.in</o> object inside a patch loaded by ears.process~
+ to create an inlet receiving data from the parent patch.
  
  @discussion
  
@@ -52,6 +52,7 @@ typedef struct _ears_in
     long inlet_nums[EARS_IN_MAX_OUTLETS];
     long nOutlets;
     long direct;
+    long unwrap;
     t_object* earsProcessParent;
 } t_ears_in;
 
@@ -95,11 +96,26 @@ int C74_EXPORT main()
     CLASS_ATTR_STYLE_LABEL(ears_in_class, "direct", 0, "onoff", "Direct");
     CLASS_ATTR_FILTER_CLIP(ears_in_class, "direct", 0, 1);
     // @description
-    // When set to 1, if a buffer inlet receives a single buffer
-    // while other inlets receive lists of buffers,
-    // then the single buffer will be iterated repeatedly against the list of buffers, until the end of the shortest list.<br/>
-    // When set to 0 (as per the default), if a buffer inlet receives a single buffer
-    // no iterator will be performed, and only the first buffer of each inlet will be processed.
+    // When the <m>direct</m> attribute is set to 0 (as per the default),
+    // lllls received by <o>ears.process~</o>
+    // are iterated in parallel with the buffer iteration.
+    // This means that the first element of each llll
+    // will be output by the corresponding <o>ears.in</o>
+    // immediately before the data from the first buffer received
+    // in each buffer inlet;
+    // the second element of each llll will be output immediately before
+    // the data from the second buffer; and so on.<br/>
+    // When set to 1, each llll received by <o>ears.process~</o>
+    // is immediately output from the corresponding <o>ears.in</o>.
+    
+    CLASS_ATTR_LONG(ears_in_class, "unwrap", 0, t_ears_in, unwrap);
+    CLASS_ATTR_STYLE_LABEL(ears_in_class, "unwrap", 0, "onoff", "Unwrap");
+    CLASS_ATTR_FILTER_CLIP(ears_in_class, "unwrap", 0, 1);
+    // @description If the <m>unwrap</m> attribute is set to 1
+    // and the <m>direct</m> attribute is set to 0, the outermost level of
+    // parentheses (if present) is removed from the llll output at each iteration.
+    // If the <m>direct</m> attribute is set to 1, the <m>unwrap</m> attribute has no effect.
+    // The default is 0.
     
     llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
 
@@ -133,7 +149,11 @@ void ears_in_iteration(t_ears_in *x, long n)
         if (el) {
             t_hatom *h = &el->l_hatom;
             t_llll *outll = llll_get();
-            llll_appendhatom_clone(outll, h);
+            if (x->unwrap && hatom_gettype(h) == H_LLLL) {
+                llll_appendllll_clone(outll, hatom_getllll(h));
+            } else {
+                llll_appendhatom_clone(outll, h);
+            }
             llllobj_outlet_llll((t_object *) x, LLLL_OBJ_VANILLA, s, outll);
             llll_free(outll);
         }
@@ -145,7 +165,6 @@ t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av)
     t_ears_in *x = (t_ears_in*) object_alloc(ears_in_class);
     x->earsProcessParent = getParentEarsProcess((t_object *) x);
 
-    
     long true_ac = attr_args_offset(ac, av);
 
     // @arg 0 @name inlets @optional 1 @type number/list @digest ears.process~ Message Inlet Numbers

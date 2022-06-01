@@ -79,6 +79,16 @@
 				used name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
+			</description>
+		</method>
 		<method name="symbol/llll">
 			<arglist />
 			<digest>
@@ -250,8 +260,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+				The default varies depending on the modules.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />

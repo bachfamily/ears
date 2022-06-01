@@ -135,6 +135,10 @@ void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
     
     x->io_obj.earsProcessParent = getParentEarsProcess((t_object *) x);
     
+    x->io_obj.ioNum = 1;
+    x->io_obj.nChans = 1;
+    x->io_obj.chan[0] = 1;
+    
     long nChans = ears_inouttilde_anything((t_ears_inouttilde*) x, nullptr, attr_args_offset(ac, av), av);
     
     if (nChans == -1) {

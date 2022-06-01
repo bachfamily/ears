@@ -40,6 +40,7 @@
 #include "ears.object.h" // already included in previous one
 #include "ears.utils.h"
 #include "notation.h"
+#include "bach_threads.h"
 
 #ifdef EARS_FROMFILE_NATIVE_MP3_HANDLING
 #include "mpg123.h"
@@ -48,6 +49,27 @@
 
 typedef t_atom_long t_ears_err;		///< an integer value suitable to be returned as an error code  @ingroup misc
 
+typedef void *(*updateprogress_fn)(void *, double progress);
+
+
+/** Standard values returned by function calls with a return type of #t_ears_err
+    @ingroup misc */
+typedef enum {
+    EARS_ERR_NONE =          0,    ///< No error
+    EARS_ERR_GENERIC =        -1,    ///< Generic error
+    EARS_ERR_INVALID_PTR =    -2,    ///< Invalid Pointer
+    EARS_ERR_DUPLICATE =    -3,    ///< Duplicate
+    EARS_ERR_OUT_OF_MEM =    -4,    ///< Out of memory
+    EARS_ERR_CANT_WRITE =   -5, ///< Can't write buffer
+    EARS_ERR_CANT_READ =    -6, ///< Can't read buffer
+    EARS_ERR_NO_BUFFER =    -7,  ///< Can't find buffer
+    EARS_ERR_EMPTY_BUFFER = -8,  ///< Empty buffer
+    EARS_ERR_ZERO_AMP =     -9,  ///< Zero amplitude buffer (e.g. for normalization)
+    EARS_ERR_NO_FILE =      -10,  ///< Can't find file
+    EARS_ERR_ESSENTIA =     -11,  ///< Essentia error
+    EARS_ERR_INVALID_MODE = -12,  ///< Invalid mode
+    EARS_ERR_SIZE_MISMATCH = -13  ///< Size mismatch
+} e_ears_errorcodes;
 
 static bool ears_is_freeing = false;
 
@@ -87,24 +109,6 @@ typedef struct _ears_encoding_settings
     t_symbol    *format;
 } t_ears_encoding_settings;
 
-
-/** Standard values returned by function calls with a return type of #t_ears_err
-	@ingroup misc */
-typedef enum {
-    EARS_ERR_NONE =          0,	///< No error
-    EARS_ERR_GENERIC =		-1,	///< Generic error
-    EARS_ERR_INVALID_PTR =	-2,	///< Invalid Pointer
-    EARS_ERR_DUPLICATE =	-3,	///< Duplicate
-    EARS_ERR_OUT_OF_MEM =	-4,	///< Out of memory
-    EARS_ERR_CANT_WRITE =   -5, ///< Can't write buffer
-    EARS_ERR_CANT_READ =    -6, ///< Can't read buffer
-    EARS_ERR_NO_BUFFER =    -7,  ///< Can't find buffer
-    EARS_ERR_EMPTY_BUFFER = -8,  ///< Empty buffer
-    EARS_ERR_ZERO_AMP =     -9,  ///< Zero amplitude buffer (e.g. for normalization)
-    EARS_ERR_NO_FILE =      -10,  ///< Can't find file
-    EARS_ERR_ESSENTIA =     -11,  ///< Essentia error
-    EARS_ERR_INVALID_MODE = -12  ///< Invalid mode
-} e_ears_errorcodes;
 
 /** Fade types
 	@ingroup misc */
@@ -250,7 +254,7 @@ typedef struct _ears_envelope_iterator
 t_ears_spectralbuf_metadata spectralbuf_metadata_get_empty();
 
 
-// BUFFER LIFECYCLE
+/// BUFFER LIFECYCLE
 
 // This one is the core function that creates new buffers when needed. It's a wrapper of object_new_typed()
 t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable = false); // create a new buffer
@@ -258,9 +262,14 @@ t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll 
 t_max_err ears_buffer_release(t_buffer_obj *buffer, t_symbol *buffername); // currently equivalent to ears_buffer_free()
 t_max_err ears_buffer_free(t_buffer_obj *buffer);
 
+/// POLYBUFFER STUFF
+t_object *ears_polybuffer_make(t_symbol *polybuffername, bool add_to_ears_hashtable);
+t_max_err ears_polybuffer_release(t_buffer_obj *polybuffer, t_symbol *polybuffername);
+t_max_err ears_polybuffer_retain(t_buffer_obj *polybuffer, t_symbol *polybuffername);
 
 
-// BUFFER MANIPULATION
+
+/// BUFFER MANIPULATION
 
 t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long start_sample, long end_sample);
 t_ears_err ears_buffer_crop_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double start_ms, double end_ms);
@@ -281,7 +290,7 @@ t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_i
 t_ears_err ears_buffer_fade_ms_inplace(t_object *ob, t_buffer_obj *buf, long fade_in_ms, long fade_out_ms, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping);
 
 
-t_ears_err ears_buffer_concat(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
+t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
                               long *xfade_samples, char also_fade_boundaries,
                               e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping,
                               e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
@@ -308,8 +317,6 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
 t_ears_err ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps);
 
 
-t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type);
-
 /// Panning operations
 t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long num_out_channels, double pan, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law, double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping);
 t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long num_out_channels, t_llll *env, e_ears_pan_modes pan_mode, e_ears_pan_laws pan_law, double multichannel_pan_aperture, char compensate_gain_for_multichannel_to_avoid_clipping, e_slope_mapping slopemapping);
@@ -332,7 +339,7 @@ t_ears_err ears_buffer_from_llll(t_object *ob, t_buffer_obj *buf, t_llll *ll, ch
 t_atom_long ears_buffer_channel_to_array(t_object *ob, t_buffer_obj *buf, long channel, float **outsamples);
 t_atom_long ears_buffer_channel_to_double_array(t_object *ob, t_buffer_obj *buf, long channel, double **outsamples);
 
-t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onsets, t_buffer_obj *impulse);
+t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onsets, t_llll *gains, t_buffer_obj *impulse);
 
 // Basic operations
 t_ears_err ears_buffer_setempty(t_object *ob, t_buffer_obj *buf, long num_channels);
@@ -346,10 +353,12 @@ t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *righ
 t_ears_err ears_buffer_slice(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest_left, t_buffer_obj *dest_right, long split_sample);
 t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **dest, long *start_samples, long *end_samples, long num_regions);
 
+t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long delta_num_samps, long framesize_samps, long rms_calc_framesize_samps, long xfade_samples, e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping);
 
-t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax);
+
+t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax, long *ampminsample = NULL, long *ampmaxsample = NULL);
 t_ears_err ears_buffer_get_maxabs(t_object *ob, t_buffer_obj *source, double *maxabs);
-t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms);;
+t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms);
 t_ears_err ears_buffer_extractchannels(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long num_channels, long *channels);
 t_ears_err ears_buffer_extractchannels_from_llll(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *channels);
 
@@ -359,6 +368,8 @@ t_ears_err ears_buffer_repeat_times(t_object *ob, t_buffer_obj *source, t_buffer
 t_ears_err ears_buffer_rev_inplace(t_object *ob, t_buffer_obj *buf);
 t_ears_err ears_buffer_rot_inplace(t_object *ob, t_buffer_obj *buf, long shift_in_samps);
 t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val);
+t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, double v_min, double v_max);
+t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, t_buffer_obj *mask);
 
 // passing messages through
 t_ears_err ears_buffer_send_message(t_object *ob, t_buffer_obj *buf, t_symbol *s, long ac, t_atom *av);
@@ -387,10 +398,16 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
                                 double attack_time_samps, double release_time_samps,
                                 double makeup_dB);
 
+// Envelopes
+t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long winsize_samps);
+
+// Waveset stuff
+t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long group, double normalize);
+
 // GET properties
-t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf);
+t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers = false);
 double ears_buffer_get_size_ms(t_object *ob, t_buffer_obj *buf);
-t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf);
+t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers = false);
 t_atom_long ears_buffer_get_numchannels(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_buffer_get_sampleformat(t_object *ob, t_buffer_obj *buf);
 
@@ -415,6 +432,7 @@ double ears_spectralbuf_get_binsize(t_object *ob, t_buffer_obj *buf);
 e_ears_frequnit ears_spectralbuf_get_binunit(t_object *ob, t_buffer_obj *buf);
 t_llll* ears_spectralbuf_get_bins(t_object *ob, t_buffer_obj *buf);
 t_symbol *ears_spectralbuf_get_spectype(t_object *ob, t_buffer_obj *buf);
+t_symbol *ears_buffer_get_name(t_object *ob, t_buffer_obj *buf);
 
 
 // SET properties
@@ -426,7 +444,8 @@ t_ears_err ears_buffer_clear(t_object *ob, t_buffer_obj *buf);
 t_ears_err ears_buffer_set_numchannels(t_object *ob, t_buffer_obj *buf, long numchannels);
 t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf, long num_frames, long numchannels);
 t_ears_err ears_buffer_set_sampleformat(t_object *ob, t_buffer_obj *buf, t_symbol *sampleformat);
-t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest);
+t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, bool dont_change_buffer_size = false);
+t_ears_err ears_buffer_copy_format_and_set_size_samps(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, long num_frames);
 t_ears_err ears_buffer_crop_ms_inplace(t_object *ob, t_buffer_obj *buf, double ms_start, long ms_end);
 
 // CONVERSIONS

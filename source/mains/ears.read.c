@@ -131,6 +131,8 @@ int C74_EXPORT main(void)
     // @mattr append @type int @default 0 @digest Append buffers
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(read)
 
+    earsbufobj_class_add_timeunit_attr(c);
+    
     // @method append @digest Import files as additional buffers
     // @description The <m>append</m> message, followed by a list of filenames, will import the files as buffers
     // appending them to the existing one, and then outputting the whole set of output buffer names.
@@ -151,6 +153,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "nativemp3",	0,	t_buf_read, native_mp3_handling);
     CLASS_ATTR_STYLE_LABEL(c, "nativemp3", 0, "onoff", "Native MP3 Handling");
@@ -258,7 +262,7 @@ t_buf_read *buf_read_new(t_symbol *s, short argc, t_atom *argv)
 
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "4", "44aaE", names);
+        earsbufobj_setup((t_earsbufobj *)x, "4", "44zzE", names);
 
         llll_free(args);
         llll_free(names);
@@ -328,6 +332,8 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
             end = hatom_getdouble(&ll->l_head->l_next->l_next->l_hatom);
         }
     }
+    
+    x->formatsyms[idx] = _llllobj_sym_unknown;
     
     if (filepath) {
         t_symbol *sampleformat = _llllobj_sym_unknown;
@@ -432,7 +438,7 @@ void buf_read_iter(t_buf_read *x, t_llll *files)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
 
-    x->formatsyms = (t_symbol **)bach_resizeptr(x->formatsyms, 1 * sizeof(t_symbol *));
+    x->formatsyms = (t_symbol **)bach_resizeptrclear(x->formatsyms, 1 * sizeof(t_symbol *));
     
     if (files && files->l_head) {
         long count = 0;
@@ -957,8 +963,7 @@ t_max_err buf_read_AIFF_native(t_buf_read *x, t_buffer_obj *outbuf, const char *
             if (num_samps <= 0 || channels <= 0)
                 return MAX_ERR_GENERIC;
             
-            ears_buffer_set_numchannels((t_object *)x, outbuf, channels);
-            ears_buffer_set_size_samps((t_object *)x, outbuf, num_samps);
+            ears_buffer_set_size_and_numchannels((t_object *)x, outbuf, num_samps, channels);
             
             if (start_samp > 0)
                 AIFF_Seek(ref, start_samp);

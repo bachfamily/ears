@@ -13,8 +13,29 @@
       "spectrum"
     ],
     "seealso": [
-      "ears.window~",
-      "ears.istft~"
+      "ears.istft~",
+      "ears.fft~",
+      "ears.window~"
+    ]
+  },
+  "ears.timesquash~": {
+    "digest": "Content-aware timestretch",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "timesquash",
+      "carve",
+      "seam",
+      "timestretch",
+      "content",
+      "preserve"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.soundtouch~"
     ]
   },
   "ears.fromvector~": {
@@ -177,7 +198,7 @@
       "ears.mix~"
     ]
   },
-  "ears.playmp3~": {
+  "ears.utils.playmp3~": {
     "digest": "Play mp3 natively",
     "module": "ears",
     "category": [
@@ -267,6 +288,7 @@
       "band"
     ],
     "seealso": [
+      "ears.soundtouch~",
       "ears.paulstretch~",
       "ears.resample~"
     ]
@@ -643,6 +665,7 @@
     ],
     "seealso": [
       "ears.mix~",
+      "ears.join",
       "ears.read~"
     ]
   },
@@ -716,6 +739,22 @@
     "seealso": [
       "ears.mixdown~",
       "ears.gain~"
+    ]
+  },
+  "ears.iter~": {
+    "digest": "Iterate over buffer samples",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "iter",
+      "iterate"
+    ],
+    "seealso": [
+      "ears.collect~",
+      "ears.expr~"
     ]
   },
   "ears.paulfreeze~": {
@@ -932,6 +971,29 @@
       "ears.channel~"
     ]
   },
+  "ears.griffinlim~": {
+    "digest": "Reconstruct signal from magnitude spectrum",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "griffinlim",
+      "spectrum",
+      "inverse",
+      "reconstruct",
+      "griffin",
+      "lim",
+      "phases",
+      "phase retrieval"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.istft~",
+      "ears.istft~"
+    ]
+  },
   "ears.py~": {
     "digest": "Offline host for patches operating on buffers",
     "module": "ears",
@@ -1082,6 +1144,8 @@
       "spectrum"
     ],
     "seealso": [
+      "ears.stft~",
+      "ears.istft~",
       "ears.window~",
       "ears.spectrogram~"
     ]
@@ -1172,6 +1236,29 @@
       "ears.essentia~"
     ]
   },
+  "ears.soundtouch~": {
+    "digest": "SoundTouch pitch and time processing",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "pitch",
+      "stretch",
+      "shift",
+      "pitchshift",
+      "timestretch",
+      "soundtouch",
+      "sound",
+      "touch"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.paulstretch~",
+      "ears.resample~"
+    ]
+  },
   "ears.istft~": {
     "digest": "Inverse Short-Time Fourier Transform",
     "module": "ears",
@@ -1187,8 +1274,9 @@
       "inverse"
     ],
     "seealso": [
-      "ears.window~",
-      "ears.stft~"
+      "ears.stft~",
+      "ears.griffinlim~",
+      "ears.window~"
     ]
   },
   "ears.reg~": {

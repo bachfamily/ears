@@ -106,10 +106,13 @@ int C74_EXPORT main(void)
     // absolute duration of the buffer, either in milliseconds or in samples, depending in turns on the <m>timeunit</m> attribute.
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     
     class_register(CLASS_BOX, c);
@@ -166,7 +169,7 @@ t_buf_envelope *buf_envelope_new(t_symbol *s, short argc, t_atom *argv)
                 atom_setfloat(&x->duration, hatom_getdouble(&args->l_head->l_hatom));
         }
 
-        earsbufobj_setup((t_earsbufobj *)x, "4", "E", names);
+        earsbufobj_setup((t_earsbufobj *)x, "44", "E", names);
 
         llll_free(args);
         llll_free(names);
@@ -191,6 +194,8 @@ void buf_envelope_bang(t_buf_envelope *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_llllelem *el = x->envelope->l_head;
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
@@ -230,6 +235,8 @@ void buf_envelope_bang(t_buf_envelope *x)
         }
         
         llll_free(env);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
@@ -239,16 +246,27 @@ void buf_envelope_bang(t_buf_envelope *x)
 
 void buf_envelope_anything(t_buf_envelope *x, t_symbol *msg, long ac, t_atom *av)
 {
+    long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
     if (!parsed) return;
     
     if (parsed && parsed->l_head) {
+        if (inlet == 0) {
         earsbufobj_mutex_lock((t_earsbufobj *)x);
         llll_free(x->envelope);
         x->envelope = llll_clone(parsed);
         earsbufobj_mutex_unlock((t_earsbufobj *)x);
         
         buf_envelope_bang(x);
+        } else {
+            earsbufobj_mutex_lock((t_earsbufobj *)x);
+            if (hatom_gettype(&parsed->l_head->l_hatom) == H_LONG) {
+                atom_setlong(&x->duration, hatom_getlong(&parsed->l_head->l_hatom));
+            } else {
+                atom_setfloat(&x->duration, hatom_getdouble(&parsed->l_head->l_hatom));
+            }
+            earsbufobj_mutex_unlock((t_earsbufobj *)x);
+        }
     }
     llll_free(parsed);
 }

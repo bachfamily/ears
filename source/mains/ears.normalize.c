@@ -103,8 +103,11 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(normalize)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     
     CLASS_ATTR_CHAR(c, "rms",	0,	t_buf_normalize, rms_mode);
@@ -205,6 +208,9 @@ void buf_normalize_bang(t_buf_normalize *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
     for (long count = 0; count < num_buffers; count++) {
         double this_linear_amp = earsbufobj_amplitude_to_linear((t_earsbufobj *)x, x->level);
 
@@ -215,8 +221,12 @@ void buf_normalize_bang(t_buf_normalize *x)
             ears_buffer_normalize_rms((t_object *)x, in, out, this_linear_amp, x->mix);
         else
             ears_buffer_normalize((t_object *)x, in, out, this_linear_amp, x->mix);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

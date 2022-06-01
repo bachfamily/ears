@@ -58,7 +58,7 @@
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="outnames" optional="1" type="symbol">
+		<objarg name="outnames" optional="1" type="symbol/llll">
 			<digest>
 				Output buffer names
 			</digest>
@@ -110,7 +110,10 @@
 			<description>
 				A float received in one of <o>ears.process~</o>'s inlets
 				is passed to the corresponding <o>ears.in</o> object
-				in the loaded patch.
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the float will be passed immediately to the receiving patch,
+				or at the beginning of the first buffer iteration.
 			</description>
 		</method>
 		<method name="int">
@@ -121,7 +124,10 @@
 			<description>
 				An integer received in one of <o>ears.process~</o>'s inlets
 				is passed to the corresponding <o>ears.in</o> object
-				in the loaded patch.
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the integer will be passed immediately to the receiving patch,
+				or at the beginning of the first buffer iteration.
 			</description>
 		</method>
 		<method name="list">
@@ -132,7 +138,10 @@
 			<description>
 				A list received in one of <o>ears.process~</o>'s inlets
 				is passed to the corresponding <o>ears.in</o> object
-				in the loaded patch.
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the list will be passed immediately to the receiving patch,
+				or iterated along with the incoming buffers.
 			</description>
 		</method>
 		<method name="patchername">
@@ -173,13 +182,13 @@
 				The names of the buffers containing the processed audio,
 				as output by the patcher's <o>ears.out~</o> and <o>ears.mc.out~</o> objects,
 				will be subsequently output.<br/>
-				Lllls received in non-buffer inlets
-				will be passed as they are to the loaded patcher,
+				Lllls received in non-buffer inlets will be passed to the loaded patcher
 				through its <o>ears.in</o> objects.<br/>
-				If the llll is received in the first inlet,
-				The processing will be triggered.<br/>
-				A single symbol, or any message starting with a symbol,
-				will be treated as an llll anyway.
+				If the llll is received in the first inlet, the processing will be triggered.<br/>
+				A single symbol, or any message starting with a symbol, will be treated as an llll anyway.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the llll will be passed immediately to the receiving patch,
+				or iterated along with the incoming buffers.
 			</description>
 		</method>
 		<method name="wclose">
@@ -222,12 +231,44 @@
 				as with "Scheduler in Overdrive" and "Scheduler in Audio Interrupt" both on.<br/>
 				If the <o>autoclock</o> attribute is set to 1 (as per the default),
 				all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
-				will automatically have their clock set by <o>ears.process~</o> before each run of the patch
+				will automatically have their clock set by <o>ears.process~</o> before each run of the patch.<br/>
+				If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
+				and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.processinfo~</o>, to the relevant objects.<br/>
+				Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
+				There is currently no way to use such objects with correct timing inside <o>ears.process~</o>.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatic Clock Message" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="duration" get="1" set="1" type="int" size="1">
+			<digest>
+				Duration Policy
+			</digest>
+			<description>
+				The <m>duration</m> attribute controls how the duration of the incoming buffers
+				affects the duration of the resulting ones.<br/>
+				If the duration policy is set to <m>0</m> (<b>shortest</b>), as per the default,
+				the duration of the processed (and therefore resulting) audio
+				is the duration of the shortest incoming buffer
+				plus the tail. If a list of buffers is passed, to be processed in sequence,
+				the processing duration refers to the shortest buffer in each iteration.<br/>
+				If the duration policy is set to <m>1</m> (<b>longest</b>),
+				the duration of the processed audio
+				is the duration of the longest incoming buffer plus the tail.<br/>
+				If the duration policy is set to <m>2</m> (<b>fixed</b>),
+				the duration of the processed audio is set to the value of the tail,
+				regardless of the duration of the incoming buffers.<br/>
+				If the loaded patcher has a single buffer inlet,
+				the <m>shortest</m> and <m>longest</m> policies are equivalent. If it has no buffer inlets, all three are equivalent
+				and the duration will anyway correspond to the value of the <m>tail</m> attribute.<br/>
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Duration Policy" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
@@ -274,34 +315,6 @@
 			<attributelist>
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="policy" get="1" set="1" type="int" size="1">
-			<digest>
-				Duration Policy
-			</digest>
-			<description>
-				The <m>policy</m> attribute controls how the duration of the incoming buffers
-				affects the duration of the resulting ones.<br/>
-				If the duration policy is set to <m>0</m> (<b>shortest</b>), as per the default,
-				the duration of the processed (and therefore resulting) audio
-				is the duration of the shortest incoming buffer
-				plus the tail. If a list of buffers is passed, to be processed in sequence,
-				the processing duration refers to the shortest buffer in each iteration.<br/>
-				If the duration policy is set to <m>1</m> (<b>longest</b>),
-				the duration of the processed audio
-				is the duration of the longest incoming buffer plus the tail.<br/>
-				If the duration policy is set to <m>2</m> (<b>fixed</b>),
-				the duration of the processed audio is set to the value of the tail,
-				regardless of the duration of the incoming buffers.<br/>
-				If the loaded patcher has a single buffer inlet,
-				the <m>shortest</m> and <m>longest</m> policies are equivalent. If it has no buffer inlets, all three are equivalent
-				and the duration will anyway correspond to the value of the <m>tail</m> attribute.<br/>
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Duration Policy" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="reload" get="1" set="1" type="int" size="1">
@@ -367,7 +380,7 @@
 			</digest>
 			<description>
 				The <m>tail</m> attribute adds a duration (always measured in milliseconds)
-				to the processing duration as established by the <m>policy</m> attribute.
+				to the processing duration as established by the <m>duration</m> attribute.
 				It defaults to 0.
 				If the loaded patch has no buffer inlets and the tail is not set to a value higher than 0 ms,
 				no processing will take place.
@@ -409,12 +422,12 @@
 	</seealsolist>
 
 	<misc name = "Input">
-		<entry name ="Inlets 1, 2, 3... (symbol/llll)">
+		<entry name ="Inlets 1, 2, 3... (symbol/list/llll)">
 			<description>
 				Incoming buffer name.
 			</description>
 		</entry>
-		<entry name ="Inlets 2, 3, 4... (symbol/llll)">
+		<entry name ="Inlets 2, 3, 4... (llll)">
 			<description>
 				Incoming data for <o>ears.in</o>..
 			</description>
@@ -427,7 +440,7 @@
 				Output buffer.
 			</description>
 		</entry>
-		<entry name ="Outlets 2, 3, 4... (symbol/llll)">
+		<entry name ="Outlets 2, 3, 4... (llll)">
 			<description>
 				Output data from <o>ears.out</o>..
 			</description>

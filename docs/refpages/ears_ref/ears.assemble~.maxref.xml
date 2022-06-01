@@ -75,12 +75,13 @@
 				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
-		<objarg name="default_ioi" optional="1" type="number">
+		<objarg name="default_interval" optional="1" type="number">
 			<digest>
-				Default inter-offset interval
+				Default time interval
 			</digest>
 			<description>
-				Sets a default inter-offset interval
+				Sets a default time interval: either an inter-onset interval
+				or a tail-onset interval (depending on the <m>mode</m> attribute)
 			</description>
 		</objarg>
 	</objarglist>
@@ -129,6 +130,16 @@
 				If the <m>naming</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
 				used name. This is especially useful in combination with iterative mechanisms.
+			</description>
+		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
 			</description>
 		</method>
 		<method name="write">
@@ -288,18 +299,22 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
-		<attribute name="delta" get="1" set="1" type="int" size="1">
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
 			<digest>
-				Use Inter-Onset Intervals
+				Blocking Mode
 			</digest>
 			<description>
-				Toggles the ability to use inter-onset intervals instead of onsets to define
-				the position of the buffers to be assembled.
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Use Inter-Onset Intervals" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="envampunit" get="1" set="1" type="int" size="1">
@@ -340,6 +355,22 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Interpolate Non-Integer Offset" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="mode" get="1" set="1" type="int" size="1">
+			<digest>
+				Onset Mode
+			</digest>
+			<description>
+				Sets the type of information that comes through the right inlet: <br />
+				0: Onsets; <br />
+				1: Inter-Onset Intervals; <br />
+				2: Tail-Onset Intervals (use it to have assemble work like <o>ears.join~</o>).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Onset Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
@@ -441,8 +472,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+				The default varies depending on the modules.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
@@ -455,7 +486,8 @@
 
 	<!--DISCUSSION-->
 	<discussion>
-		This module is related to <o>ears.mix~</o>, but should be preferred to it,
+		This module is related to <o>ears.mix~</o> (and, with the tail-onset
+		<m>mode</m>, to the <o>ears.join~</o> object), but should be preferred to them,
 		for instance in combination with <o>ears.read~</o> with <m>iter</m> 1 attribute set,
 		in order to optimize memory allocation. Indeed, <o>ears.mix~</o> needs all the buffers
 		to be allocated before mixing, while <o>ears.assemble~</o> will do this with one buffer at a time.
@@ -464,6 +496,7 @@
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ears.mix~" />
+		<seealso name="ears.join" />
 		<seealso name="ears.read~" />
 	</seealsolist>
 
@@ -503,7 +536,8 @@
 	<misc name = "Discussion">
 		<entry name ="More details">
 			<description>
-		This module is related to <o>ears.mix~</o>, but should be preferred to it,
+		This module is related to <o>ears.mix~</o> (and, with the tail-onset
+		<m>mode</m>, to the <o>ears.join~</o> object), but should be preferred to them,
 		for instance in combination with <o>ears.read~</o> with <m>iter</m> 1 attribute set,
 		in order to optimize memory allocation. Indeed, <o>ears.mix~</o> needs all the buffers
 		to be allocated before mixing, while <o>ears.assemble~</o> will do this with one buffer at a time.

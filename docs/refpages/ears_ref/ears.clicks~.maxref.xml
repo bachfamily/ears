@@ -26,6 +26,7 @@
 				Onsets
 			</digest>
 			<description>
+				List of onsets (unit depends on the <m>timeunit</m> attribute)
 			</description>
 		</inlet>
 		<inlet id="1" type="INLET_TYPE">
@@ -33,6 +34,7 @@
 				Impulse samples
 			</digest>
 			<description>
+				List of gains (unit depends on the <m>ampunit</m> attribute)
 			</description>
 		</inlet>
 	</inletlist>
@@ -93,6 +95,16 @@
 				If the <m>naming</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
 				used name. This is especially useful in combination with iterative mechanisms.
+			</description>
+		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
 			</description>
 		</method>
 		<method name="write">
@@ -239,6 +251,37 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="ampunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Amplitude Values Are In
+			</digest>
+			<description>
+				Sets the unit for amplitudes: Linear (default) or Decibel (0dB corresponding to 1. in the linear scale).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
+			<digest>
+				Blocking Mode
+			</digest>
+			<description>
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="outname" get="1" set="1" type="llll" size="1">
 			<digest>
 				Output Buffer Names
@@ -271,8 +314,8 @@
 				Time Values Are In
 			</digest>
 			<description>
-				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-				The default is always Milliseconds except for the <o>ears.repeat~</o>, <o>ears.paulstretch~</o> modules (Relative).
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+				The default varies depending on the modules.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
@@ -294,11 +337,13 @@
 		<entry name ="Inlet 1 (llll)">
 			<description>
 				Onsets.
+				List of onsets (unit depends on the <m>timeunit</m> attribute)
 			</description>
 		</entry>
 		<entry name ="Inlet 2 (llll)">
 			<description>
 				Impulse samples.
+				List of gains (unit depends on the <m>ampunit</m> attribute)
 			</description>
 		</entry>
 	</misc>

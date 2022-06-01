@@ -104,9 +104,13 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(resample)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
+    earsbufobj_class_add_timeunit_attr(c);
+
+    earsbufobj_class_add_polyout_attr(c);
 
     //    earsbufobj_class_add_blocking_attr(c); <<< not working
     //    earsbufobj_class_add_timeunit_attr(c);
@@ -155,6 +159,8 @@ t_buf_resample *buf_resample_new(t_symbol *s, short argc, t_atom *argv)
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
+        x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
+
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
@@ -207,18 +213,20 @@ void buf_resample_bang(t_buf_resample *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_llllelem *el = x->resamplefactor->l_head;
     for (long count = 0; count < num_buffers; count++, el = el && el->l_next ? el->l_next : el) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->window_width, in, false, true);
+        long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->window_width, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
         
         if (in != out) 
             ears_buffer_clone((t_object *)x, in, out);
         
         if (hatom_gettype(&el->l_hatom) == H_LLLL) { // factor is envelope
-            t_llll *env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, el, in);
+            t_llll *env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, el, in);
             
             // check if envelope crosses zero or is constantly negative (and hence needs reverse)
             t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
@@ -243,7 +251,7 @@ void buf_resample_bang(t_buf_resample *x)
 
             llll_free(env);
         } else {
-            double factor = el ? hatom_getdouble(&el->l_hatom) : 1.;
+            double factor = el ? earsbufobj_time_to_durationratio((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom), in) : 1.;
             if (factor < 0) {
                 ears_buffer_rev_inplace((t_object *)x, out);
                 factor *= -1;
@@ -255,6 +263,8 @@ void buf_resample_bang(t_buf_resample *x)
                 ears_buffer_resample((t_object *)x, out, factor, window_width_samples);
             }
         }
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

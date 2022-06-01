@@ -134,11 +134,14 @@ int C74_EXPORT main(void)
     // @description A number in the second inlet sets the hoaencode parameter (depending on the <m>ampunit</m>).
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
     
+    earsbufobj_class_add_polyout_attr(c);
+
     CLASS_ATTR_SYM(c, "dimension", 0, t_buf_hoaencode, dimension);
     CLASS_ATTR_STYLE_LABEL(c,"dimension",0,"enum","Dimension");
     CLASS_ATTR_ENUM(c,"dimension", 0, "2D 3D");
@@ -267,6 +270,8 @@ void buf_hoaencode_bang(t_buf_hoaencode *x)
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     t_llllelem *coord1_el = x->coord1->l_head;
     t_llllelem *coord2_el = x->coord2->l_head;
     t_llllelem *coord3_el = x->coord3->l_head;
@@ -311,6 +316,8 @@ void buf_hoaencode_bang(t_buf_hoaencode *x)
         llll_free(coord1_env);
         llll_free(coord2_env);
         llll_free(coord3_env);
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     

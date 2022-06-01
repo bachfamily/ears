@@ -29,6 +29,12 @@ void ears_error_bachcheck()
     }
 }
 
+t_symbol *ears_buffer_name_get_for_polybuffer(t_symbol *polybuffername, long index) {
+    char polybuffer_buffername[MAX_SYM_LENGTH+30];
+    snprintf_zero(polybuffer_buffername, MAX_SYM_LENGTH+30, "%s.%d", polybuffername->s_name, index);
+    return gensym(polybuffer_buffername);
+}
+
 
 t_hashtab *ears_hashtab_get()
 {
@@ -77,17 +83,78 @@ long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob)
     return e_ob->l_curr_proxy;
 }
 
+bool earsbufobj_buffer_is_part_of_polybuffer(t_earsbufobj *e_ob, t_symbol *buffername)
+{
+    // find position for dot
+    long len = strlen(buffername->s_name);
+    long dotpos = -1;
+    for (long i = 0; i < len; i++) {
+        if (buffername->s_name[i] == '.') {
+            dotpos = i;
+            break;
+        }
+    }
+    
+    if (dotpos <= 0)
+        return false;
+    
+    for (long i = dotpos+1; i < len; i++) {
+        if (!isdigit(buffername->s_name[i]))
+            return false;
+    }
+    
+    char potentialpolybuffername[MAX_SYM_LENGTH+1];
+    snprintf_zero(potentialpolybuffername, dotpos+1, "%s", buffername->s_name);
+    if (ears_polybuffer_symbol_is_polybuffer(gensym(potentialpolybuffername)))
+        return true;
+    
+    return false;
+
+}
+
 void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx)
 {
     t_object *buf = earsbufobj_get_stored_buffer_obj(e_ob, where, store, bufferidx);
     t_symbol *name = earsbufobj_get_stored_buffer_name(e_ob, where, store, bufferidx);
     
+    if (earsbufobj_buffer_is_part_of_polybuffer(e_ob, name))
+        return;
+
     if (name && buf) {
         if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
             if (EARS_ALLOCATIONVERBOSE)
                 post("--- ears allocation: Buffer %s will be kept in memory (dynamic mode)", name->s_name);
         } else {
             ears_buffer_release(buf, name);
+        }
+    }
+}
+
+void earsbufobj_buffer_free(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store, long bufferidx)
+{
+    t_object *buf = earsbufobj_get_stored_buffer_obj(e_ob, where, store, bufferidx);
+    t_symbol *name = earsbufobj_get_stored_buffer_name(e_ob, where, store, bufferidx);
+
+    if (earsbufobj_buffer_is_part_of_polybuffer(e_ob, name))
+        return;
+
+    if (buf) {
+        ears_buffer_free(buf);
+    }
+}
+
+void earsbufobj_polybuffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store)
+{
+    t_symbol *name = earsbufobj_get_store(e_ob, where, store)->polybuffer_name;
+    t_object *obj = ears_polybuffer_getobject(name);
+
+    if (name && obj) {
+        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+            if (EARS_ALLOCATIONVERBOSE)
+                post("--- ears allocation: Polybuffer %s will be kept in memory (dynamic mode)", name->s_name);
+        } else {
+            
+            ears_polybuffer_release(obj, name);
         }
     }
 }
@@ -102,7 +169,7 @@ void ears_hashtab_inccount(t_symbol *name)
             t_max_err err = hashtab_lookuplong(ht, name, &count);
             if (err == MAX_ERR_NONE) {
                 if (EARS_ALLOCATIONVERBOSE)
-                    post("--- ears allocation: Incrementing ears-wide count for buffer %s: now has count %ld", name->s_name, count+1);
+                    post("--- ears allocation: Incrementing ears-wide count for '%s': now has count %ld", name->s_name, count+1);
                 hashtab_storelong(ht, name, count+1); // increase reference count
             }
         }
@@ -119,7 +186,7 @@ void ears_hashtab_clipcount(t_symbol *name)
             if (err == MAX_ERR_NONE) {
                 if (count != 0) count = 1;
                 if (EARS_ALLOCATIONVERBOSE)
-                    post("--- ears allocation: Clipping count for buffer %s: now has ears-wide count %ld", name->s_name, count+1);
+                    post("--- ears allocation: Clipping count for '%s': now has ears-wide count %ld", name->s_name, count+1);
                 hashtab_storelong(ht, name, count); // increase reference count
             }
         }
@@ -133,7 +200,7 @@ void ears_hashtab_store(t_symbol *name)
         t_hashtab *ht = ears_hashtab_get();
         if (ht) {
             if (EARS_ALLOCATIONVERBOSE)
-                post("--- ears allocation: Storing buffer %s in hash table (with count = 0)", name->s_name);
+                post("--- ears allocation: Storing '%s' in hash table (with count = 0)", name->s_name);
             hashtab_storelong(ht, name, 0);
         }
     }
@@ -189,6 +256,32 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
         earsbufobj_buffer_release(e_ob, where, store_index, buffer_index);
     }
 
+    // is it a polybuffer buffer?
+    bool from_polybuf = false;
+    if (where == EARSBUFOBJ_OUT && e_ob->l_outstore[store_index].use_polybuffers) {
+        t_symbol *polybuffer_name = e_ob->l_outstore[store_index].polybuffer_name;
+        t_object *polybuffer_obj = polybuffer_name ? ears_polybuffer_getobject(polybuffer_name) : NULL;
+        if (polybuffer_obj) {
+            long polybuffer_count = object_attr_getlong(polybuffer_obj, _sym_count);
+            from_polybuf = true;
+            for (long i = polybuffer_count; i <= buffer_index; i++) {
+                object_method_long(polybuffer_obj, gensym("appendempty"), 1000, NULL);
+                if (EARS_ALLOCATIONVERBOSE)
+                    post("--- ears allocation: Buffer %s.%ld inside polybuffer has been created via 'appendempty'.", polybuffer_name->s_name, i+1);
+/*                t_symbol *newbuffer_sym = ears_buffer_name_get_for_polybuffer(polybuffer_name, i+1);
+                t_buffer_obj *newbuffer_obj = ears_buffer_getobject(newbuffer_sym);
+                if (newbuffer_sym && newbuffer_obj) {
+                    ears_hashtab_store(newbuffer_sym);
+                    ears_hashtab_inccount(newbuffer_sym);
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Retaining buffer '%s'", newbuffer_sym->s_name);
+                    object_retain((t_object *)newbuffer_obj);
+                } */
+            }
+        }
+    }
+
+    
     // does the buffer exists??
     if (!ears_buffer_symbol_is_buffer(buf_name)) {
 
@@ -220,7 +313,8 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
         
         t_llll *generated_outnames = earsbufobj_generated_names_llll_getlist(e_ob->l_generated_outnames, store_index, buffer_index);
         
-        ears_buffer_retain(*buf, buf_name, generated_outnames); // we retain the buffer
+        if (!earsbufobj_buffer_is_part_of_polybuffer(e_ob, buf_name))
+            ears_buffer_retain(*buf, buf_name, generated_outnames); // we retain the buffer
         
         *name = buf_name;
     }
@@ -258,15 +352,72 @@ void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                 for (i = old_num_bufs; i < new_size; i++) {
                     t_symbol *s = NULL;
                     store->stored_buf[i].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
-                    if (type == EARSBUFOBJ_OUT)
+                    if (type == EARSBUFOBJ_OUT) {
                         s = earsbufobj_output_get_symbol_unique(e_ob, store_idx, i, &store->stored_buf[i].l_status);
-                    else
+                    } else
                         s = symbol_unique();
                     if (s)
                         earsbufobj_buffer_link(e_ob, type, store_idx, i, s);
                 }
             }
     } else if (new_size < store->num_stored_bufs) {
+        if (type == EARSBUFOBJ_OUT) {
+            
+            if (store->use_polybuffers) {
+            /*    // now, that's a bit of a drag. We seem to have no way to delete only parts of the buffers in the polybuffer
+                // we had used "appendempty" to create them, so we have no direct ownership of them
+                // the only think we can do is to clear the polybuffer completely and recreate the necessary buffers.
+                // again, a bit of a drag.
+                // This is also worrying because somewhere else the same buffers may be in use. We are clearing all the buffers
+                // single-handedly but that's not swell. What would be a better choice?
+                t_object *polybuffer_obj = ears_polybuffer_getobject(store->polybuffer_name);
+                if (polybuffer_obj) {
+                    for (i = 0; i < store->num_stored_bufs; i++) {
+                        earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                    }
+                    if (EARS_ALLOCATIONVERBOSE)
+                        post("--- ears allocation: Clearing polybuffer %s", store->polybuffer_name->s_name);
+                    object_method(polybuffer_obj, gensym("clear"));
+                }
+                for (i = 0; i < new_size; i++) {
+                    t_symbol *s = NULL;
+                    store->stored_buf[i].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                    s = earsbufobj_output_get_symbol_unique(e_ob, store_idx, i, &store->stored_buf[i].l_status);
+                    if (s)
+                        earsbufobj_buffer_link(e_ob, type, store_idx, i, s);
+             }
+             */
+                /*
+                // we delete the polybuffer, and will make it again.
+                // I have found no other way to interact with the <o>polybuffer~</o> object to only delete its last N buffers
+                // It seems impossible to interact with its child buffers as if they were ordinary buffers (object_retain(), object_free()) and
+                // rather it seems that we have to send messages to the polybuffer instead.
+                t_symbol *polybuffer_name = e_ob->l_outstore[store_idx].polybuffer_name;
+                e_ob->l_releasing_polybuffer = true;
+                earsbufobj_polybuffer_release(e_ob, EARSBUFOBJ_OUT, store_idx);
+                e_ob->l_releasing_polybuffer = false;
+
+                if (!ears_polybuffer_symbol_is_polybuffer(polybuffer_name)) {
+                    ears_polybuffer_make(polybuffer_name, true);
+                } else {
+                    ears_polybuffer_retain(ears_polybuffer_getobject(polybuffer_name), polybuffer_name);
+                }
+                */
+                object_method(ears_polybuffer_getobject(e_ob->l_outstore[store_idx].polybuffer_name), gensym("clear"));
+
+                for (long i = 0; i < new_size; i++) {
+                    t_symbol *s = earsbufobj_output_get_symbol_unique(e_ob, store_idx, i, &store->stored_buf[i].l_status);
+                    if (s)
+                        earsbufobj_buffer_link(e_ob, EARSBUFOBJ_OUT, store_idx, i, s);
+                }
+                 
+
+            } else {
+                for (i = new_size; i < store->num_stored_bufs; i++) {
+                    earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                }
+            }
+        }
         store->stored_buf = (t_earsbufobj_stored_buffer *)bach_resizeptr(store->stored_buf, MAX(1, new_size) * sizeof(t_earsbufobj_stored_buffer));
         store->num_stored_bufs = new_size;
     }
@@ -306,7 +457,7 @@ long earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long stor
     return count;
 }
 
-long substitute_polybuffers(t_llll *ll)
+long substitute_polybuffers(t_earsbufobj *e_ob, t_llll *ll)
 {
     if (!ll)
         return 1;
@@ -324,11 +475,14 @@ long substitute_polybuffers(t_llll *ll)
                     t_symbol *s = hatom_getsym(&el->l_hatom);
                     t_object *pbuf = ears_polybuffer_getobject(s);
                     if (pbuf) {
+                        object_attach_byptr_register(e_ob, pbuf, CLASS_NOBOX);
+                        t_llll *temp = llll_get();
+                        llll_appendobj(temp, pbuf);
+                        llll_appendsym(temp, s);
+                        llll_appendllll(e_ob->l_polybuffers_attached, temp);
                         long count = object_attr_getlong(pbuf, _sym_count);
                         for (long i = 1; i <= count; i++){
-                            char polybuffer_buffername[MAX_SYM_LENGTH];
-                            snprintf_zero(polybuffer_buffername, MAX_SYM_LENGTH, "%s.%d", s->s_name, i);
-                            llll_insertsym_before(gensym(polybuffer_buffername), el);
+                            llll_insertsym_before(ears_buffer_name_get_for_polybuffer(s, i), el);
                         }
                         must_delete_el = true;
                     }
@@ -371,7 +525,7 @@ t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_s
     t_llll *ll = llllobj_parse_llll((t_object *) e_ob, type, msg, ac, av, LLLL_PARSE_CLONE);
 
     // checking whether any of the symbols is a POLYbuffer, and in this case substituting it with all its buffers
-    substitute_polybuffers(ll);
+    substitute_polybuffers(e_ob, ll);
 
     return ll;
 }
@@ -387,6 +541,28 @@ char llll_contains_only_symbols_and_at_least_one(t_llll *ll)
     return 1;
 }
 
+char llll_is_fit_for_being_names(t_llll *ll)
+{
+    if (!ll->l_head)
+        return 0;
+    
+    if (ll->l_depth <= 1 && llll_contains_only_symbols_and_at_least_one(ll))
+        return 1;
+    
+    if (ll->l_depth == 2) {
+        for (t_llllelem *el = ll->l_head; el; el = el->l_next) {
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+                if (!llll_contains_only_symbols_and_at_least_one(hatom_getllll(&el->l_hatom)))
+                    return 0;
+            } else if (hatom_gettype(&el->l_hatom) != H_SYM) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+    
+    return 0;
+}
 
 // destructive on args
 t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, char assign_naming_policy)
@@ -415,10 +591,12 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
             }
         }
         if (args->l_head) {
-            if (hatom_gettype(&args->l_head->l_hatom) == H_LLLL && llll_contains_only_symbols_and_at_least_one(hatom_getllll(&args->l_head->l_hatom))) {
-                names = llll_get();
-                llll_appendhatom_clone(names, &args->l_head->l_hatom);
-                llll_behead(args);
+            if (hatom_gettype(&args->l_head->l_hatom) == H_LLLL) {
+                if (llll_is_fit_for_being_names(hatom_getllll(&args->l_head->l_hatom))) {
+                    names = llll_get();
+                    llll_appendhatom_clone(names, &args->l_head->l_hatom);
+                    llll_behead(args);
+                }
             } else if (hatom_gettype(&args->l_head->l_hatom) == H_SYM) {
                 names = symbol2llll(hatom_getsym(&args->l_head->l_hatom));
                 llll_behead(args);
@@ -432,6 +610,10 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
 void earsbufobj_init(t_earsbufobj *e_ob, long flags)
 {
     ears_hashtabs_setup();
+
+    e_ob->l_polybuffers_attached = llll_get();
+    
+    e_ob->l_is_creating = 1;
 
     /// attributes (these must be done before the actual initialization)
     e_ob->l_ampunit = EARS_AMPUNIT_LINEAR;
@@ -455,6 +637,8 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     atom_setsym(&e_ob->a_numframes, _llllobj_sym_auto);
     e_ob->a_overlap = 2.;
     e_ob->a_wintype = gensym("hann");
+    e_ob->a_wintype_ansyn[0] = gensym("hann");
+    e_ob->a_wintype_ansyn[1] = gensym("sqrt");
     e_ob->a_winnorm = 1;
     e_ob->a_zeropadding = 0;
     e_ob->a_zerophase = true;
@@ -476,12 +660,17 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
 
 void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_types, t_llll *outlet_names)
 {
+    bool output_polybuffers = e_ob->l_output_polybuffers;
     long i, j, h;
 
     // INLETS;
     long max_in_len = strlen(in_types);
     e_ob->l_numins = 0;
     e_ob->l_numbufins = 0;
+    
+    for (long i = 0; i < LLLL_MAX_INLETS; i++)
+        e_ob->l_inlet_hot[i] = false;
+    e_ob->l_inlet_hot[0] = true;
     
     e_ob->l_proxy = (void **) bach_newptr((max_in_len + 1) * sizeof (void *));
     
@@ -491,6 +680,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
         e_ob->l_numins ++;
         if (in_types[i] == 'e' || in_types[i] == 'E')
             e_ob->l_numbufins++;
+        e_ob->l_inlet_types[i] = in_types[i];
     }
     if (e_ob->l_numbufins) {
         e_ob->l_instore = (t_earsbufobj_store *) bach_newptrclear(e_ob->l_numbufins * sizeof(t_earsbufobj_store));
@@ -539,13 +729,11 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
     for (int i = 0; i < strlen(out_types_wk); i++)
         if (out_types_wk[i] == 'a') count_a++;
     
-    // dirty, just working UP TO 2 'a' outlets (TO BE REFINED)
-    if (count_a == 0)
-        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk);
-    else if (count_a == 1)
-        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL);
-    else if (count_a == 2)
-        llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk, NULL, NULL);
+    if (count_a > 0) {
+        object_error((t_object *)e_ob, "Unimplemented feature.");
+    }
+    
+    llllobj_obj_setup((t_llllobj_object *)e_ob, num_lllls_in, out_types_wk);
 
     /*
     e_ob->l_outlet = (void **) bach_newptr((max_out_len + 1) * sizeof (void *));
@@ -582,6 +770,8 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
     }
     if (e_ob->l_numbufouts) {
         e_ob->l_outstore = (t_earsbufobj_store *) bach_newptrclear(e_ob->l_numbufouts * sizeof(t_earsbufobj_store));
+        if (outlet_names && outlet_names->l_depth == 3 && outlet_names->l_size == 1 && hatom_gettype(&outlet_names->l_head->l_hatom) == H_LLLL) // names are assigned to multiple outlets
+            outlet_names = hatom_getllll(&outlet_names->l_head->l_hatom);
         t_llllelem *elem;
         for (i = 0, j = 0, elem = (outlet_names ? outlet_names->l_head : NULL); i < max_out_len; i++) {
             if (out_types[i] == 'e' || out_types[i] == 'E') {
@@ -591,21 +781,44 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                 } else if (out_types[i] == 'E') { // 'E' buffer outlets can output a list of buffers from a single outlet
                     e_ob->l_outstore[j].max_num_stored_bufs = 0; // no limit
                     outstoresize = MAX(1, elem && hatom_gettype(&elem->l_hatom) == H_LLLL ? hatom_getllll(&elem->l_hatom)->l_size : 1);
+                    
+                    if (output_polybuffers) {
+                        e_ob->l_outstore[j].use_polybuffers = true;
+                        if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
+                            t_symbol *s = hatom_getsym(&elem->l_hatom);
+                            e_ob->l_outstore[j].polybuffer_name = s;
+                            e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
+                            if (!ears_polybuffer_symbol_is_polybuffer(s)) {
+                                ears_polybuffer_make(s, true);
+                            } else {
+                                ears_polybuffer_retain(ears_polybuffer_getobject(s), s);
+                            }
+                        } else {
+                            t_symbol *s = symbol_unique();
+                            e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                            e_ob->l_outstore[j].polybuffer_name = s;
+                            ears_polybuffer_make(s, true);
+                        }
+                    }
                 }
                 earsbufobj_resize_store(e_ob, EARSBUFOBJ_OUT, j, outstoresize, false);
                 t_llllelem *subelem = (elem && hatom_gettype(&elem->l_hatom) == H_LLLL) ? hatom_getllll(&elem->l_hatom)->l_head : NULL;
                 for (h = 0; h < outstoresize; h++) {
                     t_symbol *name = NULL;
-                    if (subelem && hatom_gettype(&subelem->l_hatom) == H_SYM) {
+                    if (e_ob->l_outstore[j].use_polybuffers) {
+                        name = NULL; // we do not create an initial buffer at startup if we are in polybuffer mode.
+//                        name = earsbufobj_output_get_symbol_unique(e_ob, j, h, &e_ob->l_outstore[j].stored_buf[h].l_status);
+//                        e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED; // e_ob->l_outstore[j].polybuffer_status;
+                    } else if (subelem && hatom_gettype(&subelem->l_hatom) == H_SYM) {
                         name = hatom_getsym(&subelem->l_hatom);
                         e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                     } else if (outstoresize == 1 && elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
                         name = hatom_getsym(&elem->l_hatom);
                         e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                     } else {
-                        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY)
-                                e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
-                        else {
+                        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+                            e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
+                        } else {
                             name = earsbufobj_output_get_symbol_unique(e_ob, j, h, &e_ob->l_outstore[j].stored_buf[h].l_status);
                         }
                     }
@@ -632,6 +845,17 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
             }
         }
     }
+    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+        object_warn((t_object *)e_ob, "Polybuffer output is currently incompatible with dynamic naming.");
+        object_warn((t_object *)e_ob, "    Switching to default static buffer output.");
+    }
+    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+        object_warn((t_object *)e_ob, "Polybuffer output is currently incompatible with copying names.");
+        object_warn((t_object *)e_ob, "    Switching to default static buffer output.");
+    }
+    object_attr_setdisabled((t_object *)e_ob, gensym("blocking"), 1);
+    object_attr_setdisabled((t_object *)e_ob, gensym("polyout"), 1);
+    e_ob->l_is_creating = 0;
 }
 
 
@@ -693,7 +917,24 @@ t_max_err earsbufobj_setattr_outname(t_earsbufobj *e_ob, t_object *attr, long ar
                     llll_appendsym(outnames_ll, e_ob->l_outstore[i].stored_buf[0].l_name);
                 }
             } else {
-                if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
+                if (e_ob->l_outstore[j].use_polybuffers) {
+                    if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
+                        t_symbol *s = hatom_getsym(&elem->l_hatom);
+                        e_ob->l_outstore[j].polybuffer_name = s;
+                        e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
+                        if (!ears_polybuffer_symbol_is_polybuffer(s)) {
+                            ears_polybuffer_make(s, true);
+                        } else {
+                            ears_polybuffer_retain(ears_polybuffer_getobject(s), s);
+                        }
+                    } else {
+                        t_symbol *s = symbol_unique();
+                        e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                        e_ob->l_outstore[j].polybuffer_name = s;
+                        ears_polybuffer_make(s, true);
+                        s = ears_buffer_name_get_for_polybuffer(e_ob->l_outstore[j].polybuffer_name, 1);
+                    }
+                } else if (elem && hatom_gettype(&elem->l_hatom) == H_SYM) {
                     e_ob->l_outstore[i].stored_buf[0].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                     s = hatom_getsym(&elem->l_hatom);
                 } else {
@@ -755,11 +996,19 @@ void earsbufobj_free(t_earsbufobj *e_ob)
     long i, j;
     
     ears_is_freeing = true;
-    
+
+
     for (i = e_ob->l_numins - 1; i > 0; i--)
         object_free_debug(e_ob->l_proxy[i]);
     bach_freeptr(e_ob->l_proxy);
 
+    // separate thread running?
+    if (e_ob->l_thread) {
+        unsigned int rv;
+        systhread_join(e_ob->l_thread, &rv);
+        // thread is exited
+    }
+    
     // deleting references
     for (i = 0; i < e_ob->l_numbufins; i++) {
         for (j = 0; j < e_ob->l_instore[i].num_stored_bufs; j++) {
@@ -780,6 +1029,11 @@ void earsbufobj_free(t_earsbufobj *e_ob)
                     earsbufobj_buffer_release(e_ob, EARSBUFOBJ_OUT, i, j);
             }
         }
+        if (e_ob->l_outstore[i].use_polybuffers) {
+            e_ob->l_releasing_polybuffer = true;
+            earsbufobj_polybuffer_release(e_ob, EARSBUFOBJ_OUT, i);
+            e_ob->l_releasing_polybuffer = false;
+        }
         bach_freeptr(e_ob->l_outstore[i].stored_buf);
     }
     
@@ -790,19 +1044,131 @@ void earsbufobj_free(t_earsbufobj *e_ob)
     
     llll_free(e_ob->l_outnames);
     llll_free(e_ob->l_generated_outnames);
-    
+
+    llll_free(e_ob->l_polybuffers_attached);
+
     if (e_ob->l_mutex)
         systhread_mutex_free_debug(e_ob->l_mutex);
 
 }
 
+void bsc(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+//    post("buffer size changed!");
+    e_ob->l_buffer_size_changed = 1;
+}
+
+bool buffer_is_part_of_polybuffer(t_symbol *buffername, t_symbol *polybuffername)
+{
+    long polybufname_len = strlen(polybuffername->s_name);
+    long bufname_len = strlen(buffername->s_name);
+    if (!(bufname_len >= polybufname_len + 2))
+        return false;
+    
+    if (strncmp(buffername->s_name, polybuffername->s_name, polybufname_len) != 0)
+        return false;
+    if (buffername->s_name[polybufname_len] != '.')
+        return false;
+    
+    for (long i = polybufname_len+1; i < bufname_len; i++)
+        if (!isdigit(buffername->s_name[i]))
+            return false;
+    
+    return true;
+}
+
+t_llllelem *earsbufobj_object_to_polybuffer(t_earsbufobj *e_ob, void *potential_polybufferobject, t_symbol **polybuffername)
+{
+    for (t_llllelem *el = e_ob->l_polybuffers_attached->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+            t_llll *ll = hatom_getllll(&el->l_hatom);
+            if (ll && ll->l_size == 2) {
+                t_object *obj = (t_object *)hatom_getobj(&ll->l_head->l_hatom);
+                if (obj == potential_polybufferobject) {
+                    *polybuffername = hatom_getsym(&ll->l_head->l_next->l_hatom);
+                    return el;
+                }
+            }
+        }
+    }
+    return NULL;
+}
+
 t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
+    if (msg == gensym("free")) {
+        if (e_ob->l_releasing_polybuffer) // same object that called
+            return MAX_ERR_NONE;
+        
+        t_symbol *polybufname = NULL;
+        t_llllelem *el = earsbufobj_object_to_polybuffer(e_ob, sender, &polybufname);
+        if (el) {
+            t_object *polybuffer_obj = (t_object *)sender;
+            t_symbol *polybuffer_name = polybufname;
+            
+//            if (calling_obj == (t_object *)e_ob)
+//                return MAX_ERR_NONE;
+            
+            // this is delicate. I don't know how to handle this otherwise.
+            // The fact is: if we free a polybuffer without freeing the buffer inside, things don't seem to work any longer for them (crashes at object_free())
+            // So before we free a polybuffer we also want to free all the references to the buffers it contains.
+            // Here we check if there are polybuffer references in the stores, if so, replace them with standard buffers.
+            for (long store_idx = 0; store_idx < e_ob->l_numbufins; store_idx++) {
+                for (long i = 0; i < e_ob->l_instore[store_idx].num_stored_bufs; i++) {
+                    t_symbol *s = earsbufobj_get_stored_buffer_name(e_ob, EARSBUFOBJ_IN, store_idx, i);
+                    if (s && buffer_is_part_of_polybuffer(s, polybuffer_name)) {
+                        t_symbol *new_s = symbol_unique();
+                        if (new_s) {
+                            if (EARS_ALLOCATIONVERBOSE)
+                                post("--- ears allocation: A polybuffer is being freed, so we have to replace buffer '%s' used elsewhere", s->s_name);
+                            earsbufobj_buffer_link(e_ob, EARSBUFOBJ_IN, store_idx, i, new_s); //< the release of the old buffer is here inside
+                        }
+                    }
+                }
+            }
+            for (long store_idx = 0; store_idx < e_ob->l_numbufouts; store_idx++) {
+                for (long i = 0; i < e_ob->l_outstore[store_idx].num_stored_bufs; i++) {
+                    t_symbol *s = earsbufobj_get_stored_buffer_name(e_ob, EARSBUFOBJ_OUT, store_idx, i);
+                    if (s && buffer_is_part_of_polybuffer(s, polybuffer_name)) {
+                        t_symbol *new_s = symbol_unique();
+                        if (new_s) {
+                            if (EARS_ALLOCATIONVERBOSE)
+                                post("--- ears allocation: A polybuffer is being freed, so we have to replace buffer '%s' used elsewhere", s->s_name);
+                            earsbufobj_buffer_link(e_ob, EARSBUFOBJ_OUT, store_idx, i, new_s); //< the release of the old buffer is here inside
+                        }
+                    }
+                }
+            }
+            
+            llll_destroyelem(el);
+        }
+        
+        return MAX_ERR_NONE;
+    }
+    
+    if (msg == gensym("buffer_modified")) {
+//        post("buffer modified");
+        switch (e_ob->l_blocking) {
+            case EARSBUFOBJ_BLOCKING_CALLINGTHREAD:
+                defer(e_ob, (method)bsc, NULL, 0, NULL);
+                break;
+                
+            case EARSBUFOBJ_BLOCKING_OWNTHREAD:
+                defer(e_ob, (method)bsc, NULL, 0, NULL);
+//                schedule_defer(e_ob, (method)bsc, 1000, NULL, 0, NULL);
+                break;
+
+            default:
+            case EARSBUFOBJ_BLOCKING_MAINTHREAD:
+                break;
+        }
+    }
+
     return MAX_ERR_NONE;
 }
 
 
-long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out where)
+long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out where, bool ignore_polybuffers)
 {
     long i, sum = 0;
     switch (where) {
@@ -812,8 +1178,10 @@ long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out w
             break;
             
         case EARSBUFOBJ_OUT:
-            for (i = 0; i < e_ob->l_numbufouts; i++)
-                sum += e_ob->l_outstore[i].num_stored_bufs;
+            for (i = 0; i < e_ob->l_numbufouts; i++) {
+                if (!(ignore_polybuffers && e_ob->l_outstore[i].use_polybuffers))
+                    sum += e_ob->l_outstore[i].num_stored_bufs;
+            }
             break;
             
         default:
@@ -825,15 +1193,20 @@ long earsbufobj_get_num_stored_buffers(t_earsbufobj *e_ob, e_earsbufobj_in_out w
 
 void earsbufobj_open(t_earsbufobj *e_ob)
 {
-    long sum = earsbufobj_get_num_stored_buffers(e_ob, EARSBUFOBJ_OUT);
+    long sum = earsbufobj_get_num_stored_buffers(e_ob, EARSBUFOBJ_OUT, true);
     if (sum > EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK)
         object_warn((t_object *)e_ob, "More than %ld buffers stored as output. Only first %ld buffers shown", EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK, EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK);
     
     long i, j, s = 0;
     for (i = 0; i < e_ob->l_numbufouts && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; i++) {
-        for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; j++, s++) {
-            //            t_symbol *fee = gensym("fee");
-            buffer_view(earsbufobj_get_outlet_buffer_obj(e_ob, i, j));
+        if (e_ob->l_outstore[i].use_polybuffers) {
+            t_object *polybuffer = ears_polybuffer_getobject(e_ob->l_outstore[i].polybuffer_name);
+            object_method(polybuffer, gensym("open"));
+        } else  {
+            for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs && s < EARS_MAX_BUFFERS_SHOWN_ON_DOUBLECLICK; j++, s++) {
+                //            t_symbol *fee = gensym("fee");
+                buffer_view(earsbufobj_get_outlet_buffer_obj(e_ob, i, j));
+            }
         }
     }
 }
@@ -985,6 +1358,11 @@ void earsbufobj_reset(t_earsbufobj *e_ob)
         e_ob->l_generated_outname_count[i] = 0;
 }
 
+void earsbufobj_stop(t_earsbufobj *e_ob)
+{
+    e_ob->l_must_stop = 1;
+}
+
 
 void earsbufobj_add_common_methods(t_class *c, long flags)
 {
@@ -992,6 +1370,7 @@ void earsbufobj_add_common_methods(t_class *c, long flags)
     if (!flags)
         class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
     class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
+    class_addmethod(c, (method)earsbufobj_stop, "stop", 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "write", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writeaiff", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writewave", A_GIMME, 0);
@@ -1018,18 +1397,58 @@ void earsbufobj_class_add_outname_attr(t_class *c)
     // unique names.
 }
 
+t_max_err earsbufobj_setattr_blocking(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (!e_ob->l_is_creating)
+            object_error((t_object *)e_ob, "The 'blocking' attribute can only be set in the object box.");
+        else if (atom_gettype(argv) == A_LONG)
+            e_ob->l_blocking = atom_getlong(argv);
+    }
+    return MAX_ERR_NONE;
+}
+
 void earsbufobj_class_add_blocking_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "blocking", 0, t_earsbufobj, l_blocking);
-    CLASS_ATTR_STYLE_LABEL(c,"blocking",0,"text","Blocking Mode");
+    CLASS_ATTR_STYLE_LABEL(c,"blocking",0,"enumindex","Blocking Mode");
+    CLASS_ATTR_ENUMINDEX(c,"blocking", 0, "Non-Blocking Blocking (Low Priority) Blocking (High Priority)");
     CLASS_ATTR_BASIC(c, "blocking", 0);
     CLASS_ATTR_CATEGORY(c, "blocking", 0, "Behavior");
+    CLASS_ATTR_ACCESSORS(c, "blocking", NULL, earsbufobj_setattr_blocking);
     // @description Sets the blocking mode, i.e. the thread to be used for computation: <br />
     // 0: the object uses its own separate thread; <br />
     // 1: the object uses the main thread (default); <br />
     // 2: the object uses its the scheduler thread. <br />
+    // The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 }
 
+
+t_max_err earsbufobj_setattr_polyout(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (!e_ob->l_is_creating)
+            object_error((t_object *)e_ob, "The polyout attribute can only be set in the object box.");
+        else if (atom_gettype(argv) == A_LONG)
+            e_ob->l_output_polybuffers = atom_getlong(argv);
+    }
+    return MAX_ERR_NONE;
+}
+
+
+void earsbufobj_class_add_polyout_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "polyout", 0, t_earsbufobj, l_output_polybuffers);
+    CLASS_ATTR_STYLE_LABEL(c,"polyout",0,"enumindex","Output Polybuffers");
+    CLASS_ATTR_ENUMINDEX(c,"polyout", 0, "Don't Yes (Single Symbol) Yes (Buffer List)");
+    CLASS_ATTR_BASIC(c, "polyout", 0);
+    CLASS_ATTR_ACCESSORS(c, "polyout", NULL, earsbufobj_setattr_polyout);
+    CLASS_ATTR_CATEGORY(c, "polyout", 0, "Behavior");
+    // @description Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
+    // - 0 (default) means that no polybuffer is created (individual buffers are output); <br />
+    // - 1 means that a polybuffer is created and its name is output; <br />
+    // - 2 means that a polybuffer is created and the individual names of its buffers are output.
+}
 
 
 t_max_err earsbufobj_setattr_ampunit(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
@@ -1115,12 +1534,12 @@ void earsbufobj_class_add_timeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
     CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
-    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Relative");
+    CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Duration Ratio Milliseconds Difference Samples Difference");
     CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
     CLASS_ATTR_BASIC(c, "timeunit", 0);
     CLASS_ATTR_CATEGORY(c, "timeunit", 0, "Units");
-    // @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
-    // The default is always Milliseconds except for the <o>ears.repeat~</o> module (Relative).
+    // @description Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+    // The default varies depending on the modules.
 }
 
 
@@ -1316,7 +1735,8 @@ void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob)
             t_object *buf = ears_buffer_getobject(s);
             if (buf) {
 //                ears_hashtab_clipcount(s);
-                ears_buffer_release(buf, s);
+                if (!earsbufobj_buffer_is_part_of_polybuffer(e_ob, s))
+                    ears_buffer_release(buf, s);
             }
         }
     }
@@ -1472,17 +1892,49 @@ void earsbufobj_class_add_numframes_attr(t_class *c)
     // is ignored and inferred from <m>numframes</m>.
 }
 
-void earsbufobj_class_add_wintype_attr(t_class *c)
+void earsbufobj_class_add_wintype_attr_essentia(t_class *c)
 {
     CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
-    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"enum","Window Type");
     CLASS_ATTR_ENUM(c,"wintype", 0, "hamming hann hannnsgcq triangular square blackmanharris62 blackmanharris70 blackmanharris74 blackmanharris92");
     CLASS_ATTR_BASIC(c, "wintype", 0);
     CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
     // @description Sets the window type.
     // Available windows are the ones allowed by the Essentia library:
-    // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
+    // "hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92". <br />
+    // For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+    // analysis window, the second one being the synthesis window).
 }
+
+
+void earsbufobj_class_add_wintype_attr(t_class *c)
+{
+    CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"enum","Window Type");
+    CLASS_ATTR_ENUM(c,"wintype", 0, "rectangular triangular sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian sqrthann sqrthamming");
+    CLASS_ATTR_BASIC(c, "wintype", 0);
+    CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+    // @description Sets the window type.
+    // Available windows are:
+    // "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+    // For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+    // analysis window, the second one being the synthesis window).
+}
+
+void earsbufobj_class_add_wintype_attr_ansyn(t_class *c)
+{
+    CLASS_ATTR_SYM_ARRAY(c, "wintype", 0, t_earsbufobj, a_wintype_ansyn, 2);
+    CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"text","Window Type");
+    CLASS_ATTR_BASIC(c, "wintype", 0);
+    CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+    // @description Sets the window type for both analaysis and synthesis (as a couple of symbols).
+    // Available windows are:
+    // "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+    // For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+    // analysis window, the second one being the synthesis window).
+}
+
+
 
 void earsbufobj_class_add_winnormalized_attr(t_class *c)
 {
@@ -1623,12 +2075,8 @@ void earsbufobj_generated_names_llll_subssymbol(t_llll *ll, t_symbol *sym, long 
     
     t_llll *sizes = llll_get();
     llll_appendlong(sizes, 1);
-
+    
     llll_multisubs(ll, address, subs_model, sizes);
-
-    llll_free(address);
-    llll_free(subs_model);
-    llll_free(sizes);
 }
 
 
@@ -1658,14 +2106,20 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
             
         case EARSBUFOBJ_NAMING_STATIC:
         {
-            t_llllelem *el = earsbufobj_generated_names_llll_getsymbol(e_ob->l_generated_outnames, outstore_idx, buffer_idx, 0);
-            if (el && hatom_gettype(&el->l_hatom) == H_SYM) {
-                sym = hatom_getsym(&el->l_hatom);
-                if (status) *status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
-            } else {
-                sym = symbol_unique();
+            if (e_ob->l_outstore[outstore_idx].use_polybuffers) {
+                sym = ears_buffer_name_get_for_polybuffer(e_ob->l_outstore[outstore_idx].polybuffer_name, buffer_idx+1);
                 earsbufobj_generated_names_llll_subssymbol(e_ob->l_generated_outnames, sym, outstore_idx, buffer_idx, 0);
                 if (status) *status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+            } else {
+                t_llllelem *el = earsbufobj_generated_names_llll_getsymbol(e_ob->l_generated_outnames, outstore_idx, buffer_idx, 0);
+                if (el && hatom_gettype(&el->l_hatom) == H_SYM) {
+                    sym = hatom_getsym(&el->l_hatom);
+                    if (status) *status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
+                } else {
+                    sym = symbol_unique();
+                    earsbufobj_generated_names_llll_subssymbol(e_ob->l_generated_outnames, sym, outstore_idx, buffer_idx, 0);
+                    if (status) *status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
+                }
             }
         }
             break;
@@ -1752,74 +2206,186 @@ void earsbufobj_refresh_outlet_names(t_earsbufobj *e_ob, char force_refresh_even
 
 
 
+void earsbufobj_outlet_anything_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s, ac-1, av+1);
+    bach_freeptr(av);
+}
+
 void earsbufobj_outlet_anything(t_earsbufobj *e_ob, long outnum, t_symbol *s, long ac, t_atom *av)
 {
-    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s, ac, av);
+    if (e_ob->l_blocking == 0) {
+        t_atom *new_av = (t_atom *)bach_newptr((ac + 1) * sizeof(t_atom));
+        atom_setlong(new_av, outnum);
+        for (long i = 0; i < ac; i++)
+            new_av[i+1] = av[i];
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_outlet_anything_do, s, ac+1, new_av);
+    } else {
+        llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s, ac, av);
+    }
+}
+
+
+
+void earsbufobj_outlet_int_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    long n = atom_getlong(av+1);
+    llllobj_outlet_int((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, n);
+}
+
+void earsbufobj_outlet_int(t_earsbufobj *e_ob, long outnum, long n)
+{
+    if (e_ob->l_blocking == 0) {
+        t_atom av[2];
+        atom_setlong(av, outnum);
+        atom_setlong(av+1, n);
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_outlet_int_do, NULL, 2, av);
+    } else {
+        llllobj_outlet_int((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, n);
+    }
+}
+
+
+void earsbufobj_outlet_symbol_list_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    long numsymbols = atom_getlong(av+1);
+    if (numsymbols > 0) {
+        if (numsymbols == 1)
+            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(av+2), 0, NULL);
+        else {
+            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, _sym_list, numsymbols, av+2);
+        }
+    }
+    bach_freeptr(av);
 }
 
 void earsbufobj_outlet_symbol_list(t_earsbufobj *e_ob, long outnum, long numsymbols, t_symbol **s)
 {
     if (numsymbols > 0) {
-        if (numsymbols == 1)
-            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, s[0], 0, NULL);
-        else {
-            t_atom *av = (t_atom *)bach_newptr(numsymbols * sizeof(t_atom));
-            for (long i = 0; i < numsymbols; i++)
-                atom_setsym(av+i, s[i]);
-            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, _sym_list, numsymbols, av);
-            bach_freeptr(av);
+        t_atom *av = (t_atom *)bach_newptr((numsymbols + 2) * sizeof(t_atom));
+        atom_setlong(av, outnum);
+        atom_setlong(av+1, numsymbols);
+        for (long i = 0; i < numsymbols; i++)
+            atom_setsym(av+i+2, s[i]);
+        if (e_ob->l_blocking == 0) {
+            earsbufobj_updateprogress(e_ob, 1.);
+            defer(e_ob, (method)earsbufobj_outlet_symbol_list_do, NULL, numsymbols+2, av);
+        } else {
+            earsbufobj_outlet_symbol_list_do(e_ob, NULL, numsymbols+2, av);
         }
     }
 }
 
+
+void earsbufobj_outlet_llll_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    t_llll *ll = (t_llll *)atom_getobj(av+1);
+    llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, ll);
+    llll_release(ll);
+}
+
 void earsbufobj_outlet_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
 {
-    llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, ll);
+    t_atom av[2];
+    atom_setlong(av, outnum);
+    atom_setobj(av+1, ll);
+    llll_retain(ll);
+    if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_outlet_llll_do, NULL, 2, av);
+    } else {
+        earsbufobj_outlet_llll_do(e_ob, NULL, 2, av);
+    }
 }
+
 
 void earsbufobj_gunload_llll(t_earsbufobj *e_ob, long outnum, t_llll *ll)
 {
     llllobj_gunload_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, ll, outnum);
 }
 
+void earsbufobj_shoot_llll_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    llllobj_shoot_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
+}
+
 void earsbufobj_shoot_llll(t_earsbufobj *e_ob, long outnum)
 {
-    llllobj_shoot_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
+    t_atom av;
+    atom_setlong(&av, outnum);
+    if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_shoot_llll_do, NULL, 1, &av);
+    } else {
+        earsbufobj_shoot_llll_do(e_ob, NULL, 1, &av);
+    }
+}
+
+
+void earsbufobj_outlet_bang_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    llllobj_outlet_bang((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
 }
 
 void earsbufobj_outlet_bang(t_earsbufobj *e_ob, long outnum)
 {
-    llllobj_outlet_bang((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum);
+    t_atom av;
+    atom_setlong(&av, outnum);
+    if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_outlet_bang_do, NULL, 1, &av);
+    } else {
+        earsbufobj_outlet_bang_do(e_ob, NULL, 1, &av);
+    }
+}
+
+void earsbufobj_outlet_buffer_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_atom *av)
+{
+    long outnum = atom_getlong(av);
+    if (outnum >= 0 && outnum < e_ob->l_ob.l_numouts) {
+        long store = earsbufobj_outlet_to_bufstore(e_ob, outnum);
+        if (e_ob->l_outstore[store].num_stored_bufs > 0) {
+            if (e_ob->l_outstore[store].use_polybuffers && e_ob->l_output_polybuffers == 1) {
+                t_symbol *name = e_ob->l_outstore[store].polybuffer_name;
+                llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, name, 0, NULL);
+            } else {
+                t_atom *a = (t_atom *)bach_newptr(e_ob->l_outstore[store].num_stored_bufs * sizeof(t_atom));
+                long j, c = 0;
+                for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
+                    t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
+                    if (name) {
+                        atom_setsym(a+c, name);
+                        c++;
+                    }
+                }
+                
+                if (c > 0) {
+                    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), c - 1, a + 1);
+                }
+                
+                bach_freeptr(a);
+            }
+        }
+    }
 }
 
 void earsbufobj_outlet_buffer(t_earsbufobj *e_ob, long outnum)
 {
-    if (outnum >= 0 && outnum < e_ob->l_ob.l_numouts) {
-        long store = earsbufobj_outlet_to_bufstore(e_ob, outnum);
-        if (e_ob->l_outstore[store].num_stored_bufs > 0) {
-            t_atom *a = (t_atom *)bach_newptr(e_ob->l_outstore[store].num_stored_bufs * sizeof(t_atom));
-            long j, c = 0;
-            for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
-                t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
-                if (name) {
-                    atom_setsym(a+c, name);
-                    c++;
-                }
-            }
-            
-            if (c > 0) {
-                llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), c - 1, a + 1);
-                
-/*
-                if (c == 1)
-                    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), 0, NULL);
-                else
-                    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, _sym_list, c, a);
- */
-            }
-            
-            bach_freeptr(a);
-        }
+    t_atom av;
+    atom_setlong(&av, outnum);
+    if (e_ob->l_blocking == 0) {
+        earsbufobj_updateprogress(e_ob, 1.);
+        defer(e_ob, (method)earsbufobj_outlet_buffer_do, NULL, 1, &av);
+    } else {
+        earsbufobj_outlet_buffer_do(e_ob, NULL, 1, &av);
     }
 }
 
@@ -1851,6 +2417,14 @@ long earsbufobj_get_instore_size(t_earsbufobj *e_ob, long store_idx)
 {
     if (store_idx >= 0 && store_idx < e_ob->l_numbufins)
         return e_ob->l_instore[store_idx].num_stored_bufs;
+    return 0;
+}
+
+
+long earsbufobj_get_outstore_size(t_earsbufobj *e_ob, long store_idx)
+{
+    if (store_idx >= 0 && store_idx < e_ob->l_numbufouts)
+        return e_ob->l_outstore[store_idx].num_stored_bufs;
     return 0;
 }
 
@@ -2000,7 +2574,7 @@ void earsbufobj_store_copy_format(t_earsbufobj *e_ob, e_earsbufobj_in_out source
     t_buffer_obj *from = earsbufobj_get_stored_buffer_obj(e_ob, source, source_store_idx, source_buffer_idx);
     t_buffer_obj *to = earsbufobj_get_stored_buffer_obj(e_ob, dest, dest_store_idx, dest_buffer_idx);
     if (from && to)
-        ears_buffer_copy_format((t_object *)e_ob, from, to);
+        ears_buffer_copy_format((t_object *)e_ob, from, to, true); // don't change size/numchannels, though!, we'll do that later.
 }
 
 
@@ -2024,8 +2598,10 @@ void earsbufobj_mutex_unlock(t_earsbufobj *e_ob)
 
 
 
-double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
     double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
@@ -2034,6 +2610,14 @@ double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buff
             
         case EARS_TIMEUNIT_DURATION_RATIO:
             return value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return (size_ms + (1000. * value / buffer_getsamplerate(buf))) / size_ms;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return (size_ms + value) / size_ms;
             break;
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -2057,8 +2641,97 @@ double earsbufobj_time_to_durationratio(t_earsbufobj *e_ob, double value, t_buff
 
 
 
-double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+double earsbufobj_time_to_durationdifference_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
+    double size_ms = ears_buffer_get_size_ms((t_object *)e_ob, buf);
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
+            return (1000. / buffer_getsamplerate(buf)) * value - size_ms;
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return value * size_ms - size_ms;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return value * (1000. / buffer_getsamplerate(buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return value;
+            break;
+
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            return size_ms * 1./value - size_ms;
+            break;
+
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            return size_ms * 1./(value-1) - size_ms;
+            break;
+
+        case EARS_TIMEUNIT_SECONDS:
+            return (value * 1000. - size_ms);
+            break;
+
+        case EARS_TIMEUNIT_MS:
+        default:
+            return value - size_ms;
+            break;
+    }
+}
+
+
+double earsbufobj_time_to_durationdifference_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
+{
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
+    bool use_original_audio_sr_for_spectral_buffers = flags & EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS;
+    double size_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf, use_original_audio_sr_for_spectral_buffers);
+    double sr = ears_buffer_get_sr((t_object *)e_ob, buf, use_original_audio_sr_for_spectral_buffers);
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
+            return value - size_samps;
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            return value * size_samps - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return value / (1000. / sr);
+            break;
+            
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            return size_samps * 1./value - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            return size_samps * 1./(value-1) - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_SECONDS:
+            return value * 1000 * sr / 1000. - size_samps;
+            break;
+
+        case EARS_TIMEUNIT_MS:
+        default:
+            return value * buffer_getsamplerate(buf) / 1000. - size_samps;
+            break;
+    }
+}
+
+
+
+double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
+{
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
             return ears_samps_to_ms(value, buffer_getsamplerate(buf));
@@ -2066,6 +2739,14 @@ double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf
             
         case EARS_TIMEUNIT_DURATION_RATIO:
             return ears_buffer_get_size_ms((t_object *)e_ob, buf) * value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return ears_buffer_get_size_ms((t_object *)e_ob, buf) + value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return ears_samps_to_ms(ears_buffer_get_size_samps((t_object *)e_ob, buf) + value, buffer_getsamplerate(buf));
             break;
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -2088,8 +2769,10 @@ double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf
 }
 
 // TO DO: handle negative values
-double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
     double res = 0;
     switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
         case EARS_TIMEUNIT_SAMPS:
@@ -2098,6 +2781,14 @@ double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj 
             
         case EARS_TIMEUNIT_DURATION_RATIO:
             res = ears_buffer_get_size_samps((t_object *)e_ob, buf) * value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            res = ears_buffer_get_size_samps((t_object *)e_ob, buf) + ears_ms_to_fsamps(value, ears_buffer_get_sr((t_object *)e_ob, buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            res = ears_buffer_get_size_samps((t_object *)e_ob, buf) + value;
             break;
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -2109,49 +2800,58 @@ double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj 
             break;
 
         case EARS_TIMEUNIT_SECONDS:
-            res = ears_ms_to_fsamps(value*1000., buffer_getsamplerate(buf));
+            res = ears_ms_to_fsamps(value*1000., ears_buffer_get_sr((t_object *)e_ob, buf));
             break;
 
         case EARS_TIMEUNIT_MS:
         default:
-            res = ears_ms_to_fsamps(value, buffer_getsamplerate(buf));
+            res = ears_ms_to_fsamps(value, ears_buffer_get_sr((t_object *)e_ob, buf));
             break;
     }
     return res;
 }
 
-long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, bool is_envelope, bool is_analysis)
+long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
-    return round(earsbufobj_time_to_fsamps(e_ob, value, buf, is_envelope, is_analysis));
+    return round(earsbufobj_time_to_fsamps(e_ob, value, buf, flags));
 }
 
 
-double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, bool is_envelope, bool is_analysis)
+double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, e_ears_timeunit new_timeunit, long flags)
 {
     switch (new_timeunit) {
         case EARS_TIMEUNIT_SAMPS:
-            return earsbufobj_time_to_fsamps(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_fsamps(e_ob, value, buf, flags);
             break;
             
         case EARS_TIMEUNIT_DURATION_RATIO:
-            return earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_durationratio(e_ob, value, buf, flags);
             break;
             
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return earsbufobj_time_to_durationdifference_ms(e_ob, value, buf, flags);
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return earsbufobj_time_to_durationdifference_samps(e_ob, value, buf, flags);
+            break;
+
+
         case EARS_TIMEUNIT_NUM_INTERVALS:
-            return 1./earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis);
+            return 1./earsbufobj_time_to_durationratio(e_ob, value, buf, flags);
             break;
 
         case EARS_TIMEUNIT_NUM_ONSETS:
-            return 1 + (1./earsbufobj_time_to_durationratio(e_ob, value, buf, is_envelope, is_analysis));
+            return 1 + (1./earsbufobj_time_to_durationratio(e_ob, value, buf, flags));
             break;
 
         case EARS_TIMEUNIT_SECONDS:
-            return earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis)/1000.;
+            return earsbufobj_time_to_ms(e_ob, value, buf, flags)/1000.;
             break;
 
         case EARS_TIMEUNIT_MS:
         default:
-            return earsbufobj_time_to_ms(e_ob, value, buf, is_envelope, is_analysis);
+            return earsbufobj_time_to_ms(e_ob, value, buf, flags);
             break;
     }
 }
@@ -2308,6 +3008,14 @@ double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit fr
             return earsbufobj_time_to_durationratio(&e_ob, value, buf, false);
             break;
             
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return earsbufobj_time_to_durationdifference_samps(&e_ob, value, buf, false);
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return earsbufobj_time_to_durationdifference_ms(&e_ob, value, buf, false);
+            break;
+            
         case EARS_TIMEUNIT_NUM_INTERVALS:
             return 1./earsbufobj_time_to_durationratio(&e_ob, value, buf, false);
             break;
@@ -2350,6 +3058,14 @@ long earsbufobj_atom_to_samps(t_earsbufobj *e_ob, t_atom *v, t_buffer_obj *buf)
             return ears_buffer_get_size_samps((t_object *)e_ob, buf) * atom_getfloat(v);
             break;
 
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            return ears_buffer_get_size_samps((t_object *)e_ob, buf) + atom_getfloat(v);
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            return ears_buffer_get_size_samps((t_object *)e_ob, buf) + ears_ms_to_samps(atom_getfloat(v), buffer_getsamplerate(buf));
+            break;
+
         case EARS_TIMEUNIT_NUM_INTERVALS:
             return ears_buffer_get_size_samps((t_object *)e_ob, buf) * (1./atom_getfloat(v));
             break;
@@ -2378,6 +3094,14 @@ void earsbufobj_samps_to_atom(t_earsbufobj *e_ob, long samps, t_buffer_obj *buf,
             
         case EARS_TIMEUNIT_DURATION_RATIO:
             atom_setfloat(a, ((float)samps)/ears_buffer_get_size_samps((t_object *)e_ob, buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            atom_setfloat(a, ((float)samps) - ears_buffer_get_size_samps((t_object *)e_ob, buf));
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            atom_setfloat(a, ears_samps_to_ms(((float)samps) - ears_buffer_get_size_samps((t_object *)e_ob, buf), buffer_getsamplerate(buf)));
             break;
 
         case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -2547,6 +3271,19 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
                 case EARS_TIMEUNIT_NUM_INTERVALS:
@@ -2875,6 +3612,20 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
                 }
                     break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
                 case EARS_TIMEUNIT_NUM_INTERVALS:
                 {
                     t_llll *sub_ll = hatom_getllll(&el->l_hatom);
@@ -2913,7 +3664,318 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
 }
 
 
+
+// llllelem can be either a number or a t_pts
+t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
+{
+    t_llll *out = llll_get();
+    llll_appendhatom_clone(out, &elem->l_hatom);
+    llll_flatten(out, 1, 0);
+    
+    double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
+    double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    
+    for (t_llllelem *el = out->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+            switch (e_ob->l_timeunit) {
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                    break;
+                default:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, earsbufobj_time_to_durationratio(e_ob, hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), buf));
+                }
+                    break;
+            }
+            switch (e_ob->l_envtimeunit) {
+                case EARS_TIMEUNIT_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_SECONDS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_NUM_INTERVALS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_NUM_ONSETS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1. + (1./hatom_getdouble(&sub_ll->l_head->l_hatom))) * (dur_samps - 1));
+                }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+
+            switch (e_ob->l_timeunit) {
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                    break;
+                default:
+                    hatom_setdouble(&el->l_hatom, earsbufobj_time_to_durationratio(e_ob, hatom_getdouble(&el->l_hatom), buf));
+                    break;
+            }
+        }
+    }
+    
+    return out;
+}
+
+
+
+
+
 t_bool earsbufobj_is_sym_naming_mech(t_symbol *s)
 {
     return s == gensym("!") || s == gensym("=") || s == gensym("_");
+}
+
+
+
+void earsbufobj_stopprogress_do(t_earsbufobj *e_ob, t_symbol *sym, short argc, t_atom *argv)
+{
+    t_object *b = NULL;
+    e_ob->l_current_progress = 0;
+    auto err = object_obex_lookup((t_object *)e_ob, _sym_pound_B, &b);
+    if (err == MAX_ERR_NONE) {
+        object_method(b, gensym("stopprogress"));
+    }
+}
+
+void earsbufobj_startprogress_do(t_earsbufobj *e_ob, t_symbol *sym, short argc, t_atom *argv)
+{
+    t_object *b = NULL;
+    e_ob->l_current_progress = 0;
+    auto err = object_obex_lookup((t_object *)e_ob, _sym_pound_B, &b);
+    if (err == MAX_ERR_NONE) {
+        object_method(b, gensym("startprogress"), &e_ob->l_current_progress);
+    }
+}
+
+void earsbufobj_updateprogress_do(t_earsbufobj *e_ob, t_symbol *sym, short argc, t_atom *argv)
+{
+    e_ob->l_current_progress = atom_getfloat(argv);
+}
+
+void earsbufobj_startprogress(t_earsbufobj *e_ob)
+{
+    defer(e_ob, (method)earsbufobj_startprogress_do, NULL, 0, NULL);
+}
+
+void earsbufobj_stopprogress(t_earsbufobj *e_ob)
+{
+    defer(e_ob, (method)earsbufobj_stopprogress_do, NULL, 0, NULL);
+}
+
+
+void earsbufobj_updateprogress(t_earsbufobj *e_ob, t_atom_float progress)
+{
+    if (e_ob->l_blocking == 0) {
+        t_atom av;
+        atom_setfloat(&av, progress);
+        defer(e_ob, (method)earsbufobj_updateprogress_do, NULL, 1, &av);
+    }
+}
+
+void earsbufobj_init_progress(t_earsbufobj *e_ob, long num_buffers)
+{
+    // we start in any case with a whole-object progress bar
+    // this is due to the fact that we want the user to recognize straight away
+    // that some processing is going on, even if the object is only processing
+    // a single buffer.
+    if (num_buffers == 1) {
+        earsbufobj_updateprogress(e_ob, 1.);
+    } else {
+        earsbufobj_updateprogress(e_ob, 0.);
+    }
+}
+
+long earsbufobj_iter_progress(t_earsbufobj *e_ob, long count, long num_buffers)
+{
+    earsbufobj_updateprogress(e_ob, (float)(1+count)/num_buffers);
+    if (e_ob->l_must_stop) {
+        e_ob->l_must_stop = 0;
+        return 1;
+    }
+    return 0;
+}
+
+
+
+t_max_err earsbufobj_store_buffer_in_dictionary(t_earsbufobj *e_ob, t_buffer_obj *buf, t_dictionary *dict)
+{
+    t_max_err err = MAX_ERR_NONE;
+    char entryname[2048];
+    t_atom_long count = 0, block_size;
+    
+    earsbufobj_mutex_lock(e_ob);
+    t_atom_long num_channels = ears_buffer_get_numchannels((t_object *)e_ob, buf);
+    t_atom_float sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    t_atom_long num_frames = ears_buffer_get_size_samps((t_object *)e_ob, buf);
+    
+    dictionary_appendlong(dict, gensym("numchannels"), num_channels);
+    dictionary_appendlong(dict, gensym("numframes"), num_frames);
+    dictionary_appendfloat(dict, gensym("sr"), sr);
+    dictionary_appendsym(dict, gensym("name"), ears_buffer_get_name((t_object *)e_ob, buf));
+
+    if (num_frames > 0 && num_channels > 0) {
+        long num_atoms = num_frames * num_channels;
+        t_atom *av = (t_atom *)bach_newptr(EARS_EMBED_BLOCK_SIZE * sizeof(t_atom));
+        
+        float *sample = buffer_locksamples(buf);
+        if (!sample) {
+            err = MAX_ERR_GENERIC;
+            object_error((t_object *)e_ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+            t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+            
+            if (channelcount != num_channels || framecount != num_frames) {
+                err = MAX_ERR_GENERIC;
+                object_error((t_object *)e_ob, "Mismatch in number of samples.");
+            } else {
+                float *cursor = sample;
+                
+                while (num_atoms > 0) {
+                    block_size = num_atoms > EARS_EMBED_BLOCK_SIZE ? EARS_EMBED_BLOCK_SIZE : num_atoms;
+                    sprintf(entryname, "block_%010" ATOM_LONG_FMT_MODIFIER "d", count++);
+                    
+                    for (long i = 0; i < block_size; i++) {
+//                        atom_setfloat(av + i, cursor[i]);
+                        atom_setlong(av + i, *((t_int32 *)&(cursor[i])));
+                    }
+                    
+                    dictionary_appendatoms(dict, gensym(entryname), block_size, av);
+                    cursor += block_size;
+                    num_atoms -= block_size;
+                }
+                
+                dictionary_appendlong(dict, gensym("block_count"), count);
+            }
+            buffer_unlocksamples(buf);
+            
+            bach_freeptr(av);
+        }
+    } else {
+        dictionary_appendlong(dict, gensym("block_count"), count);
+
+    }
+
+    earsbufobj_mutex_unlock(e_ob);
+
+    return err;
+}
+
+t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dictionary *dict, t_buffer_obj *buf)
+{
+    char entryname[2048];
+    t_atom_long num_channels = 0, num_frames = 0, block_count = 0;
+    t_atom_float sr = 0;
+    t_symbol *name = NULL;
+    t_max_err err = MAX_ERR_NONE;
+
+    long ac = 0;
+    t_atom *av = NULL;
+    long whole_numsamps = 0;
+    t_float *whole_samps, *this_whole_samps;
+
+    earsbufobj_mutex_lock(e_ob);
+
+    err |= dictionary_getlong(dict, gensym("numchannels"), &num_channels);
+    err |= dictionary_getlong(dict, gensym("numframes"), &num_frames);
+    err |= dictionary_getfloat(dict, gensym("sr"), &sr);
+    err |= dictionary_getsym(dict, gensym("name"), &name);
+    err |= dictionary_getlong(dict, gensym("block_count"), &block_count);
+
+    if (err) {
+        earsbufobj_mutex_unlock(e_ob);
+        object_error((t_object *)e_ob, "Error while retrieving saved buffer.");
+        return MAX_ERR_GENERIC;
+    } else if (num_channels == 0 || sr == 0) {
+        earsbufobj_mutex_unlock(e_ob);
+        object_error((t_object *)e_ob, "Mismatch in number of samples.");
+        return MAX_ERR_GENERIC;
+    } else if (name != ears_buffer_get_name((t_object *)e_ob, buf) && e_ob->l_bufouts_naming != EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED) {
+        earsbufobj_mutex_unlock(e_ob);
+        object_error((t_object *)e_ob, "Mismatch in buffer name.");
+        return MAX_ERR_GENERIC;
+    }
+    
+    ears_buffer_set_sr((t_object *)e_ob, buf, sr);
+    ears_buffer_set_size_and_numchannels((t_object *)e_ob, buf, num_frames, num_channels);
+    
+    if (block_count == 0) {
+        ears_buffer_clear((t_object *)e_ob, buf);
+    } else {
+        this_whole_samps = whole_samps = (t_float *) bach_newptr(block_count * EARS_EMBED_BLOCK_SIZE * sizeof(t_float));
+        for (t_atom_long i = 0; i < block_count; i++) {
+            sprintf(entryname, "block_%010ld", i);
+            dictionary_getatoms(dict, gensym(entryname), &ac, &av);
+            for (long j = 0; j < ac; j++) {
+                long val = (t_int32)atom_getlong(av+j);
+                this_whole_samps[j] = *((float *)(&val));
+//                this_whole_samps[j] = (float)(t_atom_float)atom_getfloat(av+j);
+            }
+            whole_numsamps += ac;
+            this_whole_samps += ac;
+        }
+        
+        if (whole_numsamps != num_channels * num_frames) {
+            object_error((t_object *)e_ob, "Wrong saved information about number of samples!");
+        }
+        
+        float *sample = buffer_locksamples(buf);
+        
+        if (!sample) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)e_ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+            t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+            
+            sysmem_copyptr(whole_samps, sample, MIN(whole_numsamps, channelcount * framecount) * sizeof(float));
+            buffer_setdirty(buf);
+            buffer_unlocksamples(buf);
+        }
+        
+        bach_freeptr(whole_samps);
+    }
+
+    earsbufobj_mutex_unlock(e_ob);
+    return EARS_ERR_NONE;
 }

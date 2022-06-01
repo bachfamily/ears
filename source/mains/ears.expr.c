@@ -51,8 +51,10 @@ typedef struct _buf_expr {
     t_earsbufobj       e_ob;
     
     char                normalization_mode;
+    char                scalar_mode;
     
     t_hatom               *arguments;
+    t_llll                **llll_arguments;
     long                  n_maxvars;
     t_lexpr               *n_lexpr;
     t_llll                *n_dummy;
@@ -110,6 +112,7 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(expr)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
@@ -126,6 +129,12 @@ int C74_EXPORT main(void)
     // 0 = Never, does not normalize; 1 = Always, always normalizes to 1.; 2 = Overload Protection Only, only
     // normalizes to 1. if some samples exceed in modulo 1.
     
+    CLASS_ATTR_CHAR(c, "scalarmode",    0,    t_buf_expr, scalar_mode);
+    CLASS_ATTR_FILTER_CLIP(c, "scalarmode", 0, 1);
+    CLASS_ATTR_STYLE(c, "scalarmode", 0, "onoff");
+    CLASS_ATTR_LABEL(c, "scalarmode", 0, "Scalar Mode");
+    CLASS_ATTR_BASIC(c, "scalarmode", 0);
+    // @description If set, a single number of buffers is iterated against all the others
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -264,12 +273,16 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
         x->n_maxvars = dummy->l_numvars; // workaround to get the right number of variables
         lexpr_free(dummy);
 */
-        x->n_maxvars = x->n_lexpr->l_numvars;
+        x->n_maxvars = MAX(1, x->n_lexpr->l_numvars);
         
         if (x->n_maxvars > 0) {
             x->arguments = (t_hatom *)bach_newptr(x->n_maxvars * sizeof(t_hatom));
             for (long i = 0; i < x->n_maxvars; i++)
                 hatom_setdouble(x->arguments + i, 0);
+
+            x->llll_arguments = (t_llll **)bach_newptr(x->n_maxvars * sizeof(t_llll *));
+            for (long i = 0; i < x->n_maxvars; i++)
+                x->llll_arguments[i] = llll_get();
         }
 
         /*
@@ -323,13 +336,13 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
         proxies = MIN(proxies, LLLL_MAX_INLETS);
         char temp[LLLL_MAX_INLETS + 2];
         long i = 0;
-        temp[0] = 'e';
+        temp[0] = 'E';
         for (i = 0; i < proxies; i++)
-            temp[i+1] = 'e';
+            temp[i+1] = 'E';
         temp[i+1] = 0;
         
         attr_args_process(x, argc, argv);
-        earsbufobj_setup((t_earsbufobj *)x, temp, "e", names);
+        earsbufobj_setup((t_earsbufobj *)x, temp, "E", names);
 
         llll_free(names);
     }
@@ -346,6 +359,9 @@ void buf_expr_free(t_buf_expr *x)
         if (hatom_gettype(x->arguments + i) == H_LLLL)
             llll_free(hatom_getllll(x->arguments + i));
     bach_freeptr(x->arguments);
+    for (long i = 0; i < x->n_maxvars; i++)
+        llll_free(x->llll_arguments[i]);
+    bach_freeptr(x->llll_arguments);
     llll_release(x->n_dummy);
     llll_release(x->n_empty);
 //    if (stored != x->n_dummy)
@@ -361,13 +377,82 @@ void buf_expr_bang(t_buf_expr *x)
 {
     char normalization_mode = x->normalization_mode;
     
+    long num_buffers = LONG_MAX;
+    long maxvars = x->n_maxvars;
+    
+    for (long i = 0; i < x->e_ob.l_numins; i++) {
+        if (x->scalar_mode && x->llll_arguments[i]->l_size == 1) {
+            // nothing to do
+        } else {
+            num_buffers = MIN(num_buffers, x->llll_arguments[i]->l_size);
+        }
+    }
+    if (num_buffers == LONG_MAX) {
+        num_buffers = 1;
+    }
+    if (num_buffers == 0) {
+        object_error((t_object *)x, "Not enough arguments.");
+        return;
+    }
+
+    
+    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_buffers, true);
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
+
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
     
-    t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-    ears_buffer_expr((t_object *)x, x->n_lexpr, x->arguments, x->e_ob.l_numins, out, (e_ears_normalization_modes)normalization_mode,
-                     x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+    if (x->scalar_mode && num_buffers > 1) {
+        for (long i = 0; i < x->e_ob.l_numins; i++) {
+            if (x->llll_arguments[i]->l_size == 1) {
+                for (long c = 1; c < num_buffers; c++)
+                    llll_appendhatom_clone(x->llll_arguments[i], &x->llll_arguments[i]->l_head->l_hatom);
+            }
+        }
+    }
     
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+    
+    t_llllelem **el = (t_llllelem **)bach_newptr(maxvars * sizeof(t_llllelem *));
+    for (long i = 0; i < maxvars; i++) {
+        el[i] = x->llll_arguments[i]->l_head;
+    }
+                
+    for (long count = 0; count < num_buffers; count++) {
+        t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        for (long i = 0; i < maxvars; i++) {
+            if (el[i] && is_hatom_number(&el[i]->l_hatom)) {
+                hatom_setdouble(x->arguments + i, hatom_getdouble(&el[i]->l_hatom));
+            } else if (el[i] && hatom_gettype(&el[i]->l_hatom) == H_SYM) {
+                t_buffer_obj *obj = ears_buffer_getobject(hatom_getsym(&el[i]->l_hatom));
+                if (obj) {
+                    hatom_setobj(x->arguments + i, obj);
+                } else {
+                    object_warn((t_object *)x, EARS_ERROR_BUF_NO_BUFFER);
+                    hatom_setdouble(x->arguments + i, 0);
+                }
+            } else if (el[i] && hatom_gettype(&el[i]->l_hatom) == H_LLLL) {
+                hatom_setllll(x->arguments + i, hatom_getllll(&el[i]->l_hatom));
+            } else {
+                object_warn((t_object *)x, "Unsupported argument");
+                hatom_setdouble(x->arguments + i, 0);
+            }
+        }
+
+        ears_buffer_expr((t_object *)x, x->n_lexpr, x->arguments, x->e_ob.l_numins, out, (e_ears_normalization_modes)normalization_mode,
+                         x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+
+        
+        // update el
+        for (long i = 0; i < maxvars; i++) {
+            if (el[i] && el[i]->l_next)
+                el[i] = el[i]->l_next;
+        }
+        
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
+    }
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
+    bach_freeptr(el);
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 
@@ -381,24 +466,8 @@ void buf_expr_anything(t_buf_expr *x, t_symbol *msg, long ac, t_atom *av)
     
     if (parsed && parsed->l_head) {
         earsbufobj_mutex_lock((t_earsbufobj *)x);
-        if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) { // buffers
-            long num_bufs = llll_get_num_symbols_root(parsed);
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, num_bufs, true);
-            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
-// cannot use the functions hatom_change_to_obj_and_free() etc. because they assume that the hatom belongs to an llllelem, which is NOT the case.
-// we do that manually
-            if (hatom_gettype(x->arguments + inlet) == H_LLLL)
-                llll_free(hatom_getllll(x->arguments + inlet));
-            hatom_setobj(x->arguments + inlet, earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, inlet, 0));
-        } else if (is_hatom_number(&parsed->l_head->l_hatom)) { // numbers
-            if (hatom_gettype(x->arguments + inlet) == H_LLLL)
-                llll_free(hatom_getllll(x->arguments + inlet));
-            hatom_setdouble(x->arguments + inlet, hatom_getdouble(&parsed->l_head->l_hatom));
-        } else if (hatom_gettype(&parsed->l_head->l_hatom) == H_LLLL) { // breakpoint functions
-            if (hatom_gettype(x->arguments + inlet) == H_LLLL)
-                llll_free(hatom_getllll(x->arguments + inlet));
-            hatom_setllll(x->arguments + inlet, llll_clone(hatom_getllll(&parsed->l_head->l_hatom)));
-        }
+        llll_free(x->llll_arguments[inlet]);
+        x->llll_arguments[inlet] = llll_clone(parsed);
         earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
         if (inlet == 0)

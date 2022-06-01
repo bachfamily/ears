@@ -159,7 +159,7 @@ void ext_main(void *r)
 
     // attributes
     
-    CLASS_ATTR_SYM(c, "buffername", 0, t_buf_specshow, n_buffername);
+    CLASS_ATTR_SYM(c, "buffername", ATTR_SET_DEFER_LOW, t_buf_specshow, n_buffername);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "buffername", 0, "volatile");
     CLASS_ATTR_STYLE_LABEL(c, "buffername", 0, "text", "buffer~ Object Name");
     CLASS_ATTR_ACCESSORS(c, "buffername", NULL, buf_specshow_setattr_buffername);
@@ -353,7 +353,8 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_display_start_ms = 0;
         x->n_display_end_ms = -1;
         x->n_autoscale = 0;
-        
+        x->n_buffername = _llllobj_sym_empty_symbol;
+
         x->n_mincolor = get_grey(1.);
         x->n_maxcolor = get_grey(0.);
         x->n_minvalue = 0.;

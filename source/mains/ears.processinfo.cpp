@@ -88,6 +88,7 @@ void ears_processinfo_assist(t_ears_processinfo *x, void *b, long m, long a, cha
 
 void ears_processinfo_prepare(t_ears_processinfo *x, t_atom *clock_name);
 void ears_processinfo_start(t_ears_processinfo *x, long bufs, t_atom *bufDurs);
+void ears_processinfo_output_position(t_ears_processinfo *x);
 
 void ears_processinfo_end(t_ears_processinfo *x);
 
@@ -119,7 +120,8 @@ int C74_EXPORT main()
     class_addmethod(this_class, (method)ears_processinfo_prepare, "prepare", A_CANT, 0);
     class_addmethod(this_class, (method)ears_processinfo_start, "start", A_CANT, 0);
     class_addmethod(this_class, (method)ears_processinfo_end, "end", A_CANT, 0);
-    
+    class_addmethod(this_class, (method)ears_processinfo_output_position, "output_position", A_CANT, 0);
+
     // @method stop @digest Stop process
     // @description The <m>stop</m> message
     // stops the process, if it is running.
@@ -139,7 +141,7 @@ void *ears_processinfo_new(t_symbol *s, long ac, t_atom *av)
     t_ears_processinfo *x = (t_ears_processinfo *) object_alloc(this_class);
     
     x->clock_out = outlet_new(x, "clock");
-    x->dur_out = listout(x);
+    x->dur_out = outlet_new(x, nullptr);
     x->vs_out = intout(x);
     x->sr_out = floatout(x);
     x->onoff_out = intout(x);
@@ -180,7 +182,10 @@ void ears_processinfo_prepare(t_ears_processinfo *x, t_atom *clock_name)
 
 void ears_processinfo_start(t_ears_processinfo *x, long bufs, t_atom *bufDurs)
 {
-    outlet_list(x->dur_out, NULL, bufs, bufDurs);
+    if (bufs == 1)
+        outlet_float(x->dur_out, atom_getfloat(bufDurs));
+    else if (bufs > 1)
+        outlet_list(x->dur_out, _sym_list, bufs, bufDurs);
 }
 
 void ears_processinfo_dsp64(t_ears_processinfo *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
@@ -207,12 +212,16 @@ void ears_processinfo_perform64(t_ears_processinfo *x, t_object *dsp64, double *
             *(out++) = 0;
         }
     } else {
-        outlet_float(x->pos_out, position * invsr);
         for (s = 0; s < sampleframes; s++) {
             *(out++) = (position++) * invsr;
         }
     }
     x->position = position;
+}
+
+void ears_processinfo_output_position(t_ears_processinfo *x)
+{
+    outlet_float(x->pos_out, x->position * x->invsr);
 }
 
 
@@ -233,7 +242,7 @@ void ears_processinfo_assist(t_ears_processinfo *x, void *b, long m, long a, cha
                 break;
             case 4: sprintf(s, "int: vector size"); // @out 4 @type int @digest Vector size
                 break;
-            case 5: sprintf(s, "list: input durations (ms)"); // @out 5 @type list @digest Durations of the input buffers
+            case 5: sprintf(s, "float/list: input durations (ms)"); // @out 5 @type float/list @digest Durations of the input buffers
                 break;
             case 6: sprintf(s, "clock message"); // @out 6 @type clock @digest Message for objects supporting <b>setclock</b>
                 break;

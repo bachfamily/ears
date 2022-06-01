@@ -105,6 +105,16 @@
 				used name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
+			</description>
+		</method>
 		<method name="write">
 			<arg name="bufferindex" optional="1" type="int" />
 			<arg name="filename_or_path" optional="1" type="symbol" />
@@ -262,6 +272,24 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
+			<digest>
+				Blocking Mode
+			</digest>
+			<description>
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="fullspectrum" get="1" set="1" type="int" size="1">
 			<digest>
 				Full Spectrum
@@ -323,15 +351,61 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="polar" get="1" set="1" type="int" size="1">
+		<attribute name="polarin" get="1" set="1" type="int" size="1">
 			<digest>
-				Polar Input And Output
+				Polar Input
 			</digest>
 			<description>
-				Input and output data in polar coordinates, instead of cartesian ones.
+				Input data in polar coordinates, instead of cartesian ones.
+				Default is 0.
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Input And Output" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Input" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="polarout" get="1" set="1" type="int" size="1">
+			<digest>
+				Polar Output
+			</digest>
+			<description>
+				Output data in polar coordinates, instead of cartesian ones.
+				Default is 1.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Polar Output" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="polyout" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Polybuffers
+			</digest>
+			<description>
+				Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
+				- 0 (default) means that no polybuffer is created (individual buffers are output); <br />
+				- 1 means that a polybuffer is created and its name is output; <br />
+				- 2 means that a polybuffer is created and the individual names of its buffers are output.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Polybuffers" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="unitary" get="1" set="1" type="int" size="1">
+			<digest>
+				Unitary
+			</digest>
+			<description>
+				Toggles the unitary normalization of the Fourier Transform (so that the
+				if coincides with its inverse up to conjugation).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Unitary" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
@@ -340,6 +414,8 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.stft~" />
+		<seealso name="ears.istft~" />
 		<seealso name="ears.window~" />
 		<seealso name="ears.spectrogram~" />
 	</seealsolist>

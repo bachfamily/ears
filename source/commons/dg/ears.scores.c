@@ -428,7 +428,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     bool first = true;
 
     ears_buffer_set_sr((t_object *)e_ob, dest, sr);
-    ears_buffer_set_numchannels((t_object *)e_ob, dest, num_channels);
+    ears_buffer_set_size_and_numchannels((t_object *)e_ob, dest, 1, num_channels);
     
     if (use_assembly_line)
         ears_buffer_clear((t_object *)e_ob, dest);

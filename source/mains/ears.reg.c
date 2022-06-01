@@ -53,6 +53,8 @@ typedef struct _buf_reg {
     double             level;
     char               rms_mode;
     
+    long               embed;
+    
     double             mix;
 } t_buf_reg;
 
@@ -66,6 +68,7 @@ void			buf_reg_anything(t_buf_reg *x, t_symbol *msg, long ac, t_atom *av);
 
 void buf_reg_assist(t_buf_reg *x, void *b, long m, long a, char *s);
 void buf_reg_inletinfo(t_buf_reg *x, void *b, long a, char *t);
+void buf_reg_appendtodictionary(t_buf_reg *x, t_dictionary *d);
 
 
 // Globals and Statics
@@ -104,8 +107,23 @@ int C74_EXPORT main(void)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(reg) // TO DO: should we NOT defer this?
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
 
+    earsbufobj_class_add_polyout_attr(c);
+
+    class_addmethod(c, (method)buf_reg_appendtodictionary,    "appendtodictionary", A_CANT, 0);
+
+    CLASS_ATTR_LONG(c, "embed",    0,    t_buf_reg, embed);
+    CLASS_ATTR_FILTER_CLIP(c, "embed", 0, 1);
+    CLASS_ATTR_LABEL(c, "embed", 0, "Save Buffer With Patcher");
+    CLASS_ATTR_STYLE(c, "embed", 0, "onoff");
+    CLASS_ATTR_SAVE(c, "embed", 0);
+    CLASS_ATTR_BASIC(c, "embed", 0);
+    // @description When set to 1, the stored buffer is saved with the patcher
+    // and will be available next time the patch is loaded.
+    
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -131,6 +149,48 @@ void buf_reg_inletinfo(t_buf_reg *x, void *b, long a, char *t)
 }
 
 
+void buf_reg_appendtodictionary(t_buf_reg *x, t_dictionary *d)
+{
+    if (x->embed) {
+        char entryname[2048];
+        long buffer_count = earsbufobj_get_outstore_size((t_earsbufobj *)x, 0);
+        dictionary_appendlong(d, gensym("reg_buffer_count"), buffer_count);
+        for (long b = 0; b < buffer_count; b++) {
+            t_buffer_obj *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, b);
+            if (buf) {
+                t_dictionary *subdict = dictionary_new();
+                sprintf(entryname, "reg_buffer_%010ld", b);
+                earsbufobj_store_buffer_in_dictionary((t_earsbufobj *)x, buf, subdict);
+                dictionary_appenddictionary(d, gensym(entryname), (t_object *)subdict);
+            }
+        }
+    }
+}
+
+void buf_reg_retrieve_buffers_from_dictionary(t_buf_reg *x)
+{
+    char entryname[2048];
+    t_dictionary *d = (t_dictionary *)gensym("#D")->s_thing;
+    if (d) {
+        t_atom_long buffer_count = 0;
+        t_max_err err = dictionary_getlong(d, gensym("reg_buffer_count"), &buffer_count);
+        
+        if (!err && buffer_count > 0) {
+            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, buffer_count, true);
+            
+            for (long b = 0; b < buffer_count; b++) {
+                t_buffer_obj *buf = earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, b);
+                t_dictionary *subdict = NULL;
+                sprintf(entryname, "reg_buffer_%010ld", b);
+                dictionary_getdictionary(d, gensym(entryname), (t_object **)&subdict);
+                if (subdict && buf) {
+                    earsbufobj_retrieve_buffer_from_dictionary((t_earsbufobj *)x, subdict, buf);
+                }
+            }
+        }
+    }
+}
+
 t_buf_reg *buf_reg_new(t_symbol *s, short argc, t_atom *argv)
 {
     t_buf_reg *x;
@@ -140,6 +200,7 @@ t_buf_reg *buf_reg_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->rms_mode = 0;
         x->level = 1.;
+        x->embed = 0;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -154,6 +215,8 @@ t_buf_reg *buf_reg_new(t_symbol *s, short argc, t_atom *argv)
 
         earsbufobj_setup((t_earsbufobj *)x, "EE", "E", names);
        
+        buf_reg_retrieve_buffers_from_dictionary(x);
+        
         llll_free(args);
         llll_free(names);
         
@@ -174,6 +237,9 @@ void buf_reg_bang(t_buf_reg *x)
 
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
+
     for (long count = 0; count < num_buffers; count++) {
         t_symbol *name = earsbufobj_get_inlet_buffer_name((t_earsbufobj *)x, 0, count);
         if (name) {
@@ -181,7 +247,12 @@ void buf_reg_bang(t_buf_reg *x)
         } else {
             // not a big deal: one may use [ears.reg~] just to create an empty buffer
         }
+
+        if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
+
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

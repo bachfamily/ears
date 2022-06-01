@@ -87,6 +87,16 @@
 				used name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
+			</description>
+		</method>
 		<method name="symbol/llll">
 			<arglist />
 			<digest>
@@ -95,7 +105,7 @@
 			<description>
 				A symbol (or an llll containing a symbol) in the second inlet sets the window type.
 				Available windows are: "rect", "tri", "sine", "hann", "hamming", "blackman", "nuttall",
-				"blackmannuttall", "blackmanharris", "gaussian"
+				"blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming"
 			</description>
 		</method>
 		<method name="write">
@@ -242,6 +252,24 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
+			<digest>
+				Blocking Mode
+			</digest>
+			<description>
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -277,6 +305,23 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="polyout" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Polybuffers
+			</digest>
+			<description>
+				Toggles the ability to output a <o>polybuffer~</o> instead of a list of buffers: <br />
+				- 0 (default) means that no polybuffer is created (individual buffers are output); <br />
+				- 1 means that a polybuffer is created and its name is output; <br />
+				- 2 means that a polybuffer is created and the individual names of its buffers are output.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Polybuffers" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="winnormalized" get="1" set="1" type="int" size="1">
 			<digest>
 				Windows Are Normalized
@@ -297,14 +342,16 @@
 			</digest>
 			<description>
 				Sets the window type.
-				Available windows are the ones allowed by the Essentia library:
-				"hamming", "hann", "hannnsgcq", "triangular", "square", "blackmanharris62", "blackmanharris70", "blackmanharris74", "blackmanharris92"
+				Available windows are:
+				"rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+				For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+				analysis window, the second one being the synthesis window).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 		<attribute name="zeropadding" get="1" set="1" type="int" size="1">

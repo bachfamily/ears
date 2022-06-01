@@ -125,7 +125,8 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
     } else {
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
-        
+        long outchannelcount = ears_hoa_get_channel_count(dimension, order);
+
         if (channelcount == 0) {
             object_error(ob, "Buffer has no channels!");
             buffer_unlocksamples(source);
@@ -136,14 +137,12 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
             buffer_unlocksamples(source);
+            ears_buffer_set_size_and_numchannels(ob, dest, framecount, outchannelcount);
         } else {
             orig_sample_wk = orig_sample;
-            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_copy_format(ob, source, dest, true);
+            ears_buffer_set_size_and_numchannels(ob, dest, framecount, outchannelcount);
         }
-        
-        
-        long outchannelcount = ears_hoa_get_channel_count(dimension, order);
-        ears_buffer_set_size_and_numchannels(ob, dest, framecount, outchannelcount);
 
         if (order == 0) {
             // special case, not much to do
@@ -199,6 +198,8 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             } else {
+                outchannelcount = ears_buffer_get_numchannels(ob, dest);
+                framecount = ears_buffer_get_size_samps(ob, dest);
                 for (long i = 0; i < framecount; i++) {
                     bool changed = false;
                     if (coord1_is_envelope) {
@@ -234,6 +235,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                         encoder.setElevation(e);
                         encoder.setRadius(d);
                     }
+                    // only channel 0 is used. Should we downmix to mono instead?
                     encoder.process(&orig_sample_wk[channelcount * i], &dest_sample[outchannelcount * i]);
                 }
                 
@@ -379,12 +381,12 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
             buffer_unlocksamples(source);
+            ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         } else {
             orig_sample_wk = orig_sample;
-            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
 
         if (dimension == 3) {
             hoa::DecoderRegular<hoa::Hoa3d, float> decoder(order, num_out_channels);
@@ -476,12 +478,12 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
             buffer_unlocksamples(source);
+            ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         } else {
             orig_sample_wk = orig_sample;
-            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         
         long block_size = blockSize;
         float **inputs = (float **) bach_newptr(channelcount * sizeof(float *));
@@ -602,12 +604,12 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
             buffer_unlocksamples(source);
+            ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         } else {
             orig_sample_wk = orig_sample;
-            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         
         if (order == 0) {
             // nothing to rotate
@@ -746,17 +748,18 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
             return EARS_ERR_GENERIC;
         }
         
+        long outframecount = framecount + fftsize; // maximum pad we will need for spectral processing
+        
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
             buffer_unlocksamples(source);
+            ears_buffer_set_size_and_numchannels(ob, dest, outframecount, channelcount);
         } else {
             orig_sample_wk = orig_sample;
-            ears_buffer_copy_format(ob, source, dest);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        long outframecount = framecount + fftsize; // maximum pad we will need for spectral processing
-        ears_buffer_set_size_and_numchannels(ob, dest, outframecount, channelcount);
         
         if (order == 0) {
             // nothing to shift
@@ -837,7 +840,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                         for (long j = 0; j < fftsize; j++)
                             fin[j].r *= sqrt(2*ears_ACN_to_order(c) + 1);
 
-                        bach_fft_kiss(cfg, fftsize, false, fin, fout);
+                        bach_fft_kiss(cfg, fftsize, false, fin, fout, false);
 
                         std::vector<std::complex<float>> this_component_spectrum(fftsize);
                         for (long j = 0; j < fftsize; j++) {
@@ -861,7 +864,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                             fout[j].i = shifter_output[c][j].imag();
                         }
 
-                        bach_fft_kiss(cfginv, fftsize, true, fout, fin);
+                        bach_fft_kiss(cfginv, fftsize, true, fout, fin, false);
 
                         // applying window again
                         for (long j = 0; j < fftsize; j++)
@@ -944,8 +947,7 @@ t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_o
         }
         
         if (source != dest) {
-            ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         if (order == 0) {
             // special case, nothing to mirror

@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <root>
 <refpage name='ears.stft~.maxref.xml'/>
+<refpage name='ears.timesquash~.maxref.xml'/>
 <refpage name='ears.fromvector~.maxref.xml'/>
 <refpage name='ears.out.maxref.xml'/>
 <refpage name='ears.lace~.maxref.xml'/>
@@ -9,7 +10,7 @@
 <refpage name='ears.tovector~.maxref.xml'/>
 <refpage name='ears.process~.maxref.xml'/>
 <refpage name='ears.join~.maxref.xml'/>
-<refpage name='ears.playmp3~.maxref.xml'/>
+<refpage name='ears.utils.playmp3~.maxref.xml'/>
 <refpage name='ears.model.sine.synthesis~.maxref.xml'/>
 <refpage name='ears.crop~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
@@ -38,6 +39,7 @@
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
 <refpage name='ears.out~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
+<refpage name='ears.iter~.maxref.xml'/>
 <refpage name='ears.paulfreeze~.maxref.xml'/>
 <refpage name='ears.cqt~.maxref.xml'/>
 <refpage name='ears.dynamics~.maxref.xml'/>
@@ -49,6 +51,7 @@
 <refpage name='ears.mc.out~.maxref.xml'/>
 <refpage name='ears.filterempty~.maxref.xml'/>
 <refpage name='ears.pack~.maxref.xml'/>
+<refpage name='ears.griffinlim~.maxref.xml'/>
 <refpage name='ears.py~.maxref.xml'/>
 <refpage name='ears.rev~.maxref.xml'/>
 <refpage name='ears.hoa.encode~.maxref.xml'/>
@@ -62,6 +65,7 @@
 <refpage name='ears.normalize~.maxref.xml'/>
 <refpage name='ears.offset~.maxref.xml'/>
 <refpage name='ears.vamp~.maxref.xml'/>
+<refpage name='ears.soundtouch~.maxref.xml'/>
 <refpage name='ears.istft~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
 <refpage name='ears.model.stochastic.synthesis~.maxref.xml'/>

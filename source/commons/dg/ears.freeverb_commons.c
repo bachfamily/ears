@@ -32,8 +32,7 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
         if (source == dest) {
             ears_buffer_set_size_samps(ob, dest, framecount + framepad);
         } else {
-            ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size_samps(ob, dest, framecount + framepad);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount + framepad);
         }
         
         float *dest_sample = buffer_locksamples(dest);
@@ -123,8 +122,7 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
         if (source == dest) {
             ears_buffer_set_size_samps(ob, dest, framecount + framepad);
         } else {
-            ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size_samps(ob, dest, framecount + framepad);
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount + framepad);
         }
         
         float *dest_sample = buffer_locksamples(dest);

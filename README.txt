@@ -122,8 +122,10 @@ This creates  /usr/local/lib/libsamplerate.a
 3) then combine them
     lipo /usr/local/lib/libsamplerate.a /opt/homebrew/lib/libsamplerate.a -create -output /usr/local/lib/libsamplerate.a
 
-
 • for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
+You do not need to compile or install the library separately: sources are directly compiled within the project.
+
+• for the [ears.soundtouch~] module: the SoundTouch library, released under LGPL v2.1
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
 • for the [ears.vamp~] module: a slightly modified version of the VAMP Plugin and host SDK, which is located inside the repository (source/lib/vamp-plugin-sdk-master).
@@ -156,4 +158,4 @@ Related projects
 Copyrights
 ==========
 
-* Copyright (c) 2017-2022 Daniele Ghisi
+* Copyright (c) 2017-2022 Daniele Ghisi and Andrea Agostini
