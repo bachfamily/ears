@@ -346,6 +346,7 @@ t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onse
 
 // Basic operations
 t_ears_err ears_buffer_setempty(t_object *ob, t_buffer_obj *buf, long num_channels);
+t_ears_err ears_buffer_clearchannel(t_object *ob, t_buffer_obj *buf, long channel);
 t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0);
 t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0);
 t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **source, t_buffer_obj *dest,
@@ -404,9 +405,6 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
 
 // Envelopes
 t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long winsize_samps);
-
-// Waveset stuff
-t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long group, double normalize);
 
 // GET properties
 t_atom_long ears_buffer_get_size_samps(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers = false);

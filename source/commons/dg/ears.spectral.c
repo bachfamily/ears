@@ -1360,38 +1360,74 @@ long argmin3(double val1, double val2, double val3, long idx1, long idx2, long i
     return idx1;
 }
 
-long argmin3ptr(double *val1, double *val2, double *val3, double add1, double add2, double add3, long idx1, long idx2, long idx3)
+long argminadd3ptr(double *val1, double *val2, double *val3, double add1, double add2, double add3, long idx1, long idx2, long idx3, double *energy)
 {
-    if (!val1 && !val2 && !val3)
+    if (!val1 && !val2 && !val3) {
+        if (energy) *energy = 0;
         return 0; // should never happen
-
-    if (!val1 && !val2)
+    }
+        
+    if (!val1 && !val2) {
+        if (energy) *energy = *val3+add3;
         return idx3;
+    }
 
-    if (!val1 && !val3)
+    if (!val1 && !val3) {
+        if (energy) *energy = *val2+add2;
         return idx2;
+    }
 
-    if (!val2 && !val3)
+    if (!val2 && !val3) {
+        if (energy) *energy = *val1+add1;
         return idx1;
+    }
 
-    if (!val3)
-        return (*val2 + add2 <= *val1 + add1 ? idx2 : idx1);
+    if (!val3) {
+        if (*val2 + add2 <= *val1 + add1) {
+            if (energy) *energy = *val2+add2;
+            return idx2;
+        } else {
+            if (energy) *energy = *val1+add1;
+            return idx1;
+        }
+    }
 
-    if (!val2)
-        return (*val1 + add1 <= *val3 + add3 ? idx1 : idx3);
+    if (!val2) {
+        if (*val1 + add1 <= *val3 + add3) {
+            if (energy) *energy = *val1+add1;
+            return idx1;
+        } else {
+            if (energy) *energy = *val3+add3;
+            return idx3;
+        }
+    }
 
-    if (!val1)
-        return (*val2 + add2 <= *val3 + add3 ? idx2 : idx3);
+    if (!val1) {
+        if (*val2 + add2 <= *val3 + add3) {
+            if (energy) *energy = *val2+add2;
+            return idx2;
+        } else {
+            if (energy) *energy = *val3+add3;
+            return idx3;
+        }
+    }
 
-    if (*val2 + add2 <= *val1 + add1 && *val2 + add2 <= *val3 + add3)
+    if (*val2 + add2 <= *val1 + add1 && *val2 + add2 <= *val3 + add3) {
+        if (energy) *energy = *val2+add2;
         return idx2;
+    }
 
-    if (*val1 + add1 <= *val2 + add2 && *val1 + add1 <= *val3 + add3)
+    if (*val1 + add1 <= *val2 + add2 && *val1 + add1 <= *val3 + add3) {
+        if (energy) *energy = *val1+add1;
         return idx1;
+    }
     
-    if (*val3 + add3 <= *val1 + add1 && *val3 + add3 <= *val2 + add2)
+    if (*val3 + add3 <= *val1 + add1 && *val3 + add3 <= *val2 + add2) {
+        if (energy) *energy = *val3+add3;
         return idx3;
+    }
     
+    if (energy) *energy = *val1+add1;
     return idx1; // should never happen
 }
 
@@ -1415,8 +1451,17 @@ double unwrapped_phase_avg(double phase1, double phase2)
     return phase1*0.5 + phase2*0.5;
 }
 
+std::vector<long> naive_factorize(long num)
+{
+    std::vector<long> res;
+    for (long i = 2; i < num; i++)
+        if (num % i == 0)
+            res.push_back(i);
+    return res;
+}
+
 // phase_handling = 0: none; 1: compensate; 2: griffin-lim
-t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, long phase_handling, double forward_energy_contribution, double weighting_amount, double weighting_numframes_stdev,
+t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, long phase_handling, double regularization, double forward_energy_contribution, double weighting_amount, double weighting_numframes_stdev,
    // only used for griffin-lim;
    long fullspectrum, long winleftalign, long unitary, long num_griffin_lim_iter, long griffin_lim_invalidate_width, bool griffin_lim_vertical, bool griffin_lim_randomize, const char *analysiswintype, const char *synthesiswintype)
 {
@@ -1490,8 +1535,14 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     float **amps_samples = (float **)bach_newptr(num_channels * sizeof(float *));
     float **phases_samples = (float **)bach_newptr(num_channels * sizeof(float *));
     float *carvingpath_samps = NULL, *energymapout_samps = NULL;
+
     std::vector<std::vector<int>> seams_idxs;
-    bool need_recompute_cumulative_energy = true;
+    std::vector<double> rms;
+    std::vector<double> transientprob;
+
+    long ea = (long)(regularization * num_bins);
+    double *energymap_temp = (double *)bach_newptr(num_bins * num_alloc_frames * sizeof(double));
+
     for (long c = 0; c < num_channels; c++) {
         float *temp = buffer_locksamples(amplitudes[c]);
         if (!temp) {
@@ -1583,18 +1634,46 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         }
     }
     
-    // 1b) Attack detection
-    for (long f = 0; f < num_frames - 1; f++) {
-        double total_rms = 0;
-        for (long b = 0; b < num_bins; b++) {
-            double channel_mag = 0;
-            for (long c = 0; c < num_channels; c++)
-                channel_mag += amps_samples[c][b];
-            channel_mag /= num_channels;
-            total_rms += channel_mag * channel_mag;
+    // Regularization: smearing of bins over the ones above/below.
+    // Should be optimized greatly, though...
+    if (ea > 0) {
+        bach_copyptr(energymap, energymap_temp, num_bins * num_alloc_frames * sizeof(double));
+        for (long f = 0; f < num_frames; f++) {
+            for (long b = 0; b < num_bins; b++) {
+                double temp = 0;
+                
+                for (long d = MAX(0, b-ea); d <= MIN(num_bins - 1, b+ea); d++) {
+                    temp = MAX(temp, energymap_temp[f*num_bins + d]);
+                }
+                energymap[f*num_bins + b] = temp;
+            }
         }
-        total_rms = sqrt(total_rms);
+        bach_freeptr(energymap_temp);
     }
+    
+    /*
+    // Should we instead do cepstrum?
+    for (long f = 0; f < num_frames; f++)  {
+        bach_copyptr(energymap, energymap_temp, num_bins * num_alloc_frames * sizeof(double));
+        long fftsize = fullspectrum ? num_bins : 2 * (num_bins - 1);
+        kiss_fft_cpx *fin = (kiss_fft_cpx *)bach_newptrclear(num_bins * sizeof(kiss_fft_cpx));
+        kiss_fft_cpx *fout = (kiss_fft_cpx *)bach_newptr(num_bins * sizeof(kiss_fft_cpx));
+        long i = 0;
+        for (i = 0; i < num_bins; i++) {
+            fin[i].r = energymap[f*num_bins + i];
+            fin[i].i = 0;
+        }
+        for (; i < fftsize; i++) {
+            fin[i].r = energymap[f*num_bins + (fftsize-i)];
+            fin[i].i = 0;
+        }
+        kiss_fft_cfg cfg = kiss_fft_alloc(num_bins, 0, NULL, NULL);
+
+        bach_fft_kiss(cfg, num_bins, false, fin, fout, true);
+        
+        bach_freeptr(energymap_temp);
+    }
+     */
     
     // write energymap to output, but only for the first iteration
     if (energymapout_samps) {
@@ -1605,30 +1684,27 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         }
     }
     
-    need_recompute_cumulative_energy = true;
-    while (true) {
-        
-        // 2) compute cumulative energies
-        if (need_recompute_cumulative_energy) {
+    
+    // 2) compute cumulative energies
+    for (long f = 0; f < num_frames; f++) {
+        energymapcumul[f*num_bins + 0] = energymap[f*num_bins + 0];
+    }
+    for (long b = 1; b < num_bins; b++) {
+        for (long f = 0; f < num_frames; f++) {
+            energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + min3(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1], energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
+        }
+    }
+    /*
+    if (energymapout_samps) {
+        for (long b = 0; b < num_bins; b++) {
             for (long f = 0; f < num_frames; f++) {
-                energymapcumul[f*num_bins + 0] = energymap[f*num_bins + 0];
-            }
-            for (long b = 1; b < num_bins; b++) {
-                for (long f = 0; f < num_frames; f++) {
-                    energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + min3(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1], energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
-                }
-            }
-            need_recompute_cumulative_energy = false;
-            
-            if (energymapout_samps) {
-                for (long b = 0; b < num_bins; b++) {
-                    for (long f = 0; f < num_frames; f++) {
-                        energymapout_samps[f * num_bins + b] = energymapcumul[f * num_bins + b];
-                    }
-                }
+                energymapout_samps[f * num_bins + b] = energymapcumul[f * num_bins + b];
             }
         }
-        
+    }
+    */
+    while (true) {
+                
         if (verbose) {
             post("weights");
             t_llll *ll4 = double_array_to_llll(weights, num_bins * num_frames);
@@ -1679,12 +1755,47 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                 double *v1 = (f > 0 ? &energymapcumul[(f-1)*num_bins + b] : NULL);
                 double *v2 = &energymapcumul[f*num_bins + b];
                 double *v3 = (f < num_frames - 1 ? &energymapcumul[(f+1)*num_bins + b] : NULL);
+                double carve_b_en = 0;
                 if (use_forward_energy) {
                     CU = forward_energy_contribution * sqrt((f > 0 ? ezsq(energymap[(f-1)*num_bins + b]) : 0)+(f < num_frames - 1 ? ezsq(energymap[(f+1)*num_bins + b]) : 0));
                     CL = CU + forward_energy_contribution * sqrt((b > 0 ? ezsq(energymap[f*num_bins + b-1]) : 0)+(f > 0 ? ezsq(energymap[(f-1)*num_bins + b]) : 0));
                     CR = CU + forward_energy_contribution * sqrt((b > 0 ? ezsq(energymap[f*num_bins + b-1]) : 0) +(f < num_frames - 1 ? ezsq(energymap[(f+1)*num_bins + b]) : 0));
                 }
-                carve[b] = argmin3ptr(v1, v2, v3, CL, CU, CR, f-1, f, f+1);
+                carve[b] = argminadd3ptr(v1, v2, v3, CL, CU, CR, f-1, f, f+1, &carve_b_en);
+                
+                // new topology?
+                /*
+                if (weighting_amount > 0) {
+                    std::vector<long> factors_of_bpone = naive_factorize(b+1);
+                    //                if (b+1 % 2 == 0) factors_of_bpone.push_back((b+1)/2);
+                    //                if (b+1 % 3 == 0) factors_of_bpone.push_back((b+1)/2);
+                    for (long i = 0; i < factors_of_bpone.size(); i++) {
+                        long d = (factors_of_bpone[i] - 1) * (b+1) / factors_of_bpone[i];
+                        if (d > 1 && d < b+1) {
+                            // try to see if we can take the topological shortcut to bin b
+                            double v4 = energymapcumul[f*num_bins + d];
+                            CU = 0;
+                            if (use_forward_energy) {
+                                for (long h = d; h < b+1; h++) {
+                                    double this_CU = forward_energy_contribution * sqrt((f > 0 ? ezsq(energymap[(f-1)*num_bins + h]) : 0)+(f < num_frames - 1 ? ezsq(energymap[(f+1)*num_bins + h]) : 0));
+                                    CU += this_CU;
+                                }
+                                CU /= (b+1-d);
+                            }
+                            if (v4 + CU < carve_b_en) {
+                                // take the shortcut!
+                                char text[2048];
+                                snprintf_zero(text, 2048, "Taking the shortcut from bin %d to bin %d", b+1, d);
+                                object_post(ob, text);
+                                for (long h = d; h <= b; h++)
+                                    carve[h] = f;
+                                b = d;
+                                break;
+                            }
+                        }
+                    }
+                }
+                 */
             }
         }
         

@@ -1,7 +1,7 @@
 /**
 	@file
 	ears.h
-	Flag definitions for the whole ears library
+	Constant definitions for the whole ears library
  
 	by Daniele Ghisi
  */

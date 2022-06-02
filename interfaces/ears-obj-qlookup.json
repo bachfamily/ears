@@ -593,6 +593,22 @@
       "ears.fromsamps~"
     ]
   },
+  "ears.waveset.subs~": {
+    "digest": "Waveset substitution",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.repeat~"
+    ]
+  },
   "ears.info~": {
     "digest": "Get information on buffers",
     "module": "ears",
@@ -701,6 +717,24 @@
     ],
     "seealso": [
       "ears.model.sps.synthesis~"
+    ]
+  },
+  "ears.waveset.repeat~": {
+    "digest": "Waveset repetition",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.subs~",
+      "ears.rubberband~",
+      "ears.soundtouch~"
     ]
   },
   "ears.out~": {
@@ -1327,6 +1361,23 @@
     "seealso": [
       "ears.clip~",
       "overdrive"
+    ]
+  },
+  "ears.waveset.split~": {
+    "digest": "Waveset splitting",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.repeat~",
+      "ears.waveset.subs~",
+      "ears.split~"
     ]
   },
   "ears.roll.sampling~": {

@@ -273,7 +273,7 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
             long polybuffer_count = object_attr_getlong(polybuffer_obj, _sym_count);
             from_polybuf = true;
             for (long i = polybuffer_count; i <= buffer_index; i++) {
-                object_method_long(polybuffer_obj, gensym("appendempty"), 1000, NULL);
+                object_method_long(polybuffer_obj, gensym("appendempty"), 1, NULL); // me make them sized 1 ms
 #ifdef EARS_ALLOCATIONVERBOSE
                     post("--- ears allocation: Buffer %s.%ld inside polybuffer has been created via 'appendempty'.", polybuffer_name->s_name, i+1);
 #endif

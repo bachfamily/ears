@@ -66,7 +66,8 @@ typedef struct _buf_timesquash {
     double             e_weighting_amount;
     double             e_weighting_stdev;
     long             e_compensate_phases;
-    long            e_forward_energy;
+    double            e_forward_energy;
+    double            e_regularization;
     
     // Griffin-Lim
     long            e_num_griffin_lim_iter;
@@ -182,6 +183,16 @@ int C74_EXPORT main(void)
     // @description Sets the amount of 'forward energy' contribution, i.e. the energy that
     // is obtained by neighboring pixel when a seam pixel is removed.
 
+    CLASS_ATTR_DOUBLE(c, "regularization", 0, t_buf_timesquash, e_regularization);
+    CLASS_ATTR_STYLE_LABEL(c,"regularization",0,"text","Regularization");
+    CLASS_ATTR_BASIC(c, "regularization", 0);
+    CLASS_ATTR_FILTER_CLIP(c, "reguluarization", 0, 1);
+    CLASS_ATTR_CATEGORY(c, "regularization", 0, "Frequency-Domain Algorithm");
+    // @description A value between 0 and 1 that sets how much the energy of a bin smears on the
+    // ones above and below. For a regularization value of 1, energy is constant vertically
+    // across the spectrum, and hence all seams are forced to be purely vertical.
+
+    
     CLASS_ATTR_LONG(c, "phasehandling", 0, t_buf_timesquash, e_compensate_phases);
     CLASS_ATTR_STYLE_LABEL(c,"phasehandling",0,"enumindex","Phase Handling");
     CLASS_ATTR_ENUMINDEX(c,"phasehandling", 0, "Keep Compensate Griffin-Lim");
@@ -290,6 +301,8 @@ t_buf_timesquash *buf_timesquash_new(t_symbol *s, short argc, t_atom *argv)
         x->e_griffin_lim_bleed_width = 4;
         x->e_num_griffin_lim_iter = 10;
         x->e_compensate_phases = 2; // griffin-lim
+        x->e_forward_energy = 1.; // consider forward energy
+        x->e_regularization = 0.01; // 10 bins on each side
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -315,7 +328,7 @@ t_buf_timesquash *buf_timesquash_new(t_symbol *s, short argc, t_atom *argv)
         
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4", "E", names);
+        earsbufobj_setup((t_earsbufobj *)x, "E4", "EE", names);
 
         llll_free(args);
         llll_free(names);
@@ -382,7 +395,7 @@ void buf_timesquash_bang(t_buf_timesquash *x)
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
-//    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 2, true);
+    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 2, true);
 
     earsbufobj_updateprogress((t_earsbufobj *)x, 0.);
     earsbufobj_mutex_lock((t_earsbufobj *)x);
@@ -456,13 +469,11 @@ void buf_timesquash_bang(t_buf_timesquash *x)
             long delta_frames = (long)round(delta_samps / hopsize_samps);
             double weighting_stdev_frames = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_weighting_stdev, in_amps[0], EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS | EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS)/hopsize_samps;
                 
-            t_buffer_obj *seam_path = ears_buffer_getobject(gensym("seams"));
-            t_buffer_obj *energymap = ears_buffer_getobject(gensym("energymap"));
-                //            t_buffer_obj *outampsok = ears_buffer_getobject(gensym("outamps"));
-                //            t_buffer_obj *tempchannelok = ears_buffer_getobject(gensym("tempchannel"));
+            t_buffer_obj *seam_path = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
+            t_buffer_obj *energymap = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 1);
       
             
-            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, energymap, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_forward_energy, x->e_weighting_amount, weighting_stdev_frames, fullspectrum, false, unitary, num_griffin_lim_iter, griffin_lim_invalidate_width, griffin_lim_vertical, griffin_lim_randomize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"));
+            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, energymap, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_regularization, x->e_forward_energy, x->e_weighting_amount, weighting_stdev_frames, fullspectrum, false, unitary, num_griffin_lim_iter, griffin_lim_invalidate_width, griffin_lim_vertical, griffin_lim_randomize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"));
             
             ears_buffer_istft((t_object *)x, num_in_chans, out_amps, out_phases, outbuf, NULL,
                               x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary);
@@ -485,7 +496,8 @@ void buf_timesquash_bang(t_buf_timesquash *x)
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     earsbufobj_updateprogress((t_earsbufobj *)x, 1.);
     
-//    earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
+    if (mode == 1)
+        earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 

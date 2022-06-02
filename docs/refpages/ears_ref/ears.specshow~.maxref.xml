@@ -60,7 +60,7 @@
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Settings" />
-				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="default" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatically Rescale Range" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
@@ -78,6 +78,22 @@
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
 				<attribute name="default" get="1" set="1" type="symbol" size="1" value="volatile" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="buffer~ Object Name" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="colorcurve" get="1" set="1" type="int" size="1">
+			<digest>
+				Color Range Curve
+			</digest>
+			<description>
+				Sets the curvature value for the color mapping.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Settings" />
+				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Color Range Curve" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
@@ -170,7 +186,7 @@
 				Highest Value
 			</digest>
 			<description>
-				Sets the value corresponding to <m>maxcolor</m>.
+				Sets the value corresponding to <m>maxcolor</m> (only if <m>autoscale</m> is off).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
@@ -202,7 +218,7 @@
 				Lowest Value
 			</digest>
 			<description>
-				Sets the value corresponding to <m>mincolor</m>.
+				Sets the value corresponding to <m>mincolor</m> (only if <m>autoscale</m> is off).
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
@@ -221,7 +237,6 @@
 			</description>
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="" size="1" value="0. 0. 256. 128." />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

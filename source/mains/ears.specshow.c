@@ -62,6 +62,7 @@ typedef struct _buf_specshow {
     double       n_length_ms;
     
     long        n_autoscale;
+    long        n_colorcurve;
     
     t_jrgba     n_mincolor;
     t_jrgba     n_maxcolor;
@@ -223,6 +224,13 @@ void ext_main(void *r)
     // @description Toggles the ability to obtain <m>minvalue</m> and <m>maxvalue</m> automatically
     // from the minimum and maximum values in the input buffer.
 
+    CLASS_ATTR_LONG(c, "colorcurve", 0, t_buf_specshow, n_colorcurve);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "colorcurve", 0, "0");
+    CLASS_ATTR_STYLE_LABEL(c, "colorcurve", 0, "text", "Color Range Curve");
+    CLASS_ATTR_BASIC(c, "colorcurve", 0);
+    CLASS_ATTR_CATEGORY(c, "colorcurve", 0, "Settings");
+    // @description Sets the curvature value for the color mapping.
+
     
     CLASS_ATTR_RGBA(c, "timegridcolor", 0, t_buf_specshow, n_grid_time_color);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timegridcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
@@ -373,6 +381,7 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_maxcolor = get_grey(0.);
         x->n_minvalue = 0.;
         x->n_maxvalue = 0.1;
+        x->n_colorcurve = 0.;
         
         x->n_bins = llll_get();
         
@@ -475,7 +484,11 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
 
 t_jrgba buf_specshow_value_to_color(t_buf_specshow *x, double value)
 {
-    return color_interp(x->n_mincolor, x->n_maxcolor, CLAMP((value - x->n_minvalue)/(x->n_maxvalue-x->n_minvalue), 0, 1));
+    if (x->n_colorcurve == 0)
+        return color_interp(x->n_mincolor, x->n_maxcolor, CLAMP((value - x->n_minvalue)/(x->n_maxvalue-x->n_minvalue), 0, 1));
+    else
+        return color_interp(x->n_mincolor, x->n_maxcolor, CLAMP(rescale_with_slope(value, x->n_minvalue, x->n_maxvalue, 0, 1, x->n_colorcurve, k_SLOPE_MAPPING_BACH), 0, 1));
+    
 }
 
 void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)

@@ -31,12 +31,14 @@
 <refpage name='ears.write~.maxref.xml'/>
 <refpage name='ears.in~.maxref.xml'/>
 <refpage name='ears.tosamps~.maxref.xml'/>
+<refpage name='ears.waveset.subs~.maxref.xml'/>
 <refpage name='ears.info~.maxref.xml'/>
 <refpage name='ears.channel~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>
 <refpage name='ears.assemble~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
+<refpage name='ears.waveset.repeat~.maxref.xml'/>
 <refpage name='ears.out~.maxref.xml'/>
 <refpage name='ears.pan~.maxref.xml'/>
 <refpage name='ears.iter~.maxref.xml'/>
@@ -70,6 +72,7 @@
 <refpage name='ears.reg~.maxref.xml'/>
 <refpage name='ears.model.stochastic.synthesis~.maxref.xml'/>
 <refpage name='ears.overdrive~.maxref.xml'/>
+<refpage name='ears.waveset.split~.maxref.xml'/>
 <refpage name='ears.roll.sampling~.maxref.xml'/>
 <refpage name='ears.roll.toreaper~.maxref.xml'/>
 <refpage name='ears.mix~.maxref.xml'/>

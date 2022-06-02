@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 438.0, 100.0, 677.0, 526.0 ],
+		"rect" : [ 100.0, 100.0, 705.0, 526.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -49,13 +49,13 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 311.0, 205.0, 170.0, 22.0 ],
+					"patching_rect" : [ 311.0, 205.0, 207.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"filename" : "helpstarter.js",
 						"parameter_enable" : 0
 					}
 ,
-					"text" : "js helpstarter.js ears.waveset~"
+					"text" : "js helpstarter.js ears.waveset.repeat~"
 				}
 
 			}
@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 438.0, 126.0, 677.0, 500.0 ],
+						"rect" : [ 100.0, 126.0, 705.0, 500.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -108,6 +108,17 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-10",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 206.0, 289.0, 109.0, 21.0 ],
+									"text" : "remove DC offset"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -219,7 +230,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 272.0, 189.0, 23.0 ],
+									"patching_rect" : [ 15.0, 287.0, 189.0, 23.0 ],
 									"text" : "ears.onepole~ 10 @highpass 1"
 								}
 
@@ -246,8 +257,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 227.5, 230.5, 121.0, 40.0 ],
-									"presentation_linecount" : 2,
+									"patching_rect" : [ 245.5, 230.5, 121.0, 40.0 ],
 									"text" : "Loop each waveset N times"
 								}
 
@@ -271,7 +281,7 @@
 									"maxclass" : "ezdac~",
 									"numinlets" : 2,
 									"numoutlets" : 0,
-									"patching_rect" : [ 15.0, 368.0, 45.0, 45.0 ]
+									"patching_rect" : [ 15.0, 383.0, 45.0, 45.0 ]
 								}
 
 							}
@@ -282,7 +292,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "signal", "signal", "bang" ],
-									"patching_rect" : [ 15.0, 335.0, 133.0, 23.0 ],
+									"patching_rect" : [ 15.0, 350.0, 133.0, 23.0 ],
 									"text" : "play~ earsBufAnton 2"
 								}
 
@@ -294,7 +304,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 302.0, 76.0, 23.0 ],
+									"patching_rect" : [ 15.0, 317.0, 76.0, 23.0 ],
 									"text" : "set $1, start"
 								}
 
@@ -312,7 +322,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 431.0, 393.0, 36.0 ],
+									"patching_rect" : [ 10.0, 446.0, 393.0, 36.0 ],
 									"text" : "Click here to learn about the common features of ears modules, including in-place operations and dynamic allocation."
 								}
 
@@ -325,7 +335,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 465.0, 152.0, 23.0 ],
+									"patching_rect" : [ 21.0, 480.0, 152.0, 23.0 ],
 									"text" : "load ears.help.commons"
 								}
 
@@ -338,7 +348,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 500.0, 57.0, 23.0 ],
+									"patching_rect" : [ 21.0, 515.0, 57.0, 23.0 ],
 									"text" : "pcontrol"
 								}
 
@@ -351,7 +361,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 431.0, 10.0, 182.5, 39.0 ]
+									"patching_rect" : [ 497.25, 10.0, 182.5, 39.0 ]
 								}
 
 							}
@@ -389,7 +399,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "float", "bang" ],
-									"patching_rect" : [ 431.0, 55.5, 168.0, 23.0 ],
+									"patching_rect" : [ 497.25, 55.5, 168.0, 23.0 ],
 									"text" : "buffer~ earsBufAnton anton"
 								}
 
@@ -404,7 +414,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 15.0, 239.0, 224.0, 23.0 ],
-									"text" : "ears.waveset~ 3 @mode repeat"
+									"text" : "ears.waveset.repeat~ 3"
 								}
 
 							}
@@ -414,7 +424,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.waveset~", 90 ],
+									"jsarguments" : [ "ears.waveset.repeat~", 90 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
@@ -542,13 +552,13 @@
 					"filename" : "helpname.js",
 					"id" : "obj-4",
 					"ignoreclick" : 1,
-					"jsarguments" : [ "ears.waveset~" ],
+					"jsarguments" : [ "ears.waveset.repeat~" ],
 					"maxclass" : "jsui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 10.0, 10.0, 303.89599609375, 57.599853515625 ]
+					"patching_rect" : [ 10.0, 10.0, 450.05596923828125, 57.599853515625 ]
 				}
 
 			}
@@ -571,7 +581,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 677.0, 500.0 ],
+						"rect" : [ 0.0, 26.0, 705.0, 500.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -629,7 +639,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.waveset~.mxo",
+				"name" : "ears.waveset.repeat~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
