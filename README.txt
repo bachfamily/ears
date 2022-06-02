@@ -40,7 +40,7 @@ If you're on an Apple Silicon machine, in principle by running the line above yo
     MACOSX_DEPLOYMENT_TARGET=10.11 ./waf install
     mv /usr/local/lib/libessentia.a /usr/local/lib/libessentia_arm64.a
 I don't see how at this stage the leading MACOSX_DEPLOYMENT_TARGET=10.11 makes any difference but it works in this way, so let's carry on.
-3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.essentia~ in the Xcode project. If you want to build both architecture instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure.
+3) If you only want to build the native arm64 version, you're done. Keep in mind that in this case you must edit the target architecture for ears.essentia~ in the Xcode project. If you want to build both architectures instead, delete the library folder and replace it with the copy you kept aside. There might be a more elegant way to clean everything up, but this one works for sure.
 4) Re-enter the library folder, and then
     arch -x86_64 zsh
     MACOSX_DEPLOYMENT_TARGET=10.11 ./waf configure --build-static --fft='KISS' --lightweight=""

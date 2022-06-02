@@ -1507,22 +1507,41 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
     }
 
     
-    // 1) get energy map
+    // 1) get energy map. This could be optimize by using fast convolution via Fourier Transform
     for (long b = 0; b < num_bins; b++) {
         for (long f = 0; f < num_frames; f++) {
             energymap[f*num_bins + b] = 0;
             switch (energy_mode) {
-                case EARS_SEAM_CARVE_MODE_MAGNITUDE:
-                    for (long c = 0; c < num_channels; c++)
-                        energymap[f*num_bins + b] += amps_samples[c][f*num_bins + b] * weights[f * num_bins + b];
-                    break;
-                    
                 case EARS_SEAM_CARVE_MODE_GRADIENT_MAGNITUDE:
-                default:
                     for (long c = 0; c < num_channels; c++)
                         energymap[f*num_bins + b] += (fabs(amps_samples[c][(f == num_frames - 1 ? f-1 : f+1)*num_bins + b]-amps_samples[c][f*num_bins + b]) + fabs(amps_samples[c][f*num_bins + (b == num_bins - 1 ? b-1 : b+1)]-amps_samples[c][f*num_bins + b])) * weights[f * num_bins + b];
                     break;
-                    
+
+                case EARS_SEAM_CARVE_MODE_SOBEL:
+                    for (long c = 0; c < num_channels; c++) {
+                        double Gx = (f > 0 && b > 0 ? -1 * amps_samples[c][(f-1)*num_bins + (b-1)] : 0) +
+                        (f > 0 ? -2 * amps_samples[c][(f-1)*num_bins + b] : 0) +
+                        (f > 0 && b < num_bins - 1 ? -1 * amps_samples[c][(f-1)*num_bins + (b+1)] : 0) +
+                        (f < num_frames-1 && b > 0 ? 1 * amps_samples[c][(f+1)*num_bins + (b-1)] : 0) +
+                        (f < num_frames-1 ? 2 * amps_samples[c][(f+1)*num_bins + b] : 0) +
+                        (f < num_frames-1 && b < num_bins - 1 ? 1 * amps_samples[c][(f+1)*num_bins + (b+1)] : 0);
+
+                        double Gy = (b > 0 && f > 0 ? 1 * amps_samples[c][(f-1)*num_bins + (b-1)] : 0) +
+                        (b > 0 ? 2 * amps_samples[c][(f)*num_bins + (b-1)] : 0) +
+                        (b > 0 && f < num_frames - 1 ? 1 * amps_samples[c][(f+1)*num_bins + (b-1)] : 0) +
+                        (b < num_bins-1 && f > 0 ? -1 * amps_samples[c][(f-1)*num_bins + (b+1)] : 0) +
+                        (b < num_bins-1 ? -2 * amps_samples[c][f*num_bins + (b+1)] : 0) +
+                        (b < num_bins-1 && f < num_frames - 1 ? -1 * amps_samples[c][(f+1)*num_bins + (b+1)] : 0);
+
+                        energymap[f*num_bins + b] += sqrt(Gx*Gx + Gy*Gy);
+                    }
+                    break;
+
+                case EARS_SEAM_CARVE_MODE_MAGNITUDE:
+                default:
+                    for (long c = 0; c < num_channels; c++)
+                        energymap[f*num_bins + b] += amps_samples[c][f*num_bins + b] * weights[f * num_bins + b];
+                    break;
             }
             energymap[f*num_bins + b] /= num_channels; // not really needed though
         }
