@@ -60,14 +60,17 @@ typedef struct _buf_timesquash {
     double             xfade;
     char               xfade_type;
     double             xfade_curve;
+    long               extended_output;
 
     // Spectral algorithm:
     long               e_energy_mode;
-    double             e_weighting_amount;
-    double             e_weighting_stdev;
     long             e_compensate_phases;
     double            e_forward_energy;
+    long              e_forward_energy_type;
+    long              e_forward_energy_embed;
     double            e_regularization;
+    long              e_batch_size;
+    long              e_batch_interrupt;
     
     // Griffin-Lim
     long            e_num_griffin_lim_iter;
@@ -96,6 +99,17 @@ EARSBUFOBJ_ADD_IO_METHODS(timesquash)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
+
+t_max_err t_buf_timesquash_setattr_extout(t_buf_timesquash *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (!x->e_ob.l_is_creating)
+            object_error((t_object *)x, "The 'extout' attribute can only be set in the object box.");
+        else if (atom_gettype(argv) == A_LONG)
+            x->extended_output = atom_getlong(argv);
+    }
+    return MAX_ERR_NONE;
+}
 
 
 int C74_EXPORT main(void)
@@ -140,6 +154,12 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_wintype_attr_ansyn(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
 
+    CLASS_ATTR_LONG(c, "extout",    0,    t_buf_timesquash, extended_output);
+    CLASS_ATTR_STYLE_LABEL(c, "extout", 0, "onoff", "Extended Output");
+    CLASS_ATTR_ACCESSORS(c, "extout", NULL, t_buf_timesquash_setattr_extout);
+    // @description Also output seams and energy matrices from the right outlet.
+    // This attribute is static and can only be set inside the object box.
+
     CLASS_ATTR_CHAR(c, "mode", 0, t_buf_timesquash, mode);
     CLASS_ATTR_STYLE_LABEL(c,"mode",0,"enumindex","Algorithm Mode");
     CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Time-Domain Frequency-Domain");
@@ -178,11 +198,34 @@ int C74_EXPORT main(void)
     
     CLASS_ATTR_DOUBLE(c, "forwardenergy", 0, t_buf_timesquash, e_forward_energy);
     CLASS_ATTR_STYLE_LABEL(c,"forwardenergy",0,"text","Forward Energy Contribution");
+    CLASS_ATTR_CATEGORY(c, "forwardenergy", 0, "Frequency-Domain Algorithm");
+    // @description Sets the amount of 'forward energy' contribution, i.e. the energy that
+    // is obtained by neighboring pixel when a seam pixel is removed.
+
+    
+    CLASS_ATTR_LONG(c, "forwardenergytype", 0, t_buf_timesquash, e_forward_energy_type);
+    CLASS_ATTR_STYLE_LABEL(c,"forwardenergytype",0,"text","Forward Energy Type");
+    CLASS_ATTR_ENUMINDEX(c,"forwardenergytype", 0, "Gradient L1 Norm Energy L2 Norm");
+    CLASS_ATTR_CATEGORY(c, "forwardenergytype", 0, "Frequency-Domain Algorithm");
+    // @description Sets the forward energy type.
+
+    CLASS_ATTR_LONG(c, "forwardenergyembed", 0, t_buf_timesquash, e_forward_energy_embed);
+    CLASS_ATTR_STYLE_LABEL(c,"forwardenergyembed",0,"onoff","Embed Forward Energy In Cumulative Energy");
+    CLASS_ATTR_CATEGORY(c, "forwardenergyembed", 0, "Frequency-Domain Algorithm");
+    // @description Toggles the ability to embed the forward energy in the cumulative energy matrix.
+    // If zero, the forward energy is used as additional weight when finding the best path
+    // in the cumulative energy matrix.
+
+    
+    CLASS_ATTR_DOUBLE(c, "forwardenergy", 0, t_buf_timesquash, e_forward_energy);
+    CLASS_ATTR_STYLE_LABEL(c,"forwardenergy",0,"text","Forward Energy Contribution");
     CLASS_ATTR_BASIC(c, "forwardenergy", 0);
     CLASS_ATTR_CATEGORY(c, "forwardenergy", 0, "Frequency-Domain Algorithm");
     // @description Sets the amount of 'forward energy' contribution, i.e. the energy that
     // is obtained by neighboring pixel when a seam pixel is removed.
 
+    
+    
     CLASS_ATTR_DOUBLE(c, "regularization", 0, t_buf_timesquash, e_regularization);
     CLASS_ATTR_STYLE_LABEL(c,"regularization",0,"text","Regularization");
     CLASS_ATTR_BASIC(c, "regularization", 0);
@@ -207,6 +250,18 @@ int C74_EXPORT main(void)
     CLASS_ATTR_BASIC(c, "energy", 0);
     // @description Sets the energy function used for computing seams.
 
+    CLASS_ATTR_LONG(c, "batchsize", 0, t_buf_timesquash, e_batch_size);
+    CLASS_ATTR_STYLE_LABEL(c,"batchsize",0,"text","Batch Size");
+    CLASS_ATTR_CATEGORY(c, "batchsize", 0, "Frequency-Domain Algorithm");
+    CLASS_ATTR_FILTER_MIN(c, "batchsize", 1);
+    // @description Sets the number of seams processed in batch.
+
+    CLASS_ATTR_LONG(c, "batchinterrupt", 0, t_buf_timesquash, e_batch_interrupt);
+    CLASS_ATTR_STYLE_LABEL(c,"batchinterrupt",0,"onoff","Interrupt Batch When Crossing");
+    CLASS_ATTR_CATEGORY(c, "batchinterrupt", 0, "Frequency-Domain Algorithm");
+    // @description Toggles the ability to end the batch whenever a seam crossing is encountered.
+    // In this case, a new batch will begin.
+
     
 //    CLASS_ATTR_DOUBLE(c, "uniformity", 0, t_buf_timesquash, e_weighting_amount);
 //    CLASS_ATTR_STYLE_LABEL(c,"uniformity",0,"text","Force Uniformity");
@@ -222,6 +277,8 @@ int C74_EXPORT main(void)
     // @description Sets the influence of uniformity constraints in the <m>antimeunit</m> enforced by the uniformity algorithm.
     // This corresponds to the standard deviation of the penalizing gaussian curve.
 
+
+    
     CLASS_ATTR_LONG(c, "glnumiter", 0, t_buf_timesquash, e_num_griffin_lim_iter);
     CLASS_ATTR_STYLE_LABEL(c,"glnumiter",0,"text","Number of Griffin-Lim Iterations");
     CLASS_ATTR_CATEGORY(c, "glnumiter", 0, "Phase Retrieval");
@@ -269,8 +326,9 @@ void buf_timesquash_assist(t_buf_timesquash *x, void *b, long m, long a, char *s
             sprintf(s, "symbol/list: Phase Buffers"); // @out 1 @type symbol/list/llll @digest Incoming phase buffer names
                                                            // @description One phase buffer for each channel
         else
-            sprintf(s, "list: Initial Energy Map And Seams"); // @out 2 @type list @digest Energy map and seams
-                                                    // @description Outputs two buffer: the used energy map at the first iteration and the position of the carved seams
+            sprintf(s, "list: Seams and Initial Energy Maps"); // @out 2 @type list @digest Seams, energy map and cumulative energy map
+                                                    // @description If the <m>extout</m> attribute is set, from the right outlet come three buffers, containing:
+                                                    // the position of the carved seams, the energy map at the first iteration and the cumulative energy map at the first iteration
     }
 }
 
@@ -290,13 +348,13 @@ t_buf_timesquash *buf_timesquash_new(t_symbol *s, short argc, t_atom *argv)
     if (x) {
         x->e_howmuch = llll_from_text_buf("1.");
         x->e_energy_mode = EARS_SEAM_CARVE_MODE_SOBEL;
-        x->e_weighting_amount = 0;
-        x->e_weighting_stdev = 44100; //in the <antimeunit>
         x->mode = 1;
         x->timeblock = 4096; // samps, by default, in the <antimeunit>
         x->xfade = 4096; // samps, by default, in the <antimeunit>
         x->xfade_type = EARS_FADE_SINE;
         x->xfade_curve = 0;
+        x->e_batch_size = 1;
+        x->extended_output = 0;
         
         x->e_griffin_lim_vertical = 1,
         x->e_griffin_lim_randomize = 0,
@@ -304,6 +362,8 @@ t_buf_timesquash *buf_timesquash_new(t_symbol *s, short argc, t_atom *argv)
         x->e_num_griffin_lim_iter = 10;
         x->e_compensate_phases = 2; // griffin-lim
         x->e_forward_energy = 1.; // consider forward energy
+        x->e_forward_energy_embed = 1;
+        x->e_forward_energy_type = 1;
         x->e_regularization = 0.01; // 10 bins on each side
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
@@ -330,7 +390,9 @@ t_buf_timesquash *buf_timesquash_new(t_symbol *s, short argc, t_atom *argv)
         
         attr_args_process(x, argc, argv);
         
-        earsbufobj_setup((t_earsbufobj *)x, "E4", "EE", names);
+        earsbufobj_setup((t_earsbufobj *)x, "E4", x->extended_output ? "EE" : "E", names);
+
+        object_attr_setdisabled((t_object *)x, gensym("extout"), 1);
 
         llll_free(args);
         llll_free(names);
@@ -394,10 +456,12 @@ void buf_timesquash_bang(t_buf_timesquash *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     long mode = x->mode;
+    bool extended = x->extended_output;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
-    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 2, true);
+    if (extended)
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 1, 3, true);
 
     earsbufobj_updateprogress((t_earsbufobj *)x, 0.);
     earsbufobj_mutex_lock((t_earsbufobj *)x);
@@ -469,13 +533,13 @@ void buf_timesquash_bang(t_buf_timesquash *x)
             double framesize_samps = 2*(ears_buffer_get_numchannels((t_object *)x, in_amps[0])-1);
             double hopsize_samps = ears_spectralbuf_get_original_audio_sr((t_object *)x, in_amps[0]) * 1./ears_buffer_get_sr((t_object *)x, in_amps[0]);
             long delta_frames = (long)round(delta_samps / hopsize_samps);
-            double weighting_stdev_frames = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_weighting_stdev, in_amps[0], EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS | EARSBUFOBJ_CONVERSION_FLAG_USEORIGINALAUDIOSRFORSPECTRALBUFFERS)/hopsize_samps;
                 
-            t_buffer_obj *seam_path = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0);
-            t_buffer_obj *energymap = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 1);
-      
+            t_buffer_obj *seam_path = extended ? earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0) : NULL;
+            t_buffer_obj *energymap = extended ? earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 1) : NULL;
+            t_buffer_obj *energymapcumul = extended ? earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 2) : NULL;
+
             
-            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, energymap, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_regularization, x->e_forward_energy, x->e_weighting_amount, weighting_stdev_frames, fullspectrum, false, unitary, num_griffin_lim_iter, griffin_lim_invalidate_width, griffin_lim_vertical, griffin_lim_randomize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"));
+            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, energymap, energymapcumul, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_regularization, x->e_forward_energy, x->e_forward_energy_type, x->e_forward_energy_embed, fullspectrum, false, unitary, num_griffin_lim_iter, griffin_lim_invalidate_width, griffin_lim_vertical, griffin_lim_randomize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), x->e_batch_size, x->e_batch_interrupt);
             
             ears_buffer_istft((t_object *)x, num_in_chans, out_amps, out_phases, outbuf, NULL,
                               x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary);
@@ -498,7 +562,7 @@ void buf_timesquash_bang(t_buf_timesquash *x)
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     earsbufobj_updateprogress((t_earsbufobj *)x, 1.);
     
-    if (mode == 1)
+    if (extended && mode == 1)
         earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }

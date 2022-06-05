@@ -252,6 +252,8 @@ t_buf_istft *buf_istft_new(t_symbol *s, short argc, t_atom *argv)
 
         earsbufobj_setup((t_earsbufobj *)x, "EE", x->complex_output ? "ee" : "e", names);
 
+        object_attr_setdisabled((t_object *)x, gensym("cpxout"), 1);
+
         llll_free(args);
         llll_free(names);
     }
