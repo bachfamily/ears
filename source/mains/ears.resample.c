@@ -51,8 +51,6 @@
 typedef struct _buf_resample {
     t_earsbufobj        e_ob;
     
-    long                window_width;
-    
     t_llll              *resamplefactor;
 } t_buf_resample;
 
@@ -77,6 +75,7 @@ EARSBUFOBJ_ADD_IO_METHODS(resample)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
+
 
 int C74_EXPORT main(void)
 {
@@ -109,17 +108,10 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
-
+    
+    earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
     earsbufobj_class_add_polyout_attr(c);
-
-    //    earsbufobj_class_add_blocking_attr(c); <<< not working
-    //    earsbufobj_class_add_timeunit_attr(c);
-
-    CLASS_ATTR_LONG(c, "filtersize", 0, t_buf_resample, window_width);
-    CLASS_ATTR_STYLE_LABEL(c,"filtersize",0,"text","Filter Size");
-    CLASS_ATTR_BASIC(c, "filtersize", 0);
-    // @description Sets the resampling filter size (in the <m>antimeunit</m>)
-
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -154,7 +146,6 @@ t_buf_resample *buf_resample_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_resample*)object_alloc_debug(s_tag_class);
     if (x) {
         x->resamplefactor = llll_get();
-        x->window_width = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH; // was: 7
         llll_appenddouble(x->resamplefactor, 1.);
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
@@ -209,6 +200,7 @@ void buf_resample_free(t_buf_resample *x)
 void buf_resample_bang(t_buf_resample *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
+    e_ears_resamplingmode mode = x->e_ob.l_resamplingmode;
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
@@ -220,7 +212,7 @@ void buf_resample_bang(t_buf_resample *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->window_width, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
+        long window_width_samples = earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.l_resamplingfilterwidth, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS);
         
         if (in != out) 
             ears_buffer_clone((t_object *)x, in, out);
@@ -232,6 +224,10 @@ void buf_resample_bang(t_buf_resample *x)
             t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
             double min_y = ears_envelope_iterator_get_min_y(&eei);
             double max_y = ears_envelope_iterator_get_max_y(&eei);
+            
+            if (mode != EARS_RESAMPLINGMODE_SINC) {
+                object_warn((t_object *)x, "Only sinc interpolation is supported via envelopes. Defaulting to sinc.");
+            }
             
             if (min_y == 0 || max_y == 0) {
                 object_error((t_object *)x, "Resampling envelopes cannot touch zero.");
@@ -260,7 +256,7 @@ void buf_resample_bang(t_buf_resample *x)
             if (factor == 0) {
                 object_error((t_object *)x, "Resampling factor cannot be zero.");
             } else if (factor != 1) {
-                ears_buffer_resample((t_object *)x, out, factor, window_width_samples);
+                ears_buffer_resample((t_object *)x, out, factor, window_width_samples, mode);
             }
         }
 

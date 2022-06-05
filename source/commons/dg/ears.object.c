@@ -638,6 +638,8 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     
     e_ob->l_resamplingpolicy = EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR;
     e_ob->l_resamplingfilterwidth = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH;
+    e_ob->l_resamplingmode_sym = gensym("sinc");
+    e_ob->l_resamplingmode = EARS_RESAMPLINGMODE_SINC;
     
     e_ob->a_framesize = 2048;
     e_ob->a_hopsize = 1024;
@@ -1693,6 +1695,29 @@ void earsbufobj_class_add_resamplingpolicy_attr(t_class *c)
     // "Don't" (no resampling - beware: temporality is not preserved!), "To lowest" (buffers are to the lowest sample rate),
     // "To highest" (buffers are converted to the highest sample rate), "To most common" (buffers are to the most common
     // sample rate), "To Max Current" (buffers are converted to the current Max sample rate).
+}
+
+t_max_err earsbufobj_setattr_resamplingmode(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (atom_gettype(argv) == A_SYM) {
+            e_ob->l_resamplingmode_sym = atom_getsym(argv);
+            e_ob->l_resamplingmode = ears_symbol_to_resamplingmode((t_object *)e_ob, e_ob->l_resamplingmode_sym);
+        } else {
+            object_error((t_object *)e_ob, "Invalid resampling mode!");
+        }
+    }
+    return MAX_ERR_NONE;
+}
+
+void earsbufobj_class_add_resamplingmode_attr(t_class *c)
+{
+    CLASS_ATTR_SYM(c, "resamplingmode", 0, t_earsbufobj, l_resamplingmode_sym);
+    CLASS_ATTR_STYLE_LABEL(c,"resamplingmode",0,"enum","Resampling Mode");
+    CLASS_ATTR_ENUM(c,"resamplingmode",0,"sinc nearest neighbor sample and hold linear quadratic cubic");
+    CLASS_ATTR_ACCESSORS(c, "resamplingmode", NULL, earsbufobj_setattr_resamplingmode);
+    // @description Sets the resampling mode (Sinc, Nearest Neighbor, Sample and Hold, Linear, Quadratic or Cubic). The default is "Sinc",
+    // which provides bandlimited interpolation.
 }
 
 

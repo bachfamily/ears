@@ -18,7 +18,7 @@
 	Daniele Ghisi
  
 	@digest
-	Content-aware timestretch
+	Content-aware time abridgement
  
 	@description
     Resizes a buffer while preserving original content
@@ -208,15 +208,17 @@ int C74_EXPORT main(void)
     // @description Sets the energy function used for computing seams.
 
     
-    CLASS_ATTR_DOUBLE(c, "uniformity", 0, t_buf_timesquash, e_weighting_amount);
-    CLASS_ATTR_STYLE_LABEL(c,"uniformity",0,"text","Force Uniformity");
-    CLASS_ATTR_BASIC(c, "uniformity", 0);
+//    CLASS_ATTR_DOUBLE(c, "uniformity", 0, t_buf_timesquash, e_weighting_amount);
+//    CLASS_ATTR_STYLE_LABEL(c,"uniformity",0,"text","Force Uniformity");
+//    CLASS_ATTR_BASIC(c, "uniformity", 0);
+    // @exclude all
     // @description Sets the amount of uniformity enforced by the algorithm. Zero means: no constraint for the seams:
     // whichever is in ; 1 means: enforce uniformity by penalizing seams in similar position position as previous ones
     // (via the uniformitywintime attribute)
 
-    CLASS_ATTR_DOUBLE(c, "uniformitytimeinfluence", 0, t_buf_timesquash, e_weighting_stdev);
-    CLASS_ATTR_STYLE_LABEL(c,"uniformitytimeinfluence",0,"text","Uniformity Time Influence");
+//    CLASS_ATTR_DOUBLE(c, "uniformitytimeinfluence", 0, t_buf_timesquash, e_weighting_stdev);
+//    CLASS_ATTR_STYLE_LABEL(c,"uniformitytimeinfluence",0,"text","Uniformity Time Influence");
+    // @exclude all
     // @description Sets the influence of uniformity constraints in the <m>antimeunit</m> enforced by the uniformity algorithm.
     // This corresponds to the standard deviation of the penalizing gaussian curve.
 

@@ -434,7 +434,7 @@ t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *s
                 if (polar_output) {
                     for (long b = 0; b < numbins; b++) {
                         dest_sample1[f*numbins + b] = get_cpx_ampli(wout[b]);
-                        dest_sample2[f*numbins + b] = dest_sample1[f*numbins + b] == 0 ? 0 : ears_radians_to_angle(get_cpx_phase(wout[b]), angleunit);
+                        dest_sample2[f*numbins + b] = dest_sample1[f*numbins + b] == 0 ? 0 : ears_radians_to_angle(ears_principal_phase(get_cpx_phase(wout[b])), angleunit);
                     }
                 } else {
                     for (long b = 0; b < numbins; b++) {
@@ -1624,6 +1624,43 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
                     }
                     break;
 
+                case EARS_SEAM_CARVE_MODE_SOBELHARMO:
+                    for (long c = 0; c < num_channels; c++) {
+                        double Gx = (f > 0 && b > 0 ? -1 * amps_samples[c][(f-1)*num_bins + (b-1)] : 0) +
+                        (f > 0 ? -2 * amps_samples[c][(f-1)*num_bins + b] : 0) +
+                        (f > 0 && b < num_bins - 1 ? -1 * amps_samples[c][(f-1)*num_bins + (b+1)] : 0) +
+                        (f < num_frames-1 && b > 0 ? 1 * amps_samples[c][(f+1)*num_bins + (b-1)] : 0) +
+                        (f < num_frames-1 ? 2 * amps_samples[c][(f+1)*num_bins + b] : 0) +
+                        (f < num_frames-1 && b < num_bins - 1 ? 1 * amps_samples[c][(f+1)*num_bins + (b+1)] : 0);
+
+                        double Gy = (b > 0 && f > 0 ? 1 * amps_samples[c][(f-1)*num_bins + (b-1)] : 0) +
+                        (b > 0 ? 2 * amps_samples[c][(f)*num_bins + (b-1)] : 0) +
+                        (b > 0 && f < num_frames - 1 ? 1 * amps_samples[c][(f+1)*num_bins + (b-1)] : 0) +
+                        (b < num_bins-1 && f > 0 ? -1 * amps_samples[c][(f-1)*num_bins + (b+1)] : 0) +
+                        (b < num_bins-1 ? -2 * amps_samples[c][f*num_bins + (b+1)] : 0) +
+                        (b < num_bins-1 && f < num_frames - 1 ? -1 * amps_samples[c][(f+1)*num_bins + (b+1)] : 0);
+
+                        double contrib = Gx*Gx+Gy*Gy;
+                        
+                        // topology
+                        
+                        std::vector<long> factors = naive_factorize(b);
+                        for (auto &d: factors) {
+                            long harm_index = b/d;
+                            long b1 = b-d, b2 = b+d;
+                            double Gh = (b1 > 0 && f > 0 ? 1 * amps_samples[c][(f-1)*num_bins + b1] : 0) +
+                            (b1 > 0 ? 2 * amps_samples[c][(f)*num_bins + b1] : 0) +
+                            (b1 > 0 && f < num_frames - 1 ? 1 * amps_samples[c][(f+1)*num_bins + b1] : 0) +
+                            (b2 < num_bins-1 && f > 0 ? -1 * amps_samples[c][(f-1)*num_bins + b2] : 0) +
+                            (b2 < num_bins-1 ? -2 * amps_samples[c][f*num_bins + b2] : 0) +
+                            (b2 < num_bins-1 && f < num_frames - 1 ? -1 * amps_samples[c][(f+1)*num_bins + b2] : 0);
+                            
+                            contrib += (1. / (harm_index * harm_index)) * Gh * Gh;
+                        }
+                        energymap[f*num_bins + b] += sqrt(contrib);
+                    }
+                    break;
+                    
                 case EARS_SEAM_CARVE_MODE_MAGNITUDE:
                 default:
                     for (long c = 0; c < num_channels; c++)
@@ -1683,6 +1720,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             }
         }
     }
+     
     
     
     // 2) compute cumulative energies
@@ -1694,6 +1732,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             energymapcumul[f*num_bins + b] = energymap[f*num_bins + b] + min3(energymapcumul[(f>0 ? f-1 : f) * num_bins + b-1], energymapcumul[f*num_bins + b-1], energymapcumul[(f<num_frames-1 ? f+1 : f)*num_bins + b-1]);
         }
     }
+    
     /*
     if (energymapout_samps) {
         for (long b = 0; b < num_bins; b++) {
@@ -1702,7 +1741,8 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
             }
         }
     }
-    */
+     */
+    
     while (true) {
                 
         if (verbose) {

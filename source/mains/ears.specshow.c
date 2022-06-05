@@ -62,7 +62,7 @@ typedef struct _buf_specshow {
     double       n_length_ms;
     
     long        n_autoscale;
-    long        n_colorcurve;
+    double        n_colorcurve;
     
     t_jrgba     n_mincolor;
     t_jrgba     n_maxcolor;
@@ -224,7 +224,7 @@ void ext_main(void *r)
     // @description Toggles the ability to obtain <m>minvalue</m> and <m>maxvalue</m> automatically
     // from the minimum and maximum values in the input buffer.
 
-    CLASS_ATTR_LONG(c, "colorcurve", 0, t_buf_specshow, n_colorcurve);
+    CLASS_ATTR_DOUBLE(c, "colorcurve", 0, t_buf_specshow, n_colorcurve);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "colorcurve", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "colorcurve", 0, "text", "Color Range Curve");
     CLASS_ATTR_BASIC(c, "colorcurve", 0);
@@ -322,8 +322,11 @@ void buf_specshow_set(t_buf_specshow *x, t_symbol *s)
 {
     systhread_mutex_lock(x->n_mutex);
     if (ears_buffer_symbol_is_buffer(s)) {
+        if (x->n_last_buffer)
+            ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
         x->n_last_buffer = ears_buffer_getobject(s);
         x->n_buffername = s;
+        ears_buffer_retain(x->n_last_buffer, x->n_buffername, NULL);
         
         if (!x->n_buffer_reference)
             x->n_buffer_reference = buffer_ref_new((t_object *)x, s);
@@ -416,6 +419,9 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
 
 void buf_specshow_free(t_buf_specshow *x)
 {
+    if (x->n_last_buffer)
+        ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
+    
     systhread_mutex_free_debug(x->n_mutex);
     llll_free(x->n_bins);
     if (x->n_surface)
@@ -458,8 +464,11 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
                 t_symbol *s = hatom_getsym(&parsed->l_head->l_hatom);
                 if (x->n_buffername == gensym("volatile")) {
                     if (ears_buffer_symbol_is_buffer(s)) {
+                        if (x->n_last_buffer)
+                            ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
                         t_buffer_obj *obj = ears_buffer_getobject(s);
                         x->n_last_buffer = obj;
+                        ears_buffer_retain(x->n_last_buffer, s, NULL);
                         x->n_must_recreate_surface = true;
                         jbox_redraw((t_jbox *)x);
                     }

@@ -28,6 +28,7 @@ enum {
     EARS_SEAM_CARVE_MODE_MAGNITUDE = 0,
     EARS_SEAM_CARVE_MODE_GRADIENT_MAGNITUDE = 1,
     EARS_SEAM_CARVE_MODE_SOBEL = 2,
+    EARS_SEAM_CARVE_MODE_SOBELHARMO = 3, // experimental, unused
 };
 
 void test_kiss_fft();

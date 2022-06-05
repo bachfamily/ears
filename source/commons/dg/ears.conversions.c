@@ -248,6 +248,17 @@ double ears_angle_to_radians(double angle, char angleunit)
     }
 }
 
+double ears_principal_phase(double phase)
+{
+    while (phase < -PI)
+        phase += TWOPI;
+
+    while (phase >= PI)
+        phase -= TWOPI;
+    
+    return phase;
+}
+
 double ears_radians_to_angle(double rad, char angleunit)
 {
     switch (angleunit) {

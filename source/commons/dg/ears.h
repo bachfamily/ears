@@ -1,7 +1,7 @@
 /**
 	@file
 	ears.h
-	Constant definitions for the whole ears library
+	Basic stuff for the whole ears library
  
 	by Daniele Ghisi
  */
@@ -13,6 +13,8 @@
 #define EARS_WAVPACK_SUPPORT
 
 // #define EARS_ALLOCATIONVERBOSE
+
+
 
 
 #endif // _EARS_H_

@@ -35,6 +35,9 @@ t_ears_err ears_buffer_waveset_split(t_object *ob, t_buffer_obj *source, t_buffe
 t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long span, bool normalize);
 t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_buffer_obj *waveform, long span, long resampling_filter_size);
 t_ears_err ears_buffer_waveset_shuffle(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long span, long group);
+t_ears_err ears_buffer_waveset_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long howmany, long offset, long span, bool normalize);
+t_ears_err ears_buffer_waveset_interp(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long span, long normalize, long numinterp, long resamplingfiltersize, bool equalpowerinterp);
+t_ears_err ears_buffer_waveset_average(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long span, long normalize, long groupsize, long resamplingfiltersize, bool equalpowerinterp, bool keep_waveset_length);
 
 
 #endif // _EARS_BUF_COMMONS_H_

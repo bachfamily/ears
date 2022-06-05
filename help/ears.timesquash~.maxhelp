@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 855.0, 621.0 ],
+		"rect" : [ 297.0, 306.0, 880.0, 657.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 855.0, 595.0 ],
+						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -254,7 +254,7 @@
 									"mincolor" : [ 1.0, 1.0, 1.0, 0.0 ],
 									"numinlets" : 3,
 									"numoutlets" : 0,
-									"patching_rect" : [ 9.0, 366.0, 431.0, 209.0 ],
+									"patching_rect" : [ 9.0, 366.0, 487.0, 241.0 ],
 									"timegrid" : 0.0
 								}
 
@@ -269,12 +269,12 @@
 									"id" : "obj-10",
 									"maxclass" : "ears.specshow~",
 									"maxcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
-									"maxvalue" : 7.374520778656006,
+									"maxvalue" : 9.945762634277344,
 									"mincolor" : [ 1.0, 1.0, 1.0, 0.0 ],
-									"minvalue" : 0.000000000214017,
+									"minvalue" : 0.000271568947937,
 									"numinlets" : 3,
 									"numoutlets" : 0,
-									"patching_rect" : [ 9.0, 366.0, 431.0, 209.0 ],
+									"patching_rect" : [ 9.0, 366.0, 487.0, 241.0 ],
 									"timegrid" : 0.0
 								}
 
@@ -287,11 +287,11 @@
 									"fontsize" : 10.0,
 									"id" : "obj-15",
 									"maxclass" : "ears.specshow~",
-									"maxvalue" : 1.924984931945801,
-									"minvalue" : 0.000000000007407,
+									"maxvalue" : 2.393254518508911,
+									"minvalue" : 0.000001067269068,
 									"numinlets" : 3,
 									"numoutlets" : 0,
-									"patching_rect" : [ 9.0, 366.0, 431.0, 209.0 ]
+									"patching_rect" : [ 9.0, 366.0, 487.0, 241.0 ]
 								}
 
 							}
@@ -659,7 +659,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 855.0, 595.0 ],
+						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -690,13 +690,40 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"attr" : "energy",
+									"id" : "obj-29",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 130.0, 214.5, 256.0, 23.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
 									"id" : "obj-27",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 130.0, 147.0, 391.0, 25.0 ],
+									"text" : "Or on the original recording of the bell within the rural ambience"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-24",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 150.0, 179.0, 58.0, 23.0 ],
-									"text" : "anton.aif"
+									"patching_rect" : [ 9.0, 116.5, 105.0, 23.0 ],
+									"text" : "bellandbirds.wav"
 								}
 
 							}
@@ -779,9 +806,8 @@
 									"id" : "obj-10",
 									"maxclass" : "ears.specshow~",
 									"maxcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
-									"maxvalue" : 7.726645469665527,
+									"maxvalue" : 0.449738591909409,
 									"mincolor" : [ 1.0, 1.0, 1.0, 0.0 ],
-									"minvalue" : 0.027021147310734,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 9.0, 366.0, 431.0, 209.0 ],
@@ -797,23 +823,10 @@
 									"fontsize" : 10.0,
 									"id" : "obj-15",
 									"maxclass" : "ears.specshow~",
-									"maxvalue" : 1.709195137023926,
-									"minvalue" : 0.000000038683847,
+									"maxvalue" : 0.106008648872375,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 9.0, 366.0, 431.0, 209.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-9",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 57.0, 175.0, 75.0, 23.0 ],
-									"text" : "noises.mp3"
 								}
 
 							}
@@ -823,10 +836,11 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-6",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 139.0, 146.0, 391.0, 25.0 ],
+									"patching_rect" : [ 207.75, 172.5, 215.0, 40.0 ],
 									"text" : "With full spectra, it almost works like a cutter in the time domain"
 								}
 
@@ -838,7 +852,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 42.0, 146.0, 90.0, 23.0 ],
+									"patching_rect" : [ 110.75, 181.0, 90.0, 23.0 ],
 									"text" : "grincement.aif"
 								}
 
@@ -972,8 +986,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 98.0, 116.5, 585.0, 25.0 ],
-									"text" : "For instance see how it behaves with the following bell amid background sounds of rural ambient."
+									"patching_rect" : [ 148.75, 116.5, 450.0, 25.0 ],
+									"text" : "For instance see how it behaves on this montage of a bell and some birds"
 								}
 
 							}
@@ -984,7 +998,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 9.0, 119.0, 64.0, 23.0 ],
+									"patching_rect" : [ 64.0, 148.0, 64.0, 23.0 ],
 									"text" : "rokbell.aif"
 								}
 
@@ -1127,7 +1141,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 77.0, 119.0, 20.0, 20.0 ],
+									"patching_rect" : [ 120.0, 119.0, 20.0, 20.0 ],
 									"rounded" : 60.0,
 									"text" : "1",
 									"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ],
@@ -1187,6 +1201,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-47", 0 ],
+									"source" : [ "obj-24", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-26", 0 ],
 									"source" : [ "obj-25", 0 ]
 								}
@@ -1203,6 +1224,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-21", 0 ],
 									"source" : [ "obj-26", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-7", 0 ],
+									"source" : [ "obj-29", 0 ]
 								}
 
 							}
@@ -1245,13 +1273,6 @@
 								}
 
 							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-47", 0 ],
-									"source" : [ "obj-9", 0 ]
-								}
-
-							}
  ]
 					}
 ,
@@ -1288,7 +1309,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 855.0, 595.0 ],
+						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1318,6 +1339,32 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-13",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 542.0, 52.7999267578125, 277.0, 25.0 ],
+									"text" : "or when object are somewhat isolated"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-5",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 430.0, 52.7999267578125, 105.0, 23.0 ],
+									"text" : "bellandbirds.wav"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"attr" : "regularization",
 									"id" : "obj-8",
@@ -1367,7 +1414,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 500.0, 57.7999267578125, 351.0, 54.0 ],
+									"patching_rect" : [ 509.0, 77.7999267578125, 351.0, 54.0 ],
 									"text" : "there may be some artifacts on spoken words. You can reduce them by increasing the regularization (set it to 1. to hear what happens)"
 								}
 
@@ -1381,7 +1428,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 37.0, 221.0, 209.0, 23.0 ]
+									"patching_rect" : [ 37.0, 265.0, 183.0, 23.0 ]
 								}
 
 							}
@@ -1395,7 +1442,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 610.0, 163.5, 225.0, 40.0 ],
+									"patching_rect" : [ 619.0, 183.5, 225.0, 40.0 ],
 									"text" : "Reduce framesize/hopsize if you deal with sound with noisy attacks"
 								}
 
@@ -1445,7 +1492,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 528.0, 173.0, 80.0, 23.0 ],
+									"patching_rect" : [ 537.0, 193.0, 80.0, 23.0 ],
 									"text" : "drumloop.aif"
 								}
 
@@ -1535,7 +1582,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 15.0, 259.0, 258.0, 23.0 ],
+									"patching_rect" : [ 15.0, 231.0, 294.0, 23.0 ],
 									"text" : "gate 5 1"
 								}
 
@@ -1550,7 +1597,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 582.0, 116.0, 216.0, 40.0 ],
+									"patching_rect" : [ 591.0, 136.0, 216.0, 40.0 ],
 									"text" : "This kind of piano recording is not well suited for timesquash~"
 								}
 
@@ -1562,7 +1609,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 530.0, 130.0, 50.0, 23.0 ],
+									"patching_rect" : [ 539.0, 150.0, 50.0, 23.0 ],
 									"text" : "kind.aif"
 								}
 
@@ -1574,7 +1621,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 434.0, 69.0, 64.0, 23.0 ],
+									"patching_rect" : [ 443.0, 89.0, 64.0, 23.0 ],
 									"text" : "alice.mp3"
 								}
 
@@ -1644,7 +1691,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 434.0, 103.7999267578125, 79.0, 23.0 ],
+									"patching_rect" : [ 443.0, 123.7999267578125, 79.0, 23.0 ],
 									"text" : "cherokee.aif"
 								}
 
@@ -1672,7 +1719,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 254.0, 208.0, 71.0, 23.0 ],
+									"patching_rect" : [ 290.0, 193.0, 71.0, 23.0 ],
 									"text" : "ears.read~"
 								}
 
@@ -1899,6 +1946,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-47", 0 ],
+									"source" : [ "obj-5", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
 									"source" : [ "obj-50", 0 ]
 								}
@@ -1968,7 +2022,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 855.0, 595.0 ],
+						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2389,7 +2443,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 855.0, 595.0 ],
+						"rect" : [ 297.0, 332.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2484,7 +2538,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 233.0, 89.0, 23.0 ],
+									"patching_rect" : [ 10.0, 245.0, 89.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"embed" : 0
 									}
@@ -3056,7 +3110,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 855.0, 595.0 ],
+						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

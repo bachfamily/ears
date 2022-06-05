@@ -92,6 +92,7 @@ typedef enum _earsbufobj_win_role
     EARSBUFOBJ_WIN_SYNTHESIS = 2,
 } e_earsbufobj_win_role;
 
+
 typedef struct _earsbufobj
 {
     t_llllobj_object        l_ob;            ///< the t_object from which we inherit
@@ -141,6 +142,8 @@ typedef struct _earsbufobj
     
     // Resampling modes
     char                    l_resamplingpolicy;
+    t_symbol                *l_resamplingmode_sym;
+    e_ears_resamplingmode   l_resamplingmode;
     long                    l_resamplingfilterwidth;
     
     // analysis
@@ -415,9 +418,9 @@ void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
 void earsbufobj_class_add_winnormalized_attr(t_class *c);
 void earsbufobj_class_add_zerophase_attr(t_class *c);
 void earsbufobj_class_add_zeropadding_attr(t_class *c);
-
 void earsbufobj_class_add_resamplingpolicy_attr(t_class *c);
 void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c);
+void earsbufobj_class_add_resamplingmode_attr(t_class *c);
 
 /// Basic API
 void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long store_index, long buffer_index, t_symbol *buf_name);

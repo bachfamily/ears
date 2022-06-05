@@ -102,6 +102,8 @@ double ears_cents_to_hz(double cents, double middleAtuning);
 double ears_angle_to_radians(double angle, char angleunit);
 double ears_radians_to_angle(double rad, char angleunit);
 
+double ears_principal_phase(double phase); // gets the phase between -pi and pi
+
 
 // convenience utility
 void ears_llll_to_env_samples(t_llll *ll, double dur_samps, double sr, char envtimeunit);

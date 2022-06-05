@@ -195,6 +195,18 @@ typedef enum {
 } e_ears_resamplingpolicy;
 
 
+/** Resampling mode
+ @ingroup misc */
+typedef enum {
+    EARS_RESAMPLINGMODE_SINC = 0,
+    EARS_RESAMPLINGMODE_NEARESTNEIGHBOR,
+    EARS_RESAMPLINGMODE_SAMPLEANDHOLD,
+    EARS_RESAMPLINGMODE_LINEAR,
+    EARS_RESAMPLINGMODE_QUADRATIC,
+    EARS_RESAMPLINGMODE_CUBIC,
+} e_ears_resamplingmode;
+
+
 
 /** Synthesis modes
  @ingroup misc */
@@ -235,7 +247,6 @@ typedef enum {
     EARS_ANALYSIS_SUMMARIZATIONWEIGHT_RMS,
     EARS_ANALYSIS_SUMMARIZATIONWEIGHT_LOUDNESS,
 } e_ears_analysis_summarizationweight;
-
 
 
 typedef struct _ears_envelope_iterator
@@ -359,7 +370,6 @@ t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **
 
 t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long delta_num_samps, long framesize_samps, long rms_calc_framesize_samps, long xfade_samples, e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping);
 
-
 t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax, long *ampminsample = NULL, long *ampmaxsample = NULL);
 t_ears_err ears_buffer_get_maxabs(t_object *ob, t_buffer_obj *source, double *maxabs);
 t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms);
@@ -375,6 +385,11 @@ t_ears_err ears_buffer_rev_channels_inplace(t_object *ob, t_buffer_obj *buf);
 t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val);
 t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, double v_min, double v_max);
 t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, t_buffer_obj *mask);
+
+// interpolations
+t_ears_err ears_buffer_interp(t_object *ob, t_buffer_obj *from, t_buffer_obj *to, long numinterp, t_buffer_obj **dest, long resamplingfiltersize, bool equalpowerinterp);
+t_ears_err ears_buffer_average(t_object *ob, long num_sources, t_buffer_obj **sources, t_buffer_obj *dest, double *weights, long resamplingfiltersize, bool keep_length, long reference_buffer_for_length);
+
 
 // passing messages through
 t_ears_err ears_buffer_send_message(t_object *ob, t_buffer_obj *buf, t_symbol *s, long ac, t_atom *av);
@@ -452,8 +467,9 @@ t_ears_err ears_buffer_convert_numchannels(t_object *ob, t_buffer_obj *buf, long
 t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr, long resampling_filter_size);
 t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizeinsamps);
 t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix);
-t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampling_factor, long window_width);
+t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampling_factor, long window_width, e_ears_resamplingmode resamplingmode = EARS_RESAMPLINGMODE_SINC);
 t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, e_slope_mapping slopemapping);
+e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s);
 
 
 /// WRITE FILES
@@ -464,10 +480,17 @@ void ears_writewave(t_object *buf, t_symbol *filename);
 void ears_writeraw(t_object *buf, t_symbol *filename);
 t_symbol *get_conformed_resolved_path(t_symbol *filename);
 
-// Sinc-resampling and sinc-interpolation
-long ears_resample(float *in, long num_in_frames, float **out, long num_out_frames, double factor, double fmax, double sr, double window_width, long num_channels);
-double ears_interp_circular_bandlimited(float *in, long num_in_frames, double index, double window_width);
-double ears_interp_bandlimited(float *in, long num_in_frames, double index, double window_width, long step);
+/// RESAMPLING
+// Sinc-resampling and sinc-interpolation (band-limited)
+long ears_resample_sinc(float *in, long num_in_frames, float **out, long num_out_frames, double factor, double fmax, double sr, double window_width, long num_channels);
+double ears_interp_circular_sinc(float *in, long num_in_frames, double index, double window_width);
+double ears_interp_sinc(float *in, long num_in_frames, double index, double window_width, long step);
+
+// Other kinds of resampling
+long ears_resample_linear(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels);
+long ears_resample_quadratic(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels);
+long ears_resample_sampleandhold(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels);
+long ears_resample_nearestneighbor(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels);
 
 
 /// Helper tools
