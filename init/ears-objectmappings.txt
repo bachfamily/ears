@@ -1,1 +1,3 @@
+max objectfile ears.!=~ ears.neq~;
+max objectfile ears.==~ ears.eq~;
 max objectfile ears.shift~ ears.offset~;

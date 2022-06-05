@@ -19,7 +19,7 @@
     ]
   },
   "ears.timesquash~": {
-    "digest": "Content-aware timestretch",
+    "digest": "Content-aware time abridgement",
     "module": "ears",
     "category": [
       "ears time and pitch"
@@ -217,6 +217,23 @@
       "ears.readtags"
     ]
   },
+  "ears.!=~": {
+    "digest": "Compare buffers for inequality",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "unequal",
+      "inequality",
+      "condition",
+      "compare"
+    ],
+    "seealso": [
+      "ears.==~"
+    ]
+  },
   "ears.model.sine.synthesis~": {
     "digest": "Sinusoidal synthesis model",
     "module": "ears",
@@ -291,6 +308,25 @@
       "ears.soundtouch~",
       "ears.paulstretch~",
       "ears.resample~"
+    ]
+  },
+  "ears.waveset.interp~": {
+    "digest": "Waveset interpolation",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing",
+      "interpolate"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.average~",
+      "ears.waveset.decimate~",
+      "ears.waveset.subs~"
     ]
   },
   "ears.model.stochastic.analysis~": {
@@ -426,6 +462,41 @@
       "ears.mc.out~",
       "ears.tovector~",
       "ears.fromvector~"
+    ]
+  },
+  "ears.waveset.decimate~": {
+    "digest": "Waveset repetition",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing",
+      "decimate"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.subs~",
+      "ears.rubberband~",
+      "ears.soundtouch~"
+    ]
+  },
+  "ears.==~": {
+    "digest": "Compare buffers for equality",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "equal",
+      "condition",
+      "compare"
+    ],
+    "seealso": [
+      "ears.!=~"
     ]
   },
   "ears.hoa.mirror~": {
@@ -728,10 +799,12 @@
     "keywords": [
       "buffer",
       "waveset",
-      "zero-crossing"
+      "zero-crossing",
+      "repeat"
     ],
     "seealso": [
       "ears.waveset.split~",
+      "ears.waveset.decimate~",
       "ears.waveset.subs~",
       "ears.rubberband~",
       "ears.soundtouch~"
@@ -1201,6 +1274,24 @@
       "ears.trans~"
     ]
   },
+  "ears.waveset.shuffle~": {
+    "digest": "Waveset shuffling",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.subs~",
+      "ears.rubberband~",
+      "ears.soundtouch~"
+    ]
+  },
   "ears.trim~": {
     "digest": "Trim silence from a buffer",
     "module": "ears",
@@ -1472,6 +1563,24 @@
       "ears.dynamics~",
       "ears.normalize~",
       "ears.envelope~"
+    ]
+  },
+  "ears.waveset.average~": {
+    "digest": "Waveset averaging",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.interp~",
+      "ears.waveset.repeat~",
+      "ears.waveset.subs~"
     ]
   },
   "ears.model.sine.analysis~": {

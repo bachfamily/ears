@@ -93,6 +93,8 @@ typedef enum _earsbufobj_win_role
 } e_earsbufobj_win_role;
 
 
+
+
 typedef struct _earsbufobj
 {
     t_llllobj_object        l_ob;            ///< the t_object from which we inherit

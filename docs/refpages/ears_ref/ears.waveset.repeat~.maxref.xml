@@ -91,7 +91,7 @@
 				Set number of repetitions
 			</digest>
 			<description>
-				A number in the second inlet sets the number of repeetitions.
+				A number in the second inlet sets the number of repetitions.
 			</description>
 		</method>
 		<method name="reset">
@@ -277,20 +277,6 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
-		<attribute name="group" get="1" set="1" type="int" size="1">
-			<digest>
-				Group Wavesets
-			</digest>
-			<description>
-				Sets the number of negative-to-positive zero crossing regions that form a waveset (defaults to 1: a single
-				negative-to-positive zero-crossing to negative-to-positive zero-crossing region).
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Group Wavesets" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="number" />
-			</attributelist>
-		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -356,11 +342,26 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="span" get="1" set="1" type="int" size="1">
+			<digest>
+				Group Wavesets
+			</digest>
+			<description>
+				Sets the number of negative-to-positive zero crossing regions that form a waveset (defaults to 1: a single
+				negative-to-positive zero-crossing to negative-to-positive zero-crossing region).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Group Wavesets" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="number" />
+			</attributelist>
+		</attribute>
 	</attributelist>
 
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ears.waveset.split~" />
+		<seealso name="ears.waveset.decimate~" />
 		<seealso name="ears.waveset.subs~" />
 		<seealso name="ears.rubberband~" />
 		<seealso name="ears.soundtouch~" />

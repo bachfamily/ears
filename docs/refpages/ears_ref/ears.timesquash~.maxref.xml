@@ -6,7 +6,7 @@
 <c74object name="ears.timesquash~" module="ears">
 
 	<digest>
-		Content-aware timestretch
+		Content-aware time abridgement
 	</digest>
 
 	<description>
@@ -312,19 +312,6 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
-		<attribute name="energy" get="1" set="1" type="int" size="1">
-			<digest>
-				Energy Function
-			</digest>
-			<description>
-				Sets the energy function used for computing seams.
-			</description>
-			<attributelist>
-				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Energy Function" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
 		<attribute name="forwardenergy" get="1" set="1" type="float" size="1">
 			<digest>
 				Forward Energy Contribution
@@ -363,6 +350,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bleed Extension for Griffin-Lim Algorithm" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -390,7 +378,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Randomize Griffin-Lim Phases" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -566,34 +553,6 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="uniformity" get="1" set="1" type="float" size="1">
-			<digest>
-				Force Uniformity
-			</digest>
-			<description>
-				Sets the amount of uniformity enforced by the algorithm. Zero means: no constraint for the seams:
-				whichever is in ; 1 means: enforce uniformity by penalizing seams in similar position position as previous ones
-				(via the uniformitywintime attribute)
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Force Uniformity" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
-			</attributelist>
-		</attribute>
-		<attribute name="uniformitytimeinfluence" get="1" set="1" type="float" size="1">
-			<digest>
-				Uniformity Time Influence
-			</digest>
-			<description>
-				Sets the influence of uniformity constraints in the <m>antimeunit</m> enforced by the uniformity algorithm.
-				This corresponds to the standard deviation of the penalizing gaussian curve.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Uniformity Time Influence" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="winstartfromzero" get="1" set="1" type="int" size="1">

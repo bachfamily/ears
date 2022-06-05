@@ -113,6 +113,9 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_resamplingmode_attr(c);
     earsbufobj_class_add_polyout_attr(c);
     
+    CLASS_ATTR_BASIC(c, "resamplingfiltersize", 0);
+    CLASS_ATTR_BASIC(c, "resamplingmode", 0);
+
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");

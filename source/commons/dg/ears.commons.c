@@ -5617,6 +5617,29 @@ t_ears_spectralbuf_metadata spectralbuf_metadata_get_empty(){
     return data;
 }
 
+bool spectralbuf_metadata_eq(t_ears_spectralbuf_metadata *data1, t_ears_spectralbuf_metadata *data2)
+{
+    if (!data1 && data2)
+        return false;
+    if (!data2 && data1)
+        return false;
+    if (!data1 && !data2)
+        return true;
+    if (data1->original_audio_signal_sr != data2->original_audio_signal_sr)
+        return false;
+    if (data1->binsize != data2->binsize)
+        return false;
+    if (data1->binoffset != data2->binoffset)
+        return false;
+    if (data1->binunit != data2->binunit)
+        return false;
+    if (data1->type != data2->type)
+        return false;
+    if (llll_eq_ignoretype(data1->bins, data2->bins) == 0)
+        return false;
+    return true;
+}
+
 void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double binoffset, e_ears_frequnit binunit, t_symbol *type, t_llll *bins, bool also_free_bins)
 {
     data->original_audio_signal_sr = original_audio_signal_sr;
@@ -6135,4 +6158,59 @@ e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s)
 
     object_warn(ob, "Invalid resampling mode! Defaulting to sinc.");
     return EARS_RESAMPLINGMODE_SINC;
+}
+
+
+t_ears_err ears_buffer_eq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, long *ans)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    float *sample1 = buffer_locksamples(buf1);
+    *ans = 1;
+    
+    if (!sample1) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        double sr1 = ears_buffer_get_sr(ob, buf1);
+        long channelcount1 = ears_buffer_get_numchannels(ob, buf1);
+        long framecount1 = ears_buffer_get_size_samps(ob, buf1);
+        bool spectral1 = ears_buffer_is_spectral(ob, buf1);
+        t_ears_spectralbuf_metadata *data1 = spectral1 ? ears_spectralbuf_metadata_get(ob, buf1) : NULL;
+        
+        float *sample2 = buffer_locksamples(buf2);
+        if (!sample2) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            double sr2 = ears_buffer_get_sr(ob, buf2);
+            long channelcount2 = ears_buffer_get_numchannels(ob, buf2);
+            long framecount2 = ears_buffer_get_size_samps(ob, buf2);
+            bool spectral2 = ears_buffer_is_spectral(ob, buf1);
+            t_ears_spectralbuf_metadata *data2 = spectral2 ? ears_spectralbuf_metadata_get(ob, buf2) : NULL;
+
+            if (sr2 != sr1 || channelcount2 != channelcount1 || framecount2 != framecount1 || spectral1 != spectral2 || spectralbuf_metadata_eq(data1, data2) == false) {
+                *ans = 0;
+            } else {
+                *ans = 1;
+                for (long i = 0; i < framecount1 * channelcount1; i++) {
+                    if (sample1[i] != sample2[i]) {
+                        *ans = 0;
+                        break;
+                    }
+                }
+            }
+            buffer_unlocksamples(buf2);
+        }
+        
+        buffer_unlocksamples(buf1);
+    }
+    return err;
+}
+
+
+t_ears_err ears_buffer_neq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, long *ans)
+{
+    t_ears_err err = ears_buffer_eq(ob, buf1, buf2, ans);
+    *ans = 1 - (*ans);
+    return err;
 }

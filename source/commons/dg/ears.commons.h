@@ -195,17 +195,6 @@ typedef enum {
 } e_ears_resamplingpolicy;
 
 
-/** Resampling mode
- @ingroup misc */
-typedef enum {
-    EARS_RESAMPLINGMODE_SINC = 0,
-    EARS_RESAMPLINGMODE_NEARESTNEIGHBOR,
-    EARS_RESAMPLINGMODE_SAMPLEANDHOLD,
-    EARS_RESAMPLINGMODE_LINEAR,
-    EARS_RESAMPLINGMODE_QUADRATIC,
-    EARS_RESAMPLINGMODE_CUBIC,
-} e_ears_resamplingmode;
-
 
 
 /** Synthesis modes
@@ -266,7 +255,7 @@ typedef struct _ears_envelope_iterator
 
 
 t_ears_spectralbuf_metadata spectralbuf_metadata_get_empty();
-
+bool spectralbuf_metadata_eq(t_ears_spectralbuf_metadata *data1, t_ears_spectralbuf_metadata *data2);
 
 /// BUFFER LIFECYCLE
 
@@ -390,6 +379,9 @@ t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj
 t_ears_err ears_buffer_interp(t_object *ob, t_buffer_obj *from, t_buffer_obj *to, long numinterp, t_buffer_obj **dest, long resamplingfiltersize, bool equalpowerinterp);
 t_ears_err ears_buffer_average(t_object *ob, long num_sources, t_buffer_obj **sources, t_buffer_obj *dest, double *weights, long resamplingfiltersize, bool keep_length, long reference_buffer_for_length);
 
+// comparisons
+t_ears_err ears_buffer_neq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, long *ans);
+t_ears_err ears_buffer_eq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, long *ans);
 
 // passing messages through
 t_ears_err ears_buffer_send_message(t_object *ob, t_buffer_obj *buf, t_symbol *s, long ac, t_atom *av);

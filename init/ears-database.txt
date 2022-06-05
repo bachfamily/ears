@@ -1,1 +1,3 @@
+max db.addvirtual alias ears.!=~ ears.neq~;
+max db.addvirtual alias ears.==~ ears.eq~;
 max db.addvirtual alias ears.shift~ ears.offset~;
