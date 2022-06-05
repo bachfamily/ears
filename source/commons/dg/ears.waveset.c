@@ -397,6 +397,10 @@ t_ears_err ears_buffer_waveset_split(t_object *ob, t_buffer_obj *source, t_buffe
 {
     if (!source || !dest || dest_size <= 0)
         return EARS_ERR_NO_BUFFER;
+    
+    t_buffer_obj *sourcechannel = ears_buffer_make(NULL);
+
+    ears_buffer_extractchannels(ob, source, sourcechannel, 1, &channel);
 
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = buffer_locksamples(source);
@@ -417,7 +421,7 @@ t_ears_err ears_buffer_waveset_split(t_object *ob, t_buffer_obj *source, t_buffe
                     span_count++;
                     if (span_count % span == 0) {
                         // zero crossing found at index f
-                        ears_buffer_crop(ob, source, dest[count], pivot, f);
+                        ears_buffer_crop(ob, sourcechannel, dest[count], pivot, f);
                         if (normalize > 0) {
                             ears_buffer_normalize_inplace(ob, dest[count], 1.);
                         }
@@ -433,6 +437,8 @@ t_ears_err ears_buffer_waveset_split(t_object *ob, t_buffer_obj *source, t_buffe
             }
         }
     }
+    
+    ears_buffer_free(sourcechannel);
     
     return err;
 }
@@ -676,7 +682,7 @@ t_ears_err ears_buffer_waveset_average(t_object *ob, t_buffer_obj *source, t_buf
             }
             
             for (long i = 0; i < num; i++) {
-                ears_buffer_average(ob, groupsize, wsts + groupsize - groupsize / 2, tempavg, NULL, resamplingfiltersize, keep_waveset_length, i);
+                ears_buffer_average(ob, groupsize, wsts + i + groupsize - groupsize / 2, tempavg, NULL, resamplingfiltersize, keep_waveset_length, groupsize / 2);
                 ears_buffer_assemble_once(ob, channels_temp[c], tempavg, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, &channel_cur_length_samps, &channel_cur_alloc_samps);
             }
             

@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 744.0, 500.0 ],
+						"rect" : [ 100.0, 152.0, 744.0, 474.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -108,6 +108,35 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-9",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 442.0, 144.5, 164.0, 54.0 ],
+									"presentation_linecount" : 3,
+									"text" : "Average each waveset with its neighbors while keeping its length"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "keeplength",
+									"id" : "obj-10",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 288.0, 160.0, 150.0, 23.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"hidden" : 1,
 									"id" : "obj-3",
@@ -142,7 +171,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 276.0, 200.0, 189.0, 54.0 ],
+									"patching_rect" : [ 276.0, 211.0, 189.0, 54.0 ],
 									"text" : "Number of interpolations (for every successive couple of wavesets)"
 								}
 
@@ -156,7 +185,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 220.0, 215.5, 50.0, 23.0 ]
+									"patching_rect" : [ 220.0, 226.5, 50.0, 23.0 ]
 								}
 
 							}
@@ -322,6 +351,13 @@
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
+									"destination" : [ "obj-14", 0 ],
+									"source" : [ "obj-10", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-6", 0 ],
 									"source" : [ "obj-14", 0 ]
 								}
@@ -438,7 +474,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 744.0, 500.0 ],
+						"rect" : [ 0.0, 26.0, 744.0, 474.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

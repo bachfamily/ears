@@ -6115,12 +6115,13 @@ t_ears_err ears_buffer_average(t_object *ob, long num_sources, t_buffer_obj **so
         long this_size = ears_buffer_get_size_samps(ob, sources[i]);
         if (this_size == 0) {
             ears_buffer_set_size_samps(ob, temps[i], outframecount);
-            ears_buffer_clear(ob, temps[i]);
+            ears_buffer_fill_inplace(ob, temps[i], 0);
         } else {
             if ((this_err = ears_buffer_resample(ob, temps[i], ((double)outframecount)/ears_buffer_get_size_samps(ob, sources[i]), resamplingfiltersize)))
                 err = this_err;
         }
         llll_appenddouble(gains_ll, weights ? weights[i] : 1);
+        offsets[i] = 0;
     }
     
     if ((this_err = ears_buffer_mix(ob, temps, num_sources, dest, gains_ll, offsets, EARS_NORMALIZE_DONT, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize)))

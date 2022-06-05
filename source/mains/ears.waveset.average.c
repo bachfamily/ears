@@ -167,6 +167,7 @@ t_buf_waveset_average *buf_waveset_average_new(t_symbol *s, short argc, t_atom *
         x->args = llll_from_text_buf("1", false);
         x->e_span = 1;
         x->e_normalize = 0.;
+        x->e_keeplength = 1;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
