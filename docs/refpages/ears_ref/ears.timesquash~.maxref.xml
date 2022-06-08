@@ -67,10 +67,11 @@
 		</outlet>
 		<outlet id="2" type="INLET_TYPE">
 			<digest>
-				Energy map and seams
+				Seams, energy map and cumulative energy map
 			</digest>
 			<description>
-				Outputs two buffer: the used energy map at the first iteration and the position of the carved seams
+				If the <m>extout</m> attribute is set, from the right outlet come three buffers, containing:
+				the position of the carved seams, the energy map at the first iteration and the cumulative energy map at the first iteration
 			</description>
 		</outlet>
 	</outletlist>
@@ -294,6 +295,19 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="batchsize" get="1" set="1" type="int" size="1">
+			<digest>
+				Batch Size
+			</digest>
+			<description>
+				Sets the number of seams processed in batch.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Batch Size" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="blocking" get="1" set="1" type="int" size="1">
 			<digest>
 				Blocking Mode
@@ -308,8 +322,33 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="energy" get="1" set="1" type="int" size="1">
+			<digest>
+				Energy Function
+			</digest>
+			<description>
+				Sets the energy function used for computing seams.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Energy Function" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="extout" get="1" set="1" type="int" size="1">
+			<digest>
+				Extended Output
+			</digest>
+			<description>
+				Also output seams and energy matrices from the right outlet.
+				This attribute is static and can only be set inside the object box.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Extended Output" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="forwardenergy" get="1" set="1" type="float" size="1">
@@ -326,6 +365,34 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="forwardenergyembed" get="1" set="1" type="int" size="1">
+			<digest>
+				Embed Forward Energy In Cumulative Energy
+			</digest>
+			<description>
+				Toggles the ability to embed the forward energy in the cumulative energy matrix.
+				If zero, the forward energy is used as additional weight when finding the best path
+				in the cumulative energy matrix.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Embed Forward Energy In Cumulative Energy" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="forwardenergytype" get="1" set="1" type="int" size="1">
+			<digest>
+				Forward Energy Type
+			</digest>
+			<description>
+				Sets the forward energy type.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Forward Energy Type" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="framesize" get="1" set="1" type="float" size="1">
 			<digest>
 				Frame Size
@@ -336,7 +403,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frame Size" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -350,7 +416,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Bleed Extension for Griffin-Lim Algorithm" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -406,7 +471,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Hop Size" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -419,7 +483,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Algorithm Mode" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -440,7 +503,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -454,7 +516,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -468,7 +529,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Overlap" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -482,7 +542,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Phase Handling" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -498,7 +557,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Regularization" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -509,7 +567,6 @@
 			<description>
 			</description>
 			<attributelist>
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -522,7 +579,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slope Mapping" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -536,7 +592,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Block" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -551,7 +606,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -565,7 +619,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="First Window Starts At Zero" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -583,7 +636,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -611,7 +663,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Curve" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -625,7 +676,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Time-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Crossfade Type" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -678,8 +728,9 @@
 		</entry>
 		<entry name ="Outlet 3 (list)">
 			<description>
-				Energy map and seams.
-				Outputs two buffer: the used energy map at the first iteration and the position of the carved seams
+				Seams, energy map and cumulative energy map.
+				If the <m>extout</m> attribute is set, from the right outlet come three buffers, containing:
+				the position of the carved seams, the energy map at the first iteration and the cumulative energy map at the first iteration
 			</description>
 		</entry>
 	</misc>

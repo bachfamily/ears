@@ -32,7 +32,7 @@
 	buffer, iter, iterate
  
 	@seealso
-	ears.collect~, ears.expr~
+	ears.collect~
 	
 	@owner
 	Daniele Ghisi
@@ -106,14 +106,18 @@ int C74_EXPORT main(void)
     // @method number @digest Set iter
     // @description A number in the second inlet sets the iter parameter (depending on the <m>ampunit</m>).
 
-    earsbufobj_class_add_blocking_attr(c);
+ //   earsbufobj_class_add_blocking_attr(c);
 //    earsbufobj_class_add_ampunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+//    earsbufobj_class_add_naming_attr(c);
 
     CLASS_ATTR_LONG(c, "iterationmode",    0,    t_buf_iter, e_iterationmode);
     CLASS_ATTR_STYLE_LABEL(c, "iterationmode", 0, "enumindex", "Iteration Mode");
     CLASS_ATTR_FILTER_CLIP(c, "iterationmode", 0, 2);
     CLASS_ATTR_ENUMINDEX(c, "iterationmode", 0, "Shortest Longest Zeros");
+    // @description Sets the iteration mode: <br />
+    // 0 = Iterate until the shortest list is over; <br />
+    // 1 = Iterate until the longest list is over; <br />
+    // 2 = Iterate until the longest list is over and output zeros to pad the shorter lists.
 
     
     class_register(CLASS_BOX, c);
@@ -125,8 +129,8 @@ int C74_EXPORT main(void)
 void buf_iter_assist(t_buf_iter *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        if (a < x->e_num_inlets) // @in 0 @loop 1 @type buffer @digest buffer whose sample must be iterated
-            sprintf(s, "llll %ld", a + 1);
+        if (a < x->e_num_inlets) // @in 0 @loop 1 @type symbol @digest Buffer whose sample must be iterated
+            sprintf(s, "symbol: Buffer %ld", a + 1);
     } else {
         if (a == x->e_num_inlets + 1)
             sprintf(s, "int: Sample Index");    // @out 1 @type int @digest Sample Index
@@ -157,14 +161,14 @@ t_buf_iter *buf_iter_new(t_symbol *s, short argc, t_atom *argv)
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_NONE);
         
-        // @arg 1 @name numbuffers @optional 1 @type number
+        // @arg 0 @name numbuffers @optional 1 @type number
         // @digest Number of buffers
         // @description Sets the number of buffers to be iterated in parallel.
 
         t_llll *args = llll_parse(true_ac, argv);
         
         if (args && args->l_head && is_hatom_number(&args->l_head->l_hatom)) {
-            x->e_num_inlets = CLAMP(hatom_getlong(&args->l_head->l_hatom), 0, LLLL_MAX_INLETS-1);
+            x->e_num_inlets = CLAMP(hatom_getlong(&args->l_head->l_hatom), 1, LLLL_MAX_INLETS-2);
         }
         
 

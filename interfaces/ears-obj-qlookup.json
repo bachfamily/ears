@@ -860,8 +860,7 @@
       "iterate"
     ],
     "seealso": [
-      "ears.collect~",
-      "ears.expr~"
+      "ears.collect~"
     ]
   },
   "ears.paulfreeze~": {
@@ -1486,6 +1485,20 @@
     "seealso": [
       "ears.read~",
       "ears.roll.toreaper~"
+    ]
+  },
+  "ears.collect~": {
+    "digest": "Collect buffer samples",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "collect"
+    ],
+    "seealso": [
+      "ears.iter~"
     ]
   },
   "ears.roll.toreaper~": {

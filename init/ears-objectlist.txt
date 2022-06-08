@@ -77,6 +77,7 @@ max oblist "ears objects" ears.model.stochastic.synthesis~;
 max oblist "ears objects" ears.overdrive~;
 max oblist "ears objects" ears.waveset.split~;
 max oblist "ears objects" ears.roll.sampling~;
+max oblist "ears objects" ears.collect~;
 max oblist "ears objects" ears.roll.toreaper~;
 max oblist "ears objects" ears.mix~;
 max oblist "ears objects" ears.window~;
