@@ -259,6 +259,7 @@ double ears_principal_phase(double phase)
     return phase;
 }
 
+
 double ears_radians_to_angle(double rad, char angleunit)
 {
     switch (angleunit) {

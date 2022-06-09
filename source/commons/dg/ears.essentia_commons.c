@@ -1099,44 +1099,44 @@ double convert_antimeunit_input(t_ears_essentia_extractors_library *lib, long ex
 void convert_frequnit(t_ears_essentia_extractors_library *lib, long extractor_idx, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_frequnit to)
 {
     for (long i = 0; i < vec.size(); i++)
-        vec[i] = ears_convert_frequnit(vec[i], buf, lib->extractors[extractor_idx].local_frequnit, to);
+        vec[i] = ears_convert_frequnit(vec[i], lib->extractors[extractor_idx].local_frequnit, to);
 }
 
 void convert_frequnit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_frequnit to)
 {
-    val = ears_convert_frequnit(val, buf, lib->extractors[extractor_idx].local_frequnit, to);
+    val = ears_convert_frequnit(val, lib->extractors[extractor_idx].local_frequnit, to);
 }
 
 double convert_frequnit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_frequnit u)
 {
-    return ears_convert_frequnit(val, buf, u, lib->extractors[extractor_idx].local_frequnit);
+    return ears_convert_frequnit(val, u, lib->extractors[extractor_idx].local_frequnit);
 }
 
 void convert_ampunit(t_ears_essentia_extractors_library *lib, long extractor_idx, std::vector<Real> &vec, t_buffer_obj *buf, e_ears_ampunit to)
 {
     for (long i = 0; i < vec.size(); i++)
-        vec[i] = ears_convert_ampunit(vec[i], buf, lib->extractors[extractor_idx].local_ampunit, to);
+        vec[i] = ears_convert_ampunit(vec[i], lib->extractors[extractor_idx].local_ampunit, to);
 }
 
 void convert_ampunit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_ampunit to)
 {
-    val = ears_convert_ampunit(val, buf, lib->extractors[extractor_idx].local_ampunit, to);
+    val = ears_convert_ampunit(val, lib->extractors[extractor_idx].local_ampunit, to);
 }
 
 double convert_ampunit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_ampunit u)
 {
-    return ears_convert_ampunit(val, buf, u, lib->extractors[extractor_idx].local_ampunit);
+    return ears_convert_ampunit(val, u, lib->extractors[extractor_idx].local_ampunit);
 }
 
 
 void convert_pitchunit(t_ears_essentia_extractors_library *lib, long extractor_idx, double &val, t_buffer_obj *buf, e_ears_pitchunit to)
 {
-    val = ears_convert_pitchunit(val, buf, lib->extractors[extractor_idx].local_pitchunit, to);
+    val = ears_convert_pitchunit(val, lib->extractors[extractor_idx].local_pitchunit, to);
 }
 
 double convert_pitchunit_input(t_ears_essentia_extractors_library *lib, long extractor_idx, double val, t_buffer_obj *buf, e_ears_pitchunit u)
 {
-    return ears_convert_pitchunit(val, buf, u, lib->extractors[extractor_idx].local_pitchunit);
+    return ears_convert_pitchunit(val, u, lib->extractors[extractor_idx].local_pitchunit);
 }
 
 #define eCaTI(x,u) convert_antimeunit_input(lib,i,x,NULL,u)
@@ -4476,15 +4476,15 @@ double ears_essentia_handle_units(double value, t_buffer_obj *buf, t_ears_essent
         }
     } else if (extr->essentia_output_ampunit[output_num] != EARS_AMPUNIT_UNKNOWN) {
         if (extr->essentia_output_ampunit[output_num] != extr->local_ampunit) {
-            value = ears_convert_ampunit(value, buf, extr->essentia_output_ampunit[output_num], extr->local_ampunit);
+            value = ears_convert_ampunit(value, extr->essentia_output_ampunit[output_num], extr->local_ampunit);
         }
     } else if (extr->essentia_output_frequnit[output_num] != EARS_FREQUNIT_UNKNOWN) {
         if (extr->essentia_output_frequnit[output_num] != extr->local_frequnit) {
-            value = ears_convert_frequnit(value, buf, extr->essentia_output_frequnit[output_num], extr->local_frequnit);
+            value = ears_convert_frequnit(value, extr->essentia_output_frequnit[output_num], extr->local_frequnit);
         }
     } else if (extr->essentia_output_pitchunit[output_num] != EARS_PITCHUNIT_UNKNOWN) {
         if (extr->essentia_output_pitchunit[output_num] != extr->local_pitchunit) {
-            value = ears_convert_pitchunit(value, buf, extr->essentia_output_pitchunit[output_num], extr->local_pitchunit);
+            value = ears_convert_pitchunit(value, extr->essentia_output_pitchunit[output_num], extr->local_pitchunit);
         }
     }
     

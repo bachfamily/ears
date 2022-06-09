@@ -187,7 +187,7 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_expr*)object_alloc_debug(s_tag_class);
     if (x) {
 
-        x->normalization_mode = EARS_NORMALIZE_OVERLOAD_PROTECTION_ONLY;
+        x->normalization_mode = EARS_NORMALIZE_DONT;
         
         earsbufobj_init((t_earsbufobj *)x, 0);
 

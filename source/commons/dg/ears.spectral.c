@@ -1586,6 +1586,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
 
     double CL = 0, CU = 0, CR = 0;
     
+
     for (long c = 0; c < num_channels; c++) {
         float *temp = buffer_locksamples(amplitudes[c]);
         if (!temp) {

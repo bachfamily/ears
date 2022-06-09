@@ -287,6 +287,22 @@
       "clip"
     ]
   },
+  "ears.phaseunwrap~": {
+    "digest": "Unwrap phase",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "phaseunwrap",
+      "unwrap"
+    ],
+    "seealso": [
+      "ears.phasewrap~",
+      "ears.fromdiffs~"
+    ]
+  },
   "ears.rubberband~": {
     "digest": "Rubber Band pitch and time processing",
     "module": "ears",
@@ -772,6 +788,40 @@
       "ears.rev~",
       "ears.rot~",
       "ears.crop~"
+    ]
+  },
+  "ears.todiffs~": {
+    "digest": "Get sample or frame differences",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "todiffs",
+      "difference",
+      "x2dx",
+      "dx"
+    ],
+    "seealso": [
+      "ears.fromdiffs~"
+    ]
+  },
+  "ears.fromdiffs~": {
+    "digest": "Reconstruct signal from sample or frame differences",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "todiffs",
+      "difference",
+      "dx2x",
+      "dx"
+    ],
+    "seealso": [
+      "ears.todiffs~"
     ]
   },
   "ears.model.sps.analysis~": {
@@ -1557,6 +1607,22 @@
     ],
     "seealso": [
       "ears.envelope~"
+    ]
+  },
+  "ears.phasewrap~": {
+    "digest": "Get principal phases",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "phasewrap",
+      "wrap"
+    ],
+    "seealso": [
+      "ears.phaseunwrap~",
+      "ears.fromdiffs~"
     ]
   },
   "ears.gain~": {

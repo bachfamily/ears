@@ -223,7 +223,7 @@ void ears_tovector_set(t_ears_tovector *x, t_symbol *s, long ac, t_atom *av)
 void ears_tovector_assist(t_ears_tovector *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET)
-        sprintf(s,"(list/set/clear) Values to be collected or control messages"); // @out 0 @type list/set/clear @digest Values to be collected or control messages
+        sprintf(s,"list/set/clear: Values to be collected or control messages"); // @out 0 @type list/set/clear @digest Values to be collected or control messages
 }
 
 void ears_tovector_perform64(t_ears_tovector *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam)

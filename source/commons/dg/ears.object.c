@@ -2894,7 +2894,7 @@ double earsbufobj_convert_timeunit(t_earsbufobj *e_ob, double value, t_buffer_ob
 
 
 
-double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to)
+double ears_convert_ampunit(double value, e_ears_ampunit from, e_ears_ampunit to)
 {
     t_earsbufobj e_ob;
     e_ob.l_ampunit = from;
@@ -2912,19 +2912,19 @@ double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from
 
 
 // TO DO: can be optimized
-void ears_convert_ampunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to)
+void ears_convert_ampunit(std::vector<float> &vec, e_ears_ampunit from, e_ears_ampunit to)
 {
     if (from == to)
         return;
     
     for (long i = 0; i < vec.size(); i++)
-        vec[i] = ears_convert_ampunit(vec[i], buf, from, to);
+        vec[i] = ears_convert_ampunit(vec[i], from, to);
 }
 
 
 
 
-double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to)
+double ears_convert_frequnit(double value, e_ears_frequnit from, e_ears_frequnit to)
 {
     t_earsbufobj e_ob;
     e_ob.l_frequnit = from;
@@ -2950,17 +2950,17 @@ double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit fr
 }
 
 // TO DO: can be optimized
-void ears_convert_frequnit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to)
+void ears_convert_frequnit(std::vector<float> &vec, e_ears_frequnit from, e_ears_frequnit to)
 {
     if (from == to)
         return;
     
     for (long i = 0; i < vec.size(); i++)
-        vec[i] = ears_convert_frequnit(vec[i], buf, from, to);
+        vec[i] = ears_convert_frequnit(vec[i], from, to);
 }
 
 
-double ears_convert_angleunit(double value, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to)
+double ears_convert_angleunit(double value, e_ears_angleunit from, e_ears_angleunit to)
 {
     t_earsbufobj e_ob;
     e_ob.l_angleunit = from;
@@ -2983,18 +2983,18 @@ double ears_convert_angleunit(double value, t_buffer_obj *buf, e_ears_angleunit 
 
 
 // TO DO: can be optimized
-void ears_convert_angleunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to)
+void ears_convert_angleunit(std::vector<float> &vec, e_ears_angleunit from, e_ears_angleunit to)
 {
     if (from == to)
         return;
     
     for (long i= 0; i < vec.size(); i++)
-        vec[i] = ears_convert_angleunit(vec[i], buf, from, to);
+        vec[i] = ears_convert_angleunit(vec[i], from, to);
 }
 
 
 
-double ears_convert_pitchunit(double value, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to)
+double ears_convert_pitchunit(double value, e_ears_pitchunit from, e_ears_pitchunit to)
 {
     t_earsbufobj e_ob;
     e_ob.l_pitchunit = from;
@@ -3022,13 +3022,13 @@ double ears_convert_pitchunit(double value, t_buffer_obj *buf, e_ears_pitchunit 
 
 
 // TO DO: can be optimized
-void ears_convert_pitchunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to)
+void ears_convert_pitchunit(std::vector<float> &vec, e_ears_pitchunit from, e_ears_pitchunit to)
 {
     if (from == to)
         return;
     
     for (long i= 0; i < vec.size(); i++)
-        vec[i] = ears_convert_pitchunit(vec[i], buf, from, to);
+        vec[i] = ears_convert_pitchunit(vec[i], from, to);
 }
 
 double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to)

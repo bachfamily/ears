@@ -111,9 +111,9 @@ void ears_fromvector_free(t_ears_fromvector *x)
 void ears_fromvector_assist(t_ears_fromvector *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_OUTLET)
-        sprintf(s,"(list) Signal Vector as a List"); // @out 0 @type list @digest Input signal
+        sprintf(s,"list: Signal Vector as a List"); // @out 0 @type list @digest Input signal
     else
-        sprintf(s,"(int) Dummy");
+        sprintf(s,"int: Dummy");
 }
 
 void ears_fromvector_perform64(t_ears_fromvector *x, t_dspchain *dsp64, double **ins, long numins, double **outs, long numouts, long vec_size, long flags, void *userparam)

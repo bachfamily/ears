@@ -519,6 +519,8 @@ void buf_timesquash_bang(t_buf_timesquash *x)
             t_buffer_obj **in_phases = (t_buffer_obj **)bach_newptr(num_in_chans * sizeof(t_buffer_obj *));
             t_buffer_obj **out_phases = (t_buffer_obj **)bach_newptr(num_in_chans * sizeof(t_buffer_obj *));
 
+            earsbufobj_updateprogress((t_earsbufobj *)x, 1.); // just to have a rolling line for the preprocessing
+
             for (long c = 0; c < num_in_chans; c++) {
                 in_amps[c] = ears_buffer_make(NULL);
                 in_phases[c] = ears_buffer_make(NULL);

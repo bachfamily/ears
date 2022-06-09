@@ -204,7 +204,7 @@ long convert_ampunit_fn(void *data, t_hatom *a, const t_llll *address){
     t_buf_clicks *x = (t_buf_clicks *) data;
     
     if (is_hatom_number(a) && x->e_ob.l_ampunit != EARS_AMPUNIT_LINEAR){
-        hatom_setdouble(a, ears_convert_ampunit(hatom_getdouble(a), NULL, (e_ears_ampunit)x->e_ob.l_ampunit, EARS_AMPUNIT_LINEAR));
+        hatom_setdouble(a, ears_convert_ampunit(hatom_getdouble(a), (e_ears_ampunit)x->e_ob.l_ampunit, EARS_AMPUNIT_LINEAR));
     }
     return 0;
 }

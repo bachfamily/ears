@@ -507,6 +507,12 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
                                                 double middleAtuning, double sr, long buffer_idx, e_slope_mapping slopemapping,
                                                 long oversampling, long resamplingfiltersize);
 
+// differences and phases
+t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, float *startvalues, long numstartvalues);
+t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_buffer_obj *initial);
+t_ears_err ears_buffer_todiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
+t_ears_err ears_buffer_phasewrap(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, e_ears_angleunit angleunit);
+t_ears_err ears_buffer_phaseunwrap(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, e_ears_angleunit angleunit);
 
 
 // convenience

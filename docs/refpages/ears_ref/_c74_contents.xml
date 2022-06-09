@@ -15,6 +15,7 @@
 <refpage name='ears.model.sine.synthesis~.maxref.xml'/>
 <refpage name='ears.crop~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
+<refpage name='ears.phaseunwrap~.maxref.xml'/>
 <refpage name='ears.rubberband~.maxref.xml'/>
 <refpage name='ears.waveset.interp~.maxref.xml'/>
 <refpage name='ears.model.stochastic.analysis~.maxref.xml'/>
@@ -41,6 +42,8 @@
 <refpage name='ears.freeverb~.maxref.xml'/>
 <refpage name='ears.assemble~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
+<refpage name='ears.todiffs~.maxref.xml'/>
+<refpage name='ears.fromdiffs~.maxref.xml'/>
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
 <refpage name='ears.waveset.repeat~.maxref.xml'/>
 <refpage name='ears.out~.maxref.xml'/>
@@ -83,6 +86,7 @@
 <refpage name='ears.roll.toreaper~.maxref.xml'/>
 <refpage name='ears.mix~.maxref.xml'/>
 <refpage name='ears.window~.maxref.xml'/>
+<refpage name='ears.phasewrap~.maxref.xml'/>
 <refpage name='ears.gain~.maxref.xml'/>
 <refpage name='ears.waveset.average~.maxref.xml'/>
 <refpage name='ears.model.sine.analysis~.maxref.xml'/>

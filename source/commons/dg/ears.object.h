@@ -505,16 +505,16 @@ double earsbufobj_freq_to_cents(t_earsbufobj *e_ob, double value);
 
 // Convenience non-earsobj versions
 double ears_convert_timeunit(double value, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to);
-double ears_convert_ampunit(double value, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to);
-double ears_convert_frequnit(double value, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to);
-double ears_convert_pitchunit(double value, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to);
-double ears_convert_angleunit(double value, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to);
+double ears_convert_ampunit(double value, e_ears_ampunit from, e_ears_ampunit to);
+double ears_convert_frequnit(double value, e_ears_frequnit from, e_ears_frequnit to);
+double ears_convert_pitchunit(double value, e_ears_pitchunit from, e_ears_pitchunit to);
+double ears_convert_angleunit(double value, e_ears_angleunit from, e_ears_angleunit to);
 // vector-of-floats in-place versions
 void ears_convert_timeunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_timeunit from, e_ears_timeunit to);
-void ears_convert_ampunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_ampunit from, e_ears_ampunit to);
-void ears_convert_frequnit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_frequnit from, e_ears_frequnit to);
-void ears_convert_pitchunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_pitchunit from, e_ears_pitchunit to);
-void ears_convert_angleunit(std::vector<float> &vec, t_buffer_obj *buf, e_ears_angleunit from, e_ears_angleunit to);
+void ears_convert_ampunit(std::vector<float> &vec, e_ears_ampunit from, e_ears_ampunit to);
+void ears_convert_frequnit(std::vector<float> &vec, e_ears_frequnit from, e_ears_frequnit to);
+void ears_convert_pitchunit(std::vector<float> &vec, e_ears_pitchunit from, e_ears_pitchunit to);
+void ears_convert_angleunit(std::vector<float> &vec, e_ears_angleunit from, e_ears_angleunit to);
 
 
 

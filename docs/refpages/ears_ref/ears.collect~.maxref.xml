@@ -10,7 +10,7 @@
 	</digest>
 
 	<description>
-		Create buffer from individual samples.
+		Create buffers by collecting individual samples.
 	</description>
 
 	<!--METADATA-->

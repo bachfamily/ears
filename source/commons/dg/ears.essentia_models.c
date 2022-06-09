@@ -166,9 +166,9 @@ t_ears_err ears_model_sine_analysis(t_object *ob, std::vector<Real> samples, dou
             fft->compute();
             sine->compute();
             
-            ears_convert_ampunit(magnitudes, NULL, EARS_AMPUNIT_DECIBEL, out_ampunit);
-            ears_convert_frequnit(frequencies, NULL, EARS_FREQUNIT_HERTZ, out_frequnit);
-            ears_convert_angleunit(phases, NULL, EARS_ANGLEUNIT_RADIANS, out_angleunit);
+            ears_convert_ampunit(magnitudes, EARS_AMPUNIT_DECIBEL, out_ampunit);
+            ears_convert_frequnit(frequencies, EARS_FREQUNIT_HERTZ, out_frequnit);
+            ears_convert_angleunit(phases, EARS_ANGLEUNIT_RADIANS, out_angleunit);
             
             llll_appendllll(*frequencies_ll, llll_from_vector(frequencies));
             llll_appendllll(*magnitudes_ll, llll_from_vector(magnitudes));
@@ -275,9 +275,9 @@ t_ears_err ears_model_sine_synthesis(t_object *ob, double sr,
             magnitudes = vector_from_llll(magframe_llll);
             phases = vector_from_llll(phframe_llll);
             
-            ears_convert_ampunit(magnitudes, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
-            ears_convert_frequnit(frequencies, NULL, in_frequnit, EARS_FREQUNIT_HERTZ);
-            ears_convert_angleunit(phases, NULL, in_angleunit, EARS_ANGLEUNIT_RADIANS);
+            ears_convert_ampunit(magnitudes, in_ampunit, EARS_AMPUNIT_DECIBEL);
+            ears_convert_frequnit(frequencies, in_frequnit, EARS_FREQUNIT_HERTZ);
+            ears_convert_angleunit(phases, in_angleunit, EARS_ANGLEUNIT_RADIANS);
             
 
             // Sine model synthesis
@@ -413,10 +413,10 @@ t_ears_err ears_model_SPS_analysis(t_object *ob, std::vector<Real> samples, doub
             
             spsAnal->compute();
             
-            ears_convert_ampunit(magnitudes, NULL, EARS_AMPUNIT_DECIBEL, out_ampunit);
-            ears_convert_frequnit(frequencies, NULL, EARS_FREQUNIT_HERTZ, out_frequnit);
-            ears_convert_angleunit(phases, NULL, EARS_ANGLEUNIT_RADIANS, out_angleunit);
-            ears_convert_ampunit(stocenv, NULL, EARS_AMPUNIT_DECIBEL, out_ampunit);
+            ears_convert_ampunit(magnitudes, EARS_AMPUNIT_DECIBEL, out_ampunit);
+            ears_convert_frequnit(frequencies, EARS_FREQUNIT_HERTZ, out_frequnit);
+            ears_convert_angleunit(phases, EARS_ANGLEUNIT_RADIANS, out_angleunit);
+            ears_convert_ampunit(stocenv, EARS_AMPUNIT_DECIBEL, out_ampunit);
 
             llll_appendllll(*frequencies_ll, llll_from_vector(frequencies));
             llll_appendllll(*magnitudes_ll, llll_from_vector(magnitudes));
@@ -515,10 +515,10 @@ t_ears_err ears_model_SPS_synthesis(t_object *ob, double sr,
             phases = vector_from_llll(phframe_llll);
             stocenv = vector_from_llll(stenvframe_llll);
             
-            ears_convert_ampunit(magnitudes, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
-            ears_convert_frequnit(frequencies, NULL, in_frequnit, EARS_FREQUNIT_HERTZ);
-            ears_convert_angleunit(phases, NULL, in_angleunit, EARS_ANGLEUNIT_RADIANS);
-            ears_convert_ampunit(stocenv, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
+            ears_convert_ampunit(magnitudes, in_ampunit, EARS_AMPUNIT_DECIBEL);
+            ears_convert_frequnit(frequencies, in_frequnit, EARS_FREQUNIT_HERTZ);
+            ears_convert_angleunit(phases, in_angleunit, EARS_ANGLEUNIT_RADIANS);
+            ears_convert_ampunit(stocenv, in_ampunit, EARS_AMPUNIT_DECIBEL);
 
             // Sine model synthesis
             spsmodelsynth->compute();
@@ -615,7 +615,7 @@ t_ears_err ears_model_stochastic_analysis(t_object *ob, std::vector<Real> sample
             
             stocAnal->compute();
             
-            ears_convert_ampunit(stocenv, NULL, EARS_AMPUNIT_DECIBEL, out_ampunit);
+            ears_convert_ampunit(stocenv, EARS_AMPUNIT_DECIBEL, out_ampunit);
             
             llll_appendllll(*stocenv_ll, llll_from_vector(stocenv));
             
@@ -687,7 +687,7 @@ t_ears_err ears_model_stochastic_synthesis(t_object *ob, double sr,
             
             stocenv = vector_from_llll(stenvframe_llll);
             
-            ears_convert_ampunit(stocenv, NULL, in_ampunit, EARS_AMPUNIT_DECIBEL);
+            ears_convert_ampunit(stocenv, in_ampunit, EARS_AMPUNIT_DECIBEL);
             
             // Sine model synthesis
             stocmodelsynth->compute();
