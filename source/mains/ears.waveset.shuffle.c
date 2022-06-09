@@ -102,8 +102,8 @@ int C74_EXPORT main(void)
     // For "shuffle" mode, the parameter is the number of repetitions.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(waveset_shuffle)
 
-    // @method number @digest Set number of repetitions
-    // @description A number in the second inlet sets the number of repeetitions.
+    // @method number @digest Set maximum distance
+    // @description A number in the second inlet sets the maximum distance travelled by a waveset while shuffling
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
@@ -137,7 +137,7 @@ void buf_waveset_shuffle_assist(t_buf_waveset_shuffle *x, void *b, long m, long 
         if (a == 0)
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
         else
-            sprintf(s, "number: Number Of Repetitions"); // @in 1 @type number @digest Number Of Repetitions
+            sprintf(s, "number: Maximum Shuffling Distance"); // @in 1 @type number @digest Maximum shuffling distance
     } else {
         sprintf(s, "symbol/list: Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names
     }
@@ -168,6 +168,14 @@ t_buf_waveset_shuffle *buf_waveset_shuffle_new(t_symbol *s, short argc, t_atom *
 
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
+        
+        // @arg 1 @name maxdist @optional 1 @type int
+        // @description Sets the maximum distance travelled by a waveset while shuffling
+
+        if (args && args->l_head && is_hatom_number(&args->l_head->l_hatom)) {
+            x->e_maxdist = MAX(0, hatom_getlong(&args->l_head->l_hatom));
+        }
+        
         
         attr_args_process(x, argc, argv);
         

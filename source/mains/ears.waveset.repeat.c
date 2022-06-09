@@ -167,6 +167,9 @@ t_buf_waveset_repeat *buf_waveset_repeat_new(t_symbol *s, short argc, t_atom *ar
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
 
+        // @arg 1 @name howmany @optional 1 @type int
+        // @digest Number of repetitions
+
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         

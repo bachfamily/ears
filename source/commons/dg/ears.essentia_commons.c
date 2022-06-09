@@ -1605,7 +1605,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     
                 case EARS_FEATURE_ENERGY:
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Energy");
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "array");
                     set_essentia_outputs(lib, i, "f", "energy");
                     set_custom_outputs(lib, i, "f", "energy");
                     break;
