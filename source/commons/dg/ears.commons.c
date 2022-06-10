@@ -6470,3 +6470,321 @@ t_ears_err ears_buffer_phaseunwrap(t_object *ob, t_buffer_obj *source, t_buffer_
     
     return err;
 }
+
+
+
+t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, t_buffer_obj *dest, e_ears_op op, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (!dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    double sr = ears_buffer_get_sr(ob, source1);
+    t_buffer_obj *sources[2];
+    sources[0] = source1; sources[1] = source2;
+
+    float *samples[2];
+    long num_samples[2];
+    bool must_free_samples[2];
+    bool resampled;
+
+    samples[0] = buffer_locksamples(sources[0]);
+    if (!samples[0]) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        return EARS_ERR_CANT_READ;
+    }
+    samples[1] = buffer_locksamples(sources[1]);
+    if (!samples[1]) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        buffer_unlocksamples(sources[0]);
+        return EARS_ERR_CANT_READ;
+    }
+    num_samples[0] = ears_buffer_get_size_samps(ob, sources[0]);
+    num_samples[1] = ears_buffer_get_size_samps(ob, sources[1]);
+    must_free_samples[0] = must_free_samples[1] = 0;
+
+    ears_buffer_preprocess_sr_policies(ob, sources, 2, resamplingpolicy, resamplingfiltersize, &sr, &resampled, samples, num_samples, must_free_samples, NULL);
+    
+    ears_buffer_set_sr(ob, dest, sr);
+    
+    long numchans1 = ears_buffer_get_numchannels(ob, sources[0]);
+    long numchans2 = ears_buffer_get_numchannels(ob, sources[1]);
+    long numsamps1 = ears_buffer_get_size_samps(ob, sources[0]);
+    long numsamps2 = ears_buffer_get_size_samps(ob, sources[1]);
+
+    long outnumchans = MIN(numchans1, numchans2);
+    long outnumsamps = MIN(numsamps1, numsamps2);
+
+    ears_buffer_set_size_and_numchannels(ob, dest, outnumsamps, outnumchans);
+
+    float *dest_sample = ((dest == sources[0] && !must_free_samples[0]) ? samples[0] : buffer_locksamples(dest));
+    if (!dest_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        outnumchans = MIN(outnumchans, ears_buffer_get_numchannels(ob, dest));
+        outnumsamps = MIN(outnumsamps, ears_buffer_get_size_samps(ob, dest));
+        
+        switch (op) {
+            case EARS_OP_TIMES:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = samples[0][f*outnumchans + c] * samples[1][f*outnumchans + c];
+                    }
+                }
+                break;
+                
+            case EARS_OP_PLUS:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = samples[0][f*outnumchans + c] + samples[1][f*outnumchans + c];
+                    }
+                }
+                break;
+                
+            case EARS_OP_MINUS:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = samples[0][f*outnumchans + c] - samples[1][f*outnumchans + c];
+                    }
+                }
+                break;
+                
+            case EARS_OP_DIV:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = samples[0][f*outnumchans + c] / samples[1][f*outnumchans + c];
+                    }
+                }
+                break;
+                
+            case EARS_OP_RMINUS:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = samples[1][f*outnumchans + c] - samples[0][f*outnumchans + c];
+                    }
+                }
+                break;
+                
+            case EARS_OP_RDIV:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = samples[1][f*outnumchans + c] / samples[0][f*outnumchans + c];
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    if (dest == sources[0] && !must_free_samples[0])
+        buffer_unlocksamples(dest);
+    if (must_free_samples[0])
+        bach_freeptr(samples[0]);
+    else
+        buffer_unlocksamples(sources[0]);
+    if (must_free_samples[1])
+        bach_freeptr(samples[1]);
+    else
+        buffer_unlocksamples(sources[1]);
+
+    return err;
+}
+
+
+
+
+t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num, t_buffer_obj *dest, e_ears_op op)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (!dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    float *sample = buffer_locksamples(source);
+    if (!sample) {
+        object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+        return EARS_ERR_NO_BUFFER;
+    }
+    
+    float *dest_sample = NULL;
+    if (dest == source) {
+        dest_sample = sample;
+    } else {
+        ears_buffer_copy_format(ob, source, dest, true);
+        ears_buffer_set_size_and_numchannels(ob, dest, buffer_getframecount(source), buffer_getchannelcount(source));
+        dest_sample = buffer_locksamples(dest);
+    }
+    
+    if (!dest_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        long outnumchans = buffer_getchannelcount(dest);
+        long outnumsamps = buffer_getframecount(dest);
+        
+        switch (op) {
+            case EARS_OP_TIMES:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = sample[f*outnumchans + c] * num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_PLUS:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = sample[f*outnumchans + c] + num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_MINUS:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = sample[f*outnumchans + c] - num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_DIV:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = sample[f*outnumchans + c] / num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_RMINUS:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = sample[f*outnumchans + c] - num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_RDIV:
+                for (long c = 0; c < outnumchans; c++) {
+                    for (long f = 0; f < outnumsamps; f++) {
+                        dest_sample[f*outnumchans + c] = sample[f*outnumchans + c] / num;
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    if (dest != source)
+        buffer_unlocksamples(dest);
+    buffer_unlocksamples(source);
+
+    return err;
+}
+
+
+
+t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *env, t_buffer_obj *dest, e_ears_op op, e_slope_mapping slopemapping)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (!dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    float *sample = buffer_locksamples(source);
+    if (!sample) {
+        object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+        return EARS_ERR_NO_BUFFER;
+    }
+    
+    float *dest_sample = NULL;
+    if (dest == source) {
+        dest_sample = sample;
+    } else {
+        ears_buffer_copy_format(ob, source, dest, true);
+        ears_buffer_set_size_and_numchannels(ob, dest, buffer_getframecount(source), buffer_getchannelcount(source));
+        dest_sample = buffer_locksamples(dest);
+    }
+    
+    if (!dest_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        long channelcount = buffer_getchannelcount(dest);
+        long framecount = buffer_getframecount(dest);
+        
+        t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., false, slopemapping);
+        
+        switch (op) {
+            case EARS_OP_TIMES:
+                for (long f = 0; f < framecount; f++) {
+                    double num = ears_envelope_iterator_walk_interp(&eei, f, framecount);
+                    for (long c = 0; c < channelcount; c++) {
+                        dest_sample[f*channelcount + c] = sample[f*channelcount + c] * num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_PLUS:
+                for (long f = 0; f < framecount; f++) {
+                    double num = ears_envelope_iterator_walk_interp(&eei, f, framecount);
+                    for (long c = 0; c < channelcount; c++) {
+                        dest_sample[f*channelcount + c] = sample[f*channelcount + c] + num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_MINUS:
+                for (long f = 0; f < framecount; f++) {
+                    double num = ears_envelope_iterator_walk_interp(&eei, f, framecount);
+                    for (long c = 0; c < channelcount; c++) {
+                        dest_sample[f*channelcount + c] = sample[f*channelcount + c] - num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_DIV:
+                for (long f = 0; f < framecount; f++) {
+                    double num = ears_envelope_iterator_walk_interp(&eei, f, framecount);
+                    for (long c = 0; c < channelcount; c++) {
+                        dest_sample[f*channelcount + c] = sample[f*channelcount + c] / num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_RMINUS:
+                for (long f = 0; f < framecount; f++) {
+                    double num = ears_envelope_iterator_walk_interp(&eei, f, framecount);
+                    for (long c = 0; c < channelcount; c++) {
+                        dest_sample[f*channelcount + c] = sample[f*channelcount + c] - num;
+                    }
+                }
+                break;
+                
+            case EARS_OP_RDIV:
+                for (long f = 0; f < framecount; f++) {
+                    double num = ears_envelope_iterator_walk_interp(&eei, f, framecount);
+                    for (long c = 0; c < channelcount; c++) {
+                        dest_sample[f*channelcount + c] = sample[f*channelcount + c] / num;
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    if (dest != source)
+        buffer_unlocksamples(dest);
+    buffer_unlocksamples(source);
+
+    return err;
+}

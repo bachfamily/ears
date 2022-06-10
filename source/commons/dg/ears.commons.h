@@ -237,6 +237,17 @@ typedef enum {
     EARS_ANALYSIS_SUMMARIZATIONWEIGHT_LOUDNESS,
 } e_ears_analysis_summarizationweight;
 
+typedef enum {
+    EARS_OP_NONE = 0,
+    EARS_OP_PLUS,
+    EARS_OP_MINUS,
+    EARS_OP_TIMES,
+    EARS_OP_DIV,
+    EARS_OP_RMINUS,
+    EARS_OP_RDIV,
+} e_ears_op;
+
+
 
 typedef struct _ears_envelope_iterator
 {
@@ -329,6 +340,12 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
 // operations: DESTRUCTIVE: buf is modified 
 t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *addend, long resamplingfiltersize);
 t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *factor, long resamplingfiltersize);
+
+// More general case: apply an operation ("plus", "times", "minus", "div", "rminus", "rdiv")
+t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, t_buffer_obj *dest, e_ears_op op, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num, t_buffer_obj *dest, e_ears_op op);
+t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *env, t_buffer_obj *dest, e_ears_op op, e_slope_mapping slopemapping);
+
 
 t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
                             t_hatom *arguments, long num_arguments,

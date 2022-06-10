@@ -134,7 +134,7 @@ int C74_EXPORT main(void)
     CLASS_ATTR_STYLE(c, "scalarmode", 0, "onoff");
     CLASS_ATTR_LABEL(c, "scalarmode", 0, "Scalar Mode");
     CLASS_ATTR_BASIC(c, "scalarmode", 0);
-    // @description If set, a single number of buffers is iterated against all the others
+    // @description If set, a single number or buffer is iterated against all the others
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;

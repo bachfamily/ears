@@ -1717,7 +1717,7 @@ void earsbufobj_class_add_resamplingmode_attr(t_class *c)
     CLASS_ATTR_ENUM(c,"resamplingmode",0,"sinc nearest neighbor sample and hold linear quadratic cubic");
     CLASS_ATTR_ACCESSORS(c, "resamplingmode", NULL, earsbufobj_setattr_resamplingmode);
     // @description Sets the resampling mode (Sinc, Nearest Neighbor, Sample and Hold, Linear, Quadratic or Cubic). The default is "Sinc",
-    // which provides bandlimited interpolation.
+    // which provides band-limited interpolation.
 }
 
 
