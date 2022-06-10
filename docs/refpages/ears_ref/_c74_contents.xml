@@ -10,19 +10,23 @@
 <refpage name='ears.tovector~.maxref.xml'/>
 <refpage name='ears.process~.maxref.xml'/>
 <refpage name='ears.join~.maxref.xml'/>
-<refpage name='ears.utils.playmp3~.maxref.xml'/>
+<refpage name='ears.playmp3~.maxref.xml'/>
 <refpage name='ears.neq~.maxref.xml'/>
 <refpage name='ears.model.sine.synthesis~.maxref.xml'/>
 <refpage name='ears.crop~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
+<refpage name='ears.div~.maxref.xml'/>
 <refpage name='ears.phaseunwrap~.maxref.xml'/>
+<refpage name='ears.plus~.maxref.xml'/>
 <refpage name='ears.rubberband~.maxref.xml'/>
 <refpage name='ears.waveset.interp~.maxref.xml'/>
 <refpage name='ears.model.stochastic.analysis~.maxref.xml'/>
 <refpage name='ears.mc.in~.maxref.xml'/>
+<refpage name='ears.times~.maxref.xml'/>
 <refpage name='ears.read~.maxref.xml'/>
 <refpage name='ears.slice~.maxref.xml'/>
 <refpage name='ears.format~.maxref.xml'/>
+<refpage name='ears.rminus~.maxref.xml'/>
 <refpage name='ears.unpack~.maxref.xml'/>
 <refpage name='ears.processinfo~.maxref.xml'/>
 <refpage name='ears.waveset.decimate~.maxref.xml'/>
@@ -78,6 +82,7 @@
 <refpage name='ears.soundtouch~.maxref.xml'/>
 <refpage name='ears.istft~.maxref.xml'/>
 <refpage name='ears.reg~.maxref.xml'/>
+<refpage name='ears.minus~.maxref.xml'/>
 <refpage name='ears.model.stochastic.synthesis~.maxref.xml'/>
 <refpage name='ears.overdrive~.maxref.xml'/>
 <refpage name='ears.waveset.split~.maxref.xml'/>
@@ -95,4 +100,5 @@
 <refpage name='ears.split~.maxref.xml'/>
 <refpage name='ears.hoa.rotate~.maxref.xml'/>
 <refpage name='ears.tempogram~.maxref.xml'/>
+<refpage name='ears.rdiv~.maxref.xml'/>
 </root>

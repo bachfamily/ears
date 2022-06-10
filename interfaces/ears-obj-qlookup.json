@@ -198,7 +198,7 @@
       "ears.mix~"
     ]
   },
-  "ears.utils.playmp3~": {
+  "ears.playmp3~": {
     "digest": "Play mp3 natively",
     "module": "ears",
     "category": [
@@ -287,6 +287,27 @@
       "clip"
     ]
   },
+  "ears./~": {
+    "digest": "Divide buffer samples",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "div",
+      "divide",
+      "scale"
+    ],
+    "seealso": [
+      "ears.+~",
+      "ears.-~",
+      "ears.*~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
+    ]
+  },
   "ears.phaseunwrap~": {
     "digest": "Unwrap phase",
     "module": "ears",
@@ -301,6 +322,26 @@
     "seealso": [
       "ears.phasewrap~",
       "ears.fromdiffs~"
+    ]
+  },
+  "ears.+~": {
+    "digest": "Sum buffer samples",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "plus",
+      "add"
+    ],
+    "seealso": [
+      "ears.-~",
+      "ears.*~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
     ]
   },
   "ears.rubberband~": {
@@ -382,6 +423,27 @@
       "ears.tovector~"
     ]
   },
+  "ears.*~": {
+    "digest": "Multiply buffer samples",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "times",
+      "multiply",
+      "scale"
+    ],
+    "seealso": [
+      "ears.+~",
+      "ears.-~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
+    ]
+  },
   "ears.read~": {
     "digest": "Store files in buffers",
     "module": "ears",
@@ -435,6 +497,28 @@
       "ears.normalize~",
       "ears.reg~",
       "ears.resample~"
+    ]
+  },
+  "ears.!-~": {
+    "digest": "Subtract buffer samples with reversed inlets",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "subtract",
+      "minus",
+      "reversed",
+      "reverse"
+    ],
+    "seealso": [
+      "ears.-~",
+      "ears.+~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
     ]
   },
   "ears.unpack~": {
@@ -1470,6 +1554,26 @@
       "ears.convert~"
     ]
   },
+  "ears.-~": {
+    "digest": "Subtract buffer samples",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "minus",
+      "subtract"
+    ],
+    "seealso": [
+      "ears.+~",
+      "ears.*~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
+    ]
+  },
   "ears.model.stochastic.synthesis~": {
     "digest": "Sinusoidal synthesis model",
     "module": "ears",
@@ -1771,6 +1875,29 @@
     "seealso": [
       "ears.spectrogram~",
       "ears.essentia~"
+    ]
+  },
+  "ears.!/~": {
+    "digest": "Divide buffer samples with reversed inlets",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "rdiv",
+      "divide",
+      "reversed",
+      "reverse"
+    ],
+    "seealso": [
+      "ears./~",
+      "ears.+~",
+      "ears.-~",
+      "ears./~",
+      "ears.!-~",
+      "ears.*~",
+      "ears.gain~"
     ]
   }
 }

@@ -372,7 +372,7 @@
 				Scalar Mode
 			</digest>
 			<description>
-				If set, a single number of buffers is iterated against all the others
+				If set, a single number or buffer is iterated against all the others
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Scalar Mode" />

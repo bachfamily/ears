@@ -30,7 +30,7 @@
 		</inlet>
 		<inlet id="1" type="INLET_TYPE">
 			<digest>
-				Number Of Repetitions
+				Maximum shuffling distance
 			</digest>
 			<description>
 			</description>
@@ -57,6 +57,14 @@
 			<description>
 				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
 				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
+			</description>
+		</objarg>
+		<objarg name="maxdist" optional="1" type="int">
+			<digest>
+				
+			</digest>
+			<description>
+				Sets the maximum distance travelled by a waveset while shuffling
 			</description>
 		</objarg>
 	</objarglist>
@@ -88,10 +96,10 @@
 		<method name="number">
 			<arglist />
 			<digest>
-				Set number of repetitions
+				Set maximum distance
 			</digest>
 			<description>
-				A number in the second inlet sets the number of repeetitions.
+				A number in the second inlet sets the maximum distance travelled by a waveset while shuffling
 			</description>
 		</method>
 		<method name="reset">
@@ -375,7 +383,7 @@
 		</entry>
 		<entry name ="Inlet 2 (number)">
 			<description>
-				Number Of Repetitions.
+				Maximum shuffling distance.
 			</description>
 		</entry>
 	</misc>

@@ -1,3 +1,9 @@
 max db.addvirtual alias ears.!=~ ears.neq~;
+max db.addvirtual alias ears./~ ears.div~;
+max db.addvirtual alias ears.+~ ears.plus~;
+max db.addvirtual alias ears.*~ ears.times~;
+max db.addvirtual alias ears.!-~ ears.rminus~;
 max db.addvirtual alias ears.==~ ears.eq~;
 max db.addvirtual alias ears.shift~ ears.offset~;
+max db.addvirtual alias ears.-~ ears.minus~;
+max db.addvirtual alias ears.!/~ ears.rdiv~;

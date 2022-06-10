@@ -206,11 +206,9 @@ void buf_times_bang(t_buf_times *x)
         long numoutbuffers = MIN(num_buffers1, num_buffers2);
         if (scalarmode) {
             if (num_buffers1 > 1 && num_buffers2 == 1) {
-                num_buffers2 = num_buffers1;
                 numoutbuffers = num_buffers1;
             }
             if (num_buffers1 == 1 && num_buffers2 > 1) {
-                num_buffers1 = num_buffers2;
                 numoutbuffers = num_buffers2;
             }
         }

@@ -465,7 +465,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Phase Retrieval" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Rectangular Griffin-Lim Regions" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -572,7 +571,6 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Frequency-Domain Algorithm" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Regularization" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

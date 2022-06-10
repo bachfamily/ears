@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.times.c
+	ears.rminus.c
  
 	@name
-	ears.*~
+	ears.!-~
  
 	@realname
-	ears.times~
+	ears.rminus~
  
 	@type
 	object
@@ -18,21 +18,21 @@
 	Daniele Ghisi
  
 	@digest
-	Multiply buffer samples
+	Subtract buffer samples with reversed inlets
  
 	@description
-	Multiplies all samples by a given factor, envelope or buffer
- 
+    Functions like the ears.-~ object but with inlets reversed.
+
 	@discussion
  
 	@category
 	ears math
  
 	@keywords
-	buffer, times, multiply, scale
+	buffer, subtract, minus, reversed, reverse
  
 	@seealso
-	ears.+~, ears.-~, ears./~, ears.!-~, ears.!/~, ears.gain~
+	ears.-~, ears.+~, ears./~, ears.!-~, ears.!/~, ears.gain~
 
 	@owner
 	Daniele Ghisi
@@ -47,30 +47,30 @@
 
 
 
-typedef struct _buf_times {
+typedef struct _buf_rminus {
     t_earsbufobj       e_ob;
     
     char               e_scalarmode;
     t_llll             *e_operand;
-} t_buf_times;
+} t_buf_rminus;
 
 
 
 // Prototypes
-t_buf_times*         buf_times_new(t_symbol *s, short argc, t_atom *argv);
-void			buf_times_free(t_buf_times *x);
-void			buf_times_bang(t_buf_times *x);
-void			buf_times_anything(t_buf_times *x, t_symbol *msg, long ac, t_atom *av);
+t_buf_rminus*         buf_rminus_new(t_symbol *s, short argc, t_atom *argv);
+void			buf_rminus_free(t_buf_rminus *x);
+void			buf_rminus_bang(t_buf_rminus *x);
+void			buf_rminus_anything(t_buf_rminus *x, t_symbol *msg, long ac, t_atom *av);
 
-void buf_times_assist(t_buf_times *x, void *b, long m, long a, char *s);
-void buf_times_inletinfo(t_buf_times *x, void *b, long a, char *t);
+void buf_rminus_assist(t_buf_rminus *x, void *b, long m, long a, char *s);
+void buf_rminus_inletinfo(t_buf_rminus *x, void *b, long a, char *t);
 
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
-EARSBUFOBJ_ADD_IO_METHODS(times)
+EARSBUFOBJ_ADD_IO_METHODS(rminus)
 
 /**********************************************************************/
 // Class Definition and Life Cycle
@@ -87,10 +87,10 @@ int C74_EXPORT main(void)
     
     t_class *c;
     
-    CLASS_NEW_CHECK_SIZE(c, "ears.times~",
-                         (method)buf_times_new,
-                         (method)buf_times_free,
-                         sizeof(t_buf_times),
+    CLASS_NEW_CHECK_SIZE(c, "ears.rminus~",
+                         (method)buf_rminus_new,
+                         (method)buf_rminus_free,
+                         sizeof(t_buf_rminus),
                          (method)NULL,
                          A_GIMME,
                          0L);
@@ -101,13 +101,13 @@ int C74_EXPORT main(void)
     // A symbol in the second inlet is expected to contain the name of the buffer to be used as a second operand.
     // A number or an llll in the second inlet is expected to contain respectively the numeric operand or the operand
     // in the form of an envelope.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(times)
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(rminus)
     
     // @method number @digest Set operand
     // @description A number in the second inlet sets a constant second operand
 
     
-    CLASS_ATTR_CHAR(c, "scalarmode",    0,    t_buf_times, e_scalarmode);
+    CLASS_ATTR_CHAR(c, "scalarmode",    0,    t_buf_rminus, e_scalarmode);
     CLASS_ATTR_FILTER_CLIP(c, "scalarmode", 0, 1);
     CLASS_ATTR_STYLE(c, "scalarmode", 0, "onoff");
     CLASS_ATTR_LABEL(c, "scalarmode", 0, "Scalar Mode");
@@ -129,7 +129,7 @@ int C74_EXPORT main(void)
     return 0;
 }
 
-void buf_times_assist(t_buf_times *x, void *b, long m, long a, char *s)
+void buf_rminus_assist(t_buf_rminus *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         if (a == 0)
@@ -141,19 +141,19 @@ void buf_times_assist(t_buf_times *x, void *b, long m, long a, char *s)
     }
 }
 
-void buf_times_inletinfo(t_buf_times *x, void *b, long a, char *t)
+void buf_rminus_inletinfo(t_buf_rminus *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
 
-t_buf_times *buf_times_new(t_symbol *s, short argc, t_atom *argv)
+t_buf_rminus *buf_rminus_new(t_symbol *s, short argc, t_atom *argv)
 {
-    t_buf_times *x;
+    t_buf_rminus *x;
     long true_ac = attr_args_offset(argc, argv);
     
-    x = (t_buf_times*)object_alloc_debug(s_tag_class);
+    x = (t_buf_rminus*)object_alloc_debug(s_tag_class);
     if (x) {
         x->e_operand = llll_from_text_buf("0.", false);
         x->e_scalarmode = 1;
@@ -187,7 +187,7 @@ t_buf_times *buf_times_new(t_symbol *s, short argc, t_atom *argv)
 }
 
 
-void buf_times_free(t_buf_times *x)
+void buf_rminus_free(t_buf_rminus *x)
 {
     llll_free(x->e_operand);
     earsbufobj_free((t_earsbufobj *)x);
@@ -195,7 +195,7 @@ void buf_times_free(t_buf_times *x)
 
 
 
-void buf_times_bang(t_buf_times *x)
+void buf_rminus_bang(t_buf_rminus *x)
 {
     long num_buffers1 = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     long num_buffers2 = earsbufobj_get_instore_size((t_earsbufobj *)x, 1);
@@ -206,11 +206,9 @@ void buf_times_bang(t_buf_times *x)
         long numoutbuffers = MIN(num_buffers1, num_buffers2);
         if (scalarmode) {
             if (num_buffers1 > 1 && num_buffers2 == 1) {
-                num_buffers2 = num_buffers1;
                 numoutbuffers = num_buffers1;
             }
             if (num_buffers1 == 1 && num_buffers2 > 1) {
-                num_buffers1 = num_buffers2;
                 numoutbuffers = num_buffers2;
             }
         }
@@ -224,7 +222,7 @@ void buf_times_bang(t_buf_times *x)
             t_buffer_obj *in1 = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count < num_buffers1 ? count : 0);
             t_buffer_obj *in2 = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 1, count < num_buffers2 ? count : 0);
             t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
-            ears_buffer_op((t_object *)x, in1, in2, out, EARS_OP_TIMES, (e_ears_resamplingpolicy) x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+            ears_buffer_op((t_object *)x, in1, in2, out, EARS_OP_RMINUS, (e_ears_resamplingpolicy) x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
             if (earsbufobj_iter_progress((t_earsbufobj *)x, count, numoutbuffers)) break;
         }
         earsbufobj_mutex_unlock((t_earsbufobj *)x);
@@ -246,10 +244,10 @@ void buf_times_bang(t_buf_times *x)
                 t_buffer_obj *in1 = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, inlet, count);
                 t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
                 if (el && is_hatom_number(&el->l_hatom)) {
-                    ears_buffer_number_op((t_object *)x, in1, hatom_getdouble(&el->l_hatom), out, EARS_OP_TIMES);
+                    ears_buffer_number_op((t_object *)x, in1, hatom_getdouble(&el->l_hatom), out, EARS_OP_RMINUS);
                 } else if (el && hatom_gettype(&el->l_hatom) == H_LLLL){
                     t_llll *env = earsbufobj_llllelem_to_env_samples((t_earsbufobj *)x, el, in1);
-                    ears_buffer_envelope_op((t_object *)x, in1, env, out, EARS_OP_TIMES, (e_slope_mapping) x->e_ob.l_slopemapping);
+                    ears_buffer_envelope_op((t_object *)x, in1, env, out, EARS_OP_RMINUS, (e_slope_mapping) x->e_ob.l_slopemapping);
                     llll_free(env);
                 } else {
                     object_error((t_object *)x, "Wrong syntax.");
@@ -267,7 +265,7 @@ void buf_times_bang(t_buf_times *x)
 }
 
 
-void buf_times_anything(t_buf_times *x, t_symbol *msg, long ac, t_atom *av)
+void buf_rminus_anything(t_buf_rminus *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
 
@@ -282,7 +280,7 @@ void buf_times_anything(t_buf_times *x, t_symbol *msg, long ac, t_atom *av)
             earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
             
             if (inlet == 0)
-                buf_times_bang(x);
+                buf_rminus_bang(x);
             
         } else if (inlet == 1) {
             earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, 0, false);
