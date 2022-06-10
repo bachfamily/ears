@@ -844,6 +844,7 @@
 		1EFF918A28536EB6003265C1 /* ears.div.c in Sources */ = {isa = PBXBuildFile; fileRef = 1EFF90FC28536CF0003265C1 /* ears.div.c */; };
 		1EFF918B28536EBA003265C1 /* ears.rminus.c in Sources */ = {isa = PBXBuildFile; fileRef = 1EFF90FF28536CF0003265C1 /* ears.rminus.c */; };
 		1EFF918C28536EBD003265C1 /* ears.rdiv.c in Sources */ = {isa = PBXBuildFile; fileRef = 1EFF910328536CF0003265C1 /* ears.rdiv.c */; };
+		1EFF918D28536F38003265C1 /* ears.vamp_commons.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BA82927D5F89F008A2F84 /* ears.vamp_commons.c */; };
 		1EFFE9B91D1D523E00691C4C /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		91319B4D264C022600364EAB /* ears.process_commons.h in Headers */ = {isa = PBXBuildFile; fileRef = 91319B4B264C022500364EAB /* ears.process_commons.h */; };
 		91319B4E264C022600364EAB /* ears.process_commons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91319B4C264C022600364EAB /* ears.process_commons.cpp */; };
@@ -9593,6 +9594,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EFF918D28536F38003265C1 /* ears.vamp_commons.c in Sources */,
 				1EFF917D28536E74003265C1 /* ears.vamp.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

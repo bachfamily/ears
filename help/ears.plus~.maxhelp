@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 685.0, 490.0 ],
+		"rect" : [ 603.0, 154.0, 685.0, 490.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -185,7 +185,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 293.0, 254.0, 123.0, 23.0 ],
-									"text" : "ears.*~"
+									"text" : "ears.+~"
 								}
 
 							}
@@ -248,7 +248,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 30.0, 254.0, 116.0, 23.0 ],
-									"text" : "ears.*~"
+									"text" : "ears.+~"
 								}
 
 							}
@@ -271,13 +271,13 @@
 									"filename" : "helpname.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.*~" ],
+									"jsarguments" : [ "ears.+~" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 152.02398681640625, 57.599853515625 ]
+									"patching_rect" : [ 10.0, 10.0, 159.4639892578125, 57.599853515625 ]
 								}
 
 							}
@@ -378,13 +378,13 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 311.0, 205.0, 130.0, 22.0 ],
+					"patching_rect" : [ 311.0, 205.0, 133.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"filename" : "helpstarter.js",
 						"parameter_enable" : 0
 					}
 ,
-					"text" : "js helpstarter.js ears.*~"
+					"text" : "js helpstarter.js ears.+~"
 				}
 
 			}
@@ -407,7 +407,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 685.0, 464.0 ],
+						"rect" : [ 603.0, 180.0, 685.0, 464.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -493,7 +493,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 474.606537000000003, 250.0, 113.393462999999997, 23.0 ],
-									"text" : "ears.*~ 0.5"
+									"text" : "ears.+~"
 								}
 
 							}
@@ -657,7 +657,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 265.606537000000003, 250.0, 113.393462999999997, 23.0 ],
-									"text" : "ears.*~ 0.5"
+									"text" : "ears.+~ 0.3"
 								}
 
 							}
@@ -669,7 +669,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 15.0, 250.0, 123.0, 23.0 ],
-									"text" : "ears.*~"
+									"text" : "ears.+~"
 								}
 
 							}
@@ -759,7 +759,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-2",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.*~", 90 ],
+									"jsarguments" : [ "ears.+~", 90 ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
@@ -893,13 +893,13 @@
 					"filename" : "helpname.js",
 					"id" : "obj-4",
 					"ignoreclick" : 1,
-					"jsarguments" : [ "ears.*~" ],
+					"jsarguments" : [ "ears.+~" ],
 					"maxclass" : "jsui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 10.0, 10.0, 152.02398681640625, 57.599853515625 ]
+					"patching_rect" : [ 10.0, 10.0, 159.4639892578125, 57.599853515625 ]
 				}
 
 			}
@@ -976,11 +976,11 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.read~.mxo",
+				"name" : "ears.plus~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.times~.mxo",
+				"name" : "ears.read~.mxo",
 				"type" : "iLaX"
 			}
 , 			{
