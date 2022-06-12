@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 5,
+			"minor" : 3,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 161.0, 79.0, 950.0, 579.0 ],
+		"rect" : [ 161.0, 100.0, 950.0, 579.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -76,8 +76,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 243.0, 11.0, 120.0, 19.0 ],
-					"text" : "v0.0.1 alpha",
+					"patching_rect" : [ 244.0, 11.0, 120.0, 19.0 ],
+					"text" : "v0.0.2 alpha",
 					"textcolor" : [ 0.109804, 0.109804, 0.109804, 1.0 ],
 					"varname" : "autohelp_top_digest[3]"
 				}
@@ -107,8 +107,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 823.0, 8.0, 107.0, 21.0 ],
-					"text" : "Buffer operations",
+					"patching_rect" : [ 778.0, 11.0, 152.0, 21.0 ],
+					"text" : "Off-line algorithmic audio",
 					"textcolor" : [ 0.827450980392157, 0.827450980392157, 0.827450980392157, 1.0 ]
 				}
 
@@ -245,6 +245,7 @@
 					"enablevscroll" : 0,
 					"id" : "obj-53",
 					"lockeddragscroll" : 0,
+					"lockedsize" : 0,
 					"maxclass" : "bpatcher",
 					"name" : "cage.overviewswitch.maxpat",
 					"numinlets" : 1,
@@ -254,14 +255,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 3,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 343.0, 322.0, 662.0, 490.0 ],
+						"rect" : [ 740.0, 437.0, 954.0, 482.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -290,6 +291,19 @@
 						"subpatcher_template" : "",
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-3",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 388.0, 3623.0, 457.0, 21.0 ],
+									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"hidden" : 1,
 									"id" : "obj-4",
@@ -473,15 +487,15 @@
 									"fontsize" : 15.0,
 									"hyperlinkcolor" : [ 0.694117647058824, 0.4, 0.0, 1.0 ],
 									"id" : "obj-5",
-									"linecount" : 12,
+									"linecount" : 20,
 									"linkend" : [ ":", "!", "?", "\u002c", "\u003b", "(", ")", "[", "]", "{", "}" ],
 									"linkstart" : [ "" ],
 									"maxclass" : "bach.hypercomment",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 213.5, 348.0, 208.0 ],
-									"text" : "01. Concatenate Files In A Folder\n02. Random Mix\n03. Reverse Comparison\n04. Reverse Reverb\n05. Time And Pitch\n06. Multiresample\n07. Offline Panning\n08. Query And Process\n09. Splitting And Tagging MP3 Files\n10. Batch Separate Channels\n11. Batch Combine 5.1 Channels\n12. Generate Higher-Order Ambisonic Trajectories"
+									"patching_rect" : [ 10.0, 213.5, 348.0, 342.0 ],
+									"text" : "01. Reverse\n02. Random Mix\n03. Reverse Reverb\n04. Concatenate Files In A Folder\n05. Time And Pitch\n06. In-Place Processing\n07. Multiresample\n08. Off-line Panning\n09. Query And Process\n10. Splitting And Tagging MP3 Files\n11. Batch Separate Channels\n12. Batch Combine 5.1 Channels\n13. Export A Click Track\n14. Multi-Timestretch Echo Rallentando\n15. Generate Higher-Order Ambisonic Trajectories\n16. Batch Change Gain With Progress Bar\n17. Extract Audio Features\n18. Extract Onsets As Notes\n19. Wavesets\n20. Spectal Analysis And Group Delay"
 								}
 
 							}
@@ -630,7 +644,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 525.727233999999953, 3752.090819999999894, 264.0, 35.0 ],
+									"patching_rect" : [ 525.727233999999953, 3872.090819999999894, 264.0, 35.0 ],
 									"text" : ";\rmax launchbrowser http://forum.bachproject.net"
 								}
 
@@ -648,7 +662,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 342.090941999999984, 3458.0, 136.0, 21.0 ],
+									"patching_rect" : [ 342.090941999999984, 3578.0, 136.0, 21.0 ],
 									"text" : "forum.bachproject.net"
 								}
 
@@ -666,7 +680,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 298.0, 3473.0, 165.0, 21.0 ],
+									"patching_rect" : [ 298.0, 3593.0, 165.0, 21.0 ],
 									"text" : "info@bachproject.net"
 								}
 
@@ -682,7 +696,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 69.545410000000004, 3789.27270499999986, 265.0, 35.0 ],
+									"patching_rect" : [ 69.545410000000004, 3909.27270499999986, 265.0, 35.0 ],
 									"text" : ";\rmax launchbrowser mailto:info@bachproject.net"
 								}
 
@@ -696,7 +710,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 7.0, 3458.0, 882.0, 36.0 ],
+									"patching_rect" : [ 7.0, 3578.0, 882.0, 36.0 ],
 									"text" : "If you use ears, you might find useful to join the forums at \nIf you want to contact us privately, you can do it at",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
@@ -707,45 +721,14 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-14",
-									"linecount" : 9,
+									"linecount" : 17,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 7.0, 3311.0, 770.0, 137.0 ],
-									"text" : "ears is relased under a GPLv3 license and embeds the following libraries\n• the bach library (released under GPLv3 license)\n• the mpg123 library 1.23.4 (released under LGPLv2.1)\n• for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)\n• for the [ears.writetags] and [ears.readtags] modules: a modified version of id3lib (released under GPLv2) and id3tool\n• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2) \n   which in turns uses libsamplerate (released under BSD 2-Clause \"Simplified\" License)\n• for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3\nRefer to the License file in the package folder to know more about the specific licenses.",
+									"patching_rect" : [ 7.0, 3311.0, 812.0, 253.0 ],
+									"presentation_linecount" : 18,
+									"text" : "ears is relased under a GPLv3 license and embeds the following libraries\n• bach (https://github.com/bachfamily/bach)\n• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3), modified only to prevent a clash between function naming.\n• For the [ears.write~] and [ears.read~] module: the TagLib library (released under LGPL)\n• For the [ears.write~] and [ears.read~] module: the LibAIFF library (released under MIT License, compatible with GPLv3)\n• For the [ears.write~] and [ears.read~] module: A modified version of the AudioFile library (released under GPLv3)\n• the mpg123 library 1.23.4 (released under LGPLv2.1)\n• the mp3 LAME library 3.1.00 released under LGPLv2\n• WavPack (released under BSD license)\n• for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)\n• for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2) and of the id3tool library \n• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2) which in turns uses libsamplerate (released under BSD 2-Clause \"Simplified\" License)\n• for the [ears.soundtouch~] module: the SoundTouch library, released under LGPLv2.1\n• for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3\n• for the [ears.vamp~] module: the Vamp Plugin and Host SDK, released under the permissive license below",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"autofit" : 1,
-									"data" : [ 4579, "png", "IBkSG0fBZn....PCIgDQRA...zG...PeHX....vi.xVI....DLmPIQEBHf.B7g.YHB..QnYRDEDU3wY6c1GbSbleG+qAo6O5hsVIaJjgfQV1Vjq.FrT.NmN01fgjKlP3kXNJ93fvasyEngilKbTRBGoGu3vkPByPatiyjbgdUTJTaxjbbEheQ1sG4HGZMIPZ.ofjvoLAOHKuKFkoyXQ19GR6F8r5EKocswm28yLdFuq184Y2869776442yummMGddddngphwb+9BPigezDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUgnS5Nb1tSzQGcfO8xWNkmXd4NNr509zn54UcB+cOt8f2pwFw0u90A.vi7HOBVy5VGLYxn7upiRvf8gedCMfqcM2..XxO3jvV15VQoVKUwyCg6iGXhSTwyC.fS27oQ6szB9xacK7.SbhXY0UWZ+rMY7.SbhXdKXAnxpph74NeTbeM27y1lc9wSaLi9qweUi7Ro81ZmuDyEE2wtv4WCeu8FLtiOaYgyul3xiRLWDuqK5RQR+d6MXByixKal7tulaEIO34442wyu8D9r80e0WKti080byWdYyLiznRLWDeyM0rXZjCOejEkfst4sfyblyjQuc9498gc77aG6+.uh39BFrO7cW3BgeudgAZZhimikEe+0tV75uwqmQ4Sh3zMeZ72r90mv7v.MMNyYOqrKMt0MuEbbGNRXdT87mO92+ONkrRefH0r98V9xiKODxmi7VuEV5xVp39Xbwfu6BV..PBOmjgQSlvG45h.HFa5e1UuZbY3f82rsYGqeiaj3776yGgfGdfAD+ihhBm9TmBdb6IsuXSFW3C+vDteCzzHPf.nyN6TVouG2dhqP.OOOhVFAdutWE493Xuy6jv7PHe5voShe2lcaXU0WO.FbMJ1zoufAQvf8AfXroyxxJlvbrrvrEKnlZpIoWrSXBS.KZwKNtRS24N2A.QDa..i4mO..5O594XYwa0XiD0NjMjJ6Y50oCeRWcIqz+l27lfikETTTH7.C.c50ibxIG.D4EKNNVze+8Kq7fwECZukV.EEk39Lke9nufAE29qCGNty6P+SGFyaAKHou3CD44ye7BW...5zqG.QJPZxjQxFxIHT..0We83G8b+8Y4sSDBEJDJ29CiJq7uB6aO6Qrz+oN4Iw523FkU0u4k63H1tHKVfmqcMws+v+veHqSa.fKwv.fHOv3XYwrrYCrrr318zi3wjat4Jq73e4XGCgBEJxKQQyiZqsVhmUIiktrkRTsuTXbwfUVWcfikE4Yv.wukztrkqjCLa4t2serl0sNT87mun8VNVVr+8sOYktTTQDcASG1saGkN0ohPgBAJJJb6d5ANa2YVm9BUsKXVp1ZqE.QdQVmd8hkdxVNcymF+qG6Xh0jPQQgFNvATrm6ohjJ52s+6pXYhISFwN14NEe60.MMd+28cwQa7nxNs0oWOBEJDJwpUQgQXem8286xpzjwEC7bsqAJJJDJTHL9ILATY0UK6qUA731C9G28tItV+qqudXytMzOGm3wMPBpZWIXXy4L1raCFMYhXem33GWQyCyVrPr8f0O1jQWc0kXIZ..ylMCSQaahRvu88dO3yqWjmACfmmG4Yv.VwJWYbGmdcw4FEEggUOxUw246H9+FnowkXXTjV.KPgEVHgsP+98mUo+m61Mw1EWbwHu7xCgUnRdNb3.50oC4jSNHmbxAlxOeXytMEIsSGFVE8xJubvESuD..9zO8SUjzteNNXtnhH12s6oGbyadyLNsb4xEw1yshJhjGQ6AhbviaOveLkx444IJLLbvvpnurnNgPP3MPSCG+leihk9lLYDSdJSQrgQgBERrU3oKLtXfOudE21.MMl1zllhcM9aeu2C.PrT9c33vxpqtDdr+IuMcfHhxl2xVH1WWLLfwUlILoBKlmBQqqyTuL1oSmh8x.HhmrJ0Zon2.ATjqOGw3gOgtokLerOpvlN.vhV7hIJsywxhSdhSnXo+3+ym.w1975UzSToC975knDFcF3pyACFWLvuWuhcybfvgwhdhmPwR+zkgcQuTqkJ10JA9fy8AYjvjJJwpUvwxJVEOGKaFUJ8yt5UIJg8senGRQtt.f3K2BcSq3hKA0tnEoXoe5x8kwSesqe8DNkn6a3GM2TSJRZWbwEC.PTEe55tzfA6SzdtPoQSie7Jx0kG2dv+lCGh22..K7QWXJ8J4nBa5BXytMr0ssMDJTH..PQQg8r6cqH11mzjlTb6qqzzO7984SzdtPowYNyYJ6qI.fCenCI12+PgBgYYyFd9criTdNiZroKvZV25vrrYi3AQCxz0r..4WPA3AKrPhp3k1u6jQ2c2M.HGMsBKrPYeMczFOJNtjR467EeQEMfRxDtuI5lLYDqbUqhXeNaqMY4ubgz0r4H8WWnJ9z0ybBCIrPWo.Pb88OSgkkSzyiBubW87meRaw9vA2WiQtkESvCXflFCDNLZ9TxOvDl5TsRXOjUhCgRFw1+bf3cqa1vk5pq37UP8qd0o04Npxlt.lLYDEEyCV85zgyblyH6VxWhUqD1CCDH.XY4RwYDgu7V2hXaylMK6pfEBRhXe4txppJsN2Qc1zEXkqZUDdniikEc1QGxJMqrxJESqvCL.5q2dg2znJd+98K1pcfHAyobfwECd+28cIFOfZqs16a1xE39tnOT3Z1RsVJJ2VjAvPvNZmRB6Hov3hAA6sWLVc5DCrA4Nbpc5zIgfywxlTWtNbx8cQ2jIinpppjXecwvH6p3kVJUp8Zozc2cK13MfHteUtMhKVW.KzUvxxft.Npzlt.OwRhD1Ow5ZV4VEuzFgc4qbkT9hjeIuTT1LltrpFNVG8.DQ.yzp1G0ZSG.nxppByxF43IK2p3m1zlFQim9ht6F984KoG+Ut7mPr8zmQYxJ+atolHdIVuNciHpZGXDhnaxjQzvAN.gqYc1VaxJbpDrqG6C9j4YNOt8fVaoUPQQg6ENLnnnjk8bOt8fe4a9lD6aCaZS2W6adrLhPzA9FWyxF0tpfqYuzk93rNMerG+wI198iNV1R47+9yS3YvRm5TkUjr7J6auhN5QHbx+I6bmYb5Lp1lt.KZwKFzwDMngBEBmvgirN8DF7EgtfcC+9Snc8q9Y+ODaKmQViwEiXsFB462e0+.PSm4Q45nZa5BTp0RwRepmhHnDas0Vy53naRSZRnvoXVrKX+uc2M9jON9ZNjFdTkUd4YU9ADY3SisViBmhYT6hpcvOwgQFQI5..+f0rF.7Mwateudy5onToVKEVJlrU7RcIpG2dDC2Yg7r7rTz831CN0IOIw9FrgO89Ai3Dca1sgYYyFw3g2vd2aV2uco8W+7m+7Da2YmcFm87rs+4G9PGhHTqLPSOnCeZpPUXSW.kz0rUVc0DdESZL48g+2+W..hCkpc61yp9m6wsm3lgqx0kqpBa5BHs5UCzzn8VZIqRKokZ4XYEG27fA6CexkuBwuKDtyYJRCkaNVVLunSo3QZLhTzsY2FLawBQLxOXSHwjMGvLYxHLZxjn85ABGFebzFy42mOhYHZdFLj0AMQ6szRbS5PkLzoURFQJ5.Ql0rCDNrXTrDr2dy5vohNZ3OoSudnWmNwkVkt6t63lUmYq87XeojikESurxjcC3TU1zAhDNUydNyA2giSLRVx1voRZ+tEFPGolLrTbwYkM3i13QE8cuPC41UzInnbPUYSGPYcMarSmJgFF52mu3LYT3jevLNsCFrOzvd2Kw9paEqXDiKWSDiXEcfH11exkrDBm0jMyz07SvLNs6t6Vrz48BGF2Kb33lnDoCM2TSHPf.huLYflNtkjkQZjTQebRVoGRWxKu7x5KlDQriLkvLc0Y6NwXxfp9RTiyDV5NhMbmKwp0zJ8Dp0n+96Gm33GmnZ35VwJFw4LFg4MmtwNV.HQzi0gHoaXCKEgtCIjNxc58V87pVbUrPf+4CeXvwM3w7l.RWlPLPSiVas03NtDUiPhfhhBFMYBm7Dm.9hYQUx.McBmm4xAowsW1fPigCeu6AfXVngnooE69hAZZbpSdxD9fYv318zCwfMjIK6UIi8t+8iZerGSL85JpqTS2zN+BJ.lsXgXUupufAi67SU20z+s9VH27xCbrrPmd8nufAIb4JGKKdgcsKYOOyE55ovhU.iKWXN1e3LNcDVabhsmIBu7KJ51saGWhgQ7fxImbH5Ca5hz0hk09zOcFmFRQXrw6JAS6XA6nUVYkI3LifISFQM0TCZfwURWu1LawRJELylmBrU9rRZXWY1hEr0s8iRi6lTyxV9xwu7Mey3dAMSYrRL+Yo3hEM6HV8tP0RBcQRtDHP.rp5qOkq.RYB0u5UiO2uu3VTCtMaeokcz0uwMhRLWDBDH.wZ0FGKKtMae3u8G9CGzqgm4u6Ygdc5h6ZHPf.ob4WKSvjIiXmu3KJ6zI14+90ugexIVRrKAkM9qZje11rySOtbk8eqX4Okhtjfxyyy+rOyliKe1wyu8z97aus1iaoP07jdvDtbblLZtol4KwbQDWCKb90nnKan77jKcnxQGJwbQ7O6yrYBsPbYBUffA6Cc1QG3F98ia8keYV8V1bqnh3WDZUHXbwfNc5D8zSOXtUTQFWShv8meudQtFLfxKu7L1NLiKFwoc7P48py1chKwvfdhYsqKSnDqVS38WbhtFi9YDsyYzXnAMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEBgW4e4c+xC55yxTl7jk8W7AfHKx8cjFg07KsqcIaucELXe3keoWB.HkiC+zmwLvF13FjUdA.7Fu1AgOudwXRwGB.k543Qa7n3Jo3yolvmCje5O6mI9bjvibyw9CSLOsMawBFWt4hu3F2PbPFLawh3W8G4v+v1+Inge9APIlKBStvBwWDMHEMPSCCFnQ22vuh8UWxiaO3ubtyU75mllF975EFMYBzzzfkkE985EO4RdRz3u9WK66sGslEHNSZnnnv3mPjHx418zi3Dzb1yYN3bslcg0cr78dp5fy1ZCFnowjkLzvBOSA.98W3BwOJaRYCaZS3+7C9.bplZBd74Euvt9ox9BTJim1HJ2lMzVGNwYN6YQgSwL1wK7B3Ue8CNjDInENEy3ibcQbtVaAUUUk3Wbjify0ZK3Wbji.CzzhehPjKTi6aRmstssgOx0EwG45h3IWxRfdc5fdc5HNFkf5VwJvoZtYzVGNQac3Du5AOXbeTEDHNQ+1r8AyVrf0uwMhlapILW61wa7ZGDrbrJR.QHkvgiDMGkZsTbji1XZG8JYCeM+WKtJS8DKYoC4Kr9FnowhV7hird1DrugrEk.gfdYt1sCms6DNa2IVYc0kzwgOokzyufBP+bbH7.Cfd5oG7+8Ue0PxErNcQhaq24seGXJ+7UrweOQLlbFCnoM.FWLnxppRTLFpnHKVPoVKEcGc1xV87pVQVa5RDBeK1DZSVf.ADihXoDmnOdZivuWu3Xu8ai0rt0gy0VaX+G3UvbqnBhOgWJMLW7Ohs+bO2PV5C.LlwF418N24NvuOenSmNQuABH6O0VICgU65BKrPw.Fcn3q3PrCTpvRUtdc5DC3Sojzlxtu8rG3vgChF5..nLqIxQXfvgQWLL3QqYAvmWufikULdvFJBze+d8hGdVeSU5bbrvQzE8.NVVzeBd.kMD5t2ECDNLb3vAb3vA760KnnnPQEWLtazeKzcUtuFVwtpXs8e7OV7+kFgOBP7jslZpAW2rYwOzcw1vlxlwzAP7Kh9YKyshJvWEJD9yhV8ic61IOfngeT9ETfryq7Kn.rgMsoTeP0TCdnu8egryKfHy5Vh6GIgRUM0TSZGt0CFO1i+3hq3FRxDhMi84nVPTnBQyibpPzDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUgnI5pPzDcUHZhtJDMQWEhlnqBQSzUg7+yWkLiSVtVbYA....PRE4DQtJDXBB" ],
-									"embed" : 1,
-									"forceaspect" : 1,
-									"id" : "obj-13",
-									"maxclass" : "fpic",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "jit_matrix" ],
-									"patching_rect" : [ 10.0, 3577.0, 75.0, 75.0 ],
-									"pic" : "unnamed.gif"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"autofit" : 1,
-									"data" : [ 8639, "png", "IBkSG0fBZn....PCIgDQRA..AvC...feHX....Pth2Z0....DLmPIQEBHf.B7g.YHB..f.PRDEDU3wY6ctlaairzF9sKwLIC9F.qYEDMq.JlyBXjWAR4WFvAPRdED6UfrWA1YEXKCj.jeM1qfnYAbFItBhNqfQF3.bhmPU82OZRIJJdUh5RrqGf.DqKjsZ1rX0UWc8BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHrtnVkuD8lNmp0n5pcJ0uVATKzKTkHpdQOJLyi.vDMT+olwHfICf68SVs1jvJg86ZnHqFJn+c.TiGd6usqaR6sX2rJP0FUH8uqAZAfI7vac10MqmarRF7r9Wc0kcCoLfY9Nvp6Y292rqaKOov9nZ.V0nJV0UZ8q0.Mh6gTd+6aVowSOovtYUfeoNfUUEg59Ofudr8Wd+iCb+zncQy74Jqz.TkSmy8epNf4h4J5s2hvLOHg2pPmCl4IZn9fdX+yKi10yI7u199U4Z5yRCd1cZQj9RhnZE8q9rr+ZGi0p7kzC6edXW73P+extSWXF.jqaXXluiYuKx5Icr8w0qPVcz.cy5X6+98Xm1MY16D4on4GEz+dY8.rmCPUPMRUbicB6F1HOggr6zkrTWmmOqm2e+qEJ1a1MqVgNnmhnSy6Wg8zmHSyMmXebcE8hVgeIEz1DQsR5qDvyROVraVkpTsa3XZqf1FlYkTKsu5yx9qcLarNbxo8Wy5BNy7Dd3s+5JcBLSk35b6IoXzasfdSmSIk5xz9LxMvgvtYUhNXXR2CvLOfGd6ga4V0ydnM0AVCLHGerUeplt8uiYuCYlyk2gjk5ZXebgWMXAC7e0+pz5q8W0bg.buehFp965lgvhrwL3An9OatisOteZDySead+3DY8Gaxlyy.RynljRPQvjtTB6Sr47vaacw18iClx5KxyGkHpF8lN4N1eBKgXTqP3I8W6YrA8va6cwVOr+44dJUZ862vMmmrngxcW2FDDVG1fF71tv7zyxymiHplDKOAgmm7jwfGb+3fTRb4EHZZWHHH77fmNF7..37spX94IkffvyLdRYvic6eSNSSEYmDHH7LjmTF77YvttAHHHrexSOCdJ0etqaBBBB6m7jyfGO0SR1SAAgX4ImAu7fZc1RaBBB+vxyRCdZVRfVAgmi7rzfGiI2sqaCBBBaed1YviY9NQ6KDDddxSNCdJxpQZuOyS+vVpoHHHrmwSNCd.5Wmz6X7t6iC1hMFAAg8HdxYvSYj.ukfYdByObx1t8HHHr+vJIhO6sX2oEQpk11XFicdGJwtSP34MOo7vinkq0cyM1IJW1lDI2FE9QfmLd34KxLMB+ZLyiY16saTic9p7kuN8VKPzVXlGCfwZn9SM+8613FbmI.z..dig6mGuQOeQfg5gs44qvX2rJgpszj92UlqSMBdKl4AZfwJV8mLlrsVE+0+bXeTMpxqZA8rwd0ALOjG.iT.ilxp+Dt8+wNMr7EBdyenmrN2K8zvfm8w0ipnVF8t8gS1TCd80e2dyUkpEErK+WuF.Z.5m5wNsGqgpulmbUQZSjS6+NIkYyu9+UMpp1ybk6Xf305i42jzL3kLFk+1MaaijQUBM+pVcz9lkDg8oLeid3s4Kdr1GUSQurWEh5ZdgkEVsYF+HzkvudM6z9Nlm9gM4BbsNUOZ+wdcl0tUKM1qJ.Z.fFVDNkcZOQCbmle7hLuFGivhmRclrVRpxll4qlN71XKJuoo.dANJfXFWGfm8wNqpQucsAu0txCGH72A+My7DvpyX2auYcO1wh86ZPTkqIRUK3lGl4wPo9Pv93kpXUGZ86COXv++2iwAuW6z4C40vWZxPYXuThvxeG6lUUzAWN6F+EuIoAnet2TmNWnG1+7rZSkEZMpF19SRCvW56wSyttGlf9EOk4aLdx4MFvpphzMmaLbV6nEQTK1o8.lmdwdyJ6aebchrtjHUiPi8ln.tYJO8dfYi85DtuzeLTWP+b2oNsuIMCeJZY8zMkwYIhe+drF7hdcOx4pFLNJDKFuWmtxNwrSM3QDUU6z4bM6MH0OXBC3TNcNmHUufK9SY9FM+vYaJu5p3z9xn2.wZ8Y7vauZgWyThptR6z47JjpW32yevWOFGzgse2IYcyzxBTj90JfVoYHLZ7zn2z4Tn08xRCeqPpdrS6l7vacR6yUVnG1+bO6lWMep3..VUi5gQXlx7MYZ.xXX3ZUna5YlGw7iuEtedrNba.3NO6itfnWdczarIhZPD0P6z9po7CWrKWzqfGrG9Znl4q3HsqfwdbB51bEh5x3ksva5bA+W8WXbq4X986lhW...Ez+ddM1EX3MHzFoIhWZdxUd7uLH7qoHqFJneeRiQm+fpGGrNyDYyIbx1uqgk0K9RYeXSxkWOuue3l7IwJm1WG0S.Ou+IaWqM278kjuPpKtWUFQd9qYdLMetqIhJTIsOo1jJFC3Y8cVER57XLZ8P5q1dL82456g3uFG5XT73Amx8.Eo+Jt9ibIr7lq+eIIOmySXeRqOILdd+ueasCIhcmVVVpkjR0BEBiL3GtUokHpl+Sdqu3qW4ZkSmyMA3rbItK5rm9jbM328Si7EL7ww81UHUOkS6qKTCx89IZfTBDs90jcmt9FEKr9c3u.L6LHnOH5qYVs8Ge6JXrabdL1A.nGd6IrmN1arLi6r9x1V.nn2z4znF6lx7MYZrC.v89IL+vgIonelotevWLK3U7n4GNKWUQ7RI9uKqzgLySz7C4RftxC6bCdSY9FOu+2u48uuQsv+79GGOuue3TVeQdDmGhnZUHUOKqe9qJm1WWVF9p3z9xkL1w7fbMfK.iQu2lz.mJD0svF8RQnyqPTWxRszzYxKZiGz6LzQRd74oVTJ2TY2rZbdRy7zBsvUra+alx7Mw8dDQU2pF8r6zJlEiabgL.jsQu5oZzy89IfUklAmBCqJ0PTsyM3oGd6IwNP18Sif6GGnG1+bd3sG5482+J6oOIOF+pPT24F9R9oWYh86ZDMlc..L+Xwcu18SiXdZ7qbJLs4JNsickqVGXlGvd5S779GmEefx2OLoarU7tqpQSuoyoKE+NVcVVdSSzA+Qbql6pDlC8vaSbb1bidk+LIV.6ipQjd4GBxphGKQ26mv7iI9.WeidKMUxYmRL4tL8xqD5OnJVQx1.dbgbrHOmix7fUTxof6Xv89Ira+aLF+99g40vGQG7U5McVxnUlX2rJQUVZ.m4lnUz8c2ONPy7RAJN.EQmB6NkhDRxLOwyS+Vd3sGxt8uYICFtebfd3sm348ONguNvLOI4xmUx6S4RA6iqCstvwpxL8cpQzWWyOdwxe57AyOjlAhpD8xDMPTF3uHJQ7VcML.394wLqR7A0DQMTNcNO9u68SzPkZQ2fp7p0ebqNRnTX0Je8KI10d3sZIPn6GGvCu8PVqyL9BDQUIk5RxocpwpHJJp5xdZfblRDovT9gKRqMSjd87JM.k5hbkvoyiw3D.ypVljGDpTRWf0F6ipsT72xYf4CmVRy9tLuVqlWV2jSDUOQCDqK1uqQrqNpJciNYha+6RyQgJjpGre2xmW.n4ucSpGa8x6xoUfYmal4Iks2c.6dCdqE7e0+pv2rlFlE53fg4J9K1MqpPraSswq8JA6d+DEvMozNqpnCVqo1xLONtTNH41zLid2sNdEsxX2rJQub1TRm4cZNFvSUp1M1XUlSMJNMz7jT6CMFHJ+o1RTkXWIbd52V+cLQF8KDUI9wdtedLybhmehnZIYrLWX2YgTsJKOJWU9g1fG.7uY8QmjVEzvj2UZiP0XyyMcYHAj1MqxYnKt4IM.RiUpc59oQ7vae6p5UjhWwE5v935DcvvvaKJyBTjysCUBdVv3aCVo1yB7+UKqOghdU20+7DB6iqGm2cLyiJiUBUSo6kNQT8jLbkUsjLIC04AEMem+.j8CaVU106zhxA2OOlsO9s.ImuaAXdeqqY6lImpBj98wkhhZVcegZW1uqAAqZJRaqM6pjk1lTgw2S0AnnmmkH4UvcSgYmKTPhjFIl7kyKeo6CPvT+psTag4hsWh82ql9I+pMBsuTSBl4QJfAZ9wax84IGTgr5D2qqJ5CwrOtNgWTWSnVz84cRvLeGTp+LwYw39wArS6wIcbHhZv1GUaULLGtrtYhS9lIIueZXvCv3ghcmSHBYFLYhn5JbPuows0Wral3d3Kt7DJXS6Svpl+fKafnaOGUrY387aZTtL915EyoezvrE89iEM1ku7kKfJTklI7Vii+bdbc.UUEY0ff9.s45TiE+PKekJ3AQZnb0r2fM6drEsharRhBOk86ZX1hbndxFqi82zHMvHkR4xS+9fb+PFVcAHjXJTonW1SCTrrXHRYcSydarpR9SGCd.lfx5z9t7jrslUD8c2GcvKgpI9cIpxkvocvMjI3sVh2vLRALxXb66idNWtpH6NcIK0raZV0LoWCzHgsJTcxo8rc3P7aOpjeHDLU4FiwssYkmw9nj8Biz8Hm1Ad+kvmKiwdJ0+gm5MJ7Xd8Reizgwj6.evkIMSkJD00ytYgxcNyzYms2f2n2a7zxfG.X9wyH5my0RjqnJchFuKEosSZG2k1zbBpzGlj1U8eL6kPuI6Ma778Dlu+mMvZ8Y5H6E4bQJdhGpZgrDAF..LUIFkBSLE8gseI0JJDdUiDeuT1T8g1tkSzP4pXL1Dhg+6nRepgt2OQ4z9F.jXpdonpmpANOuGxEpR47lYwJB3ImAO394wScZeSdB7ebOMRCTOoMXrl4qLdnEDup0q1b8rhYUqEUWffEmX5aW8GH7Ko9vGMT2uXQoH9a9KpGNaRRaAEBhuVPE4A.IVTM1z+llxO9AK5mS1fGzcxsAuPSm0jJJanpbjOO8L3A+bkKmqzIgps3ESSjZw84XlGwITeuDxfHah8xnJTSyJHjKCy4LGD2yvr3Bw+3Vd3sItKc15394woE5HSJpzoadRqnvSmMsz0pr3G+zRINb+3f7tKNLSgcNorRVajUM5IOlzN4qQl94ZGmlzSuhXVboefoP6HosDYJ2ojN1UaNJKt5rOtwkP0mlF7LjqanzkPQHUHdn2z4TKqeZXz.bSD0fr6zcG0rDJCLNULNo2lHpQlI4enjMds2YL4jmrF7zX2sA3e1icypjS6+Hox3M..H8ka6Rsz9DJU9mwvpV0a13jwVcSQVotcyBmrw7FdwJB3IqAuM.6mC51yHu0gO+pNxeTJ6a3kvZu+Z0BK9vOnvSmbSZS2VAzJsquASm0jn3amXtJF7xI4UuEdtBQUdO4zdXPc3iYdjm2+3jTA0z7cnZDcPoWUrUzSvvTrO5MbFEhVhnpIlWqglNqFq+9dNuHF7JB6iC51SvW3apCXJe47vacf6mFYJnlQ0kiE9d0KdwOMc10Ur4MADdwd4XuLK1DwnUz.KNc1LqDKkHhAuHjTkgE.fp7hFawlxObvLOvy6+8aQ0pA8v9mmdYIh5VzZVXZB+zpnxV6CjZklNxlqeuASUTYPRusoXDrriBglN6cayD99IqAu3zEg3HlE2Xbxe37sT6OGYJy2vCuMwxvdZETS..RotrXE+Tc50AweHWE3jK5CDQoFOrcIYsfCKs3EKr5rauoyB7D1fWdS2jnxIWZBjbZkNmm6jYgQ089IoUh6ABJ9o4LrAteZTp4mVNyCr8IxRtRUT0B4E7VCSgEcbRuczEuHX5rayEqHfcsAuZajipYeV1HqOFy7jnc3Z96odAXcp4WO6w8iCXsNwcqxb8hH2dxLHkiUixpb4u0HisYmB52uu5kWZonhon15ar1tY0fs841bwJl0V11mvEN4YTetV4iaJU7jvD6JLY7bXbhGahZrRZjg..BpR0oV4bql6UtMi5FHQ5K2aMPj.4nuoTWfmxBd5jaR68MFqOtdXuT2TE4yzXW6g2lgbNcljVgIUpZ9ZP7ljUrcUg4GNI0EGJmqbaVpokeZurQEamRmLMhSs1KiOo68SRRE7.l68dfF6tIKxmowSOCdII.JQPy7UIEf87rm9LS8Rhm2Jg68SX16jzLVUgntYdiclBRdfZbslx04VD1s+MYIWAjk558QidYU3NWPyJVSwvZUY2avqLMZjfzJFEl4QS4GRN+gb+73zjSQ.yEOKqW7EY5sqHYnSu.laryxSZM+PlJWmubct40R1xhbHOgjk558NC4lvAk4NHoTDCqUjcuAuRba.onCtLG0s+IFcSHc2o8kSwwYcNmKAjkjga628iWv1WUb+3fz1IF.AdRmhgJ26m.UNLPPTchd4PkSmyKEiD1MqRuoyoq5wJpnSGFeu7Fj0wv2P9vRyaO6ips1O.OO6I1MfdylW14F7JqsAjxo80YUzOKTcXyLsqTycr.HhZXY8huPNs+BY2oaguIvefF4z9qVVu3Kwp37OQgc6eSZdSOSzqSoOk+q9WkV7iBerpPpdDcvWq3zd0hCqcmVJm1WaY8q+MoTWRUp1svGC.n0ou2ryJuECfHpFYotlbZaDb9h5EqcypjcmtjS6uXY8yecciOsuw5Da2oKz6ad14E.TEzMKR4fdILEWxqyZypyLOf4GdagBTp6mFA6NmklnkDFhnFfPCB+50rS6QJfALTOrb9UYDcE.8qU.yUdKkxWLadbsJ1iqce5J.UwpNuhxX4zg2dF4zNV4IDHXeLevWRSo4z7Cmw3f54YOO6GKoSsne5T1nQICVrznG5yVwptVipJn+84sOSAqbJquPOr.5+aHx7Zj68SX6iOLOJwm+uoZ.3Rx5mujcZORCLxH0.KmaegDwnFy6uTgpB0qWsJzuPdFqmhoIz6aCRpZludX+tFJpRm7pupZluZJ+vEEsifr6zEjNQAEAvOW6TpKJjvTGkHJr0lB+afNO61S1F4mx5Kz72uqzJA81cZYYoRbEOYlGyr5LfICVoAzleSCSKjDYVV3mUF4WOc8MKxkbRZFyzKsEPi05yxTOMLRY4eroRgq.lx7MZ9gBI9NIh8Q0rr94uF2a448+9sco1grVF7Hm1eor12hLySz.2Yz90uON1AS1MqBTsQER+6Zf3Ub9ENdpOn4IWUVWDI5kWuI1mllAaOdQbCDp3z9REQk9BivLeWrkMbyuyuTl2fYLF9fSlWGrOttk0OMLGGuYdOaDgmIKjhCza5bJz5dk8CnXlGCVcQ3RWtxoy4UBIJQqKwpfa4bVLqBlY9L8hxdQDhy1.y7.d3sGVlmmhxZMk1x7le+AmcAgt.+Dv+pK.LFtVdfahRr2bilt2VtwIv8yiYfCgwqxdkgAgzLzEPZhJT.gBvcpB8cXHhZww853UMHRUKOGi7BQTMl+k5Hqo7FnsvgjvwDNd0AP8J9+slpVM7zC4+p+Uv9n6z3k8JCu8lanaYAlIMcnXUPAzXIQ3w89ILva4b30XdYSYna9IP0GzhJG21pHelFqmGdlmj96.nZzMgebwCYguqerQ7iiUM.jh.XuLAxsmFXbgES3x.6NsTjtoBnUQ7jfYdDTp97zukupDg8Q0vRBVSAjeuX+9.op3Zah7KrH2XY2oEEprBEH8kA+c3x+jBXzT1qex+VNpFU4UsfV2oniul+vyT1umI1+tpjC4hz935Jx58KD+2b.y7XEvcS4G+vFeZkFuR+ZnR39Xd3s+1F8blC1LwvacwWg3i+M285G5RXebcpxKZDDb6nusFp+zTjB91n8t19yI7CIRnELpV32d9COWTrp2qw935DdQcMgZJnsQjJy8bwe+aaEMiHLjS6uFXPl8zmjGULaSy9oAOAAgerIT7XMK1zC+1tb0YCXmmGdBBBO8HbMvSC0G1GL1AHF7DDDJarOtd3EKZaVB2yBwfmffPoBQVyjmSSUQY+It067cZgffvSHr6zhHUif+LSQ9YKi3gmffP4fcypg2G3aaA5IOHF7DDDJE7qVQyRKFlmtySz3nHokhffv5i86ZXY8hYkl+8gsQVbrYhg2rL0OxNBvtYUfeod7u26ZD6NHX1wJTBGOKwj8esvY6dhar7HGmTSt4P6BgXyj9T1kBg9cpHqFwlvwg6GBZuo1d7w8iCl+4hoMrPaMm6FiPIiqY2w78QwuOlyXGETncRw7jk0TMOxQaMnjEkZaKqqKQFWtv3w3H9wuJxpQh8UIcLSbb4w0AlNYoo9EcLdbs+DOdppa0Dm1T3cWnvRv7z8pX2EvFwfWfkdOue4Prv9m7WpG26Y8u5pA.X9f6Xf2F2wZJacQv9kjHqKIhZD7ZTkW0hTpKA.7rOZ4pwf8wgNuZmvGi3Z+LyCXfCA.Tzq5F2lCmcZOAr5rkxdby1h55Yt1S..+LXm1CX9wSLssP8C9dYmV6I.O.UExpSPwDH5uUhd4kDQsLI5Ixba7rTgIf.H7SQZqFRpeHbaKqymek+XwemzK5w7ASzNc9PrUJlPUoEl4wLV92UPaK70s3X4wdyuND6uoPiQWpHArPek2YyM7E+wjcZaJlEg9MNeb+x+thNFO91eHraV0x5W+6Ys83tOXCgegMHzTY4A6q6Tk8pX3YDa3hWse4oea1dcjp7pk99UHqN.AkV5EehroRdvCB+OEPrdI3+9i7aqUMkf7PsW6ipEXryXzwb77e25.eKQuXT.iB0FF6e9lDtcALqRLOA.PQub9Mf1GUKnZZjmD8LrwtP8AA+1ZPzKSTtDi1ekmpyqo8YMqBZXJwRleqyJLmwT4dCzvT+1UsMk3IEp8D52jQruq3z9x.icgtlDpuxJ1BTZ39lfeiJmNmG8yQDUKtWuHDUo9h69fMAjcmtQqhK6qd2ArGlVJDoujsaVrZpl6mGyNsGQDUGZcG.rPsuSCzRg3UiLMT8yUMnC.AwjfCU61HR2g8Ot9dZ5uYoezI3Irr8Q0.dU8z9MMc3syzqU+A+8.vnkhCh68SzNc9..5Ugntd1GcAb+73.ieLyi0CuM8eO1GUKjwtEKLp1c5RVpqIhpoQ0SiqHUtJwlQQubV4Zxy66GtfG.uoyoJs90KUMRraVUAzxucNwnuoVuWCjZYgeUf4omEqWIK1WMh4GNLu8UQFu7Ehn5IU3OUP+ds8QqdNqQ526WDOGSDUKt6CJcrOpFH8kgctee16Nf8LO7.7eZ2pnv5Jin9RDUegxbs8w0C1.ySYuxQojLC3G6+Wydx9hks6Pdy494RUg007jqB7BTQupKrOp1rLaOG5EfhdU2f+uYpqyMD6WhtGAXpJukUaNn8YRD0Eugf+q9WE1fe.Dp1x2a4w9UQWDX.baQXOkX9w2FSe0.S6JEoA089IZXjewjpXK9kx9Uqz9a7t2bb8u9atOXyJknD8xkJJt6yd2ArmYvK3l3JjpWQuXkzzZSa5rqLlouTy+ulcCfYAJ7aCzAaNYbz89IACrUP+dhd4k.9dqkiJRgeU0vTpphwihrt4rvDpenPxym+zYmURifecSbaJxQlxeVZ8U+oe6pVZGlfpnSbp5Uv3dhnUR.mBFuyLOJrlRDL1eSPEm1WFc7w9t2c.6cF7TyjbuvaOkbg6mGOS010yeZq12ifjDW6Jjpm0+pqN7+RxPE4z1HTOgJE4LqleCra+6BDSFhn5AB6yl3Fz.OwLdFP9C3y8SWCdpbrSwNrg63HZ+Uwh+jNegpvt4reWl5c2mGOyySp777L.KqW7kv+lHm1AK7PF8UgzLhHOjd13Em1CChcYvCSV3X.U+4wDTWboWT6W6.8KvlAZ0qdS4MrcmVwUEt228tCXOyfGf2Dvpy.7CFbQkLNNjmI1GWewoyls3ZmEl.TSMLUvWdB6oOI5TU0Cu8jor9h4FtoFVVp+P4ztzUhLlmd17+Oe299SWKBApAlwyJeOy8CaQEhJtxvsCHz3k5.oqYIL6ch+2oZE5f7Wx3CMFOPMvBDDayh7Txyxveg4h9x+H3cGvd3hVvt8uANs6PD0.ZcOnxetQyXxcD90qA.nJungRqeMPxSGAn.BmC.77zukHcGhnVDQU83+IVOgzC6etF3bDRjgLKvvwenTqJytebPPovWCkaA9lAdqDqQirjNSu+8MqQBqmQtFFfV2w+Z+j.OH0Z8qCFOPnZK1OtdkAKsPJAMiXhUaXTjUiY+g6mFE1.im22OjnJue1pmmlmyteZj1o8UJhNUQzo5bnIx.KFxFEU8T3r3rXUTkN5UTM4VB6lUiKtcly+9u2c.aXO7nUrzWy7imDuVVjAt2OI7zZm4RuRURKVQ+63g2914wbI8ocal1oWnUzLm2ruoQMKtS0iSGSCVrh7nh74i+6riSEpR1SGMTP3IhZTgT8L+Kj9TrAlVabnTlGjjReUPr4FuzW18iC7GuLvbLzoNdIr3um2R2dvXbhnZy6mlmufk4h73u0wV5gg+n3cGvFxf2rK9zhqb0hOMLkNH2OOViUTvOBMs1Yt5GZAMJEluRXMB+DcxtS2kykrWTqTO2k.Kr.O9K3wr+1jWU0AhOdSqDgdPjFn6RKHkcmVjS6uFXPIXUjYlG4488CC+uorNnuu01XZsQ5qVH9Z98UM.LwgKwigu2ODQ0hKWCmg68SX+P5jKr6zJXLdz9I1SOaJxqcLjsaVkbZ+kjDDoeT7tCXCMkV+K9F0Uxo8WU.2YD8WkerLxVk30C6eN6ztYQWovvSqEH8oyBXRm.kS6kzghzx0L+oc2yjGdU5w.CfcypyzHWm18fexKSjJXEzFu27TP2OONX5SDQsfS6upAFn.pGbMhYdjlenzxiKl8tfnepkYQV9ogrS6AZfwyOmJnwK6oANwjhGJim4Q5yz1MGA5W6AXhyGuXtlUOzhML+buN6oS2OOdpSmKpPJe0B6fgZm1Q6qFmZek6GGvNsGPD0.jtGRap3t8uicZeWdjjQyh2nhM9sL.BFipHcScBKZWlDcmCEgej7tCXC4gmdX+y0LeEPPd0QmFX3hYdfleHWOEKbP4yMgmVKPlSm0XzZVvkm8urabg8xqyrc3f+Twq4Gmu4oK.6srFvtCY5vaOK70nJD0M70nn4b1Zi6mF4488CCmBFgOmZluRyOb1BAgONOyiD1hvuk+JVW7qkYPzwyQ5qLWaynuZfDWTr..P.pkDQAQErWdYsp1L+vIAK5UZLOorSXLtxLKoUZQdLdc+EKKUhBPuYWm3U76Q2grwVzhoCu8LXezGH7pFZB0LBlb7Ronm228eB7+cw2y8iC7rO1Y1ln1Gl8Ni4Eesvv7imwr0Gh8XtzwHcz72twisFrz22s+Mr867O+diMIWJNWa27JlCTFK+zVXom.9eG4ueHy3blcJbLuuKYIwLIJx0nj5GJDteb.C7ar86ZDDdCSf7mLem0XezjY+lRvy7Eu9l+11xiyBecH9wIAj+9pDt159wAd1uy+0MWWS7Zm68SX6iOL5X7EZ+1Mqx7z2x7zDCODOcxML9khEG1YBwtpVzsGcfznNWIzd3t8EspHuHkGJAAg4X2rZE5fdZDZk5Up62559rffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffvtl+ePZ1d2bdfaFD.....IUjSD4pPfIH" ],
-									"embed" : 1,
-									"forceaspect" : 1,
-									"id" : "obj-12",
-									"maxclass" : "fpic",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "jit_matrix" ],
-									"patching_rect" : [ 107.0, 3583.005088291140055, 166.0, 66.189873417721515 ],
-									"pic" : "unnamed.png"
 								}
 
 							}
@@ -760,7 +743,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 253.0, 3645.0, 298.0, 35.0 ],
+									"patching_rect" : [ 313.0, 3794.0, 298.0, 35.0 ],
 									"text" : ";\rmax launchbrowser https://github.com/bachfamily/ears"
 								}
 
@@ -773,7 +756,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 2,
 									"outlettype" : [ "bang", "" ],
-									"patching_rect" : [ 46.0, 3630.0, 175.0, 22.0 ],
+									"patching_rect" : [ 50.0, 3779.0, 175.0, 22.0 ],
 									"text" : "sel ://www.bachproject.net/ears"
 								}
 
@@ -785,15 +768,15 @@
 									"fontsize" : 13.0,
 									"hyperlinkcolor" : [ 0.827450980392157, 0.470588235294118, 0.050980392156863, 1.0 ],
 									"id" : "obj-6",
-									"linecount" : 4,
+									"linecount" : 5,
 									"linkend" : [ "!", "?", "\u002c", "\u003b", "(", ")", "[", "]", "{", "}" ],
 									"linkstart" : [ "www", "http" ],
 									"maxclass" : "bach.hypercomment",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 7.0, 3503.0, 437.0, 65.0 ],
-									"text" : "The official web page is http://www.bachproject.net/ears\nThe official repository for source files is https://github.com/bachfamily/ears\n\n© 2016 - 2020 • Daniele Ghisi",
+									"patching_rect" : [ 7.0, 3623.0, 457.0, 79.0 ],
+									"text" : "The official web page is http://www.bachproject.net/ears\nThe official repository for source files is https://github.com/bachfamily/ears\nDuring 2020 ears was supported by CNMAT/University of California, Berkeley.\n\n© 2016 - 2022 • Daniele Ghisi",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
 
@@ -809,7 +792,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 46.0, 3645.0, 283.0, 35.0 ],
+									"patching_rect" : [ 50.0, 3794.0, 283.0, 35.0 ],
 									"text" : ";\rmax launchbrowser http://www.bachproject.net/ears"
 								}
 
@@ -823,6 +806,7 @@
 									"enablevscroll" : 0,
 									"id" : "obj-53",
 									"lockeddragscroll" : 0,
+									"lockedsize" : 0,
 									"maxclass" : "bpatcher",
 									"name" : "ears.explorer.maxpat",
 									"numinlets" : 0,
@@ -886,25 +870,10 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 7.0, 3282.0, 731.0, 21.0 ],
-									"text" : "ears is a personal Daniele Ghisi's project started in 2016, supported during 2020 by CNMAT/University of California, Berkeley.",
+									"patching_rect" : [ 7.0, 3282.0, 843.0, 21.0 ],
+									"presentation_linecount" : 2,
+									"text" : "The ears library is developed by Daniele Ghisi with the important exception of the whole ears.process~ ecosystem developed by Andrea Agostini.",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"angle" : 0.0,
-									"bgcolor" : [ 1.0, 1.0, 1.0, 1.0 ],
-									"border" : 1,
-									"id" : "obj-9",
-									"maxclass" : "panel",
-									"mode" : 0,
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ -7.0, 3576.0, 1215.0, 78.200049999999919 ],
-									"proportion" : 0.39,
-									"rounded" : 0
 								}
 
 							}
@@ -1292,199 +1261,25 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ears.explorer.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/ears/help",
-				"patcherrelativepath" : "../../help",
-				"type" : "JSON",
-				"implicit" : 1
+				"name" : "bach.args.mxo",
+				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ears.explorer.welcome.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/ears/help",
-				"patcherrelativepath" : "../../help",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.filter.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.filternull.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.sieve.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.keychain.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.split.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
+				"name" : "bach.belong.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
 				"patcherrelativepath" : "../../../bach/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "bach.change.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
 				"patcherrelativepath" : "../../../bach/patchers",
 				"type" : "JSON",
 				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.prepend.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.belong.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "helpdetails.js",
-				"bootpath" : "C74:/help/resources",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.lookup.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.replace.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.path2llll.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.reduce.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/bach/patchers",
-				"patcherrelativepath" : "../../../bach/patchers",
-				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "bach.tree.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.iter.mxo",
-				"type" : "iLaX"
 			}
 , 			{
 				"name" : "bach.collect.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.is.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.args.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.portal.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.neq.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.eq.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.pick.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.reg.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.nth.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.keys.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.wrap.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.find.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.flat.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.length.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.join.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.slice.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.lt.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.leq.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.geq.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.gt.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -1496,7 +1291,91 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.sort.mxo",
+				"name" : "bach.diff.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.eq.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.filter.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.filternull.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.find.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.flat.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.geq.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.gt.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.hypercomment.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.intersection.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.is.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.iter.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.join.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.keychain.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.keys.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.length.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.leq.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.lookup.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.lt.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -1508,31 +1387,81 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.intersection.mxo",
+				"name" : "bach.neq.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.thin.mxo",
+				"name" : "bach.nth.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.subs.mxo",
+				"name" : "bach.path2llll.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.pick.mxo",
 				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.portal.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.prepend.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.reduce.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.reg.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.replace.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
 			}
 , 			{
 				"name" : "bach.rev.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.trans.mxo",
+				"name" : "bach.sieve.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.slice.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.wordcloud.mxo",
+				"name" : "bach.sort.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.diff.mxo",
+				"name" : "bach.split.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/bach/patchers",
+				"patcherrelativepath" : "../../../bach/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "bach.subs.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -1542,6 +1471,46 @@
 , 			{
 				"name" : "bach.textout.mxo",
 				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.thin.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.trans.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.tree.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.wordcloud.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "bach.wrap.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.explorer.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ears/help",
+				"patcherrelativepath" : "../../help",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "ears.explorer.welcome.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ears/help",
+				"patcherrelativepath" : "../../help",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "helpdetails.js",
+				"bootpath" : "C74:/help/resources",
+				"type" : "TEXT",
+				"implicit" : 1
 			}
  ],
 		"autosave" : 0,

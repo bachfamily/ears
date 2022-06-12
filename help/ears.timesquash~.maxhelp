@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
+						"rect" : [ 100.0, 126.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -380,12 +380,11 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-47",
-									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 5,
 									"outlettype" : [ "", "", "", "", "" ],
-									"patching_rect" : [ 9.0, 155.0, 75.0, 38.0 ],
+									"patching_rect" : [ 9.0, 186.5, 96.0, 23.0 ],
 									"text" : "ears.read~ orig"
 								}
 
@@ -771,12 +770,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-1",
-									"linecount" : 3,
+									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 217.5, 307.0, 224.0, 54.0 ],
-									"text" : "Second outlet outputs two buffers containing respectively the seams and the energy map"
+									"patching_rect" : [ 216.0, 292.0, 224.0, 69.0 ],
+									"text" : "Second outlet outputs two buffers containing respectively the seams and the energy map if the \"extout\" attribute is set to 1"
 								}
 
 							}
@@ -844,8 +843,9 @@
 									"id" : "obj-10",
 									"maxclass" : "ears.specshow~",
 									"maxcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
-									"maxvalue" : 0.449738591909409,
+									"maxvalue" : 1.768646597862244,
 									"mincolor" : [ 1.0, 1.0, 1.0, 0.0 ],
+									"minvalue" : 0.000004951765732,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 9.0, 366.0, 431.0, 209.0 ],
@@ -861,7 +861,8 @@
 									"fontsize" : 10.0,
 									"id" : "obj-15",
 									"maxclass" : "ears.specshow~",
-									"maxvalue" : 0.106008648872375,
+									"maxvalue" : 1.561710953712463,
+									"minvalue" : 0.00000000453207,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 9.0, 366.0, 431.0, 209.0 ]
@@ -1347,7 +1348,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 880.0, 631.0 ],
+						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

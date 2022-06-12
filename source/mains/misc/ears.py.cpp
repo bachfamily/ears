@@ -14,6 +14,9 @@
  @module
  ears
  
+ @status
+ experimental
+ 
  @author
  Francesco Bianchi and Andrea Agostini
  

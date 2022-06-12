@@ -1,4 +1,94 @@
 {
+  "ears.playmp3~": {
+    "digest": "Play mp3 natively",
+    "module": "ears",
+    "category": [
+      "ears playback"
+    ],
+    "keywords": [
+      "play",
+      "mpeg",
+      "mp3",
+      "compressed",
+      "native",
+      "file"
+    ],
+    "seealso": [
+      "ears.writetags",
+      "ears.readtags"
+    ]
+  },
+  "ears.clicks~": {
+    "digest": "Put clicks at time points",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "click",
+      "clicks",
+      "collect"
+    ],
+    "seealso": [
+      "ears.fromsamps~",
+      "ears.mix~",
+      "ears.assemble~"
+    ]
+  },
+  "ears.roll.sampling~": {
+    "digest": "Convert a <o>bach.roll</o> into a montage of audio samples",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export"
+    ],
+    "seealso": [
+      "ears.read~",
+      "ears.roll.toreaper~"
+    ]
+  },
+  "ears.roll.toreaper~": {
+    "digest": "Export a <o>bach.roll</o> as a Reaper project",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export",
+      "Reaper"
+    ],
+    "seealso": [
+      "ears.roll.sampling~",
+      "ears.roll.sinusoids~"
+    ]
+  },
+  "ears.roll.synthesis~": {
+    "digest": "Convert a <o>bach.roll</o> into a mix of synthesis",
+    "module": "ears",
+    "category": [
+      "ears export"
+    ],
+    "keywords": [
+      "buffer",
+      "roll",
+      "bounce",
+      "export",
+      "synthesis",
+      "cycle"
+    ],
+    "seealso": [
+      "ears.read~"
+    ]
+  },
   "ears.stft~": {
     "digest": "Compute spectrograms",
     "module": "ears",
@@ -16,83 +106,6 @@
       "ears.istft~",
       "ears.fft~",
       "ears.window~"
-    ]
-  },
-  "ears.timesquash~": {
-    "digest": "Content-aware time abridgement",
-    "module": "ears",
-    "category": [
-      "ears time and pitch"
-    ],
-    "keywords": [
-      "buffer",
-      "timesquash",
-      "carve",
-      "seam",
-      "timestretch",
-      "content",
-      "preserve"
-    ],
-    "seealso": [
-      "ears.rubberband~",
-      "ears.soundtouch~"
-    ]
-  },
-  "ears.fromvector~": {
-    "digest": "Convert synchronously a signal vector into a list",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.in~",
-      "ears.tovector~"
-    ]
-  },
-  "ears.out": {
-    "digest": "Message input for a patch loaded by ears.process~",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.in~",
-      "ears.out",
-      "ears.out~"
-    ]
-  },
-  "ears.lace~": {
-    "digest": "Interleave buffer channels",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "lace",
-      "channel",
-      "pack",
-      "interleave",
-      "buffer",
-      "combine"
-    ],
-    "seealso": [
-      "ears.delace~",
-      "ears.channel~"
     ]
   },
   "ears.specshow~": {
@@ -114,126 +127,6 @@
       "waveform~"
     ]
   },
-  "ears.trans~": {
-    "digest": "Transpose a buffer considered as a matrix",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "trans",
-      "transpose",
-      "swap",
-      "channel",
-      "sample",
-      "spectral"
-    ],
-    "seealso": [
-      "ears.sftf~",
-      "ears.cqt~",
-      "bach.trans"
-    ]
-  },
-  "ears.tovector~": {
-    "digest": "Convert synchronously a list of numbers into a signal vector",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.out~",
-      "ears.tovector~"
-    ]
-  },
-  "ears.process~": {
-    "digest": "Offline host for patches operating on buffers",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.in",
-      "ears.in~",
-      "ears.mc.in~",
-      "ears.out",
-      "ears.out~",
-      "ears.mc.out~",
-      "ears.processinfo~",
-      "ears.tovector~",
-      "ears.fromvector~"
-    ]
-  },
-  "ears.join~": {
-    "digest": "Concatenate buffers",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "crossfade",
-      "joinenate",
-      "sequence",
-      "merge"
-    ],
-    "seealso": [
-      "ears.crop~",
-      "ears.read~",
-      "ears.fade~",
-      "ears.mix~"
-    ]
-  },
-  "ears.playmp3~": {
-    "digest": "Play mp3 natively",
-    "module": "ears",
-    "category": [
-      "ears playback"
-    ],
-    "keywords": [
-      "play",
-      "mpeg",
-      "mp3",
-      "compressed",
-      "native",
-      "file"
-    ],
-    "seealso": [
-      "ears.writetags",
-      "ears.readtags"
-    ]
-  },
-  "ears.!=~": {
-    "digest": "Compare buffers for inequality",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "unequal",
-      "inequality",
-      "condition",
-      "compare"
-    ],
-    "seealso": [
-      "ears.==~"
-    ]
-  },
   "ears.model.sine.synthesis~": {
     "digest": "Sinusoidal synthesis model",
     "module": "ears",
@@ -248,64 +141,6 @@
     ],
     "seealso": [
       "ears.model.sine.analysis~"
-    ]
-  },
-  "ears.crop~": {
-    "digest": "Crop a buffer",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "crop",
-      "cut",
-      "extract",
-      "portion",
-      "subbuffer"
-    ],
-    "seealso": [
-      "ears.trim~",
-      "ears.fade~",
-      "ears.repeat~"
-    ]
-  },
-  "ears.clip~": {
-    "digest": "Buffer hard clipping",
-    "module": "ears",
-    "category": [
-      "ears distorsion"
-    ],
-    "keywords": [
-      "buffer",
-      "clip",
-      "distort",
-      "hard"
-    ],
-    "seealso": [
-      "ears.overdrive~",
-      "clip"
-    ]
-  },
-  "ears./~": {
-    "digest": "Divide buffer samples",
-    "module": "ears",
-    "category": [
-      "ears math"
-    ],
-    "keywords": [
-      "buffer",
-      "div",
-      "divide",
-      "scale"
-    ],
-    "seealso": [
-      "ears.+~",
-      "ears.-~",
-      "ears.*~",
-      "ears.!-~",
-      "ears.!/~",
-      "ears.gain~"
     ]
   },
   "ears.phaseunwrap~": {
@@ -324,24 +159,295 @@
       "ears.fromdiffs~"
     ]
   },
-  "ears.+~": {
-    "digest": "Sum buffer samples",
+  "ears.model.stochastic.analysis~": {
+    "digest": "Sinusoidal-plus-residual analysis model",
     "module": "ears",
     "category": [
-      "ears math"
+      "ears spectral"
     ],
     "keywords": [
       "buffer",
-      "plus",
-      "add"
+      "model",
+      "analysis",
+      "resynthesis"
     ],
     "seealso": [
-      "ears.-~",
-      "ears.*~",
-      "ears./~",
-      "ears.!-~",
-      "ears.!/~",
-      "ears.gain~"
+      "ears.model.stochastic.synthesis~"
+    ]
+  },
+  "ears.essentia~": {
+    "digest": "Extract buffer features via the Essentia library",
+    "module": "ears",
+    "category": [
+      "ears analysis"
+    ],
+    "keywords": [
+      "buffer",
+      "essentia",
+      "feature",
+      "descriptor"
+    ],
+    "seealso": [
+      "ears.info~",
+      "ears.vamp~",
+      "ears.spectrogram~"
+    ]
+  },
+  "ears.model.sps.analysis~": {
+    "digest": "Sinusoidal-plus-residual analysis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "analysis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.sps.synthesis~"
+    ]
+  },
+  "ears.cqt~": {
+    "digest": "Constant-Q Transform",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "cqt",
+      "q",
+      "constant",
+      "fourier",
+      "transform",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.stft~"
+    ]
+  },
+  "ears.griffinlim~": {
+    "digest": "Reconstruct signal from magnitude spectrum",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "griffinlim",
+      "spectrum",
+      "inverse",
+      "reconstruct",
+      "griffin",
+      "lim",
+      "phases",
+      "phase retrieval"
+    ],
+    "seealso": [
+      "ears.window~",
+      "ears.istft~",
+      "ears.istft~"
+    ]
+  },
+  "ears.model.sps.synthesis~": {
+    "digest": "Sinusoidal synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "synthesis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.sps.analysis~"
+    ]
+  },
+  "ears.fft~": {
+    "digest": "Fast Fourier Transforms",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "fft",
+      "fourier",
+      "transform",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.stft~",
+      "ears.istft~",
+      "ears.window~",
+      "ears.spectrogram~"
+    ]
+  },
+  "ears.peaks~": {
+    "digest": "Find peaks of a spectrogram",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "peaks",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.stft~",
+      "ears.cqt~",
+      "ears.trans~"
+    ]
+  },
+  "ears.vamp~": {
+    "digest": "Vamp plugins host",
+    "module": "ears",
+    "category": [
+      "ears analysis"
+    ],
+    "keywords": [
+      "buffer",
+      "feature",
+      "features",
+      "descriptor",
+      "vamp",
+      "plugin"
+    ],
+    "seealso": [
+      "ears.essentia~"
+    ]
+  },
+  "ears.istft~": {
+    "digest": "Inverse Short-Time Fourier Transform",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "istft",
+      "fourier",
+      "transform",
+      "spectrum",
+      "inverse"
+    ],
+    "seealso": [
+      "ears.stft~",
+      "ears.griffinlim~",
+      "ears.window~"
+    ]
+  },
+  "ears.model.stochastic.synthesis~": {
+    "digest": "Sinusoidal synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "synthesis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.stochastic.analysis~"
+    ]
+  },
+  "ears.window~": {
+    "digest": "Apply an analysis window",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "window",
+      "apply",
+      "hanning",
+      "hamming",
+      "triangular",
+      "tri"
+    ],
+    "seealso": [
+      "ears.envelope~"
+    ]
+  },
+  "ears.phasewrap~": {
+    "digest": "Get principal phases",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "phasewrap",
+      "wrap"
+    ],
+    "seealso": [
+      "ears.phaseunwrap~",
+      "ears.fromdiffs~"
+    ]
+  },
+  "ears.model.sine.analysis~": {
+    "digest": "Sinusoidal analysis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "analysis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.sine.synthesis~"
+    ]
+  },
+  "ears.tempogram~": {
+    "digest": "Compute tempograms",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "tempogram",
+      "spectrogram",
+      "tempo",
+      "rhythm",
+      "transform",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.spectrogram~",
+      "ears.essentia~"
+    ]
+  },
+  "ears.timesquash~": {
+    "digest": "Content-aware time abridgement",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "timesquash",
+      "carve",
+      "seam",
+      "timestretch",
+      "content",
+      "preserve"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.soundtouch~"
     ]
   },
   "ears.rubberband~": {
@@ -367,81 +473,62 @@
       "ears.resample~"
     ]
   },
-  "ears.waveset.interp~": {
-    "digest": "Waveset interpolation",
+  "ears.paulfreeze~": {
+    "digest": "Paulstretch freeze",
     "module": "ears",
     "category": [
-      "ears basic"
+      "ears time and pitch"
     ],
     "keywords": [
       "buffer",
-      "waveset",
-      "zero-crossing",
-      "interpolate"
+      "stretch",
+      "freeze",
+      "eternal",
+      "expand"
     ],
     "seealso": [
-      "ears.waveset.split~",
-      "ears.waveset.average~",
-      "ears.waveset.decimate~",
-      "ears.waveset.subs~"
+      "ears.paulstretch~"
     ]
   },
-  "ears.model.stochastic.analysis~": {
-    "digest": "Sinusoidal-plus-residual analysis model",
+  "ears.paulstretch~": {
+    "digest": "Paulstretch timestretching",
     "module": "ears",
     "category": [
-      "ears spectral"
+      "ears time and pitch"
     ],
     "keywords": [
       "buffer",
-      "model",
-      "analysis",
-      "resynthesis"
+      "stretch",
+      "timestretch",
+      "expand",
+      "compress"
     ],
     "seealso": [
-      "ears.model.stochastic.synthesis~"
+      "ears.freeverb~",
+      "ears.paulfreeze~"
     ]
   },
-  "ears.mc.in~": {
-    "digest": "Signal input for a patch loaded by ears.process~",
+  "ears.soundtouch~": {
+    "digest": "SoundTouch pitch and time processing",
     "module": "ears",
     "category": [
-      "ears process"
+      "ears time and pitch"
     ],
     "keywords": [
       "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime",
-      "multichannel"
+      "pitch",
+      "stretch",
+      "shift",
+      "pitchshift",
+      "timestretch",
+      "soundtouch",
+      "sound",
+      "touch"
     ],
     "seealso": [
-      "ears.in",
-      "ears.in~",
-      "ears.out~",
-      "ears.tovector~"
-    ]
-  },
-  "ears.*~": {
-    "digest": "Multiply buffer samples",
-    "module": "ears",
-    "category": [
-      "ears math"
-    ],
-    "keywords": [
-      "buffer",
-      "times",
-      "multiply",
-      "scale"
-    ],
-    "seealso": [
-      "ears.+~",
-      "ears.-~",
-      "ears./~",
-      "ears.!-~",
-      "ears.!/~",
-      "ears.gain~"
+      "ears.rubberband~",
+      "ears.paulstretch~",
+      "ears.resample~"
     ]
   },
   "ears.read~": {
@@ -461,6 +548,104 @@
     ],
     "seealso": [
       "ears.write~"
+    ]
+  },
+  "ears.write~": {
+    "digest": "Save buffers to files",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "file",
+      "write",
+      "save",
+      "export"
+    ],
+    "seealso": [
+      "ears.read~"
+    ]
+  },
+  "ears.lace~": {
+    "digest": "Interleave buffer channels",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "lace",
+      "channel",
+      "pack",
+      "interleave",
+      "buffer",
+      "combine"
+    ],
+    "seealso": [
+      "ears.delace~",
+      "ears.channel~"
+    ]
+  },
+  "ears.trans~": {
+    "digest": "Transpose a buffer considered as a matrix",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "trans",
+      "transpose",
+      "swap",
+      "channel",
+      "sample",
+      "spectral"
+    ],
+    "seealso": [
+      "ears.sftf~",
+      "ears.cqt~",
+      "bach.trans"
+    ]
+  },
+  "ears.join~": {
+    "digest": "Concatenate buffers",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "crossfade",
+      "joinenate",
+      "sequence",
+      "merge"
+    ],
+    "seealso": [
+      "ears.crop~",
+      "ears.read~",
+      "ears.fade~",
+      "ears.mix~"
+    ]
+  },
+  "ears.crop~": {
+    "digest": "Crop a buffer",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "crop",
+      "cut",
+      "extract",
+      "portion",
+      "subbuffer"
+    ],
+    "seealso": [
+      "ears.trim~",
+      "ears.fade~",
+      "ears.repeat~"
     ]
   },
   "ears.slice~": {
@@ -499,28 +684,6 @@
       "ears.resample~"
     ]
   },
-  "ears.!-~": {
-    "digest": "Subtract buffer samples with reversed inlets",
-    "module": "ears",
-    "category": [
-      "ears math"
-    ],
-    "keywords": [
-      "buffer",
-      "subtract",
-      "minus",
-      "reversed",
-      "reverse"
-    ],
-    "seealso": [
-      "ears.-~",
-      "ears.+~",
-      "ears./~",
-      "ears.!-~",
-      "ears.!/~",
-      "ears.gain~"
-    ]
-  },
   "ears.unpack~": {
     "digest": "Unpack buffer channels",
     "module": "ears",
@@ -539,88 +702,6 @@
       "ears.channel~"
     ]
   },
-  "ears.processinfo~": {
-    "digest": "Report information about the process running",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.process~",
-      "ears.in",
-      "ears.in~",
-      "ears.mc.in~",
-      "ears.out",
-      "ears.out~",
-      "ears.mc.out~",
-      "ears.tovector~",
-      "ears.fromvector~"
-    ]
-  },
-  "ears.waveset.decimate~": {
-    "digest": "Waveset repetition",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "waveset",
-      "zero-crossing",
-      "decimate"
-    ],
-    "seealso": [
-      "ears.waveset.split~",
-      "ears.waveset.subs~",
-      "ears.rubberband~",
-      "ears.soundtouch~"
-    ]
-  },
-  "ears.==~": {
-    "digest": "Compare buffers for equality",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "equal",
-      "condition",
-      "compare"
-    ],
-    "seealso": [
-      "ears.!=~"
-    ]
-  },
-  "ears.hoa.mirror~": {
-    "digest": "Mirror higher-order ambisonic buffers",
-    "module": "ears",
-    "category": [
-      "ears ambisonic"
-    ],
-    "keywords": [
-      "buffer",
-      "ambisonic",
-      "mirror",
-      "hoa",
-      "3d",
-      "invert",
-      "swap",
-      "transform"
-    ],
-    "seealso": [
-      "ears.hoa.encode~",
-      "ears.hoa.decode~",
-      "ears.hoa.rotate~"
-    ]
-  },
   "ears.fromsamps~": {
     "digest": "Create a buffer from an llll",
     "module": "ears",
@@ -635,62 +716,6 @@
     ],
     "seealso": [
       "ears.tosamps~"
-    ]
-  },
-  "ears.resample~": {
-    "digest": "Resample buffer",
-    "module": "ears",
-    "category": [
-      "ears conversions"
-    ],
-    "keywords": [
-      "buffer",
-      "resample",
-      "property",
-      "change",
-      "vinyl"
-    ],
-    "seealso": [
-      "ears.format~",
-      "ears.reg~"
-    ]
-  },
-  "ears.onepole~": {
-    "digest": "Single pole lowpass or highpass filter for buffers",
-    "module": "ears",
-    "category": [
-      "ears filter"
-    ],
-    "keywords": [
-      "buffer",
-      "onepole",
-      "filter",
-      "lowpass",
-      "hipass",
-      "highpass",
-      "attenuation"
-    ],
-    "seealso": [
-      "onepole~",
-      "ears.biquad~"
-    ]
-  },
-  "ears.essentia~": {
-    "digest": "Extract buffer features via the Essentia library",
-    "module": "ears",
-    "category": [
-      "ears analysis"
-    ],
-    "keywords": [
-      "buffer",
-      "essentia",
-      "feature",
-      "descriptor"
-    ],
-    "seealso": [
-      "ears.info~",
-      "ears.vamp~",
-      "ears.spectrogram~"
     ]
   },
   "ears.rot~": {
@@ -712,43 +737,6 @@
       "ears.slice~"
     ]
   },
-  "ears.write~": {
-    "digest": "Save buffers to files",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "file",
-      "write",
-      "save",
-      "export"
-    ],
-    "seealso": [
-      "ears.read~"
-    ]
-  },
-  "ears.in~": {
-    "digest": "Signal input for a patch loaded by ears.process~",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.in",
-      "ears.mc.in~",
-      "ears.out~",
-      "ears.tovector~"
-    ]
-  },
   "ears.tosamps~": {
     "digest": "Get buffer samples as llll",
     "module": "ears",
@@ -762,22 +750,6 @@
     ],
     "seealso": [
       "ears.fromsamps~"
-    ]
-  },
-  "ears.waveset.subs~": {
-    "digest": "Waveset substitution",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "waveset",
-      "zero-crossing"
-    ],
-    "seealso": [
-      "ears.waveset.split~",
-      "ears.waveset.repeat~"
     ]
   },
   "ears.info~": {
@@ -817,24 +789,6 @@
     ],
     "seealso": [
       "ears.pack~"
-    ]
-  },
-  "ears.freeverb~": {
-    "digest": "Freeverb reverberation",
-    "module": "ears",
-    "category": [
-      "ears reverb"
-    ],
-    "keywords": [
-      "buffer",
-      "reverb",
-      "freeverb",
-      "reverberation"
-    ],
-    "seealso": [
-      "ears.biquad~",
-      "ears.onepole~",
-      "ears.paulstretch~"
     ]
   },
   "ears.assemble~": {
@@ -908,80 +862,6 @@
       "ears.todiffs~"
     ]
   },
-  "ears.model.sps.analysis~": {
-    "digest": "Sinusoidal-plus-residual analysis model",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "model",
-      "analysis",
-      "resynthesis"
-    ],
-    "seealso": [
-      "ears.model.sps.synthesis~"
-    ]
-  },
-  "ears.waveset.repeat~": {
-    "digest": "Waveset repetition",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "waveset",
-      "zero-crossing",
-      "repeat"
-    ],
-    "seealso": [
-      "ears.waveset.split~",
-      "ears.waveset.decimate~",
-      "ears.waveset.subs~",
-      "ears.rubberband~",
-      "ears.soundtouch~"
-    ]
-  },
-  "ears.out~": {
-    "digest": "Signal output for a patch loaded by ears.process~",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.in",
-      "ears.mc.in~",
-      "ears.in~",
-      "ears.tovector~"
-    ]
-  },
-  "ears.pan~": {
-    "digest": "1D buffer panning",
-    "module": "ears",
-    "category": [
-      "ears pan"
-    ],
-    "keywords": [
-      "buffer",
-      "pan",
-      "panoramics",
-      "stereo",
-      "mono"
-    ],
-    "seealso": [
-      "ears.mixdown~",
-      "ears.gain~"
-    ]
-  },
   "ears.iter~": {
     "digest": "Iterate over buffer samples",
     "module": "ears",
@@ -995,61 +875,6 @@
     ],
     "seealso": [
       "ears.collect~"
-    ]
-  },
-  "ears.paulfreeze~": {
-    "digest": "Paulstretch freeze",
-    "module": "ears",
-    "category": [
-      "ears time and pitch"
-    ],
-    "keywords": [
-      "buffer",
-      "stretch",
-      "freeze",
-      "eternal",
-      "expand"
-    ],
-    "seealso": [
-      "ears.paulstretch~"
-    ]
-  },
-  "ears.cqt~": {
-    "digest": "Constant-Q Transform",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "cqt",
-      "q",
-      "constant",
-      "fourier",
-      "transform",
-      "spectrum"
-    ],
-    "seealso": [
-      "ears.window~",
-      "ears.stft~"
-    ]
-  },
-  "ears.dynamics~": {
-    "digest": "Dynamics processing",
-    "module": "ears",
-    "category": [
-      "ears dynamics"
-    ],
-    "keywords": [
-      "buffer",
-      "compress",
-      "expand",
-      "dynamics",
-      "limit",
-      "limiter"
-    ],
-    "seealso": [
-      "ears.gain~"
     ]
   },
   "ears.envelope~": {
@@ -1090,91 +915,6 @@
       "ears.join~"
     ]
   },
-  "ears.hoa.decode~": {
-    "digest": "Decode higher-order ambisonic buffers",
-    "module": "ears",
-    "category": [
-      "ears ambisonic"
-    ],
-    "keywords": [
-      "buffer",
-      "ambisonic",
-      "decode",
-      "binaural",
-      "hoa",
-      "3d"
-    ],
-    "seealso": [
-      "ears.hoa.encode~",
-      "ears.hoa.rotate~",
-      "ears.hoa.mirror~"
-    ]
-  },
-  "ears.in": {
-    "digest": "Message input for a patch loaded by ears.process~",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.in~",
-      "ears.out",
-      "ears.out~"
-    ]
-  },
-  "ears.biquad~": {
-    "digest": "Two-pole two-zero filter for buffers",
-    "module": "ears",
-    "category": [
-      "ears filter"
-    ],
-    "keywords": [
-      "buffer",
-      "biquad",
-      "filter",
-      "lowpass",
-      "hipass",
-      "highpass",
-      "bandpass",
-      "bandreject",
-      "hishelf",
-      "lowshelf",
-      "resonant",
-      "attenuation"
-    ],
-    "seealso": [
-      "biquad~",
-      "ears.onepole~"
-    ]
-  },
-  "ears.mc.out~": {
-    "digest": "Signal output for a patch loaded by ears.process~",
-    "module": "ears",
-    "category": [
-      "ears process"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime",
-      "multichannel"
-    ],
-    "seealso": [
-      "ears.in",
-      "ears.in~",
-      "ears.out",
-      "ears.tovector~"
-    ]
-  },
   "ears.filterempty~": {
     "digest": "Filter out empty buffers",
     "module": "ears",
@@ -1211,54 +951,6 @@
       "ears.channel~"
     ]
   },
-  "ears.griffinlim~": {
-    "digest": "Reconstruct signal from magnitude spectrum",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "griffinlim",
-      "spectrum",
-      "inverse",
-      "reconstruct",
-      "griffin",
-      "lim",
-      "phases",
-      "phase retrieval"
-    ],
-    "seealso": [
-      "ears.window~",
-      "ears.istft~",
-      "ears.istft~"
-    ]
-  },
-  "ears.py~": {
-    "digest": "Offline host for patches operating on buffers",
-    "module": "ears",
-    "category": [
-      "ears py"
-    ],
-    "keywords": [
-      "buffer",
-      "offline",
-      "patch",
-      "patcher",
-      "non-realtime"
-    ],
-    "seealso": [
-      "ears.in",
-      "ears.in~",
-      "ears.mc.in~",
-      "ears.out",
-      "ears.out~",
-      "ears.mc.out~",
-      "ears.pyinfo~",
-      "ears.tovector~",
-      "ears.fromvector~"
-    ]
-  },
   "ears.rev~": {
     "digest": "Reverse buffer",
     "module": "ears",
@@ -1277,152 +969,6 @@
       "ears.rot~",
       "ears.repeat~",
       "ears.slice~"
-    ]
-  },
-  "ears.hoa.encode~": {
-    "digest": "Encode 2D or 3D higher-order ambisonic buffers",
-    "module": "ears",
-    "category": [
-      "ears ambisonic"
-    ],
-    "keywords": [
-      "buffer",
-      "ambisonic",
-      "encode",
-      "decode",
-      "HOA",
-      "3D"
-    ],
-    "seealso": [
-      "ears.hoa.decode~",
-      "ears.hoa.rotate~",
-      "ears.hoa.mirror~"
-    ]
-  },
-  "ears.expr~": {
-    "digest": "Evaluate mathematical expressions on buffers",
-    "module": "ears",
-    "category": [
-      "ears math"
-    ],
-    "keywords": [
-      "buffer",
-      "expr",
-      "sum",
-      "add",
-      "operation",
-      "arithmetic",
-      "arithmetics"
-    ],
-    "seealso": [
-      "ears.mix~"
-    ]
-  },
-  "ears.model.sps.synthesis~": {
-    "digest": "Sinusoidal synthesis model",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "model",
-      "synthesis",
-      "resynthesis"
-    ],
-    "seealso": [
-      "ears.model.sps.analysis~"
-    ]
-  },
-  "ears.paulstretch~": {
-    "digest": "Paulstretch timestretching",
-    "module": "ears",
-    "category": [
-      "ears time and pitch"
-    ],
-    "keywords": [
-      "buffer",
-      "stretch",
-      "timestretch",
-      "expand",
-      "compress"
-    ],
-    "seealso": [
-      "ears.freeverb~",
-      "ears.paulfreeze~"
-    ]
-  },
-  "ears.clicks~": {
-    "digest": "Put clicks at time points",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "click",
-      "clicks",
-      "collect"
-    ],
-    "seealso": [
-      "ears.fromsamps~",
-      "ears.mix~",
-      "ears.assemble~"
-    ]
-  },
-  "ears.fft~": {
-    "digest": "Fast Fourier Transforms",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "fft",
-      "fourier",
-      "transform",
-      "spectrum"
-    ],
-    "seealso": [
-      "ears.stft~",
-      "ears.istft~",
-      "ears.window~",
-      "ears.spectrogram~"
-    ]
-  },
-  "ears.peaks~": {
-    "digest": "Find peaks of a spectrogram",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "peaks",
-      "spectrum"
-    ],
-    "seealso": [
-      "ears.stft~",
-      "ears.cqt~",
-      "ears.trans~"
-    ]
-  },
-  "ears.waveset.shuffle~": {
-    "digest": "Waveset shuffling",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "waveset",
-      "zero-crossing"
-    ],
-    "seealso": [
-      "ears.waveset.split~",
-      "ears.waveset.subs~",
-      "ears.rubberband~",
-      "ears.soundtouch~"
     ]
   },
   "ears.trim~": {
@@ -1476,67 +1022,6 @@
       "ears.rev~"
     ]
   },
-  "ears.vamp~": {
-    "digest": "Vamp plugins host",
-    "module": "ears",
-    "category": [
-      "ears analysis"
-    ],
-    "keywords": [
-      "buffer",
-      "feature",
-      "features",
-      "descriptor",
-      "vamp",
-      "plugin"
-    ],
-    "seealso": [
-      "ears.essentia~"
-    ]
-  },
-  "ears.soundtouch~": {
-    "digest": "SoundTouch pitch and time processing",
-    "module": "ears",
-    "category": [
-      "ears time and pitch"
-    ],
-    "keywords": [
-      "buffer",
-      "pitch",
-      "stretch",
-      "shift",
-      "pitchshift",
-      "timestretch",
-      "soundtouch",
-      "sound",
-      "touch"
-    ],
-    "seealso": [
-      "ears.rubberband~",
-      "ears.paulstretch~",
-      "ears.resample~"
-    ]
-  },
-  "ears.istft~": {
-    "digest": "Inverse Short-Time Fourier Transform",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "istft",
-      "fourier",
-      "transform",
-      "spectrum",
-      "inverse"
-    ],
-    "seealso": [
-      "ears.stft~",
-      "ears.griffinlim~",
-      "ears.window~"
-    ]
-  },
   "ears.reg~": {
     "digest": "Store or clone buffers",
     "module": "ears",
@@ -1554,93 +1039,6 @@
       "ears.convert~"
     ]
   },
-  "ears.-~": {
-    "digest": "Subtract buffer samples",
-    "module": "ears",
-    "category": [
-      "ears math"
-    ],
-    "keywords": [
-      "buffer",
-      "minus",
-      "subtract"
-    ],
-    "seealso": [
-      "ears.+~",
-      "ears.*~",
-      "ears./~",
-      "ears.!-~",
-      "ears.!/~",
-      "ears.gain~"
-    ]
-  },
-  "ears.model.stochastic.synthesis~": {
-    "digest": "Sinusoidal synthesis model",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "model",
-      "synthesis",
-      "resynthesis"
-    ],
-    "seealso": [
-      "ears.model.stochastic.analysis~"
-    ]
-  },
-  "ears.overdrive~": {
-    "digest": "Buffer soft clipping",
-    "module": "ears",
-    "category": [
-      "ears distorsion"
-    ],
-    "keywords": [
-      "buffer",
-      "overdrive",
-      "distort",
-      "hard"
-    ],
-    "seealso": [
-      "ears.clip~",
-      "overdrive"
-    ]
-  },
-  "ears.waveset.split~": {
-    "digest": "Waveset splitting",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "waveset",
-      "zero-crossing"
-    ],
-    "seealso": [
-      "ears.waveset.repeat~",
-      "ears.waveset.subs~",
-      "ears.split~"
-    ]
-  },
-  "ears.roll.sampling~": {
-    "digest": "Convert a <o>bach.roll</o> into a montage of audio samples",
-    "module": "ears",
-    "category": [
-      "ears export"
-    ],
-    "keywords": [
-      "buffer",
-      "roll",
-      "bounce",
-      "export"
-    ],
-    "seealso": [
-      "ears.read~",
-      "ears.roll.toreaper~"
-    ]
-  },
   "ears.collect~": {
     "digest": "Collect buffer samples",
     "module": "ears",
@@ -1653,24 +1051,6 @@
     ],
     "seealso": [
       "ears.iter~"
-    ]
-  },
-  "ears.roll.toreaper~": {
-    "digest": "Export a <o>bach.roll</o> as a Reaper project",
-    "module": "ears",
-    "category": [
-      "ears export"
-    ],
-    "keywords": [
-      "buffer",
-      "roll",
-      "bounce",
-      "export",
-      "Reaper"
-    ],
-    "seealso": [
-      "ears.roll.sampling~",
-      "ears.roll.sinusoids~"
     ]
   },
   "ears.mix~": {
@@ -1694,41 +1074,6 @@
       "ears.mixdown~"
     ]
   },
-  "ears.window~": {
-    "digest": "Apply an analysis window",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "window",
-      "apply",
-      "hanning",
-      "hamming",
-      "triangular",
-      "tri"
-    ],
-    "seealso": [
-      "ears.envelope~"
-    ]
-  },
-  "ears.phasewrap~": {
-    "digest": "Get principal phases",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "phasewrap",
-      "wrap"
-    ],
-    "seealso": [
-      "ears.phaseunwrap~",
-      "ears.fromdiffs~"
-    ]
-  },
   "ears.gain~": {
     "digest": "Change buffer gain",
     "module": "ears",
@@ -1746,40 +1091,6 @@
       "ears.dynamics~",
       "ears.normalize~",
       "ears.envelope~"
-    ]
-  },
-  "ears.waveset.average~": {
-    "digest": "Waveset averaging",
-    "module": "ears",
-    "category": [
-      "ears basic"
-    ],
-    "keywords": [
-      "buffer",
-      "waveset",
-      "zero-crossing"
-    ],
-    "seealso": [
-      "ears.waveset.split~",
-      "ears.waveset.interp~",
-      "ears.waveset.repeat~",
-      "ears.waveset.subs~"
-    ]
-  },
-  "ears.model.sine.analysis~": {
-    "digest": "Sinusoidal analysis model",
-    "module": "ears",
-    "category": [
-      "ears spectral"
-    ],
-    "keywords": [
-      "buffer",
-      "model",
-      "analysis",
-      "resynthesis"
-    ],
-    "seealso": [
-      "ears.model.sine.synthesis~"
     ]
   },
   "ears.mixdown~": {
@@ -1802,24 +1113,6 @@
       "ears.pan~"
     ]
   },
-  "ears.roll.synthesis~": {
-    "digest": "Convert a <o>bach.roll</o> into a mix of synthesis",
-    "module": "ears",
-    "category": [
-      "ears export"
-    ],
-    "keywords": [
-      "buffer",
-      "roll",
-      "bounce",
-      "export",
-      "synthesis",
-      "cycle"
-    ],
-    "seealso": [
-      "ears.read~"
-    ]
-  },
   "ears.split~": {
     "digest": "Split a buffer into multiple buffers",
     "module": "ears",
@@ -1837,44 +1130,160 @@
       "ears.trim~"
     ]
   },
-  "ears.hoa.rotate~": {
-    "digest": "Rotate higher-order ambisonic buffers",
+  "ears.!=~": {
+    "digest": "Compare buffers for inequality",
     "module": "ears",
     "category": [
-      "ears ambisonic"
+      "ears basic"
     ],
     "keywords": [
       "buffer",
-      "ambisonic",
-      "rotate",
-      "hoa",
-      "3d",
-      "rotation"
+      "unequal",
+      "inequality",
+      "condition",
+      "compare"
     ],
     "seealso": [
-      "ears.hoa.encode~",
-      "ears.hoa.decode~",
-      "ears.hoa.mirror~"
+      "ears.==~"
     ]
   },
-  "ears.tempogram~": {
-    "digest": "Compute tempograms",
+  "ears./~": {
+    "digest": "Divide buffer samples",
     "module": "ears",
     "category": [
-      "ears spectral"
+      "ears math"
     ],
     "keywords": [
       "buffer",
-      "tempogram",
-      "spectrogram",
-      "tempo",
-      "rhythm",
-      "transform",
-      "spectrum"
+      "div",
+      "divide",
+      "scale"
     ],
     "seealso": [
-      "ears.spectrogram~",
-      "ears.essentia~"
+      "ears.+~",
+      "ears.-~",
+      "ears.*~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
+    ]
+  },
+  "ears.+~": {
+    "digest": "Sum buffer samples",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "plus",
+      "add"
+    ],
+    "seealso": [
+      "ears.-~",
+      "ears.*~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
+    ]
+  },
+  "ears.*~": {
+    "digest": "Multiply buffer samples",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "times",
+      "multiply",
+      "scale"
+    ],
+    "seealso": [
+      "ears.+~",
+      "ears.-~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
+    ]
+  },
+  "ears.!-~": {
+    "digest": "Subtract buffer samples with reversed inlets",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "subtract",
+      "minus",
+      "reversed",
+      "reverse"
+    ],
+    "seealso": [
+      "ears.-~",
+      "ears.+~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
+    ]
+  },
+  "ears.==~": {
+    "digest": "Compare buffers for equality",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "equal",
+      "condition",
+      "compare"
+    ],
+    "seealso": [
+      "ears.!=~"
+    ]
+  },
+  "ears.expr~": {
+    "digest": "Evaluate mathematical expressions on buffers",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "expr",
+      "sum",
+      "add",
+      "operation",
+      "arithmetic",
+      "arithmetics"
+    ],
+    "seealso": [
+      "ears.mix~"
+    ]
+  },
+  "ears.-~": {
+    "digest": "Subtract buffer samples",
+    "module": "ears",
+    "category": [
+      "ears math"
+    ],
+    "keywords": [
+      "buffer",
+      "minus",
+      "subtract"
+    ],
+    "seealso": [
+      "ears.+~",
+      "ears.*~",
+      "ears./~",
+      "ears.!-~",
+      "ears.!/~",
+      "ears.gain~"
     ]
   },
   "ears.!/~": {
@@ -1898,6 +1307,572 @@
       "ears.!-~",
       "ears.*~",
       "ears.gain~"
+    ]
+  },
+  "ears.waveset.interp~": {
+    "digest": "Waveset interpolation",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing",
+      "interpolate"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.average~",
+      "ears.waveset.decimate~",
+      "ears.waveset.subs~"
+    ]
+  },
+  "ears.waveset.decimate~": {
+    "digest": "Waveset repetition",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing",
+      "decimate"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.subs~",
+      "ears.rubberband~",
+      "ears.soundtouch~"
+    ]
+  },
+  "ears.waveset.subs~": {
+    "digest": "Waveset substitution",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.repeat~"
+    ]
+  },
+  "ears.waveset.repeat~": {
+    "digest": "Waveset repetition",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing",
+      "repeat"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.decimate~",
+      "ears.waveset.subs~",
+      "ears.rubberband~",
+      "ears.soundtouch~"
+    ]
+  },
+  "ears.waveset.shuffle~": {
+    "digest": "Waveset shuffling",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.subs~",
+      "ears.rubberband~",
+      "ears.soundtouch~"
+    ]
+  },
+  "ears.waveset.split~": {
+    "digest": "Waveset splitting",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.repeat~",
+      "ears.waveset.subs~",
+      "ears.split~"
+    ]
+  },
+  "ears.waveset.average~": {
+    "digest": "Waveset averaging",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "waveset",
+      "zero-crossing"
+    ],
+    "seealso": [
+      "ears.waveset.split~",
+      "ears.waveset.interp~",
+      "ears.waveset.repeat~",
+      "ears.waveset.subs~"
+    ]
+  },
+  "ears.hoa.mirror~": {
+    "digest": "Mirror higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "mirror",
+      "hoa",
+      "3d",
+      "invert",
+      "swap",
+      "transform"
+    ],
+    "seealso": [
+      "ears.hoa.encode~",
+      "ears.hoa.decode~",
+      "ears.hoa.rotate~"
+    ]
+  },
+  "ears.hoa.decode~": {
+    "digest": "Decode higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "decode",
+      "binaural",
+      "hoa",
+      "3d"
+    ],
+    "seealso": [
+      "ears.hoa.encode~",
+      "ears.hoa.rotate~",
+      "ears.hoa.mirror~"
+    ]
+  },
+  "ears.hoa.encode~": {
+    "digest": "Encode 2D or 3D higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "encode",
+      "decode",
+      "HOA",
+      "3D"
+    ],
+    "seealso": [
+      "ears.hoa.decode~",
+      "ears.hoa.rotate~",
+      "ears.hoa.mirror~"
+    ]
+  },
+  "ears.hoa.rotate~": {
+    "digest": "Rotate higher-order ambisonic buffers",
+    "module": "ears",
+    "category": [
+      "ears ambisonic"
+    ],
+    "keywords": [
+      "buffer",
+      "ambisonic",
+      "rotate",
+      "hoa",
+      "3d",
+      "rotation"
+    ],
+    "seealso": [
+      "ears.hoa.encode~",
+      "ears.hoa.decode~",
+      "ears.hoa.mirror~"
+    ]
+  },
+  "ears.clip~": {
+    "digest": "Buffer hard clipping",
+    "module": "ears",
+    "category": [
+      "ears distorsion"
+    ],
+    "keywords": [
+      "buffer",
+      "clip",
+      "distort",
+      "hard"
+    ],
+    "seealso": [
+      "ears.overdrive~",
+      "clip"
+    ]
+  },
+  "ears.resample~": {
+    "digest": "Resample buffer",
+    "module": "ears",
+    "category": [
+      "ears conversions"
+    ],
+    "keywords": [
+      "buffer",
+      "resample",
+      "property",
+      "change",
+      "vinyl"
+    ],
+    "seealso": [
+      "ears.format~",
+      "ears.reg~"
+    ]
+  },
+  "ears.onepole~": {
+    "digest": "Single pole lowpass or highpass filter for buffers",
+    "module": "ears",
+    "category": [
+      "ears filter"
+    ],
+    "keywords": [
+      "buffer",
+      "onepole",
+      "filter",
+      "lowpass",
+      "hipass",
+      "highpass",
+      "attenuation"
+    ],
+    "seealso": [
+      "onepole~",
+      "ears.biquad~"
+    ]
+  },
+  "ears.freeverb~": {
+    "digest": "Freeverb reverberation",
+    "module": "ears",
+    "category": [
+      "ears reverb"
+    ],
+    "keywords": [
+      "buffer",
+      "reverb",
+      "freeverb",
+      "reverberation"
+    ],
+    "seealso": [
+      "ears.biquad~",
+      "ears.onepole~",
+      "ears.paulstretch~"
+    ]
+  },
+  "ears.pan~": {
+    "digest": "1D buffer panning",
+    "module": "ears",
+    "category": [
+      "ears pan"
+    ],
+    "keywords": [
+      "buffer",
+      "pan",
+      "panoramics",
+      "stereo",
+      "mono"
+    ],
+    "seealso": [
+      "ears.mixdown~",
+      "ears.gain~"
+    ]
+  },
+  "ears.dynamics~": {
+    "digest": "Dynamics processing",
+    "module": "ears",
+    "category": [
+      "ears dynamics"
+    ],
+    "keywords": [
+      "buffer",
+      "compress",
+      "expand",
+      "dynamics",
+      "limit",
+      "limiter"
+    ],
+    "seealso": [
+      "ears.gain~"
+    ]
+  },
+  "ears.biquad~": {
+    "digest": "Two-pole two-zero filter for buffers",
+    "module": "ears",
+    "category": [
+      "ears filter"
+    ],
+    "keywords": [
+      "buffer",
+      "biquad",
+      "filter",
+      "lowpass",
+      "hipass",
+      "highpass",
+      "bandpass",
+      "bandreject",
+      "hishelf",
+      "lowshelf",
+      "resonant",
+      "attenuation"
+    ],
+    "seealso": [
+      "biquad~",
+      "ears.onepole~"
+    ]
+  },
+  "ears.overdrive~": {
+    "digest": "Buffer soft clipping",
+    "module": "ears",
+    "category": [
+      "ears distorsion"
+    ],
+    "keywords": [
+      "buffer",
+      "overdrive",
+      "distort",
+      "hard"
+    ],
+    "seealso": [
+      "ears.clip~",
+      "overdrive"
+    ]
+  },
+  "ears.fromvector~": {
+    "digest": "Convert synchronously a signal vector into a list",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in~",
+      "ears.tovector~"
+    ]
+  },
+  "ears.out": {
+    "digest": "Message input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in~",
+      "ears.out",
+      "ears.out~"
+    ]
+  },
+  "ears.tovector~": {
+    "digest": "Convert synchronously a list of numbers into a signal vector",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.out~",
+      "ears.tovector~"
+    ]
+  },
+  "ears.process~": {
+    "digest": "Offline host for patches operating on buffers",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.in~",
+      "ears.mc.in~",
+      "ears.out",
+      "ears.out~",
+      "ears.mc.out~",
+      "ears.processinfo~",
+      "ears.tovector~",
+      "ears.fromvector~"
+    ]
+  },
+  "ears.mc.in~": {
+    "digest": "Signal input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime",
+      "multichannel"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.in~",
+      "ears.out~",
+      "ears.tovector~"
+    ]
+  },
+  "ears.processinfo~": {
+    "digest": "Report information about the process running",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.process~",
+      "ears.in",
+      "ears.in~",
+      "ears.mc.in~",
+      "ears.out",
+      "ears.out~",
+      "ears.mc.out~",
+      "ears.tovector~",
+      "ears.fromvector~"
+    ]
+  },
+  "ears.in~": {
+    "digest": "Signal input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.mc.in~",
+      "ears.out~",
+      "ears.tovector~"
+    ]
+  },
+  "ears.out~": {
+    "digest": "Signal output for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.mc.in~",
+      "ears.in~",
+      "ears.tovector~"
+    ]
+  },
+  "ears.in": {
+    "digest": "Message input for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime"
+    ],
+    "seealso": [
+      "ears.in~",
+      "ears.out",
+      "ears.out~"
+    ]
+  },
+  "ears.mc.out~": {
+    "digest": "Signal output for a patch loaded by ears.process~",
+    "module": "ears",
+    "category": [
+      "ears process"
+    ],
+    "keywords": [
+      "buffer",
+      "offline",
+      "patch",
+      "patcher",
+      "non-realtime",
+      "multichannel"
+    ],
+    "seealso": [
+      "ears.in",
+      "ears.in~",
+      "ears.out",
+      "ears.tovector~"
     ]
   }
 }
