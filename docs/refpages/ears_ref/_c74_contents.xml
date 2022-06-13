@@ -83,6 +83,7 @@
 <refpage name='ears.hoa.encode~.maxref.xml'/>
 <refpage name='ears.hoa.rotate~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
+<refpage name='ears.interp~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
 <refpage name='ears.onepole~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>

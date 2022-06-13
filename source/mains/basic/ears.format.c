@@ -448,6 +448,13 @@ void buf_format_bang(t_buf_format *x)
                     data->binoffset = 0;
                 if (data->binunit == EARS_FREQUNIT_UNKNOWN)
                     data->binunit = EARS_FREQUNIT_HERTZ;
+/*            } else if (spectype == gensym("stc")) {
+                if (data->binsize < 0)
+                    data->binsize = ears_spectralbuf_get_original_audio_sr((t_object *)x, out)/(2*(ears_buffer_get_numchannels((t_object *)x, out)-1));
+                if (data->binoffset < 0)
+                    data->binoffset = 0;
+                if (data->binunit == EARS_FREQUNIT_UNKNOWN)
+                    data->binunit = EARS_FREQUNIT_QUEFRENCY_MS; */
             } else if (spectype == gensym("tempogram")) {
 //                if (data->binsize < 0)
 //                    data->binsize = ears_spectralbuf_get_original_audio_sr((t_object *)x, out)/(2*(ears_buffer_get_numchannels((t_object *)x, out)-1));
@@ -455,7 +462,7 @@ void buf_format_bang(t_buf_format *x)
                     data->binoffset = 0;
                 if (data->binunit == EARS_FREQUNIT_UNKNOWN)
                     data->binunit = EARS_FREQUNIT_BPM;
-            } else if (spectype == gensym("stft")) {
+            } else if (spectype == gensym("cqt")) {
 //                if (data->binsize < 0)
 //                    data->binsize = ears_spectralbuf_get_original_audio_sr((t_object *)x, out)/(2*(ears_buffer_get_numchannels((t_object *)x, out)-1));
                 if (data->binoffset < 0)

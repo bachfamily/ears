@@ -6045,19 +6045,19 @@ t_ears_err ears_buffer_interp(t_object *ob, t_buffer_obj *from, t_buffer_obj *to
         ears_buffer_clone(ob, from, temp1);
         ears_buffer_clone(ob, to, temp2);
 
-        if ((this_err = ears_buffer_resample(ob, temp1, ((double)this_size)/from_framecount, resamplingfiltersize)))
+        if (this_size != from_framecount && (this_err = ears_buffer_resample(ob, temp1, ((double)this_size)/from_framecount, resamplingfiltersize)))
             err = EARS_ERR_GENERIC;
 
-        if ((this_err = ears_buffer_resample(ob, temp2, ((double)this_size)/to_framecount, resamplingfiltersize)))
+        if (this_size != to_framecount && (this_err = ears_buffer_resample(ob, temp2, ((double)this_size)/to_framecount, resamplingfiltersize)))
             err = EARS_ERR_GENERIC;
 
         t_llll *gains = llll_get();
         if (equalpowerinterp) {
-            llll_appenddouble(gains, sqrt(factor));
             llll_appenddouble(gains, sqrt(1.-factor));
+            llll_appenddouble(gains, sqrt(factor));
         } else {
-            llll_appenddouble(gains, factor);
             llll_appenddouble(gains, 1.-factor);
+            llll_appenddouble(gains, factor);
         }
         
         if ((this_err = ears_buffer_mix(ob, temps, 2, thisdest, gains, offsets, EARS_NORMALIZE_DONT, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize)))

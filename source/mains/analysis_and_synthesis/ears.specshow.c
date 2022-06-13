@@ -647,6 +647,8 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
                 grid_freq_step = 1200 * floor(400./rect.height);
             } else if (x->n_type == gensym("tempogram")) {
                 grid_freq_step = 10 * floor(3000./rect.height);
+//            } else if (x->n_type == gensym("stc")) { // to check
+//                grid_freq_step = 256 * floor(1100./rect.height);
             }
         }
     } else {

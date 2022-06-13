@@ -675,8 +675,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 741.0, 274.549958621754399, 112.0, 22.0 ],
-					"text" : "ears.window~ hann"
+					"patching_rect" : [ 741.0, 274.549958621754399, 168.0, 22.0 ],
+					"text" : "ears.window~ @wintype hann"
 				}
 
 			}
@@ -785,7 +785,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 9.0, 50.961723327636719, 261.0, 503.0 ],
+					"patching_rect" : [ 9.0, 50.961723327636719, 262.0, 503.0 ],
 					"text" : "Group delay is defined as the negative derivative of the phase spectrum of Short-Time Fourier Transform:\n\n\n\n\nThis would require phase unwrappinig. A more convenient way to compute it is via the formula:\n\n\n\n\nwhere          and         are the real and imaginary part of the STFT bins of the original signal          , while          and           are their \ncounterparts with respect to the signal\n\n\nIn this patch we are using a built-in STFT to compute the transform of           , but we need to implement our own \"hand-made\" STFT \nimplement this formula by building ourselves a Short-Time Fourier Transform step by step \"by hand\", because we also need the transform of\n              , which means that each window frame must be modulated with a ramp.\n\nThis is a good exercise that gets us acquainted with a number of objects in the ears library that come in handy when working with spectral analysis. \n\n(The first thing to know is that a spectral buffer, in ears, is a special buffer whose spectral bins are placed in different channels, and whose frames are placed as different time samples.)"
 				}
 

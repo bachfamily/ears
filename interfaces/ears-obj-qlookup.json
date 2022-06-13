@@ -1535,6 +1535,22 @@
       "clip"
     ]
   },
+  "ears.interp~": {
+    "digest": "Buffer linear interpolation",
+    "module": "ears",
+    "category": [
+      "ears distorsion"
+    ],
+    "keywords": [
+      "buffer",
+      "interp",
+      "interpolate",
+      "linear"
+    ],
+    "seealso": [
+      "ears.waveset.interp~"
+    ]
+  },
   "ears.resample~": {
     "digest": "Resample buffer",
     "module": "ears",
