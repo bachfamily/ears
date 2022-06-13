@@ -523,7 +523,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u074001587",
+									"buffername" : "u050010109",
 									"id" : "obj-26",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

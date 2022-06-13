@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 65.0, 108.0, 772.0, 642.0 ],
+		"rect" : [ 830.0, 303.0, 772.0, 642.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,19 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-12",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 259.0, 320.548538684844971, 67.0, 33.0 ],
+					"presentation_linecount" : 2,
+					"text" : "spectral whitening"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"hidden" : 1,
 					"id" : "obj-27",
@@ -79,7 +92,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 631.20873361825943, 281.898053407669067, 98.0, 55.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Normalization & playback"
 				}
 
@@ -106,8 +118,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 561.0, 64.461723327636719, 141.0, 69.0 ],
-					"presentation_linecount" : 3,
+					"patching_rect" : [ 561.0, 64.461723327636719, 144.0, 69.0 ],
 					"text" : "This is the \"manual\" STFT we have seen in a previous example"
 				}
 
@@ -123,7 +134,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 413.0, 566.3106733560561, 147.0, 40.0 ],
-					"presentation_linecount" : 4,
 					"text" : "Assemble used as an overlap-add tool"
 				}
 
@@ -139,7 +149,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 406.0, 449.528261613490372, 97.0, 54.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Inverse of complex cepstrum"
 				}
 
@@ -154,8 +163,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 352.0, 329.398053407669067, 212.0, 69.0 ],
-					"presentation_linecount" : 5,
+					"patching_rect" : [ 352.0, 329.398053407669067, 216.0, 69.0 ],
 					"text" : "Do whatever you want here. For example, are producing a sort of low-quality denosing by enhancing the louder partials"
 				}
 

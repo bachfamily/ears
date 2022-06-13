@@ -6495,7 +6495,7 @@ t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *sou
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
         return EARS_ERR_CANT_READ;
     }
-    samples[1] = buffer_locksamples(sources[1]);
+    samples[1] = (source1 == source2 ? samples[0] : buffer_locksamples(sources[1]));
     if (!samples[1]) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -6520,7 +6520,7 @@ t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *sou
 
     ears_buffer_set_size_and_numchannels(ob, dest, outnumsamps, outnumchans);
 
-    float *dest_sample = ((dest == sources[0] && !must_free_samples[0]) ? samples[0] : buffer_locksamples(dest));
+    float *dest_sample = ((dest == sources[0] && !must_free_samples[0]) ? samples[0] : (dest == sources[1] && !must_free_samples[1] ? samples[1] : buffer_locksamples(dest)));
     if (!dest_sample) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -6582,15 +6582,17 @@ t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *sou
         }
     }
 
-    if (dest == sources[0] && !must_free_samples[0])
+    if (dest != sources[0] && !must_free_samples[0])
         buffer_unlocksamples(dest);
+    
     if (must_free_samples[0])
         bach_freeptr(samples[0]);
     else
         buffer_unlocksamples(sources[0]);
+    
     if (must_free_samples[1])
         bach_freeptr(samples[1]);
-    else
+    else if (source1 != source2 && source1 != dest)
         buffer_unlocksamples(sources[1]);
 
     return err;
