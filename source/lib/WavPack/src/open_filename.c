@@ -27,7 +27,11 @@
 // local character set works. This is ignored on non-Windows platforms
 // (which is okay because they are probably UTF-8 anyway).
 
+#ifdef MAC_VERSION
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
