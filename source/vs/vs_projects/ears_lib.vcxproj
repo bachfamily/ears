@@ -39,6 +39,11 @@
     <ClInclude Include="..\..\commons\dg\ears.utils.h" />
     <ClInclude Include="..\..\commons\dg\ears.wavpack.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\WavPack\src\libwavpack.vcxproj">
+      <Project>{5cccb9cf-0384-458f-ba08-72b73866840f}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF55A42A-CBF8-4F3D-9BF4-E99E6219CD31}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
