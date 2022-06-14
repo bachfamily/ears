@@ -32,7 +32,7 @@
 	buffer, gain, scale, multiply, factor
  
 	@seealso
-	ears.dynamics~, ears.normalize~, ears.envelope~
+	ears.*~, ears.dynamics~, ears.normalize~, ears.envelope~
 	
 	@owner
 	Daniele Ghisi
@@ -74,7 +74,7 @@ EARSBUFOBJ_ADD_IO_METHODS(gain)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -113,6 +113,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_slopemapping_attr(c);
 
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
 
     earsbufobj_class_add_polyout_attr(c);
 
@@ -225,7 +226,7 @@ void buf_gain_bang(t_buf_gain *x)
                 t_buffer_ref *ref = buffer_ref_new((t_object *)x, hatom_getsym(&env->l_head->l_hatom));
                 if (in != out)
                     ears_buffer_clone((t_object *)x, in, out);
-                ears_buffer_multiply_inplace((t_object *)x, out, buffer_ref_getobject(ref), x->e_ob.l_resamplingfilterwidth);
+                ears_buffer_multiply_inplace((t_object *)x, out, buffer_ref_getobject(ref), x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
                 object_free(ref);
             } else {
                 // gain is a single number

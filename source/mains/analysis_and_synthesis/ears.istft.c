@@ -100,7 +100,7 @@ t_max_err buf_istft_setattr_cpxout(t_buf_istft *x, void *attr, long argc, t_atom
 }
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     
 #ifdef EARS_STFT_USE_ESSENTIA

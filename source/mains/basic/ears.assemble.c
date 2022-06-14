@@ -97,7 +97,7 @@ EARSBUFOBJ_ADD_IO_METHODS(assemble)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -142,6 +142,7 @@ int C74_EXPORT main(void)
 
     earsbufobj_class_add_resamplingpolicy_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
 
     CLASS_ATTR_CHAR(c, "normalize", 0, t_buf_assemble, normalization_mode);
     CLASS_ATTR_STYLE_LABEL(c,"normalize",0,"enumindex","Normalize Output");
@@ -349,7 +350,7 @@ void buf_assemble_once(t_buf_assemble *x)
         }
         
         
-        ears_buffer_assemble_once((t_object *)x, out, buf, gains_linear, offset_samps, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, &x->curr_length_samps, &x->allocated_samps);
+        ears_buffer_assemble_once((t_object *)x, out, buf, gains_linear, offset_samps, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode, &x->curr_length_samps, &x->allocated_samps);
         
         x->assembly_line_status = 2;
     }

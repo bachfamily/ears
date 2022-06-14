@@ -77,7 +77,7 @@ EARSBUFOBJ_ADD_IO_METHODS(waveset_interp)
 // Class Definition and Life Cycle
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -111,7 +111,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
-    
+    earsbufobj_class_add_resamplingmode_attr(c);
+
     earsbufobj_class_add_polyout_attr(c);
 
 
@@ -217,7 +218,7 @@ void buf_waveset_interp_bang(t_buf_waveset_interp *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        ears_buffer_waveset_interp((t_object *)x, in, out, x->e_span, x->e_normalize, el && is_hatom_number(&el->l_hatom) ? hatom_getlong(&el->l_hatom) : 1, x->e_ob.l_resamplingfilterwidth, x->e_eqp);
+        ears_buffer_waveset_interp((t_object *)x, in, out, x->e_span, x->e_normalize, el && is_hatom_number(&el->l_hatom) ? hatom_getlong(&el->l_hatom) : 1, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode, x->e_eqp);
         
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }

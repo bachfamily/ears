@@ -77,7 +77,7 @@ EARSBUFOBJ_ADD_IO_METHODS(waveset_average)
 // Class Definition and Life Cycle
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -217,7 +217,7 @@ void buf_waveset_average_bang(t_buf_waveset_average *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
         
-        ears_buffer_waveset_average((t_object *)x, in, out, x->e_span, x->e_normalize, el && is_hatom_number(&el->l_hatom) ? hatom_getlong(&el->l_hatom) : 1, x->e_ob.l_resamplingfilterwidth, false, x->e_keeplength);
+        ears_buffer_waveset_average((t_object *)x, in, out, x->e_span, x->e_normalize, el && is_hatom_number(&el->l_hatom) ? hatom_getlong(&el->l_hatom) : 1, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode, false, x->e_keeplength);
         
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }

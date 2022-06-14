@@ -582,7 +582,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 if (use_assembly_line) {
                     t_llll *note_gain_ll = llll_get();
                     llll_appenddouble(note_gain_ll, note_gain);
-                    ears_buffer_assemble_once((t_object *)e_ob, dest, buf, note_gain_ll, ears_ms_to_samps(onset_ms, sr_os), earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth, &basebuffer_numframes, &basebuffer_allocatedframes);
+                    ears_buffer_assemble_once((t_object *)e_ob, dest, buf, note_gain_ll, ears_ms_to_samps(onset_ms, sr_os), earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth, (e_ears_resamplingmode)e_ob->l_resamplingmode, &basebuffer_numframes, &basebuffer_allocatedframes);
                     llll_free(note_gain_ll);
                     ears_buffer_free(buf);
                 }
@@ -598,7 +598,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
     } else {
         // mixing
         ears_buffer_mix_from_llll((t_object *)e_ob, sources, dest, gains, offset_samps, normalization_mode,
-                                  earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth);
+                                  earsbufobj_get_slope_mapping(e_ob), (e_ears_resamplingpolicy)e_ob->l_resamplingpolicy, e_ob->l_resamplingfilterwidth, (e_ears_resamplingmode)e_ob->l_resamplingmode);
     }
     
     if (oversampling > 1) {

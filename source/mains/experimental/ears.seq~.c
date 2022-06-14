@@ -297,7 +297,7 @@ void seq_undo_postprocess(t_seq *x);
 static t_class *seq_class;
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
 	common_symbols_init();
 	llllobj_common_symbols_init();

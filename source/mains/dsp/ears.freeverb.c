@@ -137,7 +137,7 @@ t_max_err buf_freeverb_setattr_mode(t_buf_freeverb *x, void *attr, long argc, t_
 }
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

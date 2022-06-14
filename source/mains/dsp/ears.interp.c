@@ -76,7 +76,7 @@ EARSBUFOBJ_ADD_IO_METHODS(interp)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -241,7 +241,7 @@ void buf_interp_bang(t_buf_interp *x)
         ears_buffer_clone((t_object *)x, in2, out[numoutbuffers-1]);
     }
     
-    ears_buffer_interp((t_object *)x, in1, in2, actualnuminterp, keep ? out+1 : out, x->e_ob.l_resamplingfilterwidth, eqp);
+    ears_buffer_interp((t_object *)x, in1, in2, actualnuminterp, keep ? out+1 : out, x->e_ob.l_resamplingfilterwidth, x->e_ob.l_resamplingmode, eqp);
     
     
     bach_freeptr(out);

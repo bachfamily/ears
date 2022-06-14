@@ -125,7 +125,7 @@ t_max_err buf_vamp_setattr_auto(t_buf_vamp *x, void *attr, long argc, t_atom *ar
 }
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

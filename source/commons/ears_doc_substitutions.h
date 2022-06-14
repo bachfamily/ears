@@ -214,6 +214,7 @@ CLASS_ATTR_SYM(c, "resamplingmode", 0, t_earsbufobj, l_resamplingmode_sym);
 CLASS_ATTR_STYLE_LABEL(c,"resamplingmode",0,"enum","Resampling Mode");
 CLASS_ATTR_ENUM(c,"resamplingmode",0,"sinc nearest neighbor sample and hold linear quadratic cubic");
 CLASS_ATTR_ACCESSORS(c, "resamplingmode", NULL, earsbufobj_setattr_resamplingmode);
+CLASS_ATTR_CATEGORY(c, "resamplingmode", 0, "Resampling");
 // @description Sets the resampling mode (Sinc, Nearest Neighbor, Sample and Hold, Linear, Quadratic or Cubic). The default is "Sinc",
 // which provides bandlimited interpolation.
 

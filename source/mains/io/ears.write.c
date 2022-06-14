@@ -134,7 +134,7 @@ t_max_err buf_write_setattr_format(t_buf_write *x, void *attr, long argc, t_atom
     return err;
 }
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
 #ifdef EARS_MP3_SUPPORT
     ears_mpg123_init();

@@ -78,7 +78,7 @@ EARSBUFOBJ_ADD_IO_METHODS(offset)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -114,7 +114,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
-    
+    earsbufobj_class_add_resamplingmode_attr(c);
+
     earsbufobj_class_add_polyout_attr(c);
 
     CLASS_ATTR_CHAR(c, "interp", 0, t_buf_offset, interp_offsets);
