@@ -42,8 +42,8 @@
 #include "ext_obex.h"
 #include "jpatcher_api.h"
 #include "jgraphics.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
 #include "bach_math_utilities.h"
 #include "ears.object.h"
 

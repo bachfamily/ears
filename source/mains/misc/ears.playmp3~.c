@@ -42,8 +42,8 @@
 #include "ext.h"			// standard Max include, always required (except in Jitter)
 #include "ext_obex.h"		// required for "new" style objects
 #include "z_dsp.h"			// required for MSP objects
-#include "llllobj.h"
-#include "llll_commons_ext.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
 #include "ears.mp3.h"
 
 #define EARS_PLAYMP3_ENABLE_SAMPLEACCURATELOOPING
