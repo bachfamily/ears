@@ -147,7 +147,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_mix_assist(t_buf_mix *x, void *b, long m, long a, char *s)
