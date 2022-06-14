@@ -9,6 +9,9 @@
 #ifndef _EARS_BUF_WAVPACK_H_
 #define _EARS_BUF_WAVPACK_H_
 
+#include "ears.h"
+
+
 #ifdef EARS_WAVPACK_SUPPORT
 
 #include "ears.commons.h"
