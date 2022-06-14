@@ -52,7 +52,7 @@ namespace hoa
         //! @param value The factor of widening.
         inline void setWidening(const T value) noexcept
         {
-            m_widening = std::max(std::min(value, T(1.)), T(0.));
+            m_widening = (std::numeric_limits<T>::max)((std::numeric_limits<T>::min)(value, T(1.)), T(0.));
             const size_t order  = ProcessorHarmonics<D, T>::getDecompositionOrder();
             const T      temp   = T(1) - m_widening;
             T* coeff            = m_coeffs.data();

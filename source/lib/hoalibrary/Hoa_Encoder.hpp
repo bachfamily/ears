@@ -118,7 +118,7 @@ namespace hoa
         //! @param radius The new radius.
         void setRadius(const T radius) noexcept
         {
-            m_radius = std::max(radius, static_cast<T>(0));
+            m_radius = (std::max)(radius, static_cast<T>(0));
             if(m_radius >= 1)
             {
                 std::fill(m_radius_coeffs.begin(), m_radius_coeffs.end(), static_cast<T>(1) / m_radius);

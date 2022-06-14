@@ -134,7 +134,7 @@ namespace hoa
         //! @param   vectorsize   The size of the vector.
         //! @param   vector       The vector.
         //! @return  The maximum of the absolute values of the vector
-        static inline T max(const size_t vectorsize, const T* vector) noexcept
+        static inline T maxxxx(const size_t vectorsize, const T* vector) noexcept
         {
             T max = fabs(vector[0]);
             for(size_t i = 1ul; i < vectorsize; i++)
