@@ -40,9 +40,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 
 
@@ -73,14 +73,14 @@ EARSBUFOBJ_ADD_IO_METHODS(rev)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -107,7 +107,7 @@ int C74_EXPORT main(void)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
+    return;
 }
 
 void buf_rev_assist(t_buf_rev *x, void *b, long m, long a, char *s)

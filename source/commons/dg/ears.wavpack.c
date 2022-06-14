@@ -1,3 +1,5 @@
+#ifdef EARS_WAVPACK_SUPPORT
+
 #include "ears.wavpack.h"
 
 
@@ -340,6 +342,8 @@ void ears_writewavpack(t_object *buf, t_symbol *filename, t_ears_encoding_settin
     //    if (wvc_file.file)
     //        fclose(wvc_file.file);
 }
+
+#endif // EARS_WAVPACK_SUPPORT
 
 
 

@@ -6146,17 +6146,17 @@ e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s)
         object_warn(ob, "Invalid resampling mode! Defaulting to sinc.");
         return EARS_RESAMPLINGMODE_SINC;
     }
-    if (strcasecmp(s->s_name, "linear") == 0)
+    if (strcmp_case_insensitive(s->s_name, "linear") == 0)
         return EARS_RESAMPLINGMODE_LINEAR;
-    if (strcasecmp(s->s_name, "quadratic") == 0)
+    if (strcmp_case_insensitive(s->s_name, "quadratic") == 0)
         return EARS_RESAMPLINGMODE_QUADRATIC;
-    if (strcasecmp(s->s_name, "cubic") == 0)
+    if (strcmp_case_insensitive(s->s_name, "cubic") == 0)
         return EARS_RESAMPLINGMODE_CUBIC;
-    if (strcasecmp(s->s_name, "sah") == 0 || strcasecmp(s->s_name, "sampleandhold") == 0 || strcasecmp(s->s_name, "sample and hold") == 0 || strcasecmp(s->s_name, "sample and hold") == 0)
+    if (strcmp_case_insensitive(s->s_name, "sah") == 0 || strcmp_case_insensitive(s->s_name, "sampleandhold") == 0 || strcmp_case_insensitive(s->s_name, "sample and hold") == 0 || strcmp_case_insensitive(s->s_name, "sample and hold") == 0)
         return EARS_RESAMPLINGMODE_SAMPLEANDHOLD;
-    if (strcasecmp(s->s_name, "nn") == 0 || strcasecmp(s->s_name, "nearestneighbor") == 0 || strcasecmp(s->s_name, "nearestneighbour") == 0 ||  strcasecmp(s->s_name, "nearest neighbor") == 0 || strcasecmp(s->s_name, "nearest neighbour") == 0 || strcasecmp(s->s_name, "nearest neighbor") == 0 || strcasecmp(s->s_name, "nearest neighbour") == 0)
+    if (strcmp_case_insensitive(s->s_name, "nn") == 0 || strcmp_case_insensitive(s->s_name, "nearestneighbor") == 0 || strcmp_case_insensitive(s->s_name, "nearestneighbour") == 0 ||  strcmp_case_insensitive(s->s_name, "nearest neighbor") == 0 || strcmp_case_insensitive(s->s_name, "nearest neighbour") == 0 || strcmp_case_insensitive(s->s_name, "nearest neighbor") == 0 || strcmp_case_insensitive(s->s_name, "nearest neighbour") == 0)
         return EARS_RESAMPLINGMODE_NEARESTNEIGHBOR;
-    if (strcasecmp(s->s_name, "sinc") == 0)
+    if (strcmp_case_insensitive(s->s_name, "sinc") == 0)
         return EARS_RESAMPLINGMODE_SINC;
 
     object_warn(ob, "Invalid resampling mode! Defaulting to sinc.");
