@@ -3,8 +3,9 @@
 #ifdef EARS_WAVPACK_SUPPORT
 
 #include "ears.wavpack.h"
+#ifdef WIN_VERSION
 #include <io.h>
-
+#endif
 
 long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start, long end, t_buffer_obj *buf, t_symbol **sampleformat, e_ears_timeunit timeunit)
 {
