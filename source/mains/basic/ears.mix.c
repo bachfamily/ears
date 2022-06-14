@@ -85,7 +85,7 @@ EARSBUFOBJ_ADD_IO_METHODS(mix)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -130,6 +130,7 @@ int C74_EXPORT main(void)
 
     earsbufobj_class_add_resamplingpolicy_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
 
     CLASS_ATTR_CHAR(c, "normalize", 0, t_buf_mix, normalization_mode);
     CLASS_ATTR_STYLE_LABEL(c,"normalize",0,"enumindex","Normalize Output");
@@ -264,7 +265,7 @@ void buf_mix_bang(t_buf_mix *x)
         
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
         
-        ears_buffer_mix_subsampleprec((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+        ears_buffer_mix_subsampleprec((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
         
         bach_freeptr(offsets_samps);
     } else {
@@ -295,7 +296,7 @@ void buf_mix_bang(t_buf_mix *x)
         
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
         
-        ears_buffer_mix((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+        ears_buffer_mix((t_object *)x, inbufs, num_buffers, out, gains_linear, offsets_samps, (e_ears_normalization_modes)normalization_mode, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
         
         bach_freeptr(offsets_samps);
     }

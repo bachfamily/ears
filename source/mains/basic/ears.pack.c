@@ -119,7 +119,7 @@ t_max_err buf_pack_setattr_triggers(t_buf_pack *x, t_object *attr, long ac, t_at
 
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -151,6 +151,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_resamplingpolicy_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
 
     
     CLASS_ATTR_LLLL(c, "triggers", 0, t_buf_pack, n_triggers, buf_pack_getattr_triggers, buf_pack_setattr_triggers);
@@ -278,7 +279,7 @@ void buf_pack_bang(t_buf_pack *x)
     }
 
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-    ears_buffer_pack_from_llll((t_object *)x, buffers, out, (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+    ears_buffer_pack_from_llll((t_object *)x, buffers, out, (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     llll_free(buffers);

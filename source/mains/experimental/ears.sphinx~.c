@@ -99,7 +99,7 @@ void sphinx_output_hypothesis(t_sphinx *x, const char *hyp);
 static t_class *sphinx_class;
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
 	common_symbols_init();
 	llllobj_common_symbols_init();

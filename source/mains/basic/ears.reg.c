@@ -97,7 +97,7 @@ EARSBUFOBJ_ADD_IO_METHODS(reg)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
 //    ears_test_lame();
 //    ears_test_mpg123();

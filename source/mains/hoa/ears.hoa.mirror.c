@@ -106,7 +106,7 @@ t_max_err buf_hoamirror_setattr_axis(t_buf_hoamirror *x, void *attr, long argc, 
 // Class Definition and Life Cycle
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

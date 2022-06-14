@@ -172,7 +172,7 @@ t_max_err earsbufobj_setattr_mode(t_buf_pan *x, void *attr, long argc, t_atom *a
 
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

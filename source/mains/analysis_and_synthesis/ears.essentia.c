@@ -141,7 +141,7 @@ t_max_err buf_essentia_notify(t_buf_essentia *x, t_symbol *s, t_symbol *msg, voi
     return MAX_ERR_NONE;
 }
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     ears_essentia_init();
     common_symbols_init();

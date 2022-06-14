@@ -79,7 +79,7 @@ EARSBUFOBJ_ADD_IO_METHODS(waveset_decimate)
 DEFINE_LLLL_ATTR_DEFAULT_GETTER(t_buf_waveset_decimate, e_offset, buf_waveset_decimate_getattr_offset);
 DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_waveset_decimate, e_offset, buf_waveset_decimate_setattr_offset);
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

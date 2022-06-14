@@ -75,7 +75,7 @@ EARSBUFOBJ_ADD_IO_METHODS(envelope)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

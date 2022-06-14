@@ -106,7 +106,7 @@ t_max_err buf_split_setattr_mode(t_buf_split *x, void *attr, long argc, t_atom *
     return MAX_ERR_NONE;
 }
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

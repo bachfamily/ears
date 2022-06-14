@@ -350,7 +350,7 @@ t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer
                         span_count++;
                         if (span_count % span == 0) {
                             // zero crossing found at index f
-                            ears_resample_sinc(waveform_sample, waveform_len, &temp, framecount, ((double)(f-pivot))/waveform_len, sr/2., sr, resampling_filter_size, 1);
+                            ears_resample_sinc(waveform_sample, waveform_len, &temp, framecount, ((double)(f-pivot))/waveform_len, 1, sr/2., sr, resampling_filter_size);
                             for (long j = pivot; j < f; j++) {
                                 dest_sample[j*dest_channelcount + c] = temp[(j-pivot) * channelcount + c] * max_abs;
                             }
@@ -366,7 +366,7 @@ t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer
                 // last portion
                 max_abs = MAX(max_abs, abs(orig_sample[(framecount-1)*channelcount+c]));
                 if (pivot < framecount) {
-                    ears_resample_sinc(waveform_sample, waveform_len, &temp, framecount, ((double)(framecount-pivot))/waveform_len, sr/2., sr, resampling_filter_size, 1);
+                    ears_resample_sinc(waveform_sample, waveform_len, &temp, framecount, ((double)(framecount-pivot))/waveform_len, 1, sr/2., sr, resampling_filter_size);
                     for (long j = pivot; j < framecount; j++) {
                         dest_sample[j*dest_channelcount + c] = temp[(j-pivot) * channelcount + c] * max_abs;
                     }
@@ -495,7 +495,7 @@ t_ears_err ears_buffer_waveset_shuffle(t_object *ob, t_buffer_obj *source, t_buf
                 wsts[i] = (t_buffer_obj *)hatom_getobj(&el->l_hatom);
             }
             
-            ears_buffer_join(ob, wsts, num, tempbuf, NULL, false, EARS_FADE_NONE, 0, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, 3);
+            ears_buffer_join(ob, wsts, num, tempbuf, NULL, false, EARS_FADE_NONE, 0, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, 3, EARS_RESAMPLINGMODE_SINC);
             
             ears_buffer_copychannel(ob, tempbuf, 0, dest, c);
             
@@ -516,7 +516,7 @@ t_ears_err ears_buffer_waveset_shuffle(t_object *ob, t_buffer_obj *source, t_buf
 
 
 
-t_ears_err ears_buffer_waveset_interp(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long span, long normalize, long numinterp, long resamplingfiltersize, bool equalpowerinterp)
+t_ears_err ears_buffer_waveset_interp(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long span, long normalize, long numinterp, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, bool equalpowerinterp)
 {
     t_ears_err err = EARS_ERR_NONE;
     long numframes = ears_buffer_get_size_samps(ob, source);
@@ -580,14 +580,13 @@ t_ears_err ears_buffer_waveset_interp(t_object *ob, t_buffer_obj *source, t_buff
                         t_buffer_obj *from = (t_buffer_obj *)hatom_getobj(&ll->l_head->l_hatom);
                         t_buffer_obj *to = (t_buffer_obj *)hatom_getobj(&ll->l_tail->l_hatom);
                         
-                        ears_buffer_assemble_once(ob, channels_temp[c], from, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, &channel_cur_length_samps, &channel_cur_alloc_samps);
-                        
-                        ears_buffer_interp(ob, from, to, numinterp, tempbufs, resamplingfiltersize, equalpowerinterp);
+                        ears_buffer_assemble_once(ob, channels_temp[c], from, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                        ears_buffer_interp(ob, from, to, numinterp, tempbufs, resamplingfiltersize, resamplingmode, equalpowerinterp);
                         for (long i = 0; i < numinterp; i++)
-                            ears_buffer_assemble_once(ob, channels_temp[c], tempbufs[i], gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                            ears_buffer_assemble_once(ob, channels_temp[c], tempbufs[i], gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
 
                         if (!el->l_next)
-                            ears_buffer_assemble_once(ob, channels_temp[c], to, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                            ears_buffer_assemble_once(ob, channels_temp[c], to, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
                     }
                 }
             }
@@ -603,7 +602,7 @@ t_ears_err ears_buffer_waveset_interp(t_object *ob, t_buffer_obj *source, t_buff
         }
     }
     
-    ears_buffer_pack(ob, numchannels, channels_temp, dest, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize);
+    ears_buffer_pack(ob, numchannels, channels_temp, dest, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, EARS_RESAMPLINGMODE_SINC);
     
     for (long i = 0; i < numinterp; i++)
         ears_buffer_free(tempbufs[i]);
@@ -622,7 +621,7 @@ t_ears_err ears_buffer_waveset_interp(t_object *ob, t_buffer_obj *source, t_buff
 
 
 
-t_ears_err ears_buffer_waveset_average(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long span, long normalize, long groupsize, long resamplingfiltersize, bool equalpowerinterp, bool keep_waveset_length)
+t_ears_err ears_buffer_waveset_average(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long span, long normalize, long groupsize, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, bool equalpowerinterp, bool keep_waveset_length)
 {
     t_ears_err err = EARS_ERR_NONE;
     long numframes = ears_buffer_get_size_samps(ob, source);
@@ -682,8 +681,8 @@ t_ears_err ears_buffer_waveset_average(t_object *ob, t_buffer_obj *source, t_buf
             }
             
             for (long i = 0; i < num; i++) {
-                ears_buffer_average(ob, groupsize, wsts + i + groupsize - groupsize / 2, tempavg, NULL, resamplingfiltersize, keep_waveset_length, groupsize / 2);
-                ears_buffer_assemble_once(ob, channels_temp[c], tempavg, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                ears_buffer_average(ob, groupsize, wsts + i + groupsize - groupsize / 2, tempavg, NULL, resamplingfiltersize, resamplingmode, keep_waveset_length, groupsize / 2);
+                ears_buffer_assemble_once(ob, channels_temp[c], tempavg, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
             }
             
             if (ears_buffer_assemble_close(ob, channels_temp[c], EARS_NORMALIZE_DONT, channel_cur_length_samps) != EARS_ERR_NONE) {
@@ -697,7 +696,7 @@ t_ears_err ears_buffer_waveset_average(t_object *ob, t_buffer_obj *source, t_buf
         }
     }
     
-    ears_buffer_pack(ob, numchannels, channels_temp, dest, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize);
+    ears_buffer_pack(ob, numchannels, channels_temp, dest, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, EARS_RESAMPLINGMODE_SINC);
     
     for (long c = 0; c < numchannels; c++)
         ears_buffer_free(channels_temp[c]);

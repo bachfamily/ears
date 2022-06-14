@@ -108,7 +108,7 @@ t_max_err buf_format_setattr_spectype(t_buf_format *x, void *attr, long argc, t_
     return MAX_ERR_NONE;
 }
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -146,6 +146,7 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_overlap_attr(c);
 
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
 
     CLASS_ATTR_LONG(c, "numchannels",	0,	t_buf_format, numchannels);
     CLASS_ATTR_BASIC(c, "numchannels", 0);

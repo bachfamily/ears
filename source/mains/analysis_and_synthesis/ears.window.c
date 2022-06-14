@@ -79,7 +79,7 @@ EARSBUFOBJ_ADD_IO_METHODS(window)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
 #ifdef EARS_STFT_USE_ESSENTIA
     ears_essentia_init();

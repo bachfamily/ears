@@ -97,7 +97,7 @@ t_max_err buf_stft_setattr_cpxin(t_buf_stft *x, void *attr, long argc, t_atom *a
 }
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
 #ifdef EARS_STFT_USE_ESSENTIA
     ears_essentia_init();

@@ -112,7 +112,7 @@ t_max_err t_buf_timesquash_setattr_extout(t_buf_timesquash *x, void *attr, long 
 }
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

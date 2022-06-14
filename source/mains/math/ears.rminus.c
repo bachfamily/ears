@@ -75,7 +75,7 @@ EARSBUFOBJ_ADD_IO_METHODS(rminus)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -121,6 +121,8 @@ int C74_EXPORT main(void)
     earsbufobj_class_add_naming_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingpolicy_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
     earsbufobj_class_add_polyout_attr(c);
 
     class_register(CLASS_BOX, c);
@@ -222,7 +224,7 @@ void buf_rminus_bang(t_buf_rminus *x)
             t_buffer_obj *in1 = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count < num_buffers1 ? count : 0);
             t_buffer_obj *in2 = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 1, count < num_buffers2 ? count : 0);
             t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
-            ears_buffer_op((t_object *)x, in1, in2, out, EARS_OP_RMINUS, (e_ears_resamplingpolicy) x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+            ears_buffer_op((t_object *)x, in1, in2, out, EARS_OP_RMINUS, (e_ears_resamplingpolicy) x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
             if (earsbufobj_iter_progress((t_earsbufobj *)x, count, numoutbuffers)) break;
         }
         earsbufobj_mutex_unlock((t_earsbufobj *)x);

@@ -307,7 +307,7 @@ t_ears_err ears_buffer_fade_ms_inplace(t_object *ob, t_buffer_obj *buf, long fad
 t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
                               long *xfade_samples, char also_fade_boundaries,
                               e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping,
-                              e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+                              e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels); // also work inplace, with source == dest
 t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, char thresh_is_in_decibel, e_slope_mapping slopemapping); // also work inplace, with source == dest
 t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels); // also work inplace, with source == dest
@@ -319,15 +319,15 @@ t_ears_err ears_buffer_normalize_rms(t_object *ob, t_buffer_obj *source, t_buffe
 t_ears_err ears_buffer_normalize_inplace(t_object *ob, t_buffer_obj *buf, double level);
 t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest, t_llll *gains, long *offset_samps,
                            e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping,
-                           e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+                           e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, long num_sources, t_buffer_obj *dest,
                                           t_llll *gains, double *offset_samps,
                                           e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping,
-                                          e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize); // version with interpolated offsets, with subsample handling for offsets
-t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+                                          e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode); // version with interpolated offsets, with subsample handling for offsets
+t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 
 // this is a sort of mix-inplace function: adds a newbuffer onto a basebuffer
-t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, long *basebuffer_numframes, long *basebuffer_allocatedframes);
+t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, long *basebuffer_numframes, long *basebuffer_allocatedframes);
 t_ears_err ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps);
 
 
@@ -338,11 +338,11 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
 
 
 // operations: DESTRUCTIVE: buf is modified 
-t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *addend, long resamplingfiltersize);
-t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *factor, long resamplingfiltersize);
+t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *addend, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
+t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj *factor, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 
 // More general case: apply an operation ("plus", "times", "minus", "div", "rminus", "rdiv")
-t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, t_buffer_obj *dest, e_ears_op op, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, t_buffer_obj *dest, e_ears_op op, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num, t_buffer_obj *dest, e_ears_op op);
 t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *env, t_buffer_obj *dest, e_ears_op op, e_slope_mapping slopemapping);
 
@@ -350,7 +350,7 @@ t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *e
 t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
                             t_hatom *arguments, long num_arguments,
                             t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping,
-                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 
 
 // Buffers <-> llll or array conversions
@@ -364,12 +364,12 @@ t_ears_err ears_buffer_from_clicks(t_object *ob, t_buffer_obj *buf, t_llll *onse
 // Basic operations
 t_ears_err ears_buffer_setempty(t_object *ob, t_buffer_obj *buf, long num_channels);
 t_ears_err ears_buffer_clearchannel(t_object *ob, t_buffer_obj *buf, long channel);
-t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0);
-t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0);
+t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0, e_ears_resamplingmode resamplingmode = EARS_RESAMPLINGMODE_SINC);
+t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long source_channel, t_buffer_obj *dest, long dest_channel, double resampling_sr = 0, long resamplingfiltersize = 0, e_ears_resamplingmode resamplingmode = EARS_RESAMPLINGMODE_SINC);
 t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **source, t_buffer_obj *dest,
-                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+                            e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 t_ears_err ears_buffer_pack_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest,
-                                      e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize);
+                                      e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *right, t_buffer_obj *dest);
 t_ears_err ears_buffer_slice(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest_left, t_buffer_obj *dest_right, long split_sample);
 t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **dest, long *start_samples, long *end_samples, long num_regions);
@@ -393,8 +393,8 @@ t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, doub
 t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, t_buffer_obj *mask);
 
 // interpolations
-t_ears_err ears_buffer_interp(t_object *ob, t_buffer_obj *from, t_buffer_obj *to, long numinterp, t_buffer_obj **dest, long resamplingfiltersize, bool equalpowerinterp);
-t_ears_err ears_buffer_average(t_object *ob, long num_sources, t_buffer_obj **sources, t_buffer_obj *dest, double *weights, long resamplingfiltersize, bool keep_length, long reference_buffer_for_length);
+t_ears_err ears_buffer_interp(t_object *ob, t_buffer_obj *from, t_buffer_obj *to, long numinterp, t_buffer_obj **dest, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, bool equalpowerinterp);
+t_ears_err ears_buffer_average(t_object *ob, long num_sources, t_buffer_obj **sources, t_buffer_obj *dest, double *weights, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, bool keep_length, long reference_buffer_for_length);
 
 // comparisons
 t_ears_err ears_buffer_neq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, long *ans);
@@ -491,7 +491,7 @@ t_symbol *get_conformed_resolved_path(t_symbol *filename);
 
 /// RESAMPLING
 // Sinc-resampling and sinc-interpolation (band-limited)
-long ears_resample_sinc(float *in, long num_in_frames, float **out, long num_out_frames, double factor, double fmax, double sr, double window_width, long num_channels);
+long ears_resample_sinc(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels, double fmax, double sr, double window_width);
 double ears_interp_circular_sinc(float *in, long num_in_frames, double index, double window_width);
 double ears_interp_sinc(float *in, long num_in_frames, double index, double window_width, long step);
 
@@ -500,6 +500,9 @@ long ears_resample_linear(float *in, long num_in_frames, float **out, long num_o
 long ears_resample_quadratic(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels);
 long ears_resample_sampleandhold(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels);
 long ears_resample_nearestneighbor(float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels);
+
+// general function
+long ears_resample(e_ears_resamplingmode resamplingmode, float *in, long num_in_frames, float **out, long num_out_frames, double factor, long num_channels, double fmax, double sr, double window_width);
 
 
 /// Helper tools

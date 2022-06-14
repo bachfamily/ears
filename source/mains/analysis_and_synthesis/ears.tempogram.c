@@ -80,7 +80,7 @@ EARSBUFOBJ_ADD_IO_METHODS(tempogram)
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     ears_essentia_init();
     common_symbols_init();

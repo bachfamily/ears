@@ -86,7 +86,7 @@ EARSBUFOBJ_ADD_IO_METHODS(expr)
 
 
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -120,6 +120,7 @@ int C74_EXPORT main(void)
 
     earsbufobj_class_add_resamplingpolicy_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
 
     CLASS_ATTR_CHAR(c, "normalize", 0, t_buf_expr, normalization_mode);
     CLASS_ATTR_STYLE_LABEL(c,"normalize",0,"enumindex","Normalize Output");
@@ -439,7 +440,7 @@ void buf_expr_bang(t_buf_expr *x)
         }
 
         ears_buffer_expr((t_object *)x, x->n_lexpr, x->arguments, x->e_ob.l_numins, out, (e_ears_normalization_modes)normalization_mode,
-                         x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth);
+                         x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
 
         
         // update el

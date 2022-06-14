@@ -117,7 +117,7 @@ DEFINE_LLLL_ATTR_DEFAULT_SETTER(t_buf_roll_sampling, panvoices, buf_roll_samplin
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-int C74_EXPORT main(void)
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
@@ -146,6 +146,7 @@ int C74_EXPORT main(void)
 
     earsbufobj_class_add_resamplingpolicy_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
+    earsbufobj_class_add_resamplingmode_attr(c);
 
     
     CLASS_ATTR_CHAR(c, "mutesolo", 0, t_buf_roll_sampling, use_mute_solos);
