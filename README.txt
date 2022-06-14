@@ -77,7 +77,7 @@ A modified version of the library is included in the repository.
 The modifications extend the functionalities of the library in order to support marker and cues in WAV files.
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
-• the mpg123 library 1.23.4 (released under LGPLv2.1). 
+• the mpg123 library 1.23.4 (released under LGPLv2.1).
 We have tested with versio 1.29.3 (and, previously with version 1.23.4). It may work with following versions also. The source code is, for convenience, also in the source/lib/ folder (if you want to try a later version you can download it from https://www.mpg123.de), but importantly there is an issue in the "make" portion of the procedure if your path has spaces. So first of all make sure you copy the folder in a path position with no spaces, then enter the folder and run
 MACOSX_DEPLOYMENT_TARGET=10.11 ./configure --enable-static=yes
 MACOSX_DEPLOYMENT_TARGET=10.11 make
@@ -136,7 +136,7 @@ This creates  /usr/local/lib/libsamplerate.a
     lipo /usr/local/lib/libsamplerate.a /opt/homebrew/lib/libsamplerate.a -create -output /usr/local/lib/libsamplerate.a
 
 • for the [ears.hoa.*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
-You do not need to compile or install the HOA library separately: sources are directly compiled within the project.
+You do not need to compile or install the HOA and Eigen libraries separately: sources are directly compiled within the project.
 
 • for the [ears.soundtouch~] module: the SoundTouch library, released under LGPL v2.1
 You do not need to compile or install the library separately: sources are directly compiled within the project.
@@ -146,7 +146,7 @@ To compile on a Mac Intel, go to the library folder and run
 make -f build/Makefile.osx
 To compile on a Mac M1, go to the library folder and run
 make -f build/Makefile.osxm1 sdk
-Note that, on the M1, building the vamp example plugins is potentially problematic because of their dependencies that should all be built for the arm64 architecture. 
+Note that, on the M1, building the vamp example plugins is potentially problematic because of their dependencies that should all be built for the arm64 architecture.
 
 
 -------------------------

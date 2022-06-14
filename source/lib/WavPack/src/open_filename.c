@@ -27,7 +27,7 @@
 // local character set works. This is ignored on non-Windows platforms
 // (which is okay because they are probably UTF-8 anyway).
 
-#ifdef WIN_VERSION
+#ifdef _WIN64
 #include <io.h>
 #else
 #include <unistd.h>
