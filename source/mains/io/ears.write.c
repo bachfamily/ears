@@ -46,7 +46,7 @@
 #include "ext_obex.h"
 #include "foundation/llllobj.h"
 #include "foundation/llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 
 #define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
