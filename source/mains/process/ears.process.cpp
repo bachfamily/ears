@@ -243,7 +243,7 @@ int C74_EXPORT main()
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     CLASS_NEW_CHECK_SIZE(earsprocess_class, "ears.process~", (method)earsprocess_new, (method)earsprocess_free, sizeof(t_earsprocess), NULL, A_GIMME, 0);

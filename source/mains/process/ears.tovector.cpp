@@ -84,7 +84,7 @@ int C74_EXPORT main()
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     ears_tovector_class = class_new("ears.tovector~",
