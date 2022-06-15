@@ -447,7 +447,7 @@ void buf_split_bang(t_buf_split *x)
             return;
         }
         
-        t_buffer_obj *dest[num_out_buffers];
+        t_buffer_obj **dest = (t_buffer_obj **) bach_newptr(num_out_buffers * sizeof(t_buffer_obj *));
         for (long i = 0; i < num_out_buffers; i++)
             dest[i] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, i);
         
@@ -469,6 +469,7 @@ void buf_split_bang(t_buf_split *x)
         
         bach_freeptr(start_array);
         bach_freeptr(end_array);
+        bach_freeptr(dest);
         
         earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     }
