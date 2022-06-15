@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BE9C9951-8080-4884-91F7-02CDB3A9CEAE}</ProjectGuid>
+    <ProjectGuid>{FA807035-1D2E-414A-898A-7BDEA438CD73}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -81,7 +81,7 @@
     <OutDir>..\..\..\externals</OutDir>
     <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\soundtouch\include;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -90,7 +90,7 @@
     <OutDir>..\..\..\externals</OutDir>
     <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\soundtouch\include;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -99,7 +99,7 @@
     <OutDir>..\..\..\externals</OutDir>
     <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\soundtouch\include;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -108,7 +108,7 @@
     <OutDir>..\..\..\externals</OutDir>
     <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\soundtouch\include;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -296,9 +296,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\common\commonsyms.c" />
     <ClCompile Include="..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\common\dllmain_win.c" />
+    <ClCompile Include="..\..\commons\dg\ears.soundtouch_commons.c" />
     <ClCompile Include="..\..\mains\time_and_pitch\ears.soundtouch.c" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\soundtouch\source\SoundTouch\SoundTouch.vcxproj">
+      <Project>{68a5dd20-7057-448b-8fe0-b6ac8d205509}</Project>
+    </ProjectReference>
     <ProjectReference Include="ears_lib.vcxproj">
       <Project>{df55a42a-cbf8-4f3d-9bf4-e99e6219cd31}</Project>
     </ProjectReference>

@@ -95,6 +95,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ears.rubberband~", "vs_proj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubberband-library", "..\lib\rubberband-master\rubberband-library.vcxproj", "{020CEB11-EF4E-400E-971D-A35DB69D7CF9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ears.soundtouch~", "vs_projects\ears.soundtouch~.vcxproj", "{FA807035-1D2E-414A-898A-7BDEA438CD73}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoundTouch", "..\lib\soundtouch\source\SoundTouch\SoundTouch.vcxproj", "{68A5DD20-7057-448B-8FE0-B6AC8D205509}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -463,6 +467,22 @@ Global
 		{020CEB11-EF4E-400E-971D-A35DB69D7CF9}.Release|x64.Build.0 = Release|x64
 		{020CEB11-EF4E-400E-971D-A35DB69D7CF9}.Release|x86.ActiveCfg = Release|Win32
 		{020CEB11-EF4E-400E-971D-A35DB69D7CF9}.Release|x86.Build.0 = Release|Win32
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Debug|x64.ActiveCfg = Debug|x64
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Debug|x64.Build.0 = Debug|x64
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Debug|x86.ActiveCfg = Debug|Win32
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Debug|x86.Build.0 = Debug|Win32
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Release|x64.ActiveCfg = Release|x64
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Release|x64.Build.0 = Release|x64
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Release|x86.ActiveCfg = Release|Win32
+		{FA807035-1D2E-414A-898A-7BDEA438CD73}.Release|x86.Build.0 = Release|Win32
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Debug|x64.ActiveCfg = Debug|x64
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Debug|x64.Build.0 = Debug|x64
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Debug|x86.ActiveCfg = Debug|Win32
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Debug|x86.Build.0 = Debug|Win32
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Release|x64.ActiveCfg = Release|x64
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Release|x64.Build.0 = Release|x64
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Release|x86.ActiveCfg = Release|Win32
+		{68A5DD20-7057-448B-8FE0-B6AC8D205509}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
