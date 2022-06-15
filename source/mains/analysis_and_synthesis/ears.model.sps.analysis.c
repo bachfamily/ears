@@ -18,10 +18,10 @@
 	Daniele Ghisi
  
 	@digest
-	Sinusoidal-plus-residual analysis model
+	Sinusoidal-plus-stochastic analysis model
  
 	@description
-	Applies the Essentia sinusoidal-plus-residual analysis model
+	Applies the Essentia sinusoidal-plus-stochastic analysis model
  
 	@discussion
  

@@ -18,10 +18,10 @@
  Daniele Ghisi
  
  @digest
- Sinusoidal synthesis model
+ Stochastic synthesis model
  
  @description
- Applies the Essentia sinusoidal synthesis model
+ Applies the Essentia stochastic synthesis model
  
  @discussion
  
