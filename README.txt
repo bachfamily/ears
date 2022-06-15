@@ -15,6 +15,10 @@ The official repository is https://github.com/bachfamily/ears. You can find the 
 Dependencies
 =================
 
+For building ears, we provide project files for Xcode and Visual Studio 2022.
+Detailed instructions for building on Mac are provided below.
+For Visual Studio, unless specified otherwise, all is taken care of by the Visual Studio project.
+
 • bach (https://github.com/bachfamily/bach)
 
 • the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). The essentia library is not needed for the whole project, but for a certain number of its modules (including ears.essentia~, ears.cqt~, ears.tempogram~, ears.peaks~ and all the ears.model.*~).
@@ -120,7 +124,7 @@ You do not need to compile or install the library separately: sources are direct
 • for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
-• for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2)
+• for the [ears.write~] and [ears.read~] modules: a modified version of the id3 library (released under GPLv2)
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
 • for the [ears.rubberband~] module: the Rubberband library (released under GPLv2); a slightly modified version of commit f42a369 is included in the repository.
@@ -137,6 +141,8 @@ This creates  /usr/local/lib/libsamplerate.a
 
 • for the [ears.hoa.*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 You do not need to compile or install the HOA and Eigen libraries separately: sources are directly compiled within the project.
+On the other hand, the Boost library is required. On a Mac, it can by installed through Homebrew (no need for separate procedures for Intel and M1, since we only use the header-only part).
+On Windows, ears uses the same version (and in the same location) as the dada library.
 
 • for the [ears.soundtouch~] module: the SoundTouch library, released under LGPL v2.1
 You do not need to compile or install the library separately: sources are directly compiled within the project.

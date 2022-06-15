@@ -1,0 +1,29 @@
+﻿cl : command line warning D9002: ignoring unknown option '/arch:SSE'
+  CompoundAudioCurve.cpp
+  ConstantAudioCurve.cpp
+  HighFrequencyAudioCurve.cpp
+  PercussiveAudioCurve.cpp
+  SilentAudioCurve.cpp
+  SpectralDifferenceAudioCurve.cpp
+  Profiler.cpp
+  AudioCurveCalculator.cpp
+  FFT.cpp
+  Resampler.cpp
+  rubberband-c.cpp
+  RubberBandStretcher.cpp
+  StretchCalculator.cpp
+  StretcherChannelData.cpp
+  StretcherImpl.cpp
+  StretcherProcess.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\rubberband-master\src\StretcherProcess.cpp(771,28): warning C4244: 'initializing': conversion from 'size_t' to 'RubberBand::process_t', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\rubberband-master\src\StretcherProcess.cpp(771,26): warning C4244: 'initializing': conversion from 'size_t' to 'const RubberBand::process_t', possible loss of data
+  Allocators.cpp
+  sysutils.cpp
+  Thread.cpp
+  Generating Code...
+cl : command line warning D9002: ignoring unknown option '/arch:SSE'
+  kiss_fft.c
+  kiss_fftr.c
+  resample.c
+  Generating Code...
+  rubberband-library.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\vs\x64\Release\rubberband-library.lib
