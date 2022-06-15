@@ -332,7 +332,6 @@ t_ears_err ears_model_sine_synthesis(t_object *ob, double sr,
 
 
 
-
 t_ears_err ears_model_SPS_analysis(t_object *ob, std::vector<Real> samples, double sr,
                                    t_llll **frequencies_ll, t_llll **magnitudes_ll, t_llll **phases_ll, t_llll **stocenv_ll,
                                    long channelidx,
