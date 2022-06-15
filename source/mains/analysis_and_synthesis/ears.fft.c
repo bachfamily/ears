@@ -143,7 +143,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_fft_assist(t_buf_fft *x, void *b, long m, long a, char *s)

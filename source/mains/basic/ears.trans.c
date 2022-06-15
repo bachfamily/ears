@@ -106,7 +106,6 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     class_register(CLASS_BOX, c);
     s_trans_class = c;
-    return 0;
 }
 
 void buf_trans_assist(t_buf_trans *x, void *b, long m, long a, char *s)

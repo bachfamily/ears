@@ -143,7 +143,6 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     class_register(CLASS_BOX, c);
     s_peaks_class = c;
-    return 0;
 }
 
 void buf_peaks_assist(t_buf_peaks *x, void *b, long m, long a, char *s)

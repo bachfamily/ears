@@ -150,7 +150,6 @@ void C74_EXPORT ext_main(void* moduleRef)
 	class_register(CLASS_BOX, c);
 	sphinx_class = c;
 	
-	return 0;
 }
 
 

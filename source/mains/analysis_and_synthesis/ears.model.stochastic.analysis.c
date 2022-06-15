@@ -134,7 +134,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_model_stochastic_analysis_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_model_stochastic_analysis_assist(t_buf_model_stochastic_analysis *x, void *b, long m, long a, char *s)
