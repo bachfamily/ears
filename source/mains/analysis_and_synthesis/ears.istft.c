@@ -282,8 +282,8 @@ void buf_istft_bang(t_buf_istft *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     
     if (num_buffers > 0) {
-        t_buffer_obj *in1[num_buffers];
-        t_buffer_obj *in2[num_buffers];
+        t_buffer_obj **in1 = (t_buffer_obj **)bach_newptr(num_buffers * sizeof(t_buffer_obj *));
+        t_buffer_obj **in2 = (t_buffer_obj **)bach_newptr(num_buffers * sizeof(t_buffer_obj *));
         t_buffer_obj *dest = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
         t_buffer_obj *dest2 = cpx ? earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0) : NULL;
 
@@ -302,7 +302,8 @@ void buf_istft_bang(t_buf_istft *x)
         ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, dest2, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect", x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary);
         
 #endif
-        
+        bach_freeptr(in1);
+        bach_freeptr(in2);
     }
     
     if (cpx)
