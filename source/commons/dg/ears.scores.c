@@ -249,7 +249,7 @@ char is_slot_in_decibel(t_llll *header, long slotnum)
     t_llll *repr_ll = get_slotinfo_field_from_header(header, slotnum, _llllobj_sym_representation);
     if (repr_ll && repr_ll->l_head && hatom_gettype(&repr_ll->l_head->l_hatom) == H_SYM) {
         t_symbol *s = hatom_getsym(&repr_ll->l_head->l_hatom);
-        if (strcasecmp(s->s_name, "db") == 0 || strcasecmp(s->s_name, "dbs") == 0 || strcasecmp(s->s_name, "decibel") == 0 || strcasecmp(s->s_name, "decibels") == 0)
+        if (strcmp_case_insensitive(s->s_name, "db") == 0 || strcmp_case_insensitive(s->s_name, "dbs") == 0 || strcmp_case_insensitive(s->s_name, "decibel") == 0 || strcmp_case_insensitive(s->s_name, "decibels") == 0)
             ans = 1;
     }
     llll_free(repr_ll);
@@ -262,7 +262,7 @@ char is_slot_temporal_absolute(t_llll *header, long slotnum)
     t_llll *repr_ll = get_slotinfo_field_from_header(header, slotnum, _llllobj_sym_temporalmode);
     if (repr_ll && repr_ll->l_head && hatom_gettype(&repr_ll->l_head->l_hatom) == H_SYM) {
         t_symbol *s = hatom_getsym(&repr_ll->l_head->l_hatom);
-        if (strcasecmp(s->s_name, "milliseconds") == 0 || strcasecmp(s->s_name, "ms") == 0)
+        if (strcmp_case_insensitive(s->s_name, "milliseconds") == 0 || strcmp_case_insensitive(s->s_name, "ms") == 0)
             ans = 1;
     }
     llll_free(repr_ll);
