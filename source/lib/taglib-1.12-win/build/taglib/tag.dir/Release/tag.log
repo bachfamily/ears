@@ -1,15 +1,124 @@
-﻿  fileref.cpp
-  flacfile.cpp
-  oggflacfile.cpp
-  opusfile.cpp
-  opusproperties.cpp
-  speexfile.cpp
-  speexproperties.cpp
-  vorbisfile.cpp
-  vorbisproperties.cpp
+﻿  Building Custom Rule C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/taglib/CMakeLists.txt
+  mpegfile.cpp
+  mpegproperties.cpp
+  mpegheader.cpp
+  xingheader.cpp
+  id3v1tag.cpp
+  id3v1genres.cpp
+  id3v2framefactory.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2framefactory.cpp(66,24): warning C4018: '>': signed/unsigned mismatch
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2framefactory.cpp(120,10): warning C4996: 'TagLib::ID3v2::FrameFactory::createFrame': was declared deprecated
+  id3v2synchdata.cpp
+  id3v2tag.cpp
+  id3v2header.cpp
+  id3v2frame.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2frame.cpp(590,3): warning C4996: 'TagLib::ID3v2::Frame::Header::setData': was declared deprecated
+  id3v2footer.cpp
+  id3v2extendedheader.cpp
+  attachedpictureframe.cpp
+  commentsframe.cpp
+  eventtimingcodesframe.cpp
+  generalencapsulatedobjectframe.cpp
+  ownershipframe.cpp
+  popularimeterframe.cpp
+  privateframe.cpp
+  Generating Code...
+  Compiling...
+  relativevolumeframe.cpp
+  synchronizedlyricsframe.cpp
+  textidentificationframe.cpp
+  uniquefileidentifierframe.cpp
+  unknownframe.cpp
+  unsynchronizedlyricsframe.cpp
+  urllinkframe.cpp
+  chapterframe.cpp
+  tableofcontentsframe.cpp
+  podcastframe.cpp
+  oggfile.cpp
+  oggpage.cpp
+  oggpageheader.cpp
   xiphcomment.cpp
 C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\xiphcomment.cpp(298,12): warning C4996: 'TagLib::String::isNull': was declared deprecated
-  tagunion.cpp
+  vorbisfile.cpp
+  vorbisproperties.cpp
+  oggflacfile.cpp
+  mpcfile.cpp
+  mpcproperties.cpp
+  apetag.cpp
+  Generating Code...
+  Compiling...
+  apefooter.cpp
+  apeitem.cpp
+  apefile.cpp
+  apeproperties.cpp
+  tstring.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstring.cpp(158,16): warning C4996: 'TagLib::String::null': was declared deprecated
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstring.cpp(414,15): warning C4996: 'TagLib::String::null': was declared deprecated
+  tstringlist.cpp
+  tbytevector.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevector.cpp(297,24): warning C4996: 'TagLib::ByteVector::null': was declared deprecated
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevector.cpp(667,16): warning C4996: 'TagLib::ByteVector::null': was declared deprecated
+  tbytevectorlist.cpp
+  tbytevectorstream.cpp
+  tiostream.cpp
   tfile.cpp
+  tfilestream.cpp
+  tdebug.cpp
+  tpropertymap.cpp
+  trefcounter.cpp
+  tdebuglistener.cpp
+  tzlib.cpp
+  flacfile.cpp
+  flacpicture.cpp
+  flacproperties.cpp
+  Generating Code...
+  Compiling...
+  flacmetadatablock.cpp
+  flacunknownmetadatablock.cpp
+  wavpackfile.cpp
+  wavpackproperties.cpp
+  speexfile.cpp
+  speexproperties.cpp
+  trueaudiofile.cpp
+  trueaudioproperties.cpp
+  rifffile.cpp
+  aifffile.cpp
+  aiffproperties.cpp
+  wavfile.cpp
+  wavproperties.cpp
+  infotag.cpp
+  asftag.cpp
+  asffile.cpp
+  asfproperties.cpp
+  asfattribute.cpp
+  asfpicture.cpp
+  mp4file.cpp
+  Generating Code...
+  Compiling...
+  mp4atom.cpp
+  mp4tag.cpp
+  mp4item.cpp
+  mp4properties.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4properties.cpp(260,62): warning C4244: '=': conversion from '__int64' to 'int', possible loss of data
+  mp4coverart.cpp
+  modfilebase.cpp
+  modfile.cpp
+  modtag.cpp
+  modproperties.cpp
+  s3mfile.cpp
+  s3mproperties.cpp
+  itfile.cpp
+  itproperties.cpp
+  xmfile.cpp
+  xmproperties.cpp
+  opusfile.cpp
+  opusproperties.cpp
+  tag.cpp
+  tagunion.cpp
+  fileref.cpp
+  Generating Code...
+  Compiling...
+  audioproperties.cpp
+  tagutils.cpp
   Generating Code...
   tag.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\Release\tag.lib
