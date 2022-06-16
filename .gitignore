@@ -10,6 +10,7 @@ externals/*
 libwavpack.lib
 source/lib/vamp-plugin-sdk-master/host/vamp-simple-host
 source/lib/vamp-plugin-sdk-master/rdf/generator/vamp-rdf-template-generator
+source/lib/vamp-plugin-sdk-master/build/x64/**
 source/lib/rubberband-master/x64/**
 source/vs/x64/**
 
