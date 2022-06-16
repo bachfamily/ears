@@ -208,8 +208,8 @@ void buf_griffinlim_bang(t_buf_griffinlim *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     
     if (num_buffers > 0) {
-        t_buffer_obj *in_amp[num_buffers];
-        t_buffer_obj *out_ph[num_buffers];
+        t_buffer_obj **in_amp = (t_buffer_obj **)bach_newptr(num_buffers * sizeof(t_buffer_obj *));
+        t_buffer_obj **out_ph = (t_buffer_obj**)bach_newptr(num_buffers * sizeof(t_buffer_obj*));
         t_buffer_obj *dest = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
 
         for (long i = 0; i < num_buffers; i++) {
@@ -222,6 +222,8 @@ void buf_griffinlim_bang(t_buf_griffinlim *x)
                                x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : "rect",
                                x->fullspectrum, x->e_ob.a_winstartfromzero, x->unitary, x->num_iterations, true);
         
+        bach_freeptr(in_amp);
+        bach_freeptr(out_ph);
     }
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 1);
