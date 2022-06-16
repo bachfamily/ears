@@ -38,6 +38,8 @@
 	Daniele Ghisi
  */
 
+#define TAGLIB_STATIC
+
 #include "ext.h"
 #include "ext_obex.h"
 #include "foundation/llllobj.h"
@@ -585,22 +587,22 @@ t_llll *buf_get_tags_INFO(t_buf_read *x, TagLib::RIFF::Info::Tag *tags)
             TagLib::ByteVector key = it->first;
             TagLib::String fr = it->second;
             t_llll *this_tags_ll = llll_get();
-            if (strcasecmp(key.data(), "ICRD") == 0) {
+            if (strcmp_case_insensitive(key.data(), "ICRD") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("YEAR") : gensym(key.data()));
                 llll_appendlong(this_tags_ll, tags->year());
-            } else if (strcasecmp(key.data(), "IPRT") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IPRT") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("TRACK") : gensym(key.data()));
                 llll_appendlong(this_tags_ll, tags->track());
-            } else if (strcasecmp(key.data(), "IPRD") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IPRD") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("ALBUM") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
-            } else if (strcasecmp(key.data(), "INAM") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "INAM") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("TITLE") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
-            } else if (strcasecmp(key.data(), "IART") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IART") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("ARTIST") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
-            } else if (strcasecmp(key.data(), "IGNR") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IGNR") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("GENRE") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
             } else {
