@@ -1,0 +1,15 @@
+﻿  fileref.cpp
+  flacfile.cpp
+  oggflacfile.cpp
+  opusfile.cpp
+  opusproperties.cpp
+  speexfile.cpp
+  speexproperties.cpp
+  vorbisfile.cpp
+  vorbisproperties.cpp
+  xiphcomment.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\xiphcomment.cpp(298,12): warning C4996: 'TagLib::String::isNull': was declared deprecated
+  tagunion.cpp
+  tfile.cpp
+  Generating Code...
+  tag.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\Release\tag.lib
