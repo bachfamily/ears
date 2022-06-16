@@ -1,0 +1,1325 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{d2302d69-06f9-4bd2-85a2-06ea1b480753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{c7dea8fd-ef28-48c3-80bc-ec8e206cbd10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils\svm">
+      <UniqueIdentifier>{250a014d-73ac-4ab5-a3e5-eb44c9fdf3ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils\tnt">
+      <UniqueIdentifier>{7978855f-a4ca-4130-a9f7-d458a85d385c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\base">
+      <UniqueIdentifier>{03377ac9-a964-4ac5-b08a-9dc74afc0103}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\streaming">
+      <UniqueIdentifier>{307bd675-bd93-4235-9628-9ce2f251d36b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\streaming\algorithms">
+      <UniqueIdentifier>{9600ad52-0a11-4806-acec-8b870c0289ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms">
+      <UniqueIdentifier>{2fe4f069-260f-498b-ad88-feffffa6251f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\io">
+      <UniqueIdentifier>{675a61fa-5588-4d88-87e1-40a317365e9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\_registration">
+      <UniqueIdentifier>{7b36531e-bfee-4d97-9124-7eed23ab9151}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\complex">
+      <UniqueIdentifier>{b6bc26e8-f6df-4351-8ec7-ef5eabeeb195}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\filters">
+      <UniqueIdentifier>{a8da72be-7cf2-4620-9455-fe5d888d127c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\highlevel">
+      <UniqueIdentifier>{b2f69305-f2e7-4f6a-9e40-48114dc47472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\sfx">
+      <UniqueIdentifier>{c4cdb5d0-235e-4c52-ac7d-e841a2432ec8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\spectral">
+      <UniqueIdentifier>{1ab4f287-4c3d-4fd3-892b-c5ccfc24542a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\standard">
+      <UniqueIdentifier>{8d79b28f-b527-4b53-ba60-09ad0877778c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\stats">
+      <UniqueIdentifier>{7fd67968-d3f5-47be-ad56-c5874de976bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\temporal">
+      <UniqueIdentifier>{3db87cf5-0142-445f-b915-df28222bd4f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\tempotap">
+      <UniqueIdentifier>{f469c01c-2f26-4dad-8835-470607dbea08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithms\tonal">
+      <UniqueIdentifier>{74f895f1-35ed-414e-8c8a-5c6c39839107}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:">
+      <UniqueIdentifier>{ce033d0e-dfea-4993-8834-9dfdcb487611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Program Files">
+      <UniqueIdentifier>{5d602499-c856-4c54-ace0-63daf6bcc1b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Program Files\Microsoft Visual Studio 8">
+      <UniqueIdentifier>{a1ec3038-a3ee-42a2-bbea-7deb88001982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Program Files\Microsoft Visual Studio 8\VC">
+      <UniqueIdentifier>{284f2338-2e7f-4685-8bb9-427e99626f16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Program Files\Microsoft Visual Studio 8\VC\bin">
+      <UniqueIdentifier>{c4d1f3c5-837e-4092-88a5-b2476e077cf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\essentia-thirdparty-msvc2005sp1-32bit">
+      <UniqueIdentifier>{ac1efc7b-4b4e-422a-9ee2-0013245d8066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\essentia-thirdparty-msvc2005sp1-32bit\include">
+      <UniqueIdentifier>{465dcf10-f5c2-4348-9cc6-11138b7a4dd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb">
+      <UniqueIdentifier>{8314df7a-d854-4bd8-81fd-a66621bbee3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine">
+      <UniqueIdentifier>{3a0d2bd7-a370-485e-8cc0-3336850f7d42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg">
+      <UniqueIdentifier>{6827c1a4-3fd2-4ec5-be90-a4cf12e50eba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib">
+      <UniqueIdentifier>{414dfaa8-32dc-4f2e-971d-36f1a5cc25bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\utils\svm\svm.cpp">
+      <Filter>src\utils\svm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\algorithm.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\configurable.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\essentia.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\essentiautils.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\logger.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\parameter.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\pool.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\range.cpp">
+      <Filter>src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\algorithms\devnull.cpp">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\algorithms\poolstorage.cpp">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\algorithms\valuefilestorage.cpp">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\network.cpp">
+      <Filter>src\streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\streamingalgorithm.cpp">
+      <Filter>src\streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\streamingalgorithmcomposite.cpp">
+      <Filter>src\streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\streamingalgorithmwrapper.cpp">
+      <Filter>src\streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="src\streaming\taskqueue.cpp">
+      <Filter>src\streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\monoloader.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\ringbufferoutput.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\eqloudloader.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\valuefile.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\yamloutput.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\audioonsetsmarker.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\yamlinput.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\metadatareader.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\easyloader.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\audioloader.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\ringbuffervectoroutput.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\io\ringbufferinput.cpp">
+      <Filter>src\algorithms\io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\_registration\essentia_algorithms_reg.cpp">
+      <Filter>src\algorithms\_registration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\complex\polartocartesian.cpp">
+      <Filter>src\algorithms\complex</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\complex\magnitude.cpp">
+      <Filter>src\algorithms\complex</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\complex\cartesiantopolar.cpp">
+      <Filter>src\algorithms\complex</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\highpass.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\allpass.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\bandreject.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\dcremoval.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\lowpass.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\bandpass.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\equalloudness.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\movingaverage.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\filters\iir.cpp">
+      <Filter>src\algorithms\filters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\svmclassifier.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\streamingonsetrate.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\onsetdetection.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\streamingtempotap.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\sbic.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\intensity.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\onsets.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\pca.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\singlebeatloudness.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\beatsloudness.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\danceability.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\onsetrate.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\fadedetection.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\highlevel\dynamiccomplexity.cpp">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\maxtototal.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\derivativesfx.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\mintototal.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\spectralsfx.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\aftermaxtobeforemaxenergyratio.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\tctototal.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\pitchsalience.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\sfx\flatnesssfx.cpp">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\hpcp.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\maxmagfreq.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\strongpeak.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\spectralwhitening.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\melbands.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\spectralpeaks.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\barkbands.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\spectralcontrast.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\energybandratio.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\flatnessdb.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\spectralcomplexity.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\tuningfrequency.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\hfc.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\frequencybands.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\energyband.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\rolloff.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\flux.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\spectral\mfcc.cpp">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\envelope.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\stereodemuxer.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\dct.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\trimmer.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\monomixer.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\slicer.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\resample.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\scale.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\panning.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\derivative.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\startstopsilence.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\replaygain.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\realaccumulator.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\windowing.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\ifftw.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\binaryoperator.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\framecreator.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\fftw.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\peakdetection.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\bpf.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\multiplexer.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\max.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\silencerate.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\unaryoperator.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\framecutter.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\spectrum.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\powerspectrum.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\standard\noisegenerator.cpp">
+      <Filter>src\algorithms\standard</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\instantpower.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\autocorrelation.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\geometricmean.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\variance.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\centroid.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\warpedautocorrelation.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\energy.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\poolaggregator.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\flatness.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\powermean.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\crest.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\rms.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\distributionshape.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\centralmoments.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\decrease.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\median.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\rawmoments.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\crosscorrelation.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\singlegaussian.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\stats\mean.cpp">
+      <Filter>src\algorithms\stats</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\loudnessvicker.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\larm.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\lpc.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\effectiveduration.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\strongdecay.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\leq.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\logattacktime.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\loudness.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\zerocrossingrate.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\rhythmtransform.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\temporal\duration.cpp">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tempotap\tempotap.cpp">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tempotap\bpmhistogramdescriptors.cpp">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tempotap\tempotapticks.cpp">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tempotap\bpmrubato.cpp">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tempotap\temposcalebands.cpp">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\harmonicpeaks.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\inharmonicity.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\chordsdescriptors.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\oddtoevenharmonicenergyratio.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\pitchdetection.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\tristimulus.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\key.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\dissonance.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\highresolutionfeatures.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\algorithms\tonal\chordsdetection.cpp">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\utils\svm\svm.h">
+      <Filter>src\utils\svm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_array2d.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_array1d.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_i_refvec.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_array1d_utils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_array2d_utils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_array3d.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_array3d_utils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_cmat.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array1d.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array1d_utils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array2d.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array2d_utils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array3d.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array3d_utils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_math_utils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_sparse_matrix_csr.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_stopwatch.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_subscript.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_vec.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt_version.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\jama_lu.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt2essentiautils.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\jama_eig.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\tnt\tnt2vector.h">
+      <Filter>src\utils\tnt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\MersenneTwister.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\ringbufferimpl.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\atomic.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\output.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\algorithm.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\algorithmfactory.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\configurable.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\iotypewrappers.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\iotypewrappers_impl.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\types.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\algorithmfactory_impl.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\essentia.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\parameter.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\sinkbase.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\sourcebase.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\config.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\streamutil.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\streamconnector.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\roguevector.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\threading.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\pool.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\range.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\essentiautils.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\logger.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\essentiamath.h">
+      <Filter>src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\streamingalgorithmwrapper.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\sink.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\source.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\streamingalgorithm.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\multiratebuffer.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\phantombuffer.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\debug.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\algorithms\devnull.h">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\algorithms\poolstorage.h">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\algorithms\valuefilestorage.h">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\algorithms\vectorstorage.h">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\algorithms\vectorinput.h">
+      <Filter>src\streaming\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\phantombuffer_impl.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\network.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\streamingalgorithmcomposite.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\streaming\taskqueue.h">
+      <Filter>src\streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\valuefile.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\audioloader.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\audioonsetsmarker.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\easyloader.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\eqloudloader.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\metadatareader.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\monoloader.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\ringbufferinput.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\ringbufferoutput.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\ringbuffervectoroutput.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\yamlinput.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\io\yamloutput.h">
+      <Filter>src\algorithms\io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\complex\cartesiantopolar.h">
+      <Filter>src\algorithms\complex</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\complex\magnitude.h">
+      <Filter>src\algorithms\complex</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\complex\polartocartesian.h">
+      <Filter>src\algorithms\complex</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\allpass.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\bandpass.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\bandreject.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\dcremoval.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\equalloudness.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\highpass.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\iir.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\lowpass.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\filters\movingaverage.h">
+      <Filter>src\algorithms\filters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\beatsloudness.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\danceability.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\dynamiccomplexity.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\fadedetection.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\intensity.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\onsetdetection.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\onsetrate.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\onsets.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\pca.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\sbic.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\singlebeatloudness.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\streamingonsetrate.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\streamingtempotap.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\highlevel\svmclassifier.h">
+      <Filter>src\algorithms\highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\aftermaxtobeforemaxenergyratio.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\derivativesfx.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\flatnesssfx.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\maxtototal.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\mintototal.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\pitchsalience.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\spectralsfx.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sfx\tctototal.h">
+      <Filter>src\algorithms\sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\barkbands.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\energyband.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\energybandratio.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\flatnessdb.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\flux.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\frequencybands.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\hfc.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\hpcp.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\maxmagfreq.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\melbands.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\mfcc.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\rolloff.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\spectralcomplexity.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\spectralcontrast.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\spectralpeaks.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\spectralwhitening.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\strongpeak.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\spectral\tuningfrequency.h">
+      <Filter>src\algorithms\spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\binaryoperator.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\bpf.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\dct.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\derivative.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\envelope.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\fftw.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\framecreator.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\framecutter.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\ifftw.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\max.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\monomixer.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\multiplexer.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\noisegenerator.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\panning.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\peakdetection.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\powerspectrum.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\realaccumulator.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\replaygain.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\resample.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\scale.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\silencerate.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\slicer.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\spectrum.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\startstopsilence.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\stereodemuxer.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\trimmer.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\unaryoperator.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\standard\windowing.h">
+      <Filter>src\algorithms\standard</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\autocorrelation.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\centralmoments.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\centroid.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\crest.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\crosscorrelation.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\decrease.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\distributionshape.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\energy.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\flatness.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\geometricmean.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\instantpower.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\mean.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\median.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\poolaggregator.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\powermean.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\rawmoments.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\rms.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\singlegaussian.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\variance.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\stats\warpedautocorrelation.h">
+      <Filter>src\algorithms\stats</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\duration.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\effectiveduration.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\larm.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\leq.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\logattacktime.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\loudness.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\loudnessvicker.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\lpc.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\rhythmtransform.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\strongdecay.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\temporal\zerocrossingrate.h">
+      <Filter>src\algorithms\temporal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tempotap\bpmhistogramdescriptors.h">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tempotap\bpmrubato.h">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tempotap\temposcalebands.h">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tempotap\tempotap.h">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tempotap\tempotapticks.h">
+      <Filter>src\algorithms\tempotap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\chordsdescriptors.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\chordsdetection.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\dissonance.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\harmonicpeaks.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\highresolutionfeatures.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\inharmonicity.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\key.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\oddtoevenharmonicenergyratio.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\pitchdetection.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\tonal\tristimulus.h">
+      <Filter>src\algorithms\tonal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\spin_mutex.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\tbb_machine.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\tbb_stddef.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\linux_em64t.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\linux_ia32.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\linux_itanium.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\mac_ppc.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\windows_em64t.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\windows_ia32.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\_tbb_windef.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\concurrent_queue.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\parallel_while.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\task.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\task_scheduler_init.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\tbb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\stdint.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\sched.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\unistd.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\fftw3.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avcodec.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avformat.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avutil.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avio.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\common.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\integer.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\intfloat_readwrite.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\log.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\mathematics.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\rational.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\mem.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\samplerate.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\inttypes.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\pthread.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\yaml.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\fileref.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tag.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\audioproperties.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\taglib_export.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tfile.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tstringlist.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tstring.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\taglib.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tbytevector.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tbytevectorlist.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tlist.h">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\..\..\..\Program Files\Microsoft Visual Studio 8\VC\bin\cl.EXE">
+      <Filter>C:\Program Files\Microsoft Visual Studio 8\VC\bin</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tlist.tcc">
+      <Filter>C:\essentia-thirdparty-msvc2005sp1-32bit\include\taglib</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>MakeFileProj</Keyword>
+    <ProjectGuid>{02791F57-A813-4065-A3B5-1CB8D4A0573A}</ProjectGuid>
+    <RootNamespace>essentia</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>17.0.32203.90</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons mode=debug -f ./Sconstruct</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons mode=debug -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;lib/win32/include/;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons mode=debug -f ./Sconstruct</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons -f ./Sconstruct</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;lib/win32/include/;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons -f ./Sconstruct</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\algorithms\beatit\beatit.cpp" />
+    <ClCompile Include="src\algorithms\beatit\beatitbands.cpp" />
+    <ClCompile Include="src\algorithms\beatit\src\Envelope.cpp" />
+    <ClCompile Include="src\algorithms\complex\cartesian2polar.cpp" />
+    <ClCompile Include="src\algorithms\complex\magnitude.cpp" />
+    <ClCompile Include="src\algorithms\complex\polar2cartesian.cpp" />
+    <ClCompile Include="src\algorithms\extractor\descriptorstats.cpp" />
+    <ClCompile Include="src\algorithms\extractor\essentiamusic.cpp" />
+    <ClCompile Include="src\algorithms\extractor\extractor.cpp" />
+    <ClCompile Include="src\algorithms\extractor\extractorbeatit.cpp" />
+    <ClCompile Include="src\algorithms\extractor\extractorkey.cpp" />
+    <ClCompile Include="src\algorithms\extractor\extractoronsetrate.cpp" />
+    <ClCompile Include="src\algorithms\extractor\extractoroutput.cpp" />
+    <ClCompile Include="src\algorithms\filters\allpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\bandpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\bandreject.cpp" />
+    <ClCompile Include="src\algorithms\filters\dcremoval.cpp" />
+    <ClCompile Include="src\algorithms\filters\equalloudness.cpp" />
+    <ClCompile Include="src\algorithms\filters\filtering.cpp" />
+    <ClCompile Include="src\algorithms\filters\highpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\lowpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\movingaverage.cpp" />
+    <ClCompile Include="src\algorithms\generators\noisegen.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\danceability.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\dynamiccomplexity.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\fadedetection.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\intensity.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\key.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\onsetdetection.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\onsets.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\patterndetection.cpp" />
+    <ClCompile Include="src\algorithms\io\mp3fileinput.cpp" />
+    <ClCompile Include="src\algorithms\io\oggvorbisfileinput.cpp" />
+    <ClCompile Include="src\algorithms\io\wavefileinput.cpp" />
+    <ClCompile Include="src\algorithms\io\wavefileoutput.cpp" />
+    <ClCompile Include="src\algorithms\spectral\barkbands.cpp" />
+    <ClCompile Include="src\algorithms\spectral\dissonance.cpp" />
+    <ClCompile Include="src\algorithms\spectral\energybandratio.cpp" />
+    <ClCompile Include="src\algorithms\spectral\flatnessdb.cpp" />
+    <ClCompile Include="src\algorithms\spectral\flux.cpp" />
+    <ClCompile Include="src\algorithms\spectral\freqbands.cpp" />
+    <ClCompile Include="src\algorithms\spectral\hfc.cpp" />
+    <ClCompile Include="src\algorithms\spectral\hpcp.cpp" />
+    <ClCompile Include="src\algorithms\spectral\maxmagfreq.cpp" />
+    <ClCompile Include="src\algorithms\spectral\melbands.cpp" />
+    <ClCompile Include="src\algorithms\spectral\rolloff.cpp" />
+    <ClCompile Include="src\algorithms\spectral\spectralpeaks.cpp" />
+    <ClCompile Include="src\algorithms\spectral\strongpeak.cpp" />
+    <ClCompile Include="src\algorithms\spectral\tuningfrequency.cpp" />
+    <ClCompile Include="src\algorithms\standard\binaryoperator.cpp" />
+    <ClCompile Include="src\algorithms\standard\dct.cpp" />
+    <ClCompile Include="src\algorithms\standard\dft.cpp" />
+    <ClCompile Include="src\algorithms\standard\envelope.cpp" />
+    <ClCompile Include="src\algorithms\standard\fft.cpp" />
+    <ClCompile Include="src\algorithms\standard\framecreator.cpp" />
+    <ClCompile Include="src\algorithms\standard\replaygain.cpp" />
+    <ClCompile Include="src\algorithms\standard\resample.cpp" />
+    <ClCompile Include="src\algorithms\standard\scale.cpp" />
+    <ClCompile Include="src\algorithms\standard\spectrum.cpp" />
+    <ClCompile Include="src\algorithms\standard\unaryoperator.cpp" />
+    <ClCompile Include="src\algorithms\standard\windowing.cpp" />
+    <ClCompile Include="src\algorithms\stats\centralmoments.cpp" />
+    <ClCompile Include="src\algorithms\stats\centroid.cpp" />
+    <ClCompile Include="src\algorithms\stats\crest.cpp" />
+    <ClCompile Include="src\algorithms\stats\crosscorrelation.cpp" />
+    <ClCompile Include="src\algorithms\stats\decrease.cpp" />
+    <ClCompile Include="src\algorithms\stats\distributionshape.cpp" />
+    <ClCompile Include="src\algorithms\stats\energy.cpp" />
+    <ClCompile Include="src\algorithms\stats\flatness.cpp" />
+    <ClCompile Include="src\algorithms\stats\geometricmean.cpp" />
+    <ClCompile Include="src\algorithms\stats\mean.cpp" />
+    <ClCompile Include="src\algorithms\stats\median.cpp" />
+    <ClCompile Include="src\algorithms\stats\powermean.cpp" />
+    <ClCompile Include="src\algorithms\stats\rawmoments.cpp" />
+    <ClCompile Include="src\algorithms\stats\rms.cpp" />
+    <ClCompile Include="src\algorithms\stats\variance.cpp" />
+    <ClCompile Include="src\algorithms\stats\warpedautocorrelation.cpp" />
+    <ClCompile Include="src\algorithms\temporal\duration.cpp" />
+    <ClCompile Include="src\algorithms\temporal\effectiveduration.cpp" />
+    <ClCompile Include="src\algorithms\temporal\larm.cpp" />
+    <ClCompile Include="src\algorithms\temporal\leq.cpp" />
+    <ClCompile Include="src\algorithms\temporal\logattacktime.cpp" />
+    <ClCompile Include="src\algorithms\temporal\loudness.cpp" />
+    <ClCompile Include="src\algorithms\temporal\lpc.cpp" />
+    <ClCompile Include="src\algorithms\temporal\strongdecay.cpp" />
+    <ClCompile Include="src\algorithms\temporal\zerocrossingrate.cpp" />
+    <ClCompile Include="src\algorithms\tempotap\temposcalebands.cpp" />
+    <ClCompile Include="src\algorithms\_registration\essentia_algorithms_reg.cpp" />
+    <ClCompile Include="src\base\algorithm.cpp" />
+    <ClCompile Include="src\base\algorithmfactory.cpp" />
+    <ClCompile Include="src\base\logger.cpp" />
+    <ClCompile Include="src\utils\audiofile\audiofileloader.cpp" />
+    <ClCompile Include="src\utils\audiofile\audiofilewriter.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
