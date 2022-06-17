@@ -17609,7 +17609,6 @@
 					"$(C74_SYM_LINKER_FLAGS)",
 					"-lz",
 					/usr/local/lib/libtag.a,
-					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
@@ -17652,7 +17651,6 @@
 					"$(C74_SYM_LINKER_FLAGS)",
 					"-lz",
 					/usr/local/lib/libtag.a,
-					/usr/local/lib/libessentia.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REZ_SEARCH_PATHS = "";
