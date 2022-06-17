@@ -16,7 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+#include <io.h>
+//#include <unistd.h>
 #include <png.h>
 
 #include "kiss_fft.h"
