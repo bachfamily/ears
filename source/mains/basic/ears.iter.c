@@ -51,8 +51,8 @@ typedef struct _buf_iter {
     t_earsbufobj       e_ob;
     long               e_num_inlets;
     long               e_iterationmode;
+    long               e_lengthmode;
     t_symbol           *buffers[LLLL_MAX_INLETS];
-    long               e_iteration_mode;
 } t_buf_iter;
 
 
@@ -115,10 +115,20 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_FILTER_CLIP(c, "iterationmode", 0, 2);
     CLASS_ATTR_ENUMINDEX(c, "iterationmode", 0, "Shortest Longest Zeros");
     // @description Sets the iteration mode: <br />
-    // 0 = Iterate until the shortest list is over; <br />
-    // 1 = Iterate until the longest list is over; <br />
-    // 2 = Iterate until the longest list is over and output zeros to pad the shorter lists.
+    // 0 = Iterate until the shortest list of buffers is over; <br />
+    // 1 = Iterate until the longest list of buffers is over; <br />
+    // 2 = Iterate until the longest list of buffers is over and output zeros to pad.
 
+    CLASS_ATTR_LONG(c, "lengthmode",    0,    t_buf_iter, e_lengthmode);
+    CLASS_ATTR_STYLE_LABEL(c, "lengthmode", 0, "enumindex", "Length Mode");
+    CLASS_ATTR_FILTER_CLIP(c, "lengthmode", 0, 2);
+    CLASS_ATTR_ENUMINDEX(c, "lengthmode", 0, "Shortest Longest Zeros");
+    // @description Sets the length mode: <br />
+    // 0 = Iterate until the shortest buffer is over; <br />
+    // 1 = Iterate until the longest buffer is over; <br />
+    // 2 = Iterate until the longest buffer is over and output zeros to pad the shorter buffers.
+
+    
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -168,7 +178,7 @@ t_buf_iter *buf_iter_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         
         if (args && args->l_head && is_hatom_number(&args->l_head->l_hatom)) {
-            x->e_num_inlets = CLAMP(hatom_getlong(&args->l_head->l_hatom), 1, LLLL_MAX_INLETS-2);
+            x->e_num_inlets = CLAMP(hatom_getlong(&args->l_head->l_hatom), 1, LLLL_MAX_INLETS-3);
         }
         
 
@@ -176,14 +186,15 @@ t_buf_iter *buf_iter_new(t_symbol *s, short argc, t_atom *argv)
         
         char inlets[LLLL_MAX_INLETS];
         char outlets[LLLL_MAX_OUTLETS];
-        outlets[0] = 'i';
+        outlets[0] = 'z';
+        outlets[1] = 'i';
         for (long i = 0; i < x->e_num_inlets; i++) {
-            inlets[i] = 'e';
-            outlets[i+1] = 'z';
+            inlets[i] = 'E';
+            outlets[i+2] = 'z';
         }
-        outlets[x->e_num_inlets+1] = 'b';
+        outlets[x->e_num_inlets+2] = 'b';
         inlets[x->e_num_inlets] = 0;
-        outlets[x->e_num_inlets+2] = 0;
+        outlets[x->e_num_inlets+3] = 0;
         earsbufobj_setup((t_earsbufobj *)x, inlets, outlets, NULL);
 
         llll_free(args);
@@ -209,57 +220,80 @@ void buf_iter_bang(t_buf_iter *x)
     long minsamps = LONG_MAX, maxsamps = 0;
     long maxnumchannels = 0;
     long iterationmode = x->e_iterationmode;
+    long lengthmode = x->e_lengthmode;
     
+    long num_buffers[LLLL_MAX_INLETS];
+    long minnumbuffers = -1, maxnumbuffers = -1;
     for (long i = 0; i < num_inlets; i++) {
-        buffer[i] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, 0);
-        samps[i] = buffer[i] ? buffer_locksamples(buffer[i]) : NULL;
-        sizesamps[i] = buffer_getframecount(buffer[i]);
-        if (sizesamps[i] > maxsamps)
-            maxsamps = sizesamps[i];
-        if (sizesamps[i] < minsamps)
-            minsamps = sizesamps[i];
-        numchannels[i] = buffer_getchannelcount(buffer[i]);
-        if (numchannels[i] > maxnumchannels)
-            maxnumchannels = numchannels[i];
+        num_buffers[i] = earsbufobj_get_instore_size((t_earsbufobj *)x, i);
+        if (minnumbuffers < 0 || num_buffers[i] < minnumbuffers)
+            minnumbuffers = num_buffers[i];
+        if (maxnumbuffers < 0 || num_buffers[i] > maxnumbuffers)
+            maxnumbuffers = num_buffers[i];
     }
-
-    // all buffers are now locked. Let's send out the information
-    long limitsamps = (iterationmode == 0 ? minsamps : maxsamps);
-
-    t_atom *av = (t_atom *)bach_newptr((maxnumchannels + 1) * sizeof(t_atom));
-    for (long f = 0; f < limitsamps; f++) {
-        earsbufobj_outlet_int((t_earsbufobj *)x, num_inlets+1, f);
+    long max_iter_num_buffers = (iterationmode == 0 ? minnumbuffers : maxnumbuffers);
+    
+    t_symbol *these_buffers[LLLL_MAX_INLETS];
+    
+    for (long b = 0; b < max_iter_num_buffers; b++) {
         
-        for (long i = num_inlets - 1; i >= 0; i--) {
-
-            if (numchannels[i] == 1) {
-                if (f < sizesamps[i]) {
-                    atom_setfloat(av, samps[i][f]);
-                    earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_float, 1, av);
-                } else if (iterationmode == 2) {
-                    atom_setfloat(av, 0.);
-                    earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_float, 1, av);
-                }
-            } else {
-                if (f < sizesamps[i]) {
-                    for (long c = 0; c < numchannels[i]; c++)
-                        atom_setfloat(av+c, samps[i][f*numchannels[i] + c]);
-                    earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_list, numchannels[i], av);
-                } else if (iterationmode == 2) {
-                    for (long c = 0; c < numchannels[i]; c++)
-                        atom_setfloat(av+c, 0.);
-                    earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_list, numchannels[i], av);
+        for (long i = 0; i < num_inlets; i++) {
+            t_object *buf = b < num_buffers[i] ? earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, b) : NULL;
+            these_buffers[i] = buf ? ears_buffer_get_name((t_object *)x, buf) : _llllobj_sym_none;
+        }
+        earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 3, max_iter_num_buffers, these_buffers);
+        
+        for (long i = 0; i < num_inlets; i++) {
+            buffer[i] = b < num_buffers[i] ? earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, b) : NULL;
+            samps[i] = buffer[i] ? buffer_locksamples(buffer[i]) : NULL;
+            sizesamps[i] = buffer[i] ? buffer_getframecount(buffer[i]) : 0;
+            if (sizesamps[i] > maxsamps)
+                maxsamps = sizesamps[i];
+            if (sizesamps[i] < minsamps)
+                minsamps = sizesamps[i];
+            numchannels[i] = buffer[i] ? buffer_getchannelcount(buffer[i]) : 0;
+            if (numchannels[i] > maxnumchannels)
+                maxnumchannels = numchannels[i];
+        }
+        
+        // all buffers are now locked. Let's send out the information
+        long limitsamps = (lengthmode == 0 ? minsamps : maxsamps);
+        
+        t_atom *av = (t_atom *)bach_newptr((maxnumchannels + 1) * sizeof(t_atom));
+        for (long f = 0; f < limitsamps; f++) {
+            earsbufobj_outlet_int((t_earsbufobj *)x, num_inlets+1, f);
+            
+            for (long i = num_inlets - 1; i >= 0; i--) {
+                
+                if (numchannels[i] == 1) {
+                    if (f < sizesamps[i]) {
+                        atom_setfloat(av, samps[i][f]);
+                        earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_float, 1, av);
+                    } else if (lengthmode == 2) {
+                        atom_setfloat(av, 0.);
+                        earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_float, 1, av);
+                    }
+                } else {
+                    if (f < sizesamps[i]) {
+                        for (long c = 0; c < numchannels[i]; c++)
+                            atom_setfloat(av+c, samps[i][f*numchannels[i] + c]);
+                        earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_list, numchannels[i], av);
+                    } else if (lengthmode == 2) {
+                        for (long c = 0; c < numchannels[i]; c++)
+                            atom_setfloat(av+c, 0.);
+                        earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_list, numchannels[i], av);
+                    }
                 }
             }
         }
+        
+        for (long i = 0; i < num_inlets; i++) {
+            if (samps[i] && buffer[i])
+                buffer_unlocksamples(buffer[i]);
+        }
+        
+        bach_freeptr(av);
     }
-    
-    for (long i = 0; i < num_inlets; i++) {
-        if (samps[i] && buffer[i])
-            buffer_unlocksamples(buffer[i]);
-    }
-    
-    bach_freeptr(av);
     
     // output bang
     earsbufobj_outlet_bang((t_earsbufobj *)x, 0);
