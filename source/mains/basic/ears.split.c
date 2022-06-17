@@ -220,6 +220,7 @@ t_buf_split *buf_split_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_split*)object_alloc_debug(s_tag_class);
     if (x) {
         x->e_mode = EARS_SPLIT_MODE_DURATION;
+        x->e_partial_segments = 1;
         
         earsbufobj_init((t_earsbufobj *)x, 0);
         

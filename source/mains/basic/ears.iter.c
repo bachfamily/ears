@@ -142,8 +142,10 @@ void buf_iter_assist(t_buf_iter *x, void *b, long m, long a, char *s)
         if (a < x->e_num_inlets) // @in 0 @loop 1 @type symbol @digest Buffer whose sample must be iterated
             sprintf(s, "symbol: Buffer %ld", a + 1);
     } else {
-        if (a == x->e_num_inlets + 1)
-            sprintf(s, "int: Sample Index");    // @out 1 @type int @digest Sample Index
+        if (a == x->e_num_inlets + 2)
+            sprintf(s, "symbol/list: Buffers Being Iterated");    // @out 3 @type symbol/buffer @digest Buffers being iterated
+        else if (a == x->e_num_inlets + 1)
+            sprintf(s, "int: Sample Index");    // @out 2 @type int @digest Sample Index
         else if (a == 0)
             sprintf(s, "bang When Done");    // @out 0 @type bang @digest Bang When Done
                                             // @description Sends a bang when the iteration has ended
@@ -217,7 +219,6 @@ void buf_iter_bang(t_buf_iter *x)
     t_object *buffer[LLLL_MAX_INLETS];
     long sizesamps[LLLL_MAX_INLETS];
     long numchannels[LLLL_MAX_INLETS];
-    long minsamps = LONG_MAX, maxsamps = 0;
     long maxnumchannels = 0;
     long iterationmode = x->e_iterationmode;
     long lengthmode = x->e_lengthmode;
@@ -236,23 +237,24 @@ void buf_iter_bang(t_buf_iter *x)
     t_symbol *these_buffers[LLLL_MAX_INLETS];
     
     for (long b = 0; b < max_iter_num_buffers; b++) {
-        
+        long minsamps = LONG_MAX, maxsamps = 0;
+
         for (long i = 0; i < num_inlets; i++) {
             t_object *buf = b < num_buffers[i] ? earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, b) : NULL;
             these_buffers[i] = buf ? ears_buffer_get_name((t_object *)x, buf) : _llllobj_sym_none;
         }
-        earsbufobj_outlet_symbol_list((t_earsbufobj *)x, 3, max_iter_num_buffers, these_buffers);
+        earsbufobj_outlet_symbol_list((t_earsbufobj *)x, num_inlets+2, num_inlets, these_buffers);
         
         for (long i = 0; i < num_inlets; i++) {
             buffer[i] = b < num_buffers[i] ? earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, b) : NULL;
             samps[i] = buffer[i] ? buffer_locksamples(buffer[i]) : NULL;
             sizesamps[i] = buffer[i] ? buffer_getframecount(buffer[i]) : 0;
-            if (sizesamps[i] > maxsamps)
+            if (buffer[i] && sizesamps[i] > maxsamps)
                 maxsamps = sizesamps[i];
-            if (sizesamps[i] < minsamps)
+            if (buffer[i] && sizesamps[i] < minsamps)
                 minsamps = sizesamps[i];
             numchannels[i] = buffer[i] ? buffer_getchannelcount(buffer[i]) : 0;
-            if (numchannels[i] > maxnumchannels)
+            if (buffer[i] && numchannels[i] > maxnumchannels)
                 maxnumchannels = numchannels[i];
         }
         
@@ -278,10 +280,10 @@ void buf_iter_bang(t_buf_iter *x)
                         for (long c = 0; c < numchannels[i]; c++)
                             atom_setfloat(av+c, samps[i][f*numchannels[i] + c]);
                         earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_list, numchannels[i], av);
-                    } else if (lengthmode == 2) {
-                        for (long c = 0; c < numchannels[i]; c++)
+                    } else if (lengthmode == 2 || (!buffer[i] && iterationmode == 2)) {
+                        for (long c = 0; c < (buffer[i] ? numchannels[i] : 1); c++)
                             atom_setfloat(av+c, 0.);
-                        earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_list, numchannels[i], av);
+                        earsbufobj_outlet_anything((t_earsbufobj *)x, i+1, _sym_list, (buffer[i] ? numchannels[i] : 1), av);
                     }
                 }
             }
@@ -308,13 +310,13 @@ void buf_iter_anything(t_buf_iter *x, t_symbol *msg, long ac, t_atom *av)
     if (!parsed) return;
     
     if (parsed && parsed->l_head) {
-        t_symbol *buffername = hatom_getsym(&parsed->l_head->l_hatom);
-        if (buffername) {
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, 1, true);
-            earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, 0, buffername);
-            if (inlet == 0)
-                buf_iter_bang(x);
-        }
+        long num_bufs = llll_get_num_symbols_root(parsed);
+        
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, num_bufs, true);
+        earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, inlet);
+        
+        if (inlet == 0)
+            buf_iter_bang(x);
     }
     llll_free(parsed);
 }

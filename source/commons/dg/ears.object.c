@@ -529,9 +529,10 @@ long substitute_polybuffers(t_earsbufobj *e_ob, t_llll *ll)
 }
 
 
-t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av)
+
+t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av, e_llllobj_parse_flags flags)
 {
-    t_llll *ll = llllobj_parse_llll((t_object *) e_ob, type, msg, ac, av, LLLL_PARSE_CLONE);
+    t_llll *ll = llllobj_parse_llll((t_object *) e_ob, type, msg, ac, av, flags);
 
     // checking whether any of the symbols is a POLYbuffer, and in this case substituting it with all its buffers
     substitute_polybuffers(e_ob, ll);
@@ -1723,7 +1724,7 @@ void earsbufobj_class_add_resamplingmode_attr(t_class *c)
 
 void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c)
 {
-    CLASS_ATTR_CHAR(c,"resamplingfiltersize",0, t_earsbufobj, l_resamplingfilterwidth);
+    CLASS_ATTR_LONG(c,"resamplingfiltersize",0, t_earsbufobj, l_resamplingfilterwidth);
     CLASS_ATTR_STYLE_LABEL(c,"resamplingfiltersize",0,"text","Resampling Filter Size");
     CLASS_ATTR_CATEGORY(c, "resamplingfiltersize", 0, "Resampling");
     // @description Sets the resampling filter size.
@@ -1990,7 +1991,7 @@ void earsbufobj_class_add_zeropadding_attr(t_class *c)
 
 void earsbufobj_class_add_zerophase_attr(t_class *c)
 {
-    CLASS_ATTR_LONG(c, "zerophase", 0, t_earsbufobj, a_zerophase);
+    CLASS_ATTR_CHAR(c, "zerophase", 0, t_earsbufobj, a_zerophase);
     CLASS_ATTR_STYLE_LABEL(c,"zerophase",0,"onoff","Zero Phase Windowing");
     CLASS_ATTR_CATEGORY(c, "zerophase", 0, "Analysis");
     // @description Toggles zero-phase windowing.
@@ -2117,7 +2118,7 @@ void earsbufobj_generated_names_llll_subssymbol(t_llll *ll, t_symbol *sym, long 
 
 
 // generates an unique symbol for a certain output store
-t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_idx, long buffer_idx, e_earsbufobj_bufstatus *status)
+t_symbol *earsbufobj_output_get_symbol_unique_ext(t_earsbufobj *e_ob, long outstore_idx, long buffer_idx, e_earsbufobj_bufstatus *status, long corresponding_instore_idx)
 {
     t_symbol *sym = NULL;
     
@@ -2162,7 +2163,7 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
             
         case EARSBUFOBJ_NAMING_COPY:
         default:
-            sym = earsbufobj_get_inlet_buffer_name(e_ob, outstore_idx, buffer_idx);
+            sym = earsbufobj_get_inlet_buffer_name(e_ob, corresponding_instore_idx, buffer_idx);
 //            if (!sym)
 //                sym = symbol_unique();
             if (status) *status = EARSBUFOBJ_BUFSTATUS_COPIED;
@@ -2177,6 +2178,10 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
     return sym;
 }
 
+t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_idx, long buffer_idx, e_earsbufobj_bufstatus *status)
+{
+    return earsbufobj_output_get_symbol_unique_ext(e_ob, outstore_idx, buffer_idx, status, outstore_idx);
+}
 
 long earsbufobj_get_num_inlet_stored_buffers(t_earsbufobj *e_ob, long store_idx, char remove_empty_buffers)
 {

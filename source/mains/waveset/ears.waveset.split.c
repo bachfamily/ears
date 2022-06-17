@@ -118,7 +118,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the number of negative-to-positive zero crossing regions that form a waveset (defaults to 1: a single
     // negative-to-positive zero-crossing to negative-to-positive zero-crossing region).
 
-    CLASS_ATTR_DOUBLE(c, "normalize", 0, t_buf_waveset_split, e_normalize);
+    CLASS_ATTR_LONG(c, "normalize", 0, t_buf_waveset_split, e_normalize);
     CLASS_ATTR_STYLE_LABEL(c,"normalize",0,"onoff","Normalize Wavesets");
     CLASS_ATTR_BASIC(c, "normalize", 0);
     // @description Toggles the normalization of wavesets.

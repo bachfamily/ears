@@ -435,7 +435,7 @@ void earsbufobj_free(t_earsbufobj *e_ob);
 void earsbufobj_resize_store(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long store_idx, long new_size, char also_create_unique_buffers);
 long llll_get_num_symbols_root(t_llll *ll);
 long earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx);
-t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av);
+t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av, e_llllobj_parse_flags flags = LLLL_PARSE_CLONE);
 
 t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv);
 void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob);
@@ -485,6 +485,7 @@ void earsbufobj_mutex_unlock(t_earsbufobj *e_ob);
 
 // as symbol_unique() but also accounts for outlet modes
 t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_idx, long buffer_idx, e_earsbufobj_bufstatus *status = NULL);
+t_symbol *earsbufobj_output_get_symbol_unique_ext(t_earsbufobj *e_ob, long outstore_idx, long buffer_idx, e_earsbufobj_bufstatus *status, long corresponding_instore_idx);
 
 
 
