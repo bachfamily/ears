@@ -4648,19 +4648,21 @@ std::vector<std::vector<std::vector<Real>>> ears_essentia_handle_units(std::vect
 
 t_symbol *symbol_from_ascii_vector_wrapped(std::vector<std::vector<Real>> ascii)
 {
-    char temp[ascii.size()+1];
-    for (long i = 0; i < ascii.size(); i++)
+    long size = MIN(ascii.size(), MAX_SYM_LENGTH - 1);
+    char temp[MAX_SYM_LENGTH];
+    for (long i = 0; i < size; i++)
         temp[i] = ascii[i].size() > 0 ? (unsigned char)ascii[i][0] : 0;
-    temp[ascii.size()] = 0;
+    temp[size] = 0;
     return gensym(temp);
 }
 
 t_symbol *symbol_from_ascii_vector(std::vector<Real> ascii)
 {
-    char temp[ascii.size()+1];
-    for (long i = 0; i < ascii.size(); i++)
+    long size = MIN(ascii.size(), MAX_SYM_LENGTH - 1);
+    char temp[MAX_SYM_LENGTH];
+    for (long i = 0; i < size; i++)
         temp[i] = (unsigned char)ascii[i];
-    temp[ascii.size()] = 0;
+    temp[size] = 0;
     return gensym(temp);
 }
 

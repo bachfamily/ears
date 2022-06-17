@@ -1723,7 +1723,7 @@ void earsbufobj_class_add_resamplingmode_attr(t_class *c)
 
 void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c)
 {
-    CLASS_ATTR_CHAR(c,"resamplingfiltersize",0, t_earsbufobj, l_resamplingfilterwidth);
+    CLASS_ATTR_LONG(c,"resamplingfiltersize",0, t_earsbufobj, l_resamplingfilterwidth);
     CLASS_ATTR_STYLE_LABEL(c,"resamplingfiltersize",0,"text","Resampling Filter Size");
     CLASS_ATTR_CATEGORY(c, "resamplingfiltersize", 0, "Resampling");
     // @description Sets the resampling filter size.
@@ -1990,7 +1990,7 @@ void earsbufobj_class_add_zeropadding_attr(t_class *c)
 
 void earsbufobj_class_add_zerophase_attr(t_class *c)
 {
-    CLASS_ATTR_LONG(c, "zerophase", 0, t_earsbufobj, a_zerophase);
+    CLASS_ATTR_CHAR(c, "zerophase", 0, t_earsbufobj, a_zerophase);
     CLASS_ATTR_STYLE_LABEL(c,"zerophase",0,"onoff","Zero Phase Windowing");
     CLASS_ATTR_CATEGORY(c, "zerophase", 0, "Analysis");
     // @description Toggles zero-phase windowing.

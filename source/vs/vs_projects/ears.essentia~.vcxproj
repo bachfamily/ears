@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7F3B50A4-8145-4B99-A1F8-F8CEF8FD554D}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.51106.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.mxe</TargetExt>
+    <OutDir>..\..\..\externals</OutDir>
+    <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\nnls;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\spline;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\yaml-0.1.5\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\taglib-1.9.1\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libsamplerate-0.1.8\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\fftw-3.3.3\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libav-0.8.9\include;..\..\lib\essentia-2.1_beta5-modif-win\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\scheduler;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming;..\..\lib\essentia-2.1_beta5-modif-win\src;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.mxe64</TargetExt>
+    <OutDir>..\..\..\externals</OutDir>
+    <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\nnls;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\spline;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\yaml-0.1.5\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\taglib-1.9.1\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libsamplerate-0.1.8\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\fftw-3.3.3\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libav-0.8.9\include;..\..\lib\essentia-2.1_beta5-modif-win\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\scheduler;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming;..\..\lib\essentia-2.1_beta5-modif-win\src;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.mxe</TargetExt>
+    <OutDir>..\..\..\externals</OutDir>
+    <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\nnls;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\spline;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\yaml-0.1.5\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\taglib-1.9.1\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libsamplerate-0.1.8\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\fftw-3.3.3\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libav-0.8.9\include;..\..\lib\essentia-2.1_beta5-modif-win\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\scheduler;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming;..\..\lib\essentia-2.1_beta5-modif-win\src;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.mxe64</TargetExt>
+    <OutDir>..\..\..\externals</OutDir>
+    <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\nnls;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty;..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\spline;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\yaml-0.1.5\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\taglib-1.9.1\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libsamplerate-0.1.8\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\fftw-3.3.3\include;..\..\lib\essentia-2.1_beta5-modif-win\packaging\win32_3rdparty\libav-0.8.9\include;..\..\lib\essentia-2.1_beta5-modif-win\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\scheduler;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming;..\..\lib\essentia-2.1_beta5-modif-win\src;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;..\..\lib\essentia-2.1_beta5-modif-win\src\essentia;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;_DEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;BACH_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling />
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>Default</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>bach_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\bach\source\vs\vs_stuff\lib\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;_DEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;BACH_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling />
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>Default</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe64</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalDependencies>bach_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\bach\source\vs\vs_stuff\lib\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;NDEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;BACH_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>Default</LanguageStandard>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>bach_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\bach\source\vs\vs_stuff\lib\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;NDEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;BACH_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>Default</LanguageStandard>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe64</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalDependencies>bach_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\bach\source\vs\vs_stuff\lib\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\common\commonsyms.c" />
+    <ClCompile Include="..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\common\dllmain_win.c" />
+    <ClCompile Include="..\..\commons\dg\ears.essentia_commons.c" />
+    <ClCompile Include="..\..\commons\dg\ears.essentia_models.c" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\essentia_algorithms_reg.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\allpass.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\bandpass.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\bandreject.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\dcremoval.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\equalloudness.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\highpass.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\iir.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\lowpass.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\medianfilter.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\movingaverage.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\beatsloudness.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\beattrackerdegara.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\beattrackermultifeature.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\bpmhistogram.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\bpmhistogramdescriptors.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\bpmrubato.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\harmonicbpm.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\loopbpmconfidence.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\loopbpmestimator.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\noveltycurve.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\noveltycurvefixedbpmestimator.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsetdetection.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsetdetectionglobal.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsetrate.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsets.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\percivalbpmestimator.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\percivalenhanceharmonics.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\percivalevaluatepulsetrains.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\rhythmextractor.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\rhythmextractor2013.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\rhythmtransform.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\singlebeatloudness.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\superfluxextractor.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\superfluxnovelty.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\superfluxpeaks.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\temposcalebands.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotap.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotapdegara.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotapmaxagreement.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotapticks.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\algorithm.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\configurable.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\connector.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\debugging.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\essentia.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\essentiautil.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\parameter.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\pool.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\range.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\scheduler\network.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\accumulatoralgorithm.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\devnull.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\poolstorage.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\ringbufferinput.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\ringbufferoutput.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\ringbuffervectoroutput.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\sinkbase.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\sourcebase.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\streamingalgorithm.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\streamingalgorithmcomposite.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\streamingalgorithmwrapper.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\stringutil.cpp" />
+    <ClCompile Include="..\..\mains\analysis_and_synthesis\ears.essentia.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ears_lib.vcxproj">
+      <Project>{df55a42a-cbf8-4f3d-9bf4-e99e6219cd31}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\commons\dg\ears.essentia_commons.h" />
+    <ClInclude Include="..\..\commons\dg\ears.essentia_models.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\allpass.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\bandpass.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\bandreject.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\dcremoval.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\equalloudness.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\highpass.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\iir.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\lowpass.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\medianfilter.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\filters\movingaverage.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\beatsloudness.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\beattrackerdegara.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\beattrackermultifeature.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\bpmhistogram.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\bpmhistogramdescriptors.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\bpmrubato.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\harmonicbpm.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\loopbpmconfidence.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\loopbpmestimator.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\noveltycurve.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\noveltycurvefixedbpmestimator.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsetdetection.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsetdetectionglobal.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsetrate.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\onsets.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\percivalbpmestimator.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\percivalenhanceharmonics.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\percivalevaluatepulsetrains.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\rhythmextractor.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\rhythmextractor2013.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\rhythmtransform.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\singlebeatloudness.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\superfluxextractor.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\superfluxnovelty.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\superfluxpeaks.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\temposcalebands.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotap.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotapdegara.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotapmaxagreement.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\rhythm\tempotapticks.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\algorithm.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\algorithmfactory.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\algorithmfactory_impl.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\config.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\configurable.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\connector.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\debugging.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\essentia.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\essentiamath.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\essentiautil.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\iotypewrappers.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\iotypewrappers_impl.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\parameter.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\pool.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\range.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\roguevector.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streamconnector.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\accumulatoralgorithm.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\copy.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\devnull.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\diskwriter.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\fileoutput.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\poolstorage.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\ringbufferinput.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\ringbufferoutput.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\ringbuffervectoroutput.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\vectorinput.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\algorithms\vectoroutput.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\multiratebuffer.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\phantombuffer.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\phantombuffer_impl.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\sink.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\sinkbase.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\sinkproxy.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\source.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\sourcebase.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\sourceproxy.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\streamingalgorithm.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\streamingalgorithmcomposite.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streaming\streamingalgorithmwrapper.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\streamutil.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\stringutil.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\threading.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\types.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
