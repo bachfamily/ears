@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import print_function 
 
 import sys
 import os.path
@@ -282,7 +282,7 @@ def configure(ctx):
     else:
         print('- Essentia is configured without Chromaprint.')
         print('  The following algorithms will be ignored: %s' % algos)
-        ctx.env.ALGOIGNORE += algos 
+        ctx.env.ALGOIGNORE += algos
 
     lel = len(ctx.env.EXAMPLE_LIST)
     if lel:
@@ -451,7 +451,7 @@ def build(ctx):
         sources += [ ctx.path.find_resource('3rdparty/kiss_fft130/kiss_fft.c') ]
         sources += [ ctx.path.find_resource('3rdparty/kiss_fft130/tools/kiss_fftr.c') ]
 
-    # Add Chromaprint Dependancy stuff 
+    # Add Chromaprint Dependancy stuff
     """
     if 'CHROMAPRINT' not in ctx.env.ALGOIGNORE:
         ctx.env.INCLUDES += ['3rdparty/chromaprint-1.4.2/src' ]
@@ -468,7 +468,7 @@ def build(ctx):
     # do not compile Cephes functions if we are not compiling SNR
     if 'SNR' not in ctx.env.ALGOIGNORE:
         ctx.env.INCLUDES += ['3rdparty/cephes/bessel/' ]
-        sources += ctx.path.ant_glob('3rdparty/cephes/bessel/*.cpp') 
+        sources += ctx.path.ant_glob('3rdparty/cephes/bessel/*.cpp')
     else:
         print('Building without 3rdparty Cephes library code (Bessel functions) because SNR algorithm is ignored')
 
