@@ -304,6 +304,7 @@
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\cephes\bessel\hyperg.cpp" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\cephes\bessel\iv.cpp" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\cephes\bessel\polevl.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\kiss_fft.c" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kfc.c" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fastfir.c" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftnd.c" />
@@ -587,6 +588,7 @@
     <ClInclude Include="..\..\commons\dg\ears.essentia_models.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\cephes\bessel\bessel.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\kissfft.hh" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\kiss_fft.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kfc.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftnd.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftndr.h" />

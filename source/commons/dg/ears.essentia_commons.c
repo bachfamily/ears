@@ -1294,6 +1294,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
     long spectrumsize = 1 + (params->framesize_samps/2);
     std::vector<Real> EMPTY_VECTOR_REAL;
     
+
     try
     {
         // slice audio into frames:
@@ -1319,6 +1320,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                      "releaseTime", ears_samps_to_ms(params->envelope_release_time_samps, sr),
                                                      "sampleRate", sr);
         
+
         // cartesian to polar conversion:
         lib->alg_Car2pol = AlgorithmFactory::create("CartesianToPolar");
 
@@ -1451,6 +1453,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 }
             }
             
+            if (true) {
             switch (features[i]) {
                 case EARS_FEATURE_FRAMETIME: // dummy feature to retrieve frame positions
                     lib->extractors[i].num_outputs = 1;
@@ -2197,7 +2200,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     t_llll *tempoHints_llll = NULL;
                     double lastBeatInterval = eCTI(1000, EARS_TIMEUNIT_MS), tolerance = 0.24, frameHop = eCaTI(1024, EARS_TIMEUNIT_SAMPS);
                     long minTempo = 40, maxTempo = 208, useBands = 1, useOnset = 1;
-                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "diildii",
+                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "diildiii",
                                     gensym("lastbeatinterval"), &lastBeatInterval,
                                     gensym("mintempo"), &minTempo,
                                     gensym("maxtempo"), &maxTempo,
@@ -2216,23 +2219,24 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                         convert_timeunit(lib, i, tempoHints, NULL, EARS_TIMEUNIT_SECONDS);
                     }
                     convert_antimeunit(lib, i, frameHop, NULL, EARS_TIMEUNIT_SAMPS);
+                    // lib->extractors[i].algorithm = AlgorithmFactory::create("RhythmExtractor");
                     lib->extractors[i].algorithm = AlgorithmFactory::create("RhythmExtractor",
                                                                             "frameHop", (int)frameHop,
                                                                             "frameSize", (int)params->framesize_samps,
                                                                             "hopSize", (int)params->hopsize_samps,
-                                                                            "lastBeatInterval", lastBeatInterval,
+                                                                            "lastBeatInterval", (Real)lastBeatInterval,
                                                                             "minTempo", (int)minTempo,
                                                                             "maxTempo", (int)maxTempo,
                                                                             "numberFrames", (int)params->framesize_samps,
-                                                                            "sampleRate", sr,
+                                                                            "sampleRate", (Real)sr,
                                                                             "tempoHints", tempoHints,
-                                                                            "tolerance", tolerance,
+                                                                            "tolerance", (Real)tolerance,
                                                                             "useBands", (bool)useBands,
                                                                             "useOnset", (bool)useOnset
                                                                             );
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
                     set_essentia_outputs(lib, i, "fvvv", "bpm", "ticks", "estimates", "bpmIntervals");
-                    set_custom_outputs(lib, i, "fvvv", "BPM", "ticks", "estimates", "BPM intevals");
+                    set_custom_outputs(lib, i, "fvvv", "BPM", "ticks", "estimates", "BPM intervals");
                     lib->extractors[i].essentia_output_timeunit[1] = EARS_TIMEUNIT_SECONDS;
                     lib->extractors[i].essentia_output_timeunit[3] = EARS_TIMEUNIT_SECONDS;
                     llll_free(tempoHints_llll);
@@ -2255,7 +2259,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             );
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
                     set_essentia_outputs(lib, i, "fvfvv", "bpm", "ticks", "confidence", "estimates", "bpmIntervals");
-                    set_custom_outputs(lib, i, "fvfvv", "BPM", "ticks", "confidence", "estimates", "BPM intevals");
+                    set_custom_outputs(lib, i, "fvfvv", "BPM", "ticks", "confidence", "estimates", "BPM intervals");
                     lib->extractors[i].essentia_output_timeunit[1] = EARS_TIMEUNIT_SECONDS;
                     lib->extractors[i].essentia_output_timeunit[4] = EARS_TIMEUNIT_SECONDS;
                     warn_if((t_object *)e_ob, sr != 44100, "The RhythmExtractor2013 algorithm requires the sample rate of the input signal to be 44100 Hz in order to work correctly.");
@@ -3625,6 +3629,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "none");
                     set_essentia_outputs(lib, i, "f", "none");
                     break;
+            }
             }
         }
         lib->num_extractors = num_features;

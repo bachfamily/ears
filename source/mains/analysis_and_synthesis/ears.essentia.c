@@ -1630,6 +1630,14 @@ t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buf
     params.summarizationweight = (e_ears_analysis_summarizationweight) x->summarizationweight;
     params.summarizationpositiveonly = x->summarizationpositiveonly;
 
+    params.TEMPO_bigFrameSize = 4;
+    params.TEMPO_bigOverlap = 16;
+    params.TEMPO_maxBpm = 30;
+    params.TEMPO_minBpm = 560;
+    params.TEMPO_maxPeaks = 50;
+
+    params.numGriffinLimIterations = 10;
+
     params.CQT_binsPerOctave = x->CQT_binsPerOctave;
     params.CQT_minFrequency = earsbufobj_pitch_to_hz((t_earsbufobj *)x, x->CQT_minPitch);
     params.CQT_numberBins = x->CQT_binsPerOctave;

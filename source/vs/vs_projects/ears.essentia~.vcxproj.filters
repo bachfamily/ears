@@ -273,14 +273,15 @@
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils\extractor_music\MusicRhythmDescriptors.cpp" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils\extractor_music\MusicTonalDescriptors.cpp" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\spline\splineutil.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\synthesis\resamplefft.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils\synth_utils.cpp" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\nnls\nnls.c" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\kiss_fft.c" />
+    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kfc.c" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fastfir.c" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftnd.c" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftndr.c" />
     <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftr.c" />
-    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kfc.c" />
-    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\synthesis\resamplefft.cpp" />
-    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils\synth_utils.cpp" />
-    <ClCompile Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\nnls\nnls.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\commons\dg\ears.essentia_commons.h" />
@@ -575,14 +576,15 @@
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils\extractor_music\MusicTonalDescriptors.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils\extractor_music\tagwhitelist.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\spline\splineutil.h" />
-    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\kissfft.hh" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\_kiss_fft_guts.h" />
-    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftnd.h" />
-    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftndr.h" />
-    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftr.h" />
-    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kfc.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\algorithms\synthesis\resamplefft.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\essentia\utils\synth_utils.h" />
     <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\nnls\nnls.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\kiss_fft.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\kissfft.hh" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kfc.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftnd.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftndr.h" />
+    <ClInclude Include="..\..\lib\essentia-2.1_beta5-modif-win\src\3rdparty\kiss_fft130\tools\kiss_fftr.h" />
   </ItemGroup>
 </Project>
