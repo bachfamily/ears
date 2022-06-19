@@ -59,7 +59,7 @@ typedef struct _buf_cqt {
     long               a_numberBins;
     double             a_threshold;
     long               a_minimumKernelSize;
-    long               a_scale;
+    double             a_scale;
 
 } t_buf_cqt;
 

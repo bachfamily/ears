@@ -1819,11 +1819,11 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     // TODO: FlatnessDB
                 case EARS_FEATURE_FLUX:
                 {
-                    long halfRectify = false;
+                    t_atom_long halfRectify = false;
                     t_symbol *norm = gensym("L2");
-                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "is",
+                    llll_parseattrs((t_object*)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "is",
                                     gensym("halfrectify"), &halfRectify,
-                                    gensym("norm"), norm);
+                                    gensym("norm"), &norm);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Flux",
                                                                             "halfRectify", (bool)halfRectify,
                                                                             "norm", norm->s_name);
@@ -2247,22 +2247,24 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 {
                     long minTempo = 40, maxTempo = 208;
                     t_symbol *method = gensym("multifeature");
-                    llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "sii",
+                    /*llll_parseattrs((t_object*)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "sii",
                                     gensym("method"), &method,
                                     gensym("mintempo"), &minTempo,
                                     gensym("maxtempo"), &maxTempo
-                                    );
+                                    );*/
                     lib->extractors[i].algorithm = AlgorithmFactory::create("RhythmExtractor2013",
                                                                             "maxTempo", (int)maxTempo,
                                                                             "minTempo", (int)minTempo,
                                                                             "method", method->s_name
                                                                             );
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "signal");
+                    
                     set_essentia_outputs(lib, i, "fvfvv", "bpm", "ticks", "confidence", "estimates", "bpmIntervals");
                     set_custom_outputs(lib, i, "fvfvv", "BPM", "ticks", "confidence", "estimates", "BPM intervals");
                     lib->extractors[i].essentia_output_timeunit[1] = EARS_TIMEUNIT_SECONDS;
                     lib->extractors[i].essentia_output_timeunit[4] = EARS_TIMEUNIT_SECONDS;
                     warn_if((t_object *)e_ob, sr != 44100, "The RhythmExtractor2013 algorithm requires the sample rate of the input signal to be 44100 Hz in order to work correctly.");
+                
                 }
                     break;
                     
