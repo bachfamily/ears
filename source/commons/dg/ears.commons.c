@@ -6612,6 +6612,7 @@ t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *sou
             default:
                 break;
         }
+        buffer_setdirty(dest);
     }
 
     if (dest != sources[0] && !must_free_samples[0])
