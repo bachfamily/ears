@@ -117,8 +117,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_dspinit(ears_mcouttilde_class);
     
     class_register(CLASS_BOX, ears_mcouttilde_class);
-    
-    return 0;
 }
 
 

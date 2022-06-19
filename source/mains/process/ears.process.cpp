@@ -483,9 +483,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     emptyLl = llll_get();
     
     class_register(CLASS_BOX, earsprocess_class);
-
-    
-    return 0;
 }
 
 t_max_err earsprocess_set_vs(t_earsprocess *x, t_object *attr, long argc, t_atom *argv)

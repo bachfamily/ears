@@ -120,8 +120,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
 
     class_register(CLASS_BOX, ears_in_class);
-    
-    return 0;
 }
 
 void ears_in_llll(t_ears_in *x, t_llll *ll, long inlet)

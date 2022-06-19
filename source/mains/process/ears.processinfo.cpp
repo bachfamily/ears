@@ -131,8 +131,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     //class_addmethod(this_class, (method)ears_processinfo_bang, "bang", 0);
     
     class_register(CLASS_BOX, this_class);
-    
-    return 0;
 }
 
 

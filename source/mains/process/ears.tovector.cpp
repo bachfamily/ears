@@ -148,8 +148,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_dspinit(ears_tovector_class);
     
     class_register(CLASS_BOX, ears_tovector_class);
-    
-    return 0;
 }
 
 void *ears_tovector_new(t_symbol *s, t_atom_long ac, t_atom* av)

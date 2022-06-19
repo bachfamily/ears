@@ -149,8 +149,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     // If the <m>direct</m> attribute is set to 1, the <m>outwrap</m> attribute has no effect.
     
     class_register(CLASS_BOX, ears_out_class);
-    
-    return 0;
 }
 
 void ears_out_bang(t_ears_out *x)
