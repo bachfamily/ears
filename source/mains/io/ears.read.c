@@ -557,7 +557,7 @@ void buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 void buf_read_anything(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
-    long append = false;
+    t_atom_long append = false;
     
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
     if (!parsed) return;

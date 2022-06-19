@@ -1261,7 +1261,7 @@ void fill_encoding_settings(t_object *ob, t_llll *args, t_ears_encoding_settings
 {
     // parsing args
     t_symbol *vbrmode = gensym("vbr"), *format = NULL;
-    long bitrate = 0, bitrate_min = 0, bitrate_max = 0, correction = 0;
+    t_atom_long bitrate = 0, bitrate_min = 0, bitrate_max = 0, correction = 0;
     llll_parseattrs(ob, args, true, "siiisi",
                     gensym("vbrmode"), &vbrmode,
                     gensym("bitrate"), &bitrate,

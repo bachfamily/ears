@@ -714,7 +714,7 @@ void seq_anything(t_seq *x, t_symbol *msg, long ac, t_atom *av)
 		} else if (router == gensym("addregion") && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
 			t_symbol *filename = hatom_getsym(&parsed->l_head->l_hatom);
 			double onset = 0, offset = 0, duration = -1, gain = 0, fadeindur = 0, fadeinslope = 0, fadeoutdur = 0, fadeoutslope = 0;
-			long track = 1;
+			t_atom_long track = 1;
 			llll_destroyelem(parsed->l_head);
 			llll_parseargs((t_object *)x, parsed, "iddd", gensym("track"), &track, gensym("onset"), 
 						   &onset, gensym("offset"), &offset, gensym("duration"), &duration, gensym("gain"), &gain,
