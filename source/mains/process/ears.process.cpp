@@ -371,7 +371,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);
 
-    CLASS_ATTR_OBJ(earsprocess_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsprocess, e_ob);
+    // TODO FIXME @Andrea : controlla questa riga qui sotto, dà negative subscript
+//    CLASS_ATTR_OBJ(earsprocess_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsprocess, e_ob);
+    class_addattr((earsprocess_class), attr_offset_new("ownsdspchain", USESYM(object), (ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER), (method)0L, (method)0L, 0));
     CLASS_ATTR_ACCESSORS(earsprocess_class, "ownsdspchain", (method) earsprocess_get_ownsdspchain, NULL);
     CLASS_ATTR_INVISIBLE(earsprocess_class, "ownsdspchain", 0);
     

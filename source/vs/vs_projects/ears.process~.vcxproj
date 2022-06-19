@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BE9C9951-8080-4884-91F7-02CDB3A9CEAE}</ProjectGuid>
+    <ProjectGuid>{B152A34A-3E67-4FE4-9218-A9AEC9BD0F39}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -296,12 +296,16 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\common\commonsyms.c" />
     <ClCompile Include="..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\common\dllmain_win.c" />
+    <ClCompile Include="..\..\commons\aa\ears.process_commons.cpp" />
     <ClCompile Include="..\..\mains\process\ears.process.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="ears_lib.vcxproj">
       <Project>{df55a42a-cbf8-4f3d-9bf4-e99e6219cd31}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\commons\aa\ears.process_commons.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
