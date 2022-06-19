@@ -1823,7 +1823,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     t_symbol *norm = gensym("L2");
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "is",
                                     gensym("halfrectify"), &halfRectify,
-                                    gensym("norm"), norm);
+                                    gensym("norm"), &norm);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Flux",
                                                                             "halfRectify", (bool)halfRectify,
                                                                             "norm", norm->s_name);
