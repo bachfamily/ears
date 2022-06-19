@@ -69,7 +69,7 @@ void ears_in_anything(t_ears_in *x, t_symbol *s, long ac, t_atom *av);
 void ears_in_llll(t_ears_in *x, t_llll *ll, long inlet);
 void ears_in_iteration(t_ears_in *x, long n);
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

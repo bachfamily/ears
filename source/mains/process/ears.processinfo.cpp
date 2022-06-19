@@ -96,7 +96,7 @@ void ears_processinfo_dsp64(t_ears_processinfo *x, t_object *dsp64, short *count
 
 void ears_processinfo_perform64(t_ears_processinfo *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

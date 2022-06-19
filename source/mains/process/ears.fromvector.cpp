@@ -64,7 +64,7 @@ void ears_fromvector_perform64(t_ears_fromvector *x, t_dspchain *dsp64, double *
 
 
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();

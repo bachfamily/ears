@@ -73,7 +73,7 @@ void ears_out_finalize(t_ears_out *x, long n);
 void ears_out_iteration(t_ears_out *x, long n);
 
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
