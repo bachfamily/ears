@@ -11,7 +11,7 @@
 
 
 // Change these defines here to tweak behavior
-#define EARS_MP3_READ_SUPPORT
+//#define EARS_MP3_READ_SUPPORT
 #define EARS_MP3_WRITE_SUPPORT
 #define EARS_WAVPACK_SUPPORT
 
