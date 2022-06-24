@@ -11,7 +11,9 @@
 
 
 // Change these defines here to tweak behavior
-//#define EARS_MP3_READ_SUPPORT
+#ifndef WIN_VERSION
+#define EARS_MP3_READ_SUPPORT
+#endif
 #define EARS_MP3_WRITE_SUPPORT
 #define EARS_WAVPACK_SUPPORT
 
