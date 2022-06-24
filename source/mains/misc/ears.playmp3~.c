@@ -71,7 +71,7 @@ typedef struct _playmp3 {
     
     void        *m_clock;
     
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     mpg123_handle*  mh;
 #endif
     unsigned char*  buffer;
@@ -127,10 +127,8 @@ static t_class *playmp3_class = NULL;
 
 void ext_main(void *r)
 {
-#ifdef EARS_MP3_SUPPORT
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     ears_mpg123_init();
-#endif
 #endif
 
 	// object initialization, note the use of dsp_free for the freemethod, which is required
@@ -168,7 +166,7 @@ void ext_main(void *r)
 
 void *playmp3_new(t_symbol *s, long argc, t_atom *argv)
 {
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
 	t_playmp3 *x = (t_playmp3 *)object_alloc(playmp3_class);
     long true_ac = attr_args_offset(argc, argv);
 
@@ -221,7 +219,7 @@ void *playmp3_new(t_symbol *s, long argc, t_atom *argv)
 
 void playmp3_free(t_playmp3 *x)
 {
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     object_free(x->m_clock);
     mpg123_delete(x->mh);
     systhread_mutex_free(x->c_mutex);
@@ -234,7 +232,7 @@ void playmp3_free(t_playmp3 *x)
 
 void playmp3_task(t_playmp3 *x)
 {
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     if (x->loop) {
         mpg123_seek(x->mh, x->seek_to, SEEK_SET);
         clock_fdelay(x->m_clock, x->loop_ms);
@@ -252,7 +250,7 @@ int open_file_new(t_playmp3 *x, const char *path, double start_ms, double end_ms
 {
     int err = 0;
     
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     err = MPG123_OK;
     int channels, encoding;
     long srate;
@@ -416,7 +414,7 @@ int open_file(t_playmp3 *x, const char *path, double start_ms, double end_ms, do
 {
     int err = 0;
     
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     err = MPG123_OK;
     int channels, encoding, orig_channels, orig_encoding;
     long srate, orig_srate;
@@ -512,7 +510,7 @@ int open_file(t_playmp3 *x, const char *path, double start_ms, double end_ms, do
 
 int close_file(t_playmp3 *x)
 {
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     systhread_mutex_lock(x->c_mutex);
     if (x->mh) mpg123_close(x->mh);
     x->playing = x->paused = false;
@@ -579,7 +577,7 @@ void playmp3_assist(t_playmp3 *x, void *b, long m, long a, char *s)
 // registers a function for the signal chain in Max
 void playmp3_dsp64(t_playmp3 *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     x->samplerate = samplerate;
     mpg123_getformat(x->mh, &x->rate, &x->channels, &x->encoding);
 
@@ -630,7 +628,7 @@ void playmp3_post(t_playmp3 *x, t_symbol *s, long argc, t_atom *argv)
 // this is the 64-bit perform method audio vectors
 void playmp3_perform64(t_playmp3 *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
 {
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     if (x->play_rate != 1.) {
         playmp3_perform64_interp(x, dsp64, ins, numins, outs, numouts, sampleframes, flags, userparam);
         return;
@@ -780,7 +778,7 @@ t_double playmp3_resample(t_playmp3 *x, t_float *buffer, long num_samples_in_buf
 // this is the 64-bit perform method audio vectors
 void playmp3_perform64_interp(t_playmp3 *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
 {
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     t_double *outL = outs[0];    // we get audio for each outlet of the object from the **outs argument
     t_double *outR = numouts == 1 ? NULL : outs[1];    // we get audio for each outlet of the object from the **outs argument
     size_t done;

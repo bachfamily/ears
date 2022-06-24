@@ -1,5 +1,5 @@
 #include "ears.commons.h"
-#ifdef EARS_MP3_SUPPORT
+#if defined EARS_MP3_WRITE_SUPPORT || defined EARS_MP3_READ_SUPPORT
 #include "ears.mp3.h"
 #endif
 
@@ -4277,7 +4277,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
             err = EARS_ERR_GENERIC;
         } else {
             
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
             if (ears_symbol_ends_with(filepath, ".mp3", true)) {
                 err = ears_buffer_read_handle_mp3(ob, filepath->s_name, start_ms, end_ms, *dest, EARS_TIMEUNIT_MS);
             } else {
@@ -4292,7 +4292,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
                     ears_buffer_crop_ms_inplace(ob, *dest, start_ms, end_ms);
                 }
                 
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
             }
 #endif
         }
@@ -5312,6 +5312,37 @@ const char *get_filename_ext(const char *filename)
     return dot + 1;
 }
 
+void ears_print_supported_extensions(t_object *culprit, const char *unsupported_ext, bool write)
+{
+    char error_msg1[2048];
+    char error_msg2[2048];
+#ifdef EARS_MP3_WRITE_SUPPORT
+    bool supportsmp3write = true;
+#else
+    bool supportsmp3write = false;
+#endif
+#ifdef EARS_MP3_READ_SUPPORT
+    bool supportsmp3read = true;
+#else
+    bool supportsmp3read = false;
+#endif
+#ifdef EARS_WAVPACK_SUPPORT
+    bool supportswavpack = true;
+#else
+    bool supportswavpack = false;
+#endif
+    bool supportsmp3 = (write ? supportsmp3write : supportsmp3read);
+    if (unsupported_ext) {
+        snprintf_zero(error_msg1, 2048, "The extension '%s' is not supported for %s.", unsupported_ext, write ? "writing" : "reading");
+        snprintf_zero(error_msg2, 2048, "       Please use one of the following extensions: aif(f), wav(e),%s flac,%s or data.", supportsmp3 ? " mp3," : "", supportswavpack ? " wv (wavpack)," : "");
+    } else {
+        snprintf_zero(error_msg2, 2048, "Supported extensions for %s are: aif(f), wav(e),%s flac,%s or data.", write ? "writing" : "reading", supportsmp3 ? " mp3," : "", supportswavpack ? " wv (wavpack)," : "");
+
+    }
+    object_error(culprit, error_msg1);
+    object_error(culprit, error_msg2);
+}
+
 void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings)
 {
     const char *ext = get_filename_ext(filename->s_name);
@@ -5323,7 +5354,7 @@ void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_e
         ears_writeflac(buf, filename);
     else if (!strcmp(ext, "data"))
         ears_writeraw(buf, filename);
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_WRITE_SUPPORT
     else if (!strcmp(ext, "mp3"))
         ears_writemp3(buf, filename, settings);
 #endif
@@ -5331,25 +5362,8 @@ void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_e
     else if (!strcmp(ext, "wv") || !strcmp(ext, "wavpack"))
         ears_writewavpack(buf, filename, settings);
 #endif
-    else {
-        char error_msg1[2048];
-        char error_msg2[2048];
-#ifdef EARS_MP3_SUPPORT
-        bool supportsmp3 = true;
-#else
-        bool supportsmp3 = false;
-#endif
-#ifdef EARS_WAVPACK_SUPPORT
-        bool supportswavpack = true;
-#else
-        bool supportswavpack = false;
-#endif
-        snprintf_zero(error_msg1, 2048, "The extension '%s' is not supported.", ext);
-        snprintf_zero(error_msg2, 2048, "       Please use one of the following extensions: aif(f), wav(e),%s flac,%s or data.", supportsmp3 ? " mp3," : "", supportswavpack ? " wv (wavpack)," : "");
-        object_error(culprit, ".");
-        object_error(culprit, error_msg1);
-        object_error(culprit, error_msg2);
-    }
+    else
+        ears_print_supported_extensions(culprit, ext, true);
 }
 
 

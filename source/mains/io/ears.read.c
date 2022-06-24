@@ -338,7 +338,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         
         buf_read_addpathsym(x, filepath, idx);
         
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
         if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
             sampleformat = gensym("compressed");
             long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
@@ -393,7 +393,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
             }
 #endif
             
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
         }
 #endif
         // cleaning spectral data

@@ -1,5 +1,5 @@
 #include "ears.object.h"
-#ifdef EARS_MP3_SUPPORT
+#if defined EARS_MP3_WRITE_SUPPORT || defined EARS_MP3_READ_SUPPORT
 #include "ears.mp3.h"
 #endif
 
@@ -1318,6 +1318,8 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
         }
         
         if (msg == gensym("writemp3")) {
+
+#ifdef EARS_MP3_WRITE_SUPPORT
             t_fourcc outtype;
 //            t_fourcc filetype = 'MPEG';
             t_symbol *outfilepath = NULL;
@@ -1329,7 +1331,14 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
             if (outfilepath)
                 ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
             
+#else
+            ears_print_supported_extensions((t_object *)e_ob, "mp3", true);
+#endif
+            
         } else if (msg == gensym("writewavpack") || msg == gensym("writewv")) {
+
+#ifdef EARS_WAVPACK_SUPPORT
+
             t_fourcc outtype;
 //            t_fourcc filetype = 'WAVE';
             t_symbol *outfilepath = NULL;
@@ -1345,6 +1354,10 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
                 ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
             }
             
+#else
+            ears_print_supported_extensions((t_object *)e_ob, "wv", true);
+#endif
+
         } else {
             // all other cases are handled natively via Max API
             if (parsed && parsed->l_size > 0) {
@@ -1395,7 +1408,7 @@ void earsbufobj_add_common_methods(t_class *c, long flags)
     
     class_addmethod(c, (method)earsbufobj_open, "open", 0);
 
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     ears_mpg123_init();
 #endif
 }

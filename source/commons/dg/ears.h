@@ -9,12 +9,17 @@
 #ifndef _EARS_H_
 #define _EARS_H_
 
-//#define EARS_MP3_SUPPORT
+
+// Change these defines here to tweak behavior
+#define EARS_MP3_READ_SUPPORT
+#define EARS_MP3_WRITE_SUPPORT
 #define EARS_WAVPACK_SUPPORT
 
 // #define EARS_ALLOCATIONVERBOSE
 
 
+
+// Do not change anything below this line
 
 /** Resampling mode
  @ingroup misc */

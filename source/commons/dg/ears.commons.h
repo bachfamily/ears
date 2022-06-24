@@ -41,7 +41,7 @@
 #include "notation/notation.h"
 #include "foundation/bach_threads.h"
 
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
 #include "mpg123.h"
 #endif
 
@@ -103,9 +103,10 @@ typedef enum {
 typedef struct _ears_encoding_settings
 {
     e_ears_mp3_encoding_vbrmode  vbr_type;
+    float                       quality; // for VBR encoding
     int                         bitrate;
-    int                         bitrate_max;
-    int                         bitrate_min;
+    int                         bitrate_max; // for VBR encoding
+    int                         bitrate_min; // for VBR encoding
     
     // For wavpack
     char        use_correction_file;
@@ -488,6 +489,7 @@ void ears_writeflac(t_object *buf, t_symbol *filename);
 void ears_writewave(t_object *buf, t_symbol *filename);
 void ears_writeraw(t_object *buf, t_symbol *filename);
 t_symbol *get_conformed_resolved_path(t_symbol *filename);
+void ears_print_supported_extensions(t_object *culprit, const char *unsupported_ext, bool write);
 
 /// RESAMPLING
 // Sinc-resampling and sinc-interpolation (band-limited)
