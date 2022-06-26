@@ -12,10 +12,10 @@
 
 // Change these defines here to tweak behavior
 #ifndef WIN_VERSION
-#define EARS_MP3_READ_SUPPORT
+#define EARS_MP3_READ_SUPPORT // via mpg123
 #endif
-#define EARS_MP3_WRITE_SUPPORT
-#define EARS_WAVPACK_SUPPORT
+#define EARS_MP3_WRITE_SUPPORT // via lame
+#define EARS_WAVPACK_SUPPORT // via Wavpack library
 
 // #define EARS_ALLOCATIONVERBOSE
 
