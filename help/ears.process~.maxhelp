@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 3,
-			"revision" : 0,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -53,7 +53,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -273,7 +273,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "list" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 276.0, 379.599853515625, 80.0, 23.0 ],
 									"text" : "ears.info~ sr"
 								}
@@ -495,7 +495,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -541,13 +541,13 @@
 										"appversion" : 										{
 											"major" : 8,
 											"minor" : 3,
-											"revision" : 0,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
-										"rect" : [ 66.0, 100.0, 903.0, 664.0 ],
+										"rect" : [ 66.0, 100.0, 826.0, 459.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -575,63 +575,14 @@
 										"style" : "",
 										"subpatcher_template" : "",
 										"assistshowspatchername" : 0,
-										"visible" : 1,
 										"boxes" : [ 											{
-												"box" : 												{
-													"id" : "obj-11",
-													"linecount" : 3,
-													"maxclass" : "comment",
-													"numinlets" : 1,
-													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 569.0, 381.0, 47.0 ],
-													"text" : "They are currently undocumented, but in principle work exactly the same as the original ones, except for their ability to behave correctly under with a clock message."
-												}
-
-											}
-, 											{
-												"box" : 												{
-													"id" : "obj-10",
-													"linecount" : 2,
-													"maxclass" : "comment",
-													"numinlets" : 1,
-													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 527.0, 124.0, 33.0 ],
-													"text" : "ears.process.line~\nears.process~.curve~"
-												}
-
-											}
-, 											{
-												"box" : 												{
-													"id" : "obj-3",
-													"linecount" : 2,
-													"maxclass" : "comment",
-													"numinlets" : 1,
-													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 486.0, 381.0, 33.0 ],
-													"text" : "ears includes a few abstraction that should work around the timing issues of the corresponding Max objects:"
-												}
-
-											}
-, 											{
-												"box" : 												{
-													"fontface" : 1,
-													"id" : "obj-1",
-													"maxclass" : "comment",
-													"numinlets" : 1,
-													"numoutlets" : 0,
-													"patching_rect" : [ 289.0, 458.0, 157.0, 20.0 ],
-													"text" : "Surrogate audio modules:"
-												}
-
-											}
-, 											{
 												"box" : 												{
 													"id" : "obj-21",
 													"linecount" : 3,
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 385.0, 448.0, 47.0 ],
+													"patching_rect" : [ 319.0, 385.0, 448.0, 47.0 ],
 													"text" : "For some of these limiations there are workarounds. For others, unfortunately, not. Feel free to experiment, share your experiences on the forums and exert gentle pressure upon Cycling '74 for extending the support for the clock message!"
 												}
 
@@ -643,7 +594,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 402.0, 238.0, 156.0, 100.0 ],
+													"patching_rect" : [ 427.0, 238.0, 156.0, 100.0 ],
 													"text" : "and the message outlets of \nadsr~\nlive.adsr~\ncurve~\nline~\nlive.gain~\nplay~"
 												}
 
@@ -655,7 +606,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 94.0, 121.0, 100.0 ],
+													"patching_rect" : [ 319.0, 94.0, 121.0, 100.0 ],
 													"text" : "adsr~\nlive.adsr~\ncurve~\nline~\nplay~\nsig~\nand all the oscillators"
 												}
 
@@ -667,7 +618,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 344.0, 446.0, 33.0 ],
+													"patching_rect" : [ 319.0, 344.0, 446.0, 33.0 ],
 													"text" : "peakamp~ and snapshot~ will behave correctly if triggered by an external bang, typically produced by metro."
 												}
 
@@ -679,7 +630,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 238.0, 65.0, 60.0 ],
+													"patching_rect" : [ 319.0, 238.0, 65.0, 60.0 ],
 													"text" : "edge~\nfzero~\npeakamp~\nsnapshot~"
 												}
 
@@ -691,7 +642,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 203.0, 446.0, 33.0 ],
+													"patching_rect" : [ 319.0, 203.0, 446.0, 33.0 ],
 													"text" : "On the other hand, objects that take signals and produce messages will generally have timing issues. This concerns, among the others:"
 												}
 
@@ -703,7 +654,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 294.0, 53.0, 381.0, 33.0 ],
+													"patching_rect" : [ 319.0, 53.0, 381.0, 33.0 ],
 													"text" : "Objects that produce signals in response to messages generally work correctly. This includes the signal outlets of the following:"
 												}
 
@@ -715,7 +666,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 289.0, 28.0, 243.0, 20.0 ],
+													"patching_rect" : [ 314.0, 28.0, 243.0, 20.0 ],
 													"text" : "Special considerations for audio objects:"
 												}
 
@@ -727,7 +678,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 182.0, 218.0, 33.0 ],
+													"patching_rect" : [ 25.0, 200.0, 218.0, 33.0 ],
 													"text" : "Even for these objects, the itm syntax (such as 4n and so on) is unsupported."
 												}
 
@@ -740,7 +691,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 20.0, 257.0, 168.0, 47.0 ],
+													"patching_rect" : [ 20.0, 275.0, 168.0, 47.0 ],
 													"text" : "Timed objects that don't implement the clock message or attribute:"
 												}
 
@@ -752,7 +703,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 34.0, 319.0, 70.0, 74.0 ],
+													"patching_rect" : [ 34.0, 337.0, 70.0, 74.0 ],
 													"text" : "mtr\nqlist\nquickthresh\nseq\nthresh"
 												}
 
@@ -761,12 +712,12 @@
 												"box" : 												{
 													"fontface" : 1,
 													"id" : "obj-4",
-													"linecount" : 2,
+													"linecount" : 3,
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 20.0, 28.0, 168.0, 33.0 ],
-													"text" : "Objects that implement the clock message or attribute:"
+													"patching_rect" : [ 20.0, 28.0, 265.0, 47.0 ],
+													"text" : "Objects that work correctly in ears.process~, because they implement the clock message or attribute:"
 												}
 
 											}
@@ -777,7 +728,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 25.0, 62.0, 221.0, 114.0 ],
+													"patching_rect" : [ 25.0, 80.0, 221.0, 114.0 ],
 													"text" : "clocker\ndelay\nline\nmakenote\nmetro\npipe\ntimer\nand all the timed bach and dada objects"
 												}
 
@@ -963,13 +914,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
+						"rect" : [ 100.0, 126.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1277,7 +1228,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1614,7 +1565,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1711,7 +1662,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2087,13 +2038,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 792.0, 523.0 ],
+						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2169,7 +2120,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 265.0, 305.5, 390.0, 36.0 ],
+									"patching_rect" : [ 265.0, 305.5, 392.0, 36.0 ],
 									"text" : "The optional shortcut symbol for the naming mechanism (=, _ or !) is the first argument, if present."
 								}
 
@@ -2467,7 +2418,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2858,7 +2809,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
