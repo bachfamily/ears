@@ -2129,35 +2129,93 @@ t_ears_err ears_buffer_pack_from_llll(t_object *ob, t_llll *sources_ll, t_buffer
     }
 }
 
-t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *right, t_buffer_obj *dest)
+t_ears_err ears_buffer_lace(t_object *ob, long num_sources, t_buffer_obj **sources, t_buffer_obj *dest)
 {
     t_ears_err err = EARS_ERR_NONE;
     
-    if (!dest)
+    if (!dest || num_sources <= 0) {
+        object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
         return EARS_ERR_NO_BUFFER;
+    }
     
-    long num_channels_left = ears_buffer_get_numchannels(ob, left);
-    long num_channels_right = ears_buffer_get_numchannels(ob, right);
-    long num_channels = num_channels_left + num_channels_right;
-    long max_num_frames = MAX(ears_buffer_get_size_samps(ob, left), ears_buffer_get_size_samps(ob, right));
+    for (long i = 0; i < num_sources; i++) {
+        if (!sources[i]) {
+            object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+            return EARS_ERR_NO_BUFFER;
+        }
+    }
+
+    long *num_channels = (long *)bach_newptr(num_sources * sizeof(long));
+    long *num_samps = (long *)bach_newptr(num_sources * sizeof(long));
+    long *count = (long *)bach_newptrclear(num_sources * sizeof(long));
+    long tot_num_channels = 0, max_num_samps = 0;
+    for (long i = 0; i < num_sources; i++) {
+        num_channels[i] = ears_buffer_get_numchannels(ob, sources[i]);
+        num_samps[i] = ears_buffer_get_size_samps(ob, sources[i]);
+        tot_num_channels += num_channels[i];
+        max_num_samps = MAX(max_num_samps, num_samps[i]);
+    }
     
-    ears_buffer_set_size_and_numchannels(ob, dest, max_num_frames, num_channels);
+    ears_buffer_set_size_and_numchannels(ob, dest, max_num_samps, tot_num_channels);
     
-    long left_i = 0, right_i = 0;
-    for (long i = 0; i < num_channels; i++) {
-        if (i % 2 == 0 && left_i < num_channels_left) {
-            t_ears_err this_err = ears_buffer_copychannel(ob, left, left_i++, dest, i);
-            if (err == EARS_ERR_NONE)
-                err = this_err;
-        } else if (right_i < num_channels_right) {
-            t_ears_err this_err = ears_buffer_copychannel(ob, right, right_i++, dest, i);
+    for (long i = 0; i < tot_num_channels; i++) {
+        long j = i % num_sources;
+        if (count[j] < num_channels[j]) {
+            t_ears_err this_err = ears_buffer_copychannel(ob, sources[j], count[j]++, dest, i);
             if (err == EARS_ERR_NONE)
                 err = this_err;
         }
     }
     
+    bach_freeptr(num_channels);
+    bach_freeptr(num_samps);
+    bach_freeptr(count);
+
     return err;
 }
+
+t_ears_err ears_buffer_delace(t_object *ob, t_buffer_obj *source, long num_dests, t_buffer_obj **dests)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (!source || num_dests <= 0) {
+        object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+        return EARS_ERR_NO_BUFFER;
+    }
+    
+    for (long i = 0; i < num_dests; i++) {
+        if (!dests[i]) {
+            object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+            return EARS_ERR_NO_BUFFER;
+        }
+    }
+    
+    long num_channels = ears_buffer_get_numchannels(ob, source);
+    long num_samps = ears_buffer_get_size_samps(ob, source);
+    long *num_channels_dest = (long *)bach_newptrclear(num_dests * sizeof(long));
+    long *count = (long *)bach_newptrclear(num_dests * sizeof(long));
+
+    for (long i = 0; i < num_channels; i++) {
+        long j = i % num_dests;
+        num_channels_dest[j]++;
+    }
+    for (long j = 0; j < num_dests; j++) {
+        ears_buffer_set_size_and_numchannels(ob, dests[j], num_samps, num_channels_dest[j]);
+    }
+    for (long i = 0; i < num_channels; i++) {
+        long j = i % num_dests;
+        t_ears_err this_err = ears_buffer_copychannel(ob, source, i, dests[j], count[j]);
+        if (err == EARS_ERR_NONE)
+            err = this_err;
+        count[j]++;
+    }
+    
+    bach_freeptr(num_channels_dest);
+    bach_freeptr(count);
+    
+    return err;
+}
+
 
 
 t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax, long *ampminsample, long *ampmaxsample)

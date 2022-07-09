@@ -509,7 +509,6 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resample Buffers" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -525,6 +524,21 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Filter Size" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="resamplingmode" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Resampling Mode
+			</digest>
+			<description>
+				Sets the resampling mode (Sinc, Nearest Neighbor, Sample and Hold, Linear, Quadratic or Cubic). The default is "Sinc",
+				which provides bandlimited interpolation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 		<attribute name="spectype" get="1" set="1" type="symbol" size="1">

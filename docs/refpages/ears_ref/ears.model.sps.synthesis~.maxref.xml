@@ -6,11 +6,11 @@
 <c74object name="ears.model.sps.synthesis~" module="ears">
 
 	<digest>
-		Sinusoidal synthesis model
+		Sinusoidal-plus-stochastic synthesis model
 	</digest>
 
 	<description>
-		Applies the Essentia sinusoidal synthesis model
+		Applies the Essentia sinusoidal-plus-stochastic synthesis model
 	</description>
 
 	<!--METADATA-->

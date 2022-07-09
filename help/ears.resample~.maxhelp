@@ -1402,8 +1402,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 164.5, 113.0, 23.0 ],
-									"text" : "ears.resample~ 2."
+									"patching_rect" : [ 10.0, 164.5, 194.0, 23.0 ],
+									"text" : "ears.resample~ 2. @changesr 0"
 								}
 
 							}
@@ -1532,7 +1532,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 773.0, 524.0 ],
+						"rect" : [ 100.0, 126.0, 773.0, 524.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1563,9 +1563,24 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
-									"hidden" : 1,
+									"id" : "obj-7",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 211.0, 163.0, 127.0, 54.0 ],
+									"presentation_linecount" : 6,
+									"text" : "You need to have @changesr to 0 to have this work"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
 									"id" : "obj-3",
 									"maxclass" : "comment",
 									"numinlets" : 1,
@@ -1590,7 +1605,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 308.0, 157.0, 294.0, 36.0 ],
+									"patching_rect" : [ 373.0, 163.0, 294.0, 36.0 ],
 									"text" : "Click here to learn more about common features, including envelopes"
 								}
 
@@ -1603,7 +1618,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 308.0, 200.0, 152.0, 23.0 ],
+									"patching_rect" : [ 373.0, 206.0, 152.0, 23.0 ],
 									"text" : "load ears.help.commons"
 								}
 
@@ -1616,7 +1631,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 308.0, 235.0, 57.0, 23.0 ],
+									"patching_rect" : [ 373.0, 241.0, 57.0, 23.0 ],
 									"text" : "pcontrol"
 								}
 
@@ -1744,8 +1759,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 174.0, 129.0, 23.0 ],
-									"text" : "ears.resample~ 2."
+									"patching_rect" : [ 15.0, 174.0, 194.0, 23.0 ],
+									"text" : "ears.resample~ 2. @changesr 0"
 								}
 
 							}
@@ -1893,7 +1908,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 773.0, 524.0 ],
+						"rect" : [ 0.0, 26.0, 773.0, 524.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1932,8 +1947,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 489.0, 200.0, 183.0, 40.0 ],
-									"presentation_linecount" : 2,
+									"patching_rect" : [ 489.0, 200.0, 186.0, 40.0 ],
 									"text" : "Also change output buffer's sampling rate"
 								}
 

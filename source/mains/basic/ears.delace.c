@@ -1,12 +1,12 @@
 /**
 	@file
-	ears.lace.c
+	ears.delace.c
  
 	@name
-	ears.lace~
+	ears.delace~
  
 	@realname
-	ears.lace~
+	ears.delace~
  
 	@type
 	object
@@ -18,10 +18,10 @@
 	Daniele Ghisi
  
 	@digest
-	Interleave buffer channels
+	De-interleave buffer channels
  
 	@description
-	Interleave the channels of two buffers
+	De-interleave the channels of two buffers
  
 	@discussion
  
@@ -29,10 +29,10 @@
 	ears basic
  
 	@keywords
-	buffer, lace, channel, pack, interleave, buffer, combine
+	buffer, delace, channel, pack, interleave, buffer, combine
  
 	@seealso
-	ears.delace~, ears.channel~
+	ears.dedelace~, ears.channel~
 	
 	@owner
 	Daniele Ghisi
@@ -47,28 +47,28 @@
 
 
 
-typedef struct _buf_lace {
+typedef struct _buf_delace {
     t_earsbufobj       e_ob;
     long               e_count;
-} t_buf_lace;
+} t_buf_delace;
 
 
 
 // Prototypes
-t_buf_lace*         buf_lace_new(t_symbol *s, short argc, t_atom *argv);
-void			buf_lace_free(t_buf_lace *x);
-void			buf_lace_bang(t_buf_lace *x);
-void			buf_lace_anything(t_buf_lace *x, t_symbol *msg, long ac, t_atom *av);
+t_buf_delace*         buf_delace_new(t_symbol *s, short argc, t_atom *argv);
+void			buf_delace_free(t_buf_delace *x);
+void			buf_delace_bang(t_buf_delace *x);
+void			buf_delace_anything(t_buf_delace *x, t_symbol *msg, long ac, t_atom *av);
 
-void buf_lace_assist(t_buf_lace *x, void *b, long m, long a, char *s);
-void buf_lace_inletinfo(t_buf_lace *x, void *b, long a, char *t);
+void buf_delace_assist(t_buf_delace *x, void *b, long m, long a, char *s);
+void buf_delace_inletinfo(t_buf_delace *x, void *b, long a, char *t);
 
 
 // Globals and Statics
 static t_class	*s_tag_class = NULL;
 static t_symbol	*ps_event = NULL;
 
-EARSBUFOBJ_ADD_IO_METHODS(lace)
+EARSBUFOBJ_ADD_IO_METHODS(delace)
 
 
 
@@ -89,18 +89,19 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     t_class *c;
     
-    CLASS_NEW_CHECK_SIZE(c, "ears.lace~",
-                         (method)buf_lace_new,
-                         (method)buf_lace_free,
-                         sizeof(t_buf_lace),
+    CLASS_NEW_CHECK_SIZE(c, "ears.delace~",
+                         (method)buf_delace_new,
+                         (method)buf_delace_free,
+                         sizeof(t_buf_delace),
                          (method)NULL,
                          A_GIMME,
                          0L);
     
     // @method symbol/llll @digest Process buffers
-    // @description A symbol or an llll with a single symbol in any of the inlets will set the corresponding buffer.
-    // The first inlet will trigger the interleaving of the channels of the buffers, and the output buffer name will be output.
-    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(lace)
+    // @description A symbol or an llll with a single symbol in the first inlet sets the buffer
+    // to be de-interleaved; the de-interleaved buffers are then output from the
+    // appropriate outlets.
+    EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(delace)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
@@ -112,31 +113,30 @@ void C74_EXPORT ext_main(void* moduleRef)
     ps_event = gensym("event");
 }
 
-void buf_lace_assist(t_buf_lace *x, void *b, long m, long a, char *s)
+void buf_delace_assist(t_buf_delace *x, void *b, long m, long a, char *s)
 {
-    if (m == ASSIST_INLET)
-        sprintf(s, "symbol/list/llll: Buffer %ld", a + 1); // @in 0 @loop 1 @type symbol/llll @digest Buffer to be interleaved
-    else {
-        sprintf(s, "symbol: Output buffer"); // @out 0 @type symbol @digest Output buffer
+    if (m == ASSIST_INLET) {
+        sprintf(s, "symbol: Input buffer"); // @in 0 @type symbol/llll @digest Input buffer
+    } else {
+        sprintf(s, "symbol: Deinterleaved buffer No. %ld", a + 1); // @out 0 @loop 1 @type symbol @digest De-interleaved buffers
     }
 }
 
-void buf_lace_inletinfo(t_buf_lace *x, void *b, long a, char *t)
+void buf_delace_inletinfo(t_buf_delace *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
 
-t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
+t_buf_delace *buf_delace_new(t_symbol *s, short argc, t_atom *argv)
 {
-    t_buf_lace *x;
+    t_buf_delace *x;
     long true_ac = attr_args_offset(argc, argv);
     
-    x = (t_buf_lace*)object_alloc_debug(s_tag_class);
+    x = (t_buf_delace*)object_alloc_debug(s_tag_class);
     if (x) {
         x->e_count = 2;
-
         earsbufobj_init((t_earsbufobj *)x, 0);
         
         t_llll *args = llll_parse(true_ac, argv);
@@ -147,13 +147,13 @@ t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
         // @description @copy EARS_DOC_OUTNAME_ATTR
 
         // @arg 1 @name count @optional 1 @type int
-        // @digest Number of input buffers
+        // @digest Number of output buffers
 
         if (args && args->l_head && hatom_gettype(&args->l_head->l_hatom) == H_LONG) {
-            x->e_count = CLAMP(hatom_getlong(&args->l_head->l_hatom), 1, LLLL_MAX_INLETS);
+            x->e_count = CLAMP(hatom_getlong(&args->l_head->l_hatom), 1, LLLL_MAX_OUTLETS);
         }
-        
-        char buf[LLLL_MAX_INLETS+1];
+
+        char buf[LLLL_MAX_OUTLETS+1];
         long i = 0;
         for (; i < x->e_count; i++) {
             buf[i] = 'e';
@@ -162,7 +162,7 @@ t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
         
         attr_args_process(x, argc, argv); // this must be called before llllobj_obj_setup
 
-        earsbufobj_setup((t_earsbufobj *)x, buf, "e", names);
+        earsbufobj_setup((t_earsbufobj *)x, "e", buf, names);
         
         llll_free(args);
         llll_free(names);
@@ -171,36 +171,38 @@ t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
 }
 
 
-void buf_lace_free(t_buf_lace *x)
+void buf_delace_free(t_buf_delace *x)
 {
     earsbufobj_free((t_earsbufobj *)x);
 }
 
 
 
-void buf_lace_bang(t_buf_lace *x)
+void buf_delace_bang(t_buf_delace *x)
 {
     long num_buffers = x->e_count;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
-    earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
+    for (long c = 0; c < num_buffers; c++)
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, c, 1, true);
     
     earsbufobj_mutex_lock((t_earsbufobj *)x);
     t_buffer_obj **bufs = (t_buffer_obj **)bach_newptr(num_buffers * sizeof(t_buffer_obj *));
     for (long i = 0; i < num_buffers; i++)
-        bufs[i] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, 0);
-    t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
+        bufs[i] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, i, 0);
+    t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
     
-    ears_buffer_lace((t_object *)x, num_buffers, bufs, out);
+    ears_buffer_delace((t_object *)x, in, num_buffers, bufs);
     
     bach_freeptr(bufs);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
-    earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
+    for (long c = num_buffers-1; c >= 0; c--)
+        earsbufobj_outlet_buffer((t_earsbufobj *)x, c);
 }
 
 
-void buf_lace_anything(t_buf_lace *x, t_symbol *msg, long ac, t_atom *av)
+void buf_delace_anything(t_buf_delace *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
         
@@ -211,7 +213,7 @@ void buf_lace_anything(t_buf_lace *x, t_symbol *msg, long ac, t_atom *av)
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, 1, true);
         earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, inlet, 0, hatom_getsym(&parsed->l_head->l_hatom));
         if (inlet == 0)
-            buf_lace_bang(x);
+            buf_delace_bang(x);
     }
     llll_free(parsed);
 }

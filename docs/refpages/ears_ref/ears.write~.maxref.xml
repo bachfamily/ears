@@ -348,6 +348,20 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="quality" get="1" set="1" type="float" size="1">
+			<digest>
+				MP3 VBR Quality
+			</digest>
+			<description>
+				Sets the variable bit-rate quality for MP3 encoding, from 0. (highest quality, largest file)
+				to 9.999 (lowest quality, smallest file).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="MP3 VBR Quality" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="spectralannotations" get="1" set="1" type="int" size="1">
 			<digest>
 				Write Annotations for Spectral Buffers
@@ -371,7 +385,7 @@
 				"CBR": constant bit rate (set via the <m>bitrate</m> attribute); <br />
 				"ABR": average bit rate (set via the <m>bitrate</m> attribute, possibly with
 				maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes); <br />
-				"VBR" (default): variable bit rate (with
+				"VBR" (default): variable bit rate (with a quality factor defined by the <m>quality</m> attribute; and/or
 				maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes).
 			</description>
 			<attributelist>
