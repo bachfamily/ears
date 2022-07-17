@@ -348,7 +348,7 @@ t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num,
 t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *env, t_buffer_obj *dest, e_ears_op op, e_slope_mapping slopemapping);
 
 
-t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
+t_ears_err ears_buffer_expr(t_object *ob, void *expr,
                             t_hatom *arguments, long num_arguments,
                             t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping,
                             e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);

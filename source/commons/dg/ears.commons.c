@@ -222,6 +222,10 @@ double ears_buffer_get_size_ms(t_object *ob, t_buffer_obj *buf)
 
 t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers)
 {
+    if (!buf) {
+        object_bug(ob, "Trying to compute sample rate of NULL buffer.");
+        return ears_get_current_Max_sr();
+    }
     if (use_original_audio_sr_for_spectral_buffers && ears_buffer_is_spectral(ob, buf))
         return ears_spectralbuf_get_original_audio_sr(ob, buf);
     
@@ -370,6 +374,10 @@ t_symbol *ears_buffer_get_name(t_object *ob, t_buffer_obj *buf)
 {
     t_buffer_info info;
     info.b_name = NULL;
+    if (!buf) {
+        object_bug(ob, "Trying to get name of NULL buffer.");
+        return NULL;
+    }
     buffer_getinfo(buf, &info);
     return info.b_name;
 }
@@ -990,7 +998,8 @@ long ears_resample_sinc(float *in, long num_in_frames, float **out, long num_out
 long ears_resample_sinc_env(float *in, long num_in_frames, float **out, long num_out_frames, t_ears_envelope_iterator *factor_env, long num_channels, double fmax, double sr, double window_width)
 {
     double maxfactor = ears_envelope_iterator_get_max_y(factor_env);
-    if (num_out_frames <= 0)
+    long actual_num_out_frames = num_out_frames;
+    if (num_out_frames <= 0) // num_out_frames is an estimate in any case
         num_out_frames = (long)ceil(num_in_frames * maxfactor);
     if (out && !*out)
         *out = (float *)bach_newptr(num_out_frames * num_channels * sizeof(float));
@@ -1005,6 +1014,10 @@ long ears_resample_sinc_env(float *in, long num_in_frames, float **out, long num
             double r_w, r_a, r_snc;
             double r_g = 2 * fmax / sr; // Calc gain correction factor
             double r_y = 0;
+            if (x - window_width/2 > num_in_frames) {
+                actual_num_out_frames = s;
+                break;
+            }
             for (i = -window_width/2; i < window_width/2; i++) { // For 1 window width
 //                x = s / factor;
                 j = (long)(x + i);          // Calc input sample index
@@ -1023,7 +1036,7 @@ long ears_resample_sinc_env(float *in, long num_in_frames, float **out, long num
             }
         }
     }
-    return num_out_frames * num_channels;
+    return actual_num_out_frames * num_channels;
 }
 
 
@@ -1302,9 +1315,11 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             ears_envelope_iterator_reset(&eei);
-            ears_resample_sinc_env(temp, framecount, &sample, new_framecount, &eei, channelcount, fmax, sr, window_width);
+            long out_samps_times_channels = ears_resample_sinc_env(temp, framecount, &sample, new_framecount, &eei, channelcount, fmax, sr, window_width);
+            long out_framecount = out_samps_times_channels / channelcount;
             buffer_setdirty(buf);
             buffer_unlocksamples(buf);
+            ears_buffer_set_size_samps_preserve(ob, buf, out_framecount);
         }
         bach_freeptr(temp);
     }
@@ -4027,7 +4042,7 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
         return EARS_ERR_NONE;
     } else if (num_sources == 1) {
         if (also_fade_boundaries)
-            return ears_buffer_fade(ob, source[0], dest, xfade_samples ? xfade_samples[0] : 0, xfade_samples ? xfade_samples[0] : 0, fade_type, fade_type, fade_curve, fade_curve, slopemapping);
+            return ears_buffer_fade(ob, source[0], dest, xfade_samples && xfade_samples[0] > 0 ? xfade_samples[0] : 0, xfade_samples && xfade_samples[0] > 0 ? xfade_samples[0] : 0, fade_type, fade_type, fade_curve, fade_curve, slopemapping);
         else
             return ears_buffer_clone(ob, source[0], dest);
     }
@@ -4125,7 +4140,7 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
             
             
             // "sustain"
-            for ( ; j < sample_fadeout_start[i]; j++) {
+            for ( ; j < MIN(sample_end[i], sample_fadeout_start[i]); j++) {
                 // copying samples
                 // TO DO: can be done via sysmem_copyptr()
                 long l = j - sample_start[i];
@@ -4312,7 +4327,7 @@ t_ears_err ears_buffer_from_buffer(t_object *ob, t_buffer_obj **dest, t_symbol *
     t_symbol *name = default_filepath2buffername(buffername, buffer_idx);
     *dest = ears_buffer_make(name);
     
-    t_ears_err this_err = ears_buffer_clone(ob, ears_buffer_getobject(buffername), *dest);
+    t_ears_err this_err = ears_buffer_clone(ob, ears_buffer_get_object(buffername), *dest);
     
     if (start_ms > 0 || end_ms >= 0)
         ears_buffer_crop_ms(ob, *dest, *dest, start_ms, end_ms);
@@ -5050,7 +5065,7 @@ t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_ob
 
 
 
-t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
+t_ears_err ears_buffer_expr(t_object *ob, void *expr, /* this can be either a t_expr* or a t_lexpr* depending on EARS_EXPR_USE_LEXPR */
                             t_hatom *arguments, long num_arguments,
                             t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping,
                             e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode)
@@ -5193,10 +5208,15 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         // erasing samples
         memset(dest_sample, 0, total_length_samps * channelcount * sizeof(float));
         
+#ifdef EARS_EXPR_USE_LEXPR
         t_hatom vars[LEXPR_MAX_VARS];
         t_hatom stack[L_MAX_TOKENS];
         hatom_setdouble(stack, 0);
-        
+#else
+        t_atom vars[9];
+        t_atom res;
+        atom_setfloat(&res, 0);
+#endif
 /*        // clearing all variables
         for (long i = 0; i < LEXPR_MAX_VARS; i++)
             hatom_setdouble(vars + i, 0.);
@@ -5206,11 +5226,17 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         if (expr) {
             long j, c;
             // first: setting all numeric args which are going to be constant
+#ifdef EARS_EXPR_USE_LEXPR
             for (long i = 0; i < num_arguments && i < LEXPR_MAX_VARS; i++) {
                 if (argtype[i] == 1) // number
                     hatom_setdouble(vars+i, numericargs[i]);
             }
-            
+#else
+            for (long i = 0; i < num_arguments && i < 9; i++) {
+                if (argtype[i] == 1) // number
+                    atom_setfloat(vars+i, numericargs[i]);
+            }
+#endif
 
             for (c = 0; c < channelcount; c++) {
                 
@@ -5220,6 +5246,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
                     if (argtype[i] == 2) // function
                         ears_envelope_iterator_reset(eei+i);
                 
+#ifdef EARS_EXPR_USE_LEXPR
                 for (j = 0; j < total_length_samps; j++) {
                     // setting variables
                     for (long i = 0; i < num_arguments && i < LEXPR_MAX_VARS; i++) {
@@ -5248,9 +5275,33 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
   //                  hatom_setdouble(vars+253, total_length_samps > 0 ? ((double)j)/(total_length_samps - 1) : 0);
     //                hatom_setdouble(vars+252, j + 1);
 
-                    lexpr_eval_upon(expr, vars, stack); // optimized version of lexpr_eval for many evaluations
+                    lexpr_eval_upon((t_lexpr *)expr, vars, stack); // optimized version of lexpr_eval for many evaluations
                     dest_sample[j * channelcount + c] = hatom_getdouble(stack);
                 }
+#else
+                for (j = 0; j < total_length_samps; j++) {
+                    // setting variables
+                    for (long i = 0; i < num_arguments && i < 9; i++) {
+                        // could be optimized by stripping the numeric arguments from the cycle, this is not the bottleneck though
+                        switch (argtype[i]) {
+                            case 0: // buffer
+                                atom_setfloat(vars+i, (c < num_channels[i] && j < num_samples[i]) ?
+                                                samples[i][j * num_channels[i] + c] : 0);
+                                break;
+                                
+                            case 2: // envelope
+                                atom_setfloat(vars+i, ears_envelope_iterator_walk_interp(eei+i, j, total_length_samps));
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
+                    expr_eval((t_expr *)expr, MIN(num_arguments, 9), vars, &res);
+                    dest_sample[j * channelcount + c] = atom_getfloat(&res);
+                }
+#endif
+                
             }
         }
         
@@ -6022,7 +6073,7 @@ t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buf
     ears_buffer_clone(ob, envelope, mask);
     ears_buffer_fill_inplace(ob, mask, 1.);
 
-    t_buffer_obj *TESTenv = ears_buffer_getobject(gensym("env"));
+    t_buffer_obj *TESTenv = ears_buffer_get_object(gensym("env"));
     ears_buffer_clone(ob, envelope, TESTenv);
 
     long orig_num_samps = ears_buffer_get_size_samps(ob, envelope);

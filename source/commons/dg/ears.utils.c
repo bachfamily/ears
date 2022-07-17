@@ -207,7 +207,7 @@ long ears_buffer_symbol_is_buffer(t_symbol *s)
         return (0);
 }
 
-t_object *ears_buffer_getobject(t_symbol *name)
+t_object *ears_buffer_get_object(t_symbol *name)
 {
     t_object *rtn = NULL;
     

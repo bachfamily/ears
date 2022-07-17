@@ -14,10 +14,15 @@
 #ifndef WIN_VERSION
 #define EARS_MP3_READ_SUPPORT // via mpg123
 #endif
+
 #define EARS_MP3_WRITE_SUPPORT // via lame
+
 #define EARS_WAVPACK_SUPPORT // via Wavpack library
 
-// #define EARS_ALLOCATIONVERBOSE
+// #define EARS_ALLOCATIONVERBOSE ///< If defined, posts information about buffer allocation in the max windows
+
+// #define EARS_EXPR_USE_LEXPR ///< If not defined, it'll use the standard Max atoms instead (which is quicker!, so there's no reason to define it, except for having access to some specific bach.expr functions which are not in expr (e.g. bessel)
+
 
 
 

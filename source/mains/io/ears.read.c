@@ -426,7 +426,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         // TODO store metadata
         char *txtbuf = NULL;
         hatom_to_text_buf(&elem->l_hatom, &txtbuf);
-        object_warn((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
+        object_error((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
         buf_read_addpathsym(x, _llllobj_sym_none, idx);
         earsbufobj_store_empty_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx);
         bach_freeptr(txtbuf);

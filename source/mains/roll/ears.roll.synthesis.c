@@ -418,7 +418,7 @@ void buf_roll_synthesis_bang(t_buf_roll_synthesis *x)
     t_buffer_obj *buf = NULL;
     if (x->wavetable && x->wavetable != _llllobj_sym_empty_symbol) {
         if (ears_buffer_symbol_is_buffer(x->wavetable)) {
-            buf = ears_buffer_getobject(x->wavetable);
+            buf = ears_buffer_get_object(x->wavetable);
             if (buf) {
                 wavetable_length = ears_buffer_get_size_samps((t_object *)x, buf);
                 wavetable = buffer_locksamples(buf);
