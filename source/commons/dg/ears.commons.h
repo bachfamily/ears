@@ -419,6 +419,7 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
 t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double cutoff_freq, char highpass); // also works inplace
 t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double a0, double a1, double a2, double b1, double b2); // also works inplace
 t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long factor);
+t_ears_err ears_buffer_dcfilter(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest); // also works inplace
 
 // Transposition
 t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
@@ -481,6 +482,9 @@ t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer
 t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampling_factor, long window_width, e_ears_resamplingmode resamplingmode = EARS_RESAMPLINGMODE_SINC);
 t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, e_slope_mapping slopemapping);
 e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s);
+
+// experimental, don't use
+t_ears_err ears_buffer_resample_envelope_speed_circualar(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps);
 
 
 /// WRITE FILES

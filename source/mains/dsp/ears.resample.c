@@ -234,37 +234,51 @@ void buf_resample_bang(t_buf_resample *x)
             ears_buffer_clone((t_object *)x, in, out);
         
         if (hatom_gettype(&el->l_hatom) == H_LLLL) { // factor is envelope
-            t_llll *env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, el, in);
             
-            // check if envelope crosses zero or is constantly negative (and hence needs reverse)
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
-            double min_y = ears_envelope_iterator_get_min_y(&eei);
-            double max_y = ears_envelope_iterator_get_max_y(&eei);
-            
-            if (mode != EARS_RESAMPLINGMODE_SINC) {
-                object_warn((t_object *)x, "Only sinc interpolation is supported via envelopes. Defaulting to sinc.");
-            }
-            
-            if (min_y == 0 || max_y == 0) {
-                object_error((t_object *)x, "Resampling envelopes cannot touch zero.");
-            } else if (min_y * max_y < 0) {
-                object_error((t_object *)x, "Resampling envelopes cannot cross zero.");
-            } else if (min_y < 0 && max_y < 0) {
-                ears_buffer_rev_inplace((t_object *)x, out);
-                for (t_llllelem *el = env->l_head; el; el = el->l_next) {
-                    t_llll *ll = hatom_getllll(&el->l_hatom);
-                    if (ll && ll->l_size >= 2 && is_hatom_number(&ll->l_head->l_next->l_hatom))
-                        hatom_setdouble(&ll->l_head->l_next->l_hatom, hatom_getdouble(&ll->l_head->l_next->l_hatom) * -1);
-                }
-                ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
-            } else {
-                ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
-            }
+            // special HIGHLY EXPERIMENTAL case
+            if (hatom_getllll(&el->l_hatom) && hatom_getllll(&el->l_hatom)->l_head && hatom_gettype(&hatom_getllll(&el->l_hatom)->l_head->l_hatom) == H_SYM && hatom_getsym(&hatom_getllll(&el->l_hatom)->l_head->l_hatom) == gensym("circularspeed")) {
+                t_llll *ll = hatom_getllll(&el->l_hatom);
+                double factor_start = hatom_getdouble(&llll_getindex(ll, 2, I_MODULO)->l_hatom);
+                double factor_end = hatom_getdouble(&llll_getindex(ll, 3, I_MODULO)->l_hatom);
+                double factor_factor = hatom_getdouble(&llll_getindex(ll, 4, I_MODULO)->l_hatom);
+                double maxlensamps = hatom_getdouble(&llll_getindex(ll, 5, I_MODULO)->l_hatom) * ears_buffer_get_sr((t_object *)x, in) / 1000.;
+                ears_buffer_resample_envelope_speed_circualar((t_object *)x, out, factor_start, factor_end, factor_factor, window_width_samples, maxlensamps);
 
-            llll_free(env);
-            
-            if (change_sr) {
-                object_warn((t_object *)x, "Resampling envelope introduced: won't change sample rate.");
+            // ORDINARY CASES
+            } else {
+                
+                t_llll *env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, el, in);
+                
+                // check if envelope crosses zero or is constantly negative (and hence needs reverse)
+                t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                double min_y = ears_envelope_iterator_get_min_y(&eei);
+                double max_y = ears_envelope_iterator_get_max_y(&eei);
+                
+                if (mode != EARS_RESAMPLINGMODE_SINC) {
+                    object_warn((t_object *)x, "Only sinc interpolation is supported via envelopes. Defaulting to sinc.");
+                }
+                
+                if (min_y == 0 || max_y == 0) {
+                    object_error((t_object *)x, "Resampling envelopes cannot touch zero.");
+                } else if (min_y * max_y < 0) {
+                    object_error((t_object *)x, "Resampling envelopes cannot cross zero.");
+                } else if (min_y < 0 && max_y < 0) {
+                    ears_buffer_rev_inplace((t_object *)x, out);
+                    for (t_llllelem *el = env->l_head; el; el = el->l_next) {
+                        t_llll *ll = hatom_getllll(&el->l_hatom);
+                        if (ll && ll->l_size >= 2 && is_hatom_number(&ll->l_head->l_next->l_hatom))
+                            hatom_setdouble(&ll->l_head->l_next->l_hatom, hatom_getdouble(&ll->l_head->l_next->l_hatom) * -1);
+                    }
+                    ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                } else {
+                    ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                }
+                
+                llll_free(env);
+                
+                if (change_sr) {
+                    object_warn((t_object *)x, "Resampling envelope introduced: won't change sample rate.");
+                }
             }
 
         } else {

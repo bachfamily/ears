@@ -3407,8 +3407,8 @@ void earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(t_earsbufobj *e_
                                                                 e_ears_timeunit dest_envtimeunit,
                                                                 double orig_from, double orig_to, char convert_from_decibels)
 {
-    double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
-    double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    double dur_samps = buf ? ears_buffer_get_size_samps((t_object *)e_ob, buf) : 0;
+    double sr = buf ? ears_buffer_get_sr((t_object *)e_ob, buf) : ears_get_current_Max_sr();
     
     if (orig_from != 0 || orig_to != 1 || convert_from_decibels) {
         for (t_llllelem *el = out->l_head; el; el = el->l_next) {

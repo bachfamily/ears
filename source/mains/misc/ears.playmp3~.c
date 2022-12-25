@@ -495,7 +495,10 @@ int open_file(t_playmp3 *x, const char *path, double start_ms, double end_ms, do
     } else {
         mpg123_close(x->mh);
         x->playing = x->paused = paused = false;
-        object_error((t_object *)x, "File doesn't seem to have .mp3 extension.");
+        if (len == 0)
+            object_error((t_object *)x, "Cannot locate file.");
+        else
+            object_error((t_object *)x, "File doesn't seem to have .mp3 extension.");
         err = MPG123_ERR;
     }
     

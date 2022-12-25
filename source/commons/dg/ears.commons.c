@@ -993,6 +993,55 @@ long ears_resample_sinc(float *in, long num_in_frames, float **out, long num_out
     return num_out_frames * num_channels;
 }
 
+// EXPERIMENTAL, single channel for now
+// beware: <in> should be allocated with num_in_frames * num_channels floats
+long ears_resample_sinc_env_speed_circular(float *in, long num_in_frames, float **out, double start_factor, double end_factor, double factor_factor, long num_channels, double orig_sr, double window_width, long maxlen_samps)
+{
+    long actual_num_out_frames = 0;
+    for (long ch = 0; ch < 1 /*num_channels*/; ch++) {
+        long alloc = EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC * orig_sr * num_channels;
+        *out = (float *)bach_newptr(alloc * sizeof(float));
+        
+        double factor = start_factor;
+        bool rall = (end_factor >= start_factor);
+        double x = 0;
+        long s = 0;
+        double sr = orig_sr * factor;
+        while (((rall && factor < end_factor) || (!rall && factor > end_factor)) && (maxlen_samps <= 0 || s < maxlen_samps)) {
+            long i, j;
+            double r_w, r_a, r_snc;
+            double fmax = sr / 2.; // TO DO
+            double r_g = 2 * fmax / sr; // Calc gain correction factor
+            double r_y = 0;
+            for (i = -window_width/2; i < window_width/2; i++) { // For 1 window width
+//                x = s / factor;
+                j = (long)(x + i);          // Calc input sample index
+                //rem calculate von Hann Window. Scale and calculate Sinc
+                r_w     = 0.5 - 0.5 * cos(TWOPI*(0.5 + (j - x)/window_width));
+                r_a     = TWOPI*(j - x)*fmax/sr;
+                r_snc   = (r_a != 0 ? r_snc = sin(r_a)/r_a : 1); ///<< sin(r_a) is slow. Do we have other options?
+                j = positive_mod(j, num_in_frames);
+//                if (j >= 0 && j < num_in_frames)
+                r_y   = r_y + r_g * r_w * r_snc * in[num_channels * j + ch];
+            }
+
+            long t = num_channels * s + ch;
+            if (t >= alloc) {
+                alloc += EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC * orig_sr * num_channels;
+                *out = (float *)bach_resizeptr(*out, alloc * sizeof(float));
+            }
+            (*out)[num_channels * s + ch] = r_y;                  // Return new filtered sample
+            x += 1 / factor;
+            s++;
+            factor *= factor_factor;
+            sr = orig_sr * factor;
+        }
+        actual_num_out_frames = s;
+    }
+    return actual_num_out_frames * num_channels;
+}
+
+
 // Could be improved
 // beware: <in> should be allocated with num_in_frames * num_channels floats, and <out> might be allocated with num_out_frames * num_channels float
 long ears_resample_sinc_env(float *in, long num_in_frames, float **out, long num_out_frames, t_ears_envelope_iterator *factor_env, long num_channels, double fmax, double sr, double window_width)
@@ -1278,6 +1327,47 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
     
     return err;
 }
+
+
+// THIS ONE IS EXPERIMENTAL
+// resampling without converting sr
+t_ears_err ears_buffer_resample_envelope_speed_circualar(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    double curr_sr = buffer_getsamplerate(buf);
+    
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+        
+        float *outsample = NULL;
+        long out_framecount = ears_resample_sinc_env_speed_circular(sample, framecount, &outsample, factor_start, factor_end, factor_factor, channelcount, curr_sr, window_width, maxlen_samps);
+        
+        buffer_unlocksamples(buf);
+
+        ears_buffer_set_size_samps(ob, buf, out_framecount);
+        
+        float *sample = buffer_locksamples(buf);
+        
+        if (!sample) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            bach_copyptr(outsample, sample, out_framecount * sizeof(float));
+            bach_freeptr(outsample);
+            buffer_setdirty(buf);
+            buffer_unlocksamples(buf);
+        }
+    }
+    
+    return err;
+}
+
 
 
 // resampling without converting sr
@@ -5009,8 +5099,47 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
     return err;
 }
 
+t_ears_err ears_buffer_dcfilter(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+
+    if (dest != source)
+        ears_buffer_clone(ob, source, dest);
+    
+    float *dest_sample = buffer_locksamples(dest);
+    
+    if (!dest_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        for (long c = 0; c < channelcount; c++) {
+            // computing dc offset iteratively (avoids numeric issues!)
+            double dcoffset = 0;
+            long t = 1;
+            for (long f = 0; f < framecount; f++) {
+                dcoffset += (dest_sample[f * channelcount + c] - dcoffset) / t;
+                t++;
+            }
+
+            // removing it
+            for (long f = 0; f < framecount; f++) {
+                dest_sample[f * channelcount + c] -= dcoffset;
+            }
+        }
+        
+        buffer_unlocksamples(dest);
+    }
+    return err;
+}
 
 
+// that is channels/samples transposition; NOT musical transposition
 t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest)
 {
     
