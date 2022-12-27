@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 792.0, 549.0 ],
+		"rect" : [ 208.0, 245.0, 792.0, 549.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -501,7 +501,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
+						"rect" : [ 208.0, 271.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -716,7 +716,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 20.0, 28.0, 265.0, 47.0 ],
+													"patching_rect" : [ 20.0, 28.0, 268.0, 47.0 ],
 													"text" : "Objects that work correctly in ears.process~, because they implement the clock message or attribute:"
 												}
 
@@ -835,7 +835,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 72.5, 678.0, 65.0 ],
-									"text" : "The patch loaded in ears.process~ behaves as with Scheduler In Audio Interrupt on, regardless of the global Max setting. This means that the scheduling of messages from timed objects such as metro, delay, clocker and almost any other object you can think of that controls its own internal timing (including bach.roll and bach.score during playback) is locked to the timing of the audio processing."
+									"text" : "The patch loaded in ears.process~ behaves as with Scheduler In Audio Interrupt on, regardless of the global Max setting. This means that the scheduling of messages from timed objects such as metro, delay, clocker and almost any other object you can think of that controls its own internal timing (including bach.roll and bach.score during playback) is locked to the timing of the audio processing: which is what you usually want!"
 								}
 
 							}
@@ -920,7 +920,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 792.0, 523.0 ],
+						"rect" : [ 0.0, 26.0, 792.0, 523.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -979,7 +979,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u173001664",
+									"buffername" : "u777001440",
 									"id" : "obj-11",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1078,7 +1078,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u958009768",
+									"buffername" : "u250001448",
 									"id" : "obj-6",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1859,8 +1859,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 298.0, 323.0, 400.0, 69.0 ],
-									"text" : "You can have non-buffer inlets and outlets as well. In this case, buffer inlets and outlets will always be at the left of buffer ones. By default, messages are passed when the patch is activated.\nFor more details, see the help files of ears.in and ears.out."
+									"patching_rect" : [ 306.0, 323.0, 418.0, 69.0 ],
+									"text" : "You can have non-buffer inlets and outlets as well. In this case, buffer inlets and outlets will always be at the left of non-buffer ones. By default, messages are passed when the patch is activated.\nFor more details, see the help files of ears.in and ears.out."
 								}
 
 							}
@@ -2463,7 +2463,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 369.0, 725.0, 79.0 ],
-									"text" : "Generally speaking, ears.process~ is useful if you want to perform a process more quickly than in real-time, or if you have some rendering that is too intensive to be performed in real-time (in which case the processing will take more time than the duration of the incoming buffer). You can think of it as an equivalent to a sequencer's offline render, or another way to achieve what Max's non-realtime driver is meant for.\nIt is absolutely normal to see the spinning wheel during the processing. ",
+									"text" : "Generally speaking, ears.process~ is useful if you want to perform a process more quickly than in real-time, or if you have some rendering that is too intensive to be performed in real-time (in which case the processing will take more time than the duration of the incoming buffer). You can think of it as an equivalent to a DAW's offline render, or another way to achieve what Max's non-realtime driver is meant for.\nIt is absolutely normal to see the spinning wheel during the processing. ",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -2478,7 +2478,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 269.0, 727.0, 94.0 ],
-									"text" : "The basic idea is that the DSP and scheduler of the loaded patch are only activated for the processing of the buffer, which starts when a message is received in ears.process~'s leftmost inlet. From that point on, samples from the buffer are sent through the ears.in~ objects in the patch; they can undergo any kind of processing as in a normal, real-time patch; and the result of the processing is collected by the ears.out~ objects. When all the samples from the input buffer have been read, the DSP and scheduler of the patch are stopped, and the collected samples are output in buffers from ears.process~'s outlets.\nThere are many additional details to this basic ideas, which will be discussed in the next tabs.",
+									"text" : "The basic idea is that the DSP and scheduler of the loaded patch are only activated for the processing of the buffer, which starts when a message is received in ears.process~'s leftmost inlet. From that point on, samples from the buffer are sent through the ears.in~ objects in the patch; they can undergo any kind of processing as in a normal, real-time patch; and the result of the processing is collected by the ears.out~ objects. When all the samples from the input buffer have been read, the DSP and scheduler of the patch are stopped, and the collected samples are output in buffers from ears.process~'s outlets.\nThere are many additional details to this basic idea, which will be discussed in the next tabs.",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -2539,7 +2539,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u598008167",
+									"buffername" : "u108001655",
 									"id" : "obj-13",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -2619,7 +2619,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u799008005",
+									"buffername" : "u198001536",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
