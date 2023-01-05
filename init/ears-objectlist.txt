@@ -83,6 +83,7 @@ max oblist "ears objects" ears.hoa.encode~;
 max oblist "ears objects" ears.hoa.rotate~;
 max oblist "ears objects" ears.clip~;
 max oblist "ears objects" ears.interp~;
+max oblist "ears objects" ears.dcfilter~;
 max oblist "ears objects" ears.resample~;
 max oblist "ears objects" ears.onepole~;
 max oblist "ears objects" ears.freeverb~;

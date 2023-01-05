@@ -237,7 +237,6 @@
 			</description>
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="" size="1" value="0. 0. 256. 128." />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

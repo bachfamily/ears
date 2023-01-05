@@ -148,7 +148,7 @@ typedef enum _ears_split_modes {
     EARS_SPLIT_MODE_NUMBER = 1,
     EARS_SPLIT_MODE_LIST = 2,
     EARS_SPLIT_MODE_SILENCE = 3,
-    EARS_SPLIT_MODE_ONSET = 4,
+//    EARS_SPLIT_MODE_ONSET = 4,
 } e_ears_split_modes;
 
 
