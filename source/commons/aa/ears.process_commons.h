@@ -43,7 +43,7 @@ public:
     void set(t_object* x, t_symbol *name) {
         ref = buffer_ref_new((t_object *) x, name);
         obj = buffer_ref_getobject(ref);
-        samps = buffer_locksamples(obj);
+        samps = ears_buffer_locksamples(obj);
         locked = true;
         chans = ears_buffer_get_numchannels(x, obj);
         frames = ears_buffer_get_size_samps(x, obj);
@@ -52,7 +52,7 @@ public:
     
     void unlock() {
         if (samps && locked) {
-            buffer_unlocksamples(obj);
+            ears_buffer_unlocksamples(obj);
             locked = false;
         }
     }

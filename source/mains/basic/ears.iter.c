@@ -211,7 +211,7 @@ void buf_iter_bang(t_buf_iter *x)
     
     for (long i = 0; i < num_inlets; i++) {
         buffer[i] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, 0);
-        samps[i] = buffer[i] ? buffer_locksamples(buffer[i]) : NULL;
+        samps[i] = buffer[i] ? ears_buffer_locksamples(buffer[i]) : NULL;
         sizesamps[i] = buffer_getframecount(buffer[i]);
         if (sizesamps[i] > maxsamps)
             maxsamps = sizesamps[i];
@@ -255,7 +255,7 @@ void buf_iter_bang(t_buf_iter *x)
     
     for (long i = 0; i < num_inlets; i++) {
         if (samps[i] && buffer[i])
-            buffer_unlocksamples(buffer[i]);
+            ears_buffer_unlocksamples(buffer[i]);
     }
     
     bach_freeptr(av);

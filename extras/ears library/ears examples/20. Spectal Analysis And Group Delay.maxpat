@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 1,
+			"minor" : 5,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -485,7 +485,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "jit_matrix" ],
-					"patching_rect" : [ 47.0, 251.549958621754399, 34.864864864864899, 17.916666666666682 ],
+					"patching_rect" : [ 235.0, 239.549958621754399, 34.864864864864899, 17.916666666666682 ],
 					"pic" : "GrDXn.png"
 				}
 
@@ -501,7 +501,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "jit_matrix" ],
-					"patching_rect" : [ 172.075129530122183, 254.549958621754399, 17.612903225806519, 16.058823529411825 ],
+					"patching_rect" : [ 103.0, 254.549958621754399, 17.612903225806519, 16.058823529411825 ],
 					"pic" : "GrDYI.png"
 				}
 
@@ -517,7 +517,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "jit_matrix" ],
-					"patching_rect" : [ 117.075129530122183, 254.549958621754399, 21.580645161290334, 15.928571428571438 ],
+					"patching_rect" : [ 48.0, 254.549958621754399, 21.580645161290334, 15.928571428571438 ],
 					"pic" : "GrDYR.png"
 				}
 
@@ -785,7 +785,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 9.0, 50.961723327636719, 262.0, 503.0 ],
+					"patching_rect" : [ 9.0, 50.961723327636719, 271.0, 503.0 ],
 					"text" : "Group delay is defined as the negative derivative of the phase spectrum of Short-Time Fourier Transform:\n\n\n\n\nThis would require phase unwrappinig. A more convenient way to compute it is via the formula:\n\n\n\n\nwhere          and         are the real and imaginary part of the STFT bins of the original signal          , while          and           are their \ncounterparts with respect to the signal\n\n\nIn this patch we are using a built-in STFT to compute the transform of           , but we need to implement our own \"hand-made\" STFT \nimplement this formula by building ourselves a Short-Time Fourier Transform step by step \"by hand\", because we also need the transform of\n              , which means that each window frame must be modulated with a ramp.\n\nThis is a good exercise that gets us acquainted with a number of objects in the ears library that come in handy when working with spectral analysis. \n\n(The first thing to know is that a spectral buffer, in ears, is a special buffer whose spectral bins are placed in different channels, and whose frames are placed as different time samples.)"
 				}
 

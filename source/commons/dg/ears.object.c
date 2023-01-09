@@ -3907,7 +3907,7 @@ t_max_err earsbufobj_store_buffer_in_dictionary(t_earsbufobj *e_ob, t_buffer_obj
         long num_atoms = num_frames * num_channels;
         t_atom *av = (t_atom *)bach_newptr(EARS_EMBED_BLOCK_SIZE * sizeof(t_atom));
         
-        float *sample = buffer_locksamples(buf);
+        float *sample = ears_buffer_locksamples(buf);
         if (!sample) {
             err = MAX_ERR_GENERIC;
             object_error((t_object *)e_ob, EARS_ERROR_BUF_CANT_READ);
@@ -3937,7 +3937,7 @@ t_max_err earsbufobj_store_buffer_in_dictionary(t_earsbufobj *e_ob, t_buffer_obj
                 
                 dictionary_appendlong(dict, gensym("block_count"), count);
             }
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
             
             bach_freeptr(av);
         }
@@ -4009,7 +4009,7 @@ t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dicti
             object_error((t_object *)e_ob, "Wrong saved information about number of samples!");
         }
         
-        float *sample = buffer_locksamples(buf);
+        float *sample = ears_buffer_locksamples(buf);
         
         if (!sample) {
             err = EARS_ERR_CANT_READ;
@@ -4020,7 +4020,7 @@ t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dicti
             
             sysmem_copyptr(whole_samps, sample, MIN(whole_numsamps, channelcount * framecount) * sizeof(float));
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
         
         bach_freeptr(whole_samps);
