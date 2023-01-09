@@ -199,6 +199,29 @@ t_max_err ears_polybuffer_release(t_buffer_obj *polybuffer, t_symbol *polybuffer
 
 
 
+t_float *ears_buffer_locksamples(t_buffer_obj *buf)
+{
+    long l = buffer_getframecount(buf);
+    if (l == 0) {
+        // Max won't handle this case neatly. If we lock the buffer when it has NO samples, then unlock it, it will stay locked for some reason.
+        return NULL;
+    } else {
+        return buffer_locksamples(buf);
+    }
+}
+
+void ears_buffer_unlocksamples(t_buffer_obj *buf)
+{
+    long l = buffer_getframecount(buf);
+    if (l == 0) {
+        // Max won't handle this case neatly. If we lock the buffer when it has NO samples, then unlock it, it will stay locked for some reason.
+    } else {
+        buffer_unlocksamples(buf);
+    }
+}
+
+
+
 
 
 
@@ -297,13 +320,13 @@ t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, 
     } else if (num_frames > curr_num_frames) {
         t_atom_long channelcount = ears_buffer_get_numchannels(ob, buf);
         float *temp = (float *)bach_newptr(curr_num_frames * channelcount * sizeof(float));
-        float *sample = buffer_locksamples(buf);
+        float *sample = ears_buffer_locksamples(buf);
         sysmem_copyptr(sample, temp, curr_num_frames * channelcount * sizeof(float));
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
         ears_buffer_set_size_samps(ob, buf, num_frames);
-        sample = buffer_locksamples(buf);
+        sample = ears_buffer_locksamples(buf);
         sysmem_copyptr(temp, sample, curr_num_frames * channelcount * sizeof(float));
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
         bach_freeptr(temp);
     }
     return EARS_ERR_NONE;
@@ -717,7 +740,7 @@ t_ears_err ears_buffer_copy_format(t_object *ob, t_buffer_obj *orig, t_buffer_ob
 t_ears_err ears_buffer_rev_inplace(t_object *ob, t_buffer_obj *buf)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -739,7 +762,7 @@ t_ears_err ears_buffer_rev_inplace(t_object *ob, t_buffer_obj *buf)
             buffer_setdirty(buf);
         }
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }
@@ -750,7 +773,7 @@ t_ears_err ears_buffer_rev_inplace(t_object *ob, t_buffer_obj *buf)
 t_ears_err ears_buffer_rot_inplace(t_object *ob, t_buffer_obj *buf, long shift_in_samps)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -772,7 +795,7 @@ t_ears_err ears_buffer_rot_inplace(t_object *ob, t_buffer_obj *buf, long shift_i
             buffer_setdirty(buf);
         }
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }
@@ -783,7 +806,7 @@ t_ears_err ears_buffer_rot_inplace(t_object *ob, t_buffer_obj *buf, long shift_i
 t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -800,7 +823,7 @@ t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val)
             buffer_setdirty(buf);
         }
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }
@@ -811,7 +834,7 @@ t_ears_err ears_buffer_fill_inplace(t_object *ob, t_buffer_obj *buf, float val)
 t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, double v_min, double v_max)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -828,7 +851,7 @@ t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, doub
             buffer_setdirty(buf);
         }
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }
@@ -837,7 +860,7 @@ t_ears_err ears_buffer_random_fill_inplace(t_object *ob, t_buffer_obj *buf, doub
 t_ears_err ears_buffer_rev_channels_inplace(t_object *ob, t_buffer_obj *buf)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -859,7 +882,7 @@ t_ears_err ears_buffer_rev_channels_inplace(t_object *ob, t_buffer_obj *buf)
             buffer_setdirty(buf);
         }
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }
@@ -869,9 +892,9 @@ t_ears_err ears_buffer_rev_channels_inplace(t_object *ob, t_buffer_obj *buf)
 t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, t_buffer_obj *mask)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample1 = buffer_locksamples(buf1);
-    float *sample2 = buffer_locksamples(buf2);
-    float *sampleM = buffer_locksamples(mask);
+    float *sample1 = ears_buffer_locksamples(buf1);
+    float *sample2 = ears_buffer_locksamples(buf2);
+    float *sampleM = ears_buffer_locksamples(mask);
 
     if (!sample1 || !sample2 || !sampleM) {
         err = EARS_ERR_CANT_READ;
@@ -898,9 +921,9 @@ t_ears_err ears_buffer_apply_mask(t_object *ob, t_buffer_obj *buf1, t_buffer_obj
             err = EARS_ERR_GENERIC;
         }
         
-        buffer_unlocksamples(buf1);
-        buffer_unlocksamples(buf2);
-        buffer_unlocksamples(mask);
+        ears_buffer_unlocksamples(buf1);
+        ears_buffer_unlocksamples(buf2);
+        ears_buffer_unlocksamples(mask);
     }
     return err;
 }
@@ -1207,7 +1230,7 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
     
     double fmax = sr / 2.;
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -1220,9 +1243,9 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
         float *temp = (float *)bach_newptr(channelcount * framecount * sizeof(float));
         sysmem_copyptr(sample, temp, channelcount * framecount * sizeof(float));
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
         ears_buffer_set_size_samps(ob, buf, new_framecount);
-        sample = buffer_locksamples(buf);
+        sample = ears_buffer_locksamples(buf);
         
         new_framecount = buffer_getframecount(buf);
 
@@ -1258,7 +1281,7 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
                     break;
             }
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
         bach_freeptr(temp);
     }
@@ -1278,7 +1301,7 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
     
     double fmax = sr / 2.;
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -1291,9 +1314,9 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
         float *temp = (float *)bach_newptr(channelcount * framecount * sizeof(float));
         sysmem_copyptr(sample, temp, channelcount * framecount * sizeof(float));
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
         ears_buffer_set_size_samps(ob, buf, new_framecount);
-        sample = buffer_locksamples(buf);
+        sample = ears_buffer_locksamples(buf);
         
         new_framecount = buffer_getframecount(buf);
         
@@ -1304,7 +1327,7 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
             ears_envelope_iterator_reset(&eei);
             ears_resample_sinc_env(temp, framecount, &sample, new_framecount, &eei, channelcount, fmax, sr, window_width);
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
         bach_freeptr(temp);
     }
@@ -1323,7 +1346,7 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr, lo
     long window_width = resampling_filter_size;
     double fmax = sr / 2.;
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -1336,10 +1359,10 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr, lo
         float *temp = (float *)bach_newptr(channelcount * framecount * sizeof(float));
         sysmem_copyptr(sample, temp, channelcount * framecount * sizeof(float));
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
         ears_buffer_set_size_samps(ob, buf, new_framecount);
         ears_buffer_set_sr(ob, buf, sr);
-        sample = buffer_locksamples(buf);
+        sample = ears_buffer_locksamples(buf);
         new_framecount   = buffer_getframecount(buf);
 
         if (!sample) {
@@ -1348,7 +1371,7 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr, lo
         } else {
             ears_resample_sinc(temp, framecount, &sample, new_framecount, factor, channelcount, fmax, sr, resampling_filter_size);
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
         bach_freeptr(temp);
     }
@@ -1361,7 +1384,7 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr, lo
 t_ears_err ears_buffer_set_numchannels_preserve(t_object *ob, t_buffer_obj *buf, long new_numchannels, e_ears_channel_convert_modes mode)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -1373,9 +1396,9 @@ t_ears_err ears_buffer_set_numchannels_preserve(t_object *ob, t_buffer_obj *buf,
         float *temp = (float *)bach_newptr(channelcount * framecount * sizeof(float));
         sysmem_copyptr(sample, temp, channelcount * framecount * sizeof(float));
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
         ears_buffer_set_numchannels(ob, buf, new_numchannels);
-        sample = buffer_locksamples(buf);
+        sample = ears_buffer_locksamples(buf);
         
         if (!sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -1442,7 +1465,7 @@ t_ears_err ears_buffer_set_numchannels_preserve(t_object *ob, t_buffer_obj *buf,
                     break;
             }
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
         bach_freeptr(temp);
     }
@@ -1486,7 +1509,7 @@ t_ears_err ears_buffer_convert_numchannels(t_object *ob, t_buffer_obj *buf, long
 t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizeinsamps)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -1498,9 +1521,9 @@ t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizein
         float *temp = (float *)bach_newptr(channelcount * framecount * sizeof(float));
         sysmem_copyptr(sample, temp, channelcount * framecount * sizeof(float));
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
         ears_buffer_set_size_samps(ob, buf, sizeinsamps);
-        sample = buffer_locksamples(buf);
+        sample = ears_buffer_locksamples(buf);
         
         if (!sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -1509,7 +1532,7 @@ t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizein
             t_atom_long	new_framecount = buffer_getframecount(buf);			// should be always equal to sizeinsamps!
             sysmem_copyptr(temp, sample, channelcount * MIN(new_framecount, framecount) * sizeof(float));
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
         bach_freeptr(temp);
     }
@@ -1553,7 +1576,7 @@ t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         return ears_buffer_crop_inplace(ob, source, start_sample, end_sample);
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         if (!buffer_getframecount(source)) {
@@ -1588,7 +1611,7 @@ t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, new_dest_frames);
 
             t_atom_long dest_channelcount = buffer_getchannelcount(dest);
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -1596,10 +1619,10 @@ t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             } else {
                 sysmem_copyptr(orig_sample + start_sample * channelcount, dest_sample, new_dest_frames * dest_channelcount * sizeof(float));
                 buffer_setdirty(dest);
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
             }
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -1622,7 +1645,7 @@ t_ears_err ears_buffer_crop_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj 
 t_ears_err ears_buffer_crop_inplace(t_object *ob, t_buffer_obj *buf, long start_sample, long end_sample)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         if (!buffer_getframecount(buf)) {
@@ -1655,9 +1678,9 @@ t_ears_err ears_buffer_crop_inplace(t_object *ob, t_buffer_obj *buf, long start_
             float *temp = (float *)bach_newptr(channelcount * new_dest_frames * sizeof(float));
             sysmem_copyptr(sample + start_sample * channelcount, temp, channelcount * new_dest_frames * sizeof(float));
             
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
             ears_buffer_set_size_samps(ob, buf, new_dest_frames);
-            sample = buffer_locksamples(buf);
+            sample = ears_buffer_locksamples(buf);
             
             if (!sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -1669,7 +1692,7 @@ t_ears_err ears_buffer_crop_inplace(t_object *ob, t_buffer_obj *buf, long start_
             
             bach_freeptr(temp);
         }
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }
@@ -1699,7 +1722,7 @@ t_ears_err ears_buffer_clone(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
     // For instance, "duplicate" doesn't copy the buffer format.
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -1710,7 +1733,7 @@ t_ears_err ears_buffer_clone(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
 
         ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
 
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -1718,9 +1741,9 @@ t_ears_err ears_buffer_clone(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
         } else {
             sysmem_copyptr(orig_sample, dest_sample, framecount * channelcount * sizeof(float));
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -1731,7 +1754,7 @@ t_ears_err ears_buffer_clone(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
 t_ears_err ears_buffer_slice(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest_left, t_buffer_obj *dest_right, long split_sample)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         if (!buffer_getframecount(source)) {
@@ -1767,28 +1790,28 @@ t_ears_err ears_buffer_slice(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
             t_atom_long dest_left_channelcount = buffer_getchannelcount(dest_left);
             t_atom_long dest_right_channelcount = buffer_getchannelcount(dest_right);
             
-            float *dest_left_sample = buffer_locksamples(dest_left);
+            float *dest_left_sample = ears_buffer_locksamples(dest_left);
             if (!dest_left_sample) {
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             } else {
                 sysmem_copyptr(orig_sample, dest_left_sample, split_sample * dest_left_channelcount * sizeof(float));
                 buffer_setdirty(dest_left);
-                buffer_unlocksamples(dest_left);
+                ears_buffer_unlocksamples(dest_left);
             }
 
-            float *dest_right_sample = buffer_locksamples(dest_right);
+            float *dest_right_sample = ears_buffer_locksamples(dest_right);
             if (!dest_left_sample) {
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
             } else {
                 sysmem_copyptr(orig_sample + split_sample * channelcount, dest_right_sample, (framecount - split_sample) * dest_right_channelcount * sizeof(float));
                 buffer_setdirty(dest_right);
-                buffer_unlocksamples(dest_right);
+                ears_buffer_unlocksamples(dest_right);
             }
             
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -1801,7 +1824,7 @@ t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **
 {
     t_ears_err err = EARS_ERR_NONE;
     if (num_regions > 0) {
-        float *orig_sample = buffer_locksamples(source);
+        float *orig_sample = ears_buffer_locksamples(source);
         
         if (!orig_sample) {
             if (!buffer_getframecount(source)) {
@@ -1845,19 +1868,19 @@ t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **
                         object_error(ob, "Mismatch in frame count!");
                     }
 
-                    float *dest_sample = buffer_locksamples(this_dest);
+                    float *dest_sample = ears_buffer_locksamples(this_dest);
                     if (!dest_sample) {
                         err = EARS_ERR_CANT_WRITE;
                         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
                     } else {
                         sysmem_copyptr(orig_sample + this_start * channelcount, dest_sample, (this_end - this_start) * channelcount * sizeof(float));
                         buffer_setdirty(this_dest);
-                        buffer_unlocksamples(this_dest);
+                        ears_buffer_unlocksamples(this_dest);
                     }
                 }
             }
             
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         }
     } else {
         err = EARS_ERR_GENERIC;
@@ -1882,7 +1905,7 @@ void ears_buffer_preprocess_sr_single(t_object *ob, double target_sr, t_buffer_o
         long num_out_frames = ceil(num_in_frames * resampling_factor);
         float *new_samples = (float *)bach_newptr(num_out_frames * num_channels * sizeof(float));
         ears_resample_sinc(*factor_sample, num_in_frames, &new_samples, num_out_frames, resampling_factor, num_channels, this_sr/2., this_sr, resamplingfiltersize);
-        buffer_unlocksamples(factor);
+        ears_buffer_unlocksamples(factor);
         *factor_sample = new_samples;
         *resampled = true;
         *new_factor_sample = num_out_frames;
@@ -1899,7 +1922,7 @@ t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long sourc
     t_ears_err err = EARS_ERR_NONE;
     bool resampled = false;
     double sr = ears_buffer_get_sr(ob, source);
-    float *source_sample = buffer_locksamples(source);
+    float *source_sample = ears_buffer_locksamples(source);
     
     if (!source_sample) {
         err = EARS_ERR_CANT_READ;
@@ -1913,7 +1936,7 @@ t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long sourc
             ears_buffer_preprocess_sr_single(ob, resampling_sr, source, &source_sample, resamplingfiltersize, resamplingmode, &resampled, &source_framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         if (!dest_sample) {
             err = EARS_ERR_CANT_READ;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -1924,13 +1947,13 @@ t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long sourc
             for (long i = 0; i < source_framecount && i < dest_framecount; i++) {
                 dest_sample[i * dest_channelcount + dest_channel] += source_sample[i * source_channelcount + source_channel];
             }
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (resampled)
             bach_freeptr(source_sample);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -1942,7 +1965,7 @@ t_ears_err ears_buffer_clearchannel(t_object *ob, t_buffer_obj *buf, long channe
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -1957,7 +1980,7 @@ t_ears_err ears_buffer_clearchannel(t_object *ob, t_buffer_obj *buf, long channe
             }
         }
         buffer_setdirty(buf);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return err;
@@ -1971,7 +1994,7 @@ t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long sour
     t_ears_err err = EARS_ERR_NONE;
     bool resampled = false;
     double sr = ears_buffer_get_sr(ob, source);
-    float *source_sample = buffer_locksamples(source);
+    float *source_sample = ears_buffer_locksamples(source);
     
     if (!source_sample) {
         err = EARS_ERR_CANT_READ;
@@ -1985,7 +2008,7 @@ t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long sour
             ears_buffer_preprocess_sr_single(ob, resampling_sr, source, &source_sample, resamplingfiltersize, resamplingmode, &resampled, &source_framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         if (!dest_sample) {
             err = EARS_ERR_CANT_READ;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -1996,13 +2019,13 @@ t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long sour
             for (long i = 0; i < source_framecount && i < dest_framecount; i++) {
                 dest_sample[i * dest_channelcount + dest_channel] = source_sample[i * source_channelcount + source_channel];
             }
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (resampled)
             bach_freeptr(source_sample);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -2166,7 +2189,7 @@ t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *am
     double min = 0, max = 0;
     long minsample = 0, maxsample = 0;
 
-    float *sample = buffer_locksamples(source);
+    float *sample = ears_buffer_locksamples(source);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -2194,7 +2217,7 @@ t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *am
         }
     }
     
-    buffer_unlocksamples(source);
+    ears_buffer_unlocksamples(source);
     
     if (ampmin)
         *ampmin = min;
@@ -2224,7 +2247,7 @@ t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms)
     t_ears_err err = EARS_ERR_NONE;
     double tot = 0;
     
-    float *sample = buffer_locksamples(source);
+    float *sample = ears_buffer_locksamples(source);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -2244,7 +2267,7 @@ t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms)
         }
     }
     
-    buffer_unlocksamples(source);
+    ears_buffer_unlocksamples(source);
     
     if (rms)
         *rms = tot;
@@ -2260,7 +2283,7 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -2277,7 +2300,7 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
 //            ears_buffer_set_size_samps(ob, dest, framecount);
         }
         
-        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        float *dest_sample = (source == dest ? orig_sample : ears_buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2290,10 +2313,10 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             
             buffer_setdirty(dest);
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -2308,7 +2331,7 @@ t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -2323,7 +2346,7 @@ t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
 
-        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        float *dest_sample = (source == dest ? orig_sample : ears_buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2339,10 +2362,10 @@ t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             
             buffer_setdirty(dest);
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -2362,7 +2385,7 @@ t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_ob
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -2375,7 +2398,7 @@ t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_ob
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        float *dest_sample = (source == dest ? orig_sample : ears_buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2388,10 +2411,10 @@ t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_ob
             
             buffer_setdirty(dest);
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -2498,7 +2521,7 @@ t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -2511,7 +2534,7 @@ t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
@@ -2519,7 +2542,7 @@ t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2576,13 +2599,13 @@ t_ears_err ears_buffer_pan1d(t_object *ob, t_buffer_obj *source, t_buffer_obj *d
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -2598,7 +2621,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
 
     if (!orig_sample) {
@@ -2611,7 +2634,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
@@ -2619,7 +2642,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2663,13 +2686,13 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
 
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -2683,7 +2706,7 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *source_sample = buffer_locksamples(source);
+    float *source_sample = ears_buffer_locksamples(source);
     float *source_sample_wk = NULL;
 
     if (!source_sample) {
@@ -2696,7 +2719,7 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
         if (source == dest) { // inplace operation!
             source_sample_wk = (float *)bach_newptr(source_channelcount * source_framecount * sizeof(float));
             sysmem_copyptr(source_sample, source_sample_wk, source_channelcount * source_framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             source_sample_wk = source_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
@@ -2707,13 +2730,13 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
 //        t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
 //        t_atom_long    dest_framecount   = buffer_getframecount(dest);
  
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
-            float *pan_sample = buffer_locksamples(pan);
+            float *pan_sample = ears_buffer_locksamples(pan);
             
             if (!pan_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -2761,16 +2784,16 @@ t_ears_err ears_buffer_pan1d_buffer(t_object *ob, t_buffer_obj *source, t_buffer
                     }
                 }
                 
-                buffer_unlocksamples(pan);
+                ears_buffer_unlocksamples(pan);
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(source_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -2788,7 +2811,7 @@ t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffe
     
     t_ears_err err = EARS_ERR_NONE;
     double sr = ears_buffer_get_sr(ob, buf);
-    float *buf_sample = buffer_locksamples(buf);
+    float *buf_sample = ears_buffer_locksamples(buf);
     
     if (!buf_sample) {
         err = EARS_ERR_CANT_READ;
@@ -2798,7 +2821,7 @@ t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffe
         t_atom_long	framecount   = buffer_getframecount(buf);
         
         bool resampled = false;
-        float *factor_sample = buffer_locksamples(factor);
+        float *factor_sample = ears_buffer_locksamples(factor);
 
         if (!factor_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2824,10 +2847,10 @@ t_ears_err ears_buffer_multiply_inplace(t_object *ob, t_buffer_obj *buf, t_buffe
             if (resampled)
                 bach_freeptr(factor_sample);
             else
-                buffer_unlocksamples(factor);
+                ears_buffer_unlocksamples(factor);
         }
         buffer_setdirty(buf);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return err;
@@ -2842,7 +2865,7 @@ t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj
     t_ears_err err = EARS_ERR_NONE;
     bool resampled = false;
     double sr = ears_buffer_get_sr(ob, buf);
-    float *buf_sample = buffer_locksamples(buf);
+    float *buf_sample = ears_buffer_locksamples(buf);
     
     if (!buf_sample) {
         err = EARS_ERR_CANT_READ;
@@ -2851,7 +2874,7 @@ t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj
         t_atom_long	channelcount = buffer_getchannelcount(buf);
         t_atom_long	framecount   = buffer_getframecount(buf);
         
-        float *addend_sample = buffer_locksamples(addend);
+        float *addend_sample = ears_buffer_locksamples(addend);
         
         if (!addend_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -2874,10 +2897,10 @@ t_ears_err ears_buffer_sum_inplace(t_object *ob, t_buffer_obj *buf, t_buffer_obj
             if (resampled)
                 bach_freeptr(addend_sample);
             else
-                buffer_unlocksamples(addend);
+                ears_buffer_unlocksamples(addend);
         }
         buffer_setdirty(buf);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return err;
@@ -2893,7 +2916,7 @@ t_llll *ears_buffer_to_llll(t_object *ob, t_buffer_obj *buf)
     if (!buf)
         return out;
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -2916,7 +2939,7 @@ t_llll *ears_buffer_to_llll(t_object *ob, t_buffer_obj *buf)
         bach_freeptr(chan);
     }
     
-    buffer_unlocksamples(buf);
+    ears_buffer_unlocksamples(buf);
     return out;
 }
 
@@ -2926,7 +2949,7 @@ t_atom_long ears_buffer_channel_to_array(t_object *ob, t_buffer_obj *buf, long c
     if (!buf)
         return -1;
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     t_atom_long    framecount = 0;
     
     if (!sample) {
@@ -2945,7 +2968,7 @@ t_atom_long ears_buffer_channel_to_array(t_object *ob, t_buffer_obj *buf, long c
             (*outsamples)[i] = sample[channelcount * i + channel];
     }
     
-    buffer_unlocksamples(buf);
+    ears_buffer_unlocksamples(buf);
     return framecount;
 }
 
@@ -2954,7 +2977,7 @@ t_atom_long ears_buffer_channel_to_double_array(t_object *ob, t_buffer_obj *buf,
     if (!buf)
         return -1;
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     t_atom_long    framecount = 0;
     
     if (!sample) {
@@ -2973,7 +2996,7 @@ t_atom_long ears_buffer_channel_to_double_array(t_object *ob, t_buffer_obj *buf,
             (*outsamples)[i] = sample[channelcount * i + channel];
     }
     
-    buffer_unlocksamples(buf);
+    ears_buffer_unlocksamples(buf);
     return framecount;
 }
 
@@ -2996,7 +3019,7 @@ t_ears_err ears_buffer_from_llll(t_object *ob, t_buffer_obj *buf, t_llll *ll, ch
     if (reformat)
         ears_buffer_set_size_and_numchannels(ob, buf, max_num_samples, num_channels);
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -3023,7 +3046,7 @@ t_ears_err ears_buffer_from_llll(t_object *ob, t_buffer_obj *buf, t_llll *ll, ch
         buffer_setdirty(buf);
     }
     
-    buffer_unlocksamples(buf);
+    ears_buffer_unlocksamples(buf);
     return EARS_ERR_NONE;
 }
 
@@ -3235,7 +3258,7 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -3249,7 +3272,7 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        float *dest_sample = (source == dest ? orig_sample : ears_buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -3268,10 +3291,10 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             
             buffer_setdirty(dest);
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
 
     }
     
@@ -3285,7 +3308,7 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -3299,7 +3322,7 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        float *dest_sample = (source == dest ? orig_sample : ears_buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -3322,9 +3345,9 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             
             buffer_setdirty(dest);
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -3337,7 +3360,7 @@ t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -3352,7 +3375,7 @@ t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+        float *dest_sample = (source == dest ? orig_sample : ears_buffer_locksamples(dest));
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -3371,9 +3394,9 @@ t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_
             
             buffer_setdirty(dest);
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -3473,7 +3496,7 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         return ears_buffer_fade_inplace(ob, source, fade_in_samples, fade_out_samples, fade_in_type, fade_out_type, fade_in_curve, fade_out_curve, slopemapping);
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -3488,7 +3511,7 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         t_atom_long dest_channelcount = buffer_getchannelcount(dest);
         
         if (!dest_sample) {
@@ -3513,9 +3536,9 @@ t_ears_err ears_buffer_fade(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -3539,7 +3562,7 @@ t_ears_err ears_buffer_fade_ms(t_object *ob, t_buffer_obj *source, t_buffer_obj 
 t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_in_samples, long fade_out_samples, e_ears_fade_types fade_in_type, e_ears_fade_types fade_out_type, double fade_in_curve, double fade_out_curve, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -3566,7 +3589,7 @@ t_ears_err ears_buffer_fade_inplace(t_object *ob, t_buffer_obj *buf, long fade_i
         }
         
         buffer_setdirty(buf);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return err;
@@ -3602,7 +3625,7 @@ void ears_buffer_preprocess_sr_policies(t_object *ob, t_buffer_obj **source, lon
                 
                 ears_resample(resamplingmode, samples[i], num_in_frames, &new_samples, num_out_frames, factor, num_channels, this_sr/2., this_sr, resamplingfiltersize);
                 
-                buffer_unlocksamples(source[i]);
+                ears_buffer_unlocksamples(source[i]);
                 samples[i] = new_samples;
                 num_samples[i] = num_out_frames;
                 must_free_samples[i] = true;
@@ -3664,7 +3687,7 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
     channelcount = buffer_getchannelcount(source[0]);
     for (i = 0, num_locked = 0; i < num_sources; i++, num_locked++) {
         if (source_first_unique_idx[i] == i) {
-            samples[i] = buffer_locksamples(source[i]);
+            samples[i] = ears_buffer_locksamples(source[i]);
             if (!samples[i]) {
                 err = EARS_ERR_CANT_READ;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -3714,7 +3737,7 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
     
     ears_buffer_set_size_and_numchannels(ob, dest, total_length, channelcount);
 
-    dest_sample = buffer_locksamples(dest);
+    dest_sample = ears_buffer_locksamples(dest);
     if (!dest_sample) {
         err = EARS_ERR_CANT_WRITE;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -3741,7 +3764,7 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
         }
         
         buffer_setdirty(dest);
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
     }
     
 end:
@@ -3749,7 +3772,7 @@ end:
         if (must_free_samples[i] && samples[i])
             bach_freeptr(samples[i]);
         else if (source_first_unique_idx[i] == i)
-            buffer_unlocksamples(source[i]);
+            ears_buffer_unlocksamples(source[i]);
     }
     
     bach_freeptr(source_first_unique_idx);
@@ -3817,7 +3840,7 @@ t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, lo
     channelcount = buffer_getchannelcount(source[0]);        // number of floats in a frame
     for (i = 0, num_locked = 0; i < num_sources; i++, num_locked++) {
         if (source_first_unique_idx[i] == i) {
-            samples[i] = buffer_locksamples(source[i]);
+            samples[i] = ears_buffer_locksamples(source[i]);
             if (!samples[i]) {
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -3846,7 +3869,7 @@ t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, lo
     
     ears_buffer_set_size_and_numchannels(ob, dest, total_length, channelcount);
     
-    dest_sample = buffer_locksamples(dest);
+    dest_sample = ears_buffer_locksamples(dest);
     if (!dest_sample) {
         err = EARS_ERR_CANT_WRITE;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -3885,7 +3908,7 @@ t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, lo
         }
         
         buffer_setdirty(dest);
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
     }
     
 end:
@@ -3893,7 +3916,7 @@ end:
         if (must_free_samples[i])
             bach_freeptr(samples[i]);
         else if (source_first_unique_idx[i] == i)
-            buffer_unlocksamples(source[i]);
+            ears_buffer_unlocksamples(source[i]);
     }
     
     bach_freeptr(source_first_unique_idx);
@@ -4000,7 +4023,7 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
     
     for (i = 0, num_locked = 0; i < num_sources; i++, num_locked++) {
         if (source_first_unique_idx[i] == i) {
-            samples[i] = buffer_locksamples(source[i]);
+            samples[i] = ears_buffer_locksamples(source[i]);
             if (!samples[i]) {
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -4045,7 +4068,7 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
 //    ears_buffer_set_size_samps(ob, dest, total_length);
     ears_buffer_set_size_and_numchannels(ob, dest, total_length, channelcount);
     
-    dest_sample = buffer_locksamples(dest);
+    dest_sample = ears_buffer_locksamples(dest);
     if (!dest_sample) {
         err = EARS_ERR_CANT_WRITE;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -4086,7 +4109,7 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
         }
         
         buffer_setdirty(dest);
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
     }
     
 end:
@@ -4094,7 +4117,7 @@ end:
         if (must_free_samples[i])
             bach_freeptr(samples[i]);
         else if (source_first_unique_idx[i] == i)
-            buffer_unlocksamples(source[i]);
+            ears_buffer_unlocksamples(source[i]);
     }
     
     bach_freeptr(source_first_unique_idx);
@@ -4135,7 +4158,7 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
 
     float *base_sample, *new_sample;
     
-    new_sample = buffer_locksamples(newbuffer);
+    new_sample = ears_buffer_locksamples(newbuffer);
     
     if (new_sr != sr) {
         // must resample!
@@ -4144,7 +4167,7 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
         long num_out_frames = ceil(num_in_frames * factor);
         float *resampled_samples = (float *)bach_newptr(num_out_frames * new_channelcount * sizeof(float));
         ears_resample(resamplingmode, new_sample, num_in_frames, &resampled_samples, num_out_frames, factor, new_channelcount, new_sr/2., new_sr, resamplingfiltersize);
-        buffer_unlocksamples(newbuffer);
+        ears_buffer_unlocksamples(newbuffer);
         new_sample = resampled_samples;
         must_free = true;
     }
@@ -4161,7 +4184,7 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
     }
     *basebuffer_numframes = total_length;
     
-    base_sample = buffer_locksamples(basebuffer);
+    base_sample = ears_buffer_locksamples(basebuffer);
     if (!base_sample) {
         err = EARS_ERR_CANT_WRITE;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -4180,14 +4203,14 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
         }
         
         buffer_setdirty(basebuffer);
-        buffer_unlocksamples(basebuffer);
+        ears_buffer_unlocksamples(basebuffer);
     }
     
 //end:
     if (must_free)
         bach_freeptr(new_sample);
     else
-        buffer_unlocksamples(newbuffer);
+        ears_buffer_unlocksamples(newbuffer);
     
 
     return err;
@@ -4379,7 +4402,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
     ears_buffer_set_size_and_numchannels(e_ob, *dest, duration_samps, 1);
     ears_buffer_set_sr(e_ob, *dest, sr_os);
 
-    float *sample = buffer_locksamples(*dest);
+    float *sample = ears_buffer_locksamples(*dest);
 
     if (mode == EARS_SYNTHMODE_WAVETABLE && (!wavetable || wavetable_length < 2)) {
         err = EARS_ERR_GENERIC;
@@ -4469,7 +4492,7 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
         }
         
         buffer_setdirty(*dest);
-        buffer_unlocksamples(*dest);
+        ears_buffer_unlocksamples(*dest);
         
         
         
@@ -4512,7 +4535,7 @@ t_ears_err ears_buffer_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -4525,7 +4548,7 @@ t_ears_err ears_buffer_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change num frames/channel count
@@ -4533,7 +4556,7 @@ t_ears_err ears_buffer_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *
 
         ears_buffer_set_size_and_numchannels(ob, dest, new_numsamples, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -4547,13 +4570,13 @@ t_ears_err ears_buffer_repeat(t_object *ob, t_buffer_obj *source, t_buffer_obj *
                 sysmem_copyptr(orig_sample_wk, dest_sample + f * channelcount, channelcount * MIN(framecount, new_numsamples - f) * sizeof(float));
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -4574,7 +4597,7 @@ t_ears_err ears_buffer_offset(t_object *ob, t_buffer_obj *source, t_buffer_obj *
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -4587,7 +4610,7 @@ t_ears_err ears_buffer_offset(t_object *ob, t_buffer_obj *source, t_buffer_obj *
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change num frames and num channels
@@ -4595,7 +4618,7 @@ t_ears_err ears_buffer_offset(t_object *ob, t_buffer_obj *source, t_buffer_obj *
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount + shift_samps, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -4609,13 +4632,13 @@ t_ears_err ears_buffer_offset(t_object *ob, t_buffer_obj *source, t_buffer_obj *
             sysmem_copyptr(orig_sample_wk, dest_sample + shift_samps * channelcount, channelcount * framecount * sizeof(float));
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -4631,7 +4654,7 @@ t_ears_err ears_buffer_offset_subsampleprec(t_object *ob, t_buffer_obj *source, 
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -4645,7 +4668,7 @@ t_ears_err ears_buffer_offset_subsampleprec(t_object *ob, t_buffer_obj *source, 
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change num frames and num channels
@@ -4653,7 +4676,7 @@ t_ears_err ears_buffer_offset_subsampleprec(t_object *ob, t_buffer_obj *source, 
         
         ears_buffer_set_size_and_numchannels(ob, dest, out_framecount, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -4670,13 +4693,13 @@ t_ears_err ears_buffer_offset_subsampleprec(t_object *ob, t_buffer_obj *source, 
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -4694,7 +4717,7 @@ t_ears_err ears_buffer_trim(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -4728,7 +4751,7 @@ t_ears_err ears_buffer_trim(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
             }
         }
 
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
         
         if (start_samp > 0 || end_samp_included < framecount - 1)
             ears_buffer_crop(ob, source, dest, start_samp, end_samp_included + 1); // crop wants as end sample the FIRST sample not to be taken
@@ -4746,7 +4769,7 @@ t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -4760,7 +4783,7 @@ t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change num samples and num channels
@@ -4769,7 +4792,7 @@ t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj
         ears_buffer_set_size_and_numchannels(ob, dest, framecount/factor, channelcount);
         ears_buffer_set_sr(ob, dest, sr/factor);
 
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -4784,13 +4807,13 @@ t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -4810,7 +4833,7 @@ t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj 
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -4823,13 +4846,13 @@ t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj 
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -4860,13 +4883,13 @@ t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj 
 
             bach_freeptr(prev);
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -4880,7 +4903,7 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -4893,13 +4916,13 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -4924,13 +4947,13 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
             bach_freeptr(prev_fb_1);
             bach_freeptr(prev_fb_2);
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -4945,7 +4968,7 @@ t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_ob
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -4958,7 +4981,7 @@ t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_ob
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change num frames/num channels
@@ -4966,7 +4989,7 @@ t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_ob
         
         ears_buffer_set_size_and_numchannels(ob, dest, channelcount, framecount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -4978,13 +5001,13 @@ t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_ob
                     dest_sample[c * framecount + f] = orig_sample_wk[f * channelcount + c];
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -5073,7 +5096,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
     
     for (i = 0; i < num_arguments; i++) {
         if (source[i] && (source_first_unique_idx[i] == i)) {
-            samples[i] = buffer_locksamples((t_buffer_obj *)hatom_getobj(arguments+i));
+            samples[i] = ears_buffer_locksamples((t_buffer_obj *)hatom_getobj(arguments+i));
             locked[i] = true;
             if (!samples[i]) {
                 err = EARS_ERR_CANT_WRITE;
@@ -5127,7 +5150,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         }
     }
     
-    dest_sample = buffer_locksamples(dest);
+    dest_sample = ears_buffer_locksamples(dest);
     if (!dest_sample) {
         err = EARS_ERR_CANT_WRITE;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -5197,7 +5220,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         }
         
         buffer_setdirty(dest);
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
     }
     
 end:
@@ -5206,7 +5229,7 @@ end:
             if (must_free_samples[i])
                 bach_freeptr(samples[i]);
             else if (source_first_unique_idx[i] == i)
-                buffer_unlocksamples((t_buffer_obj *)hatom_getobj(arguments+i));
+                ears_buffer_unlocksamples((t_buffer_obj *)hatom_getobj(arguments+i));
         }
     }
     
@@ -5381,7 +5404,7 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -5467,7 +5490,7 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
             }
         }
 
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return err;
@@ -5483,7 +5506,7 @@ t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -5559,7 +5582,7 @@ t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *
         
         bach_freeptr(ampenv);
         bach_freeptr(temp);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return err;
@@ -5574,7 +5597,7 @@ std::vector<float> ears_buffer_get_sample_vector_channel(t_object *ob, t_buffer_
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -5587,7 +5610,7 @@ std::vector<float> ears_buffer_get_sample_vector_channel(t_object *ob, t_buffer_
         for (long f = 0; f < framecount; f++) {
             res.push_back(sample[f * channelcount + channelnum]);
         }
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return res;
@@ -5615,7 +5638,7 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -5631,7 +5654,7 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
                 sum += sample[f * channelcount + c];
             res.push_back(sum/channelcount);
         }
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     return res;
@@ -5711,7 +5734,7 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
     
     t_ears_err err = EARS_ERR_NONE;
     double half_kneewidth_dB = kneewidth_dB / 2.;
-    float *source_sample = buffer_locksamples(source);
+    float *source_sample = ears_buffer_locksamples(source);
     bool inplace = false, separate_sidechain = false;
     
     if (!source_sample) {
@@ -5727,7 +5750,7 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
         if (source != dest) {
             inplace = false;
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, source_framecount);
-            dest_sample = buffer_locksamples(dest);
+            dest_sample = ears_buffer_locksamples(dest);
         } else {
             inplace = true;
             dest_sample = source_sample;
@@ -5743,7 +5766,7 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
             separate_sidechain = true;
             sidechain_channelcount = buffer_getchannelcount(sidechain);
             sidechain_framecount = buffer_getframecount(sidechain);
-            sidechain_sample = buffer_locksamples(sidechain);
+            sidechain_sample = ears_buffer_locksamples(sidechain);
         }
         
         if (!dest_sample) {
@@ -5801,13 +5824,13 @@ t_ears_err ears_buffer_compress(t_object *ob, t_buffer_obj *source, t_buffer_obj
                     dest_sample[i * dest_channelcount + c] = source_sample[i * dest_channelcount + c] * gain_to_apply_linear;
             }
             if (!inplace)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
         
         if (separate_sidechain)
-            buffer_unlocksamples(sidechain);
+            ears_buffer_unlocksamples(sidechain);
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -5820,7 +5843,7 @@ t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -5833,7 +5856,7 @@ t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
@@ -5841,7 +5864,7 @@ t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -5878,13 +5901,13 @@ t_ears_err ears_buffer_rms_envelope(t_object *ob, t_buffer_obj *source, t_buffer
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -5896,8 +5919,8 @@ long ears_buffer_get_mono_minindex_weighted(t_object *ob, t_buffer_obj *source, 
     double min = 0;
     long minsample = -1;
 
-    float *source_sample = buffer_locksamples(source);
-    float *mask_sample = buffer_locksamples(mask);
+    float *source_sample = ears_buffer_locksamples(source);
+    float *mask_sample = ears_buffer_locksamples(mask);
 
     if (!source_sample || !mask_sample) {
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -5919,8 +5942,8 @@ long ears_buffer_get_mono_minindex_weighted(t_object *ob, t_buffer_obj *source, 
         }
     }
     
-    buffer_unlocksamples(source);
-    buffer_unlocksamples(mask);
+    ears_buffer_unlocksamples(source);
+    ears_buffer_unlocksamples(mask);
     
     return minsample;
 }
@@ -5961,12 +5984,12 @@ t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buf
         ears_buffer_clone(ob, source, dest);
         ears_buffer_clear(ob, dest);
     } else if (delta_num_samps < 0) { // squash
-        float *dest_sample = buffer_locksamples(dest);
-        float *mask_sample = buffer_locksamples(mask);
+        float *dest_sample = ears_buffer_locksamples(dest);
+        float *mask_sample = ears_buffer_locksamples(mask);
         if (!dest_sample) {
             err = EARS_ERR_CANT_READ;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         } else {
             
             long dest_numsamples = ears_buffer_get_size_samps(ob, mask);
@@ -6029,7 +6052,7 @@ t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buf
             ears_buffer_split(ob, source, chunks, &regionstartsamp[0], &regionendsamp[0], num_regions);
 
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
 
             ears_buffer_join(ob, chunks, num_regions, dest, &xfade_samples_reg[0], false, fade_type, fade_curve, slopemapping, EARS_RESAMPLINGPOLICY_DONT, 11, EARS_RESAMPLINGMODE_SINC);
             
@@ -6038,7 +6061,7 @@ t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buf
             bach_freeptr(chunks);
         }
         
-        buffer_unlocksamples(mask);
+        ears_buffer_unlocksamples(mask);
 
     } else if (delta_num_samps > 0){
         object_error(ob, "Time-domain timesquash does not support adding time.");
@@ -6199,7 +6222,7 @@ e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s)
 t_ears_err ears_buffer_eq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, long *ans)
 {
     t_ears_err err = EARS_ERR_NONE;
-    float *sample1 = buffer_locksamples(buf1);
+    float *sample1 = ears_buffer_locksamples(buf1);
     *ans = 1;
     
     if (!sample1) {
@@ -6212,7 +6235,7 @@ t_ears_err ears_buffer_eq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, 
         bool spectral1 = ears_buffer_is_spectral(ob, buf1);
         t_ears_spectralbuf_metadata *data1 = spectral1 ? ears_spectralbuf_metadata_get(ob, buf1) : NULL;
         
-        float *sample2 = buffer_locksamples(buf2);
+        float *sample2 = ears_buffer_locksamples(buf2);
         if (!sample2) {
             err = EARS_ERR_CANT_READ;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -6234,10 +6257,10 @@ t_ears_err ears_buffer_eq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, 
                     }
                 }
             }
-            buffer_unlocksamples(buf2);
+            ears_buffer_unlocksamples(buf2);
         }
         
-        buffer_unlocksamples(buf1);
+        ears_buffer_unlocksamples(buf1);
     }
     return err;
 }
@@ -6265,7 +6288,7 @@ t_ears_err ears_buffer_todiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj 
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -6278,7 +6301,7 @@ t_ears_err ears_buffer_todiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj 
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change num samples and num channels
@@ -6286,7 +6309,7 @@ t_ears_err ears_buffer_todiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj 
 
         ears_buffer_set_size_and_numchannels(ob, dest, framecount-1, channelcount);
 
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -6307,13 +6330,13 @@ t_ears_err ears_buffer_todiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj 
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -6332,7 +6355,7 @@ t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_ob
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -6349,7 +6372,7 @@ t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_ob
             } else {
                 orig_sample_wk = NULL;
             }
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change num samples and num channels
@@ -6357,7 +6380,7 @@ t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_ob
 
         ears_buffer_set_size_and_numchannels(ob, dest, framecount+1, channelcount);
 
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -6381,14 +6404,14 @@ t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_ob
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) { // inplace operation!
             if (orig_sample_wk)
                 bach_freeptr(orig_sample_wk);
         } else {
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         }
     }
     
@@ -6400,7 +6423,7 @@ t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_ob
     if (!initial)
         return ears_buffer_fromdiffs(ob, source, dest, NULL, 0);
     
-    float *sample = buffer_locksamples(initial);
+    float *sample = ears_buffer_locksamples(initial);
     if (!sample) {
         return ears_buffer_fromdiffs(ob, source, dest, NULL, 0);
     } else {
@@ -6412,7 +6435,7 @@ t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_ob
             for (long c = 0; c < numchans; c++)
                 initial_fl[c] = sample[0 * numchans + c];
         }
-        buffer_unlocksamples(initial);
+        ears_buffer_unlocksamples(initial);
         return ears_buffer_fromdiffs(ob, source, dest, initial_fl, initial_fl ? numchans : 0);
     }
 }
@@ -6424,7 +6447,7 @@ t_ears_err ears_buffer_phasewrap(t_object *ob, t_buffer_obj *source, t_buffer_ob
 
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -6438,7 +6461,7 @@ t_ears_err ears_buffer_phasewrap(t_object *ob, t_buffer_obj *source, t_buffer_ob
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         }
 
-        float *dest_sample = (source == dest) ? orig_sample : buffer_locksamples(dest);
+        float *dest_sample = (source == dest) ? orig_sample : ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -6472,10 +6495,10 @@ t_ears_err ears_buffer_phasewrap(t_object *ob, t_buffer_obj *source, t_buffer_ob
             
             buffer_setdirty(dest);
             if (source != dest)
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
         }
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -6521,17 +6544,17 @@ t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *sou
     bool must_free_samples[2];
     bool resampled;
 
-    samples[0] = buffer_locksamples(sources[0]);
+    samples[0] = ears_buffer_locksamples(sources[0]);
     if (!samples[0]) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
         return EARS_ERR_CANT_READ;
     }
-    samples[1] = (source1 == source2 ? samples[0] : buffer_locksamples(sources[1]));
+    samples[1] = (source1 == source2 ? samples[0] : ears_buffer_locksamples(sources[1]));
     if (!samples[1]) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
-        buffer_unlocksamples(sources[0]);
+        ears_buffer_unlocksamples(sources[0]);
         return EARS_ERR_CANT_READ;
     }
     num_samples[0] = ears_buffer_get_size_samps(ob, sources[0]);
@@ -6552,7 +6575,7 @@ t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *sou
 
     ears_buffer_set_size_and_numchannels(ob, dest, outnumsamps, outnumchans);
 
-    float *dest_sample = ((dest == sources[0] && !must_free_samples[0]) ? samples[0] : (dest == sources[1] && !must_free_samples[1] ? samples[1] : buffer_locksamples(dest)));
+    float *dest_sample = ((dest == sources[0] && !must_free_samples[0]) ? samples[0] : (dest == sources[1] && !must_free_samples[1] ? samples[1] : ears_buffer_locksamples(dest)));
     if (!dest_sample) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -6616,17 +6639,17 @@ t_ears_err ears_buffer_op(t_object *ob, t_buffer_obj *source1, t_buffer_obj *sou
     }
 
     if (dest != sources[0] && !must_free_samples[0])
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
     
     if (must_free_samples[0])
         bach_freeptr(samples[0]);
     else
-        buffer_unlocksamples(sources[0]);
+        ears_buffer_unlocksamples(sources[0]);
     
     if (must_free_samples[1])
         bach_freeptr(samples[1]);
     else if (source1 != source2 && source1 != dest)
-        buffer_unlocksamples(sources[1]);
+        ears_buffer_unlocksamples(sources[1]);
 
     return err;
 }
@@ -6641,7 +6664,7 @@ t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num,
     if (!dest)
         return EARS_ERR_NO_BUFFER;
     
-    float *sample = buffer_locksamples(source);
+    float *sample = ears_buffer_locksamples(source);
     if (!sample) {
         object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
         return EARS_ERR_NO_BUFFER;
@@ -6653,7 +6676,7 @@ t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num,
     } else {
         ears_buffer_copy_format(ob, source, dest, true);
         ears_buffer_set_size_and_numchannels(ob, dest, buffer_getframecount(source), buffer_getchannelcount(source));
-        dest_sample = buffer_locksamples(dest);
+        dest_sample = ears_buffer_locksamples(dest);
     }
     
     if (!dest_sample) {
@@ -6718,8 +6741,8 @@ t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num,
     }
 
     if (dest != source)
-        buffer_unlocksamples(dest);
-    buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(dest);
+    ears_buffer_unlocksamples(source);
 
     return err;
 }
@@ -6733,7 +6756,7 @@ t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *e
     if (!dest)
         return EARS_ERR_NO_BUFFER;
     
-    float *sample = buffer_locksamples(source);
+    float *sample = ears_buffer_locksamples(source);
     if (!sample) {
         object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
         return EARS_ERR_NO_BUFFER;
@@ -6745,7 +6768,7 @@ t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *e
     } else {
         ears_buffer_copy_format(ob, source, dest, true);
         ears_buffer_set_size_and_numchannels(ob, dest, buffer_getframecount(source), buffer_getchannelcount(source));
-        dest_sample = buffer_locksamples(dest);
+        dest_sample = ears_buffer_locksamples(dest);
     }
     
     if (!dest_sample) {
@@ -6818,8 +6841,8 @@ t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *e
     }
 
     if (dest != source)
-        buffer_unlocksamples(dest);
-    buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(dest);
+    ears_buffer_unlocksamples(source);
 
     return err;
 }

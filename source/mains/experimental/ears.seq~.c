@@ -634,7 +634,7 @@ void seq_perform64(t_seq *x, t_object *dsp64, double **ins, long numins, double 
 			double reg_fadein_slope = reg->fade_in.slope, reg_fadeout_slope = reg->fade_out.slope; 
 //			long reg_fadein_type = reg->fade_in.fade_type, reg_fadeout_type = reg->fade_out.fade_type;
 
-			t_float		*tab = buffer_locksamples(buffer);
+			t_float		*tab = ears_buffer_locksamples(buffer);
 			if (!tab)
 				continue;
 			
@@ -670,7 +670,7 @@ void seq_perform64(t_seq *x, t_object *dsp64, double **ins, long numins, double 
 					}
 				}
 			}
-			buffer_unlocksamples(buffer);
+			ears_buffer_unlocksamples(buffer);
 		}
 		
 		// Increase samples cursor
@@ -1733,7 +1733,7 @@ void buffer_create_view(t_seq *x, t_seq_buffer *buffer, long view_idx, double sa
 	
 	long i, j, k = 1;
 	float *v = view->samples;
-	t_float	*tab = buffer_locksamples(buffer->buffer);
+	t_float	*tab = ears_buffer_locksamples(buffer->buffer);
 	for (i = 0, j = 0; i < num_view_samples_ceil && j < num_frames; v++) {
 		float abs_max = 0;
 		double k_subs = k * subsampling;
@@ -1749,7 +1749,7 @@ void buffer_create_view(t_seq *x, t_seq_buffer *buffer, long view_idx, double sa
 		*v = abs_max;
 		i++;
 	} 
-	buffer_unlocksamples(buffer->buffer);
+	ears_buffer_unlocksamples(buffer->buffer);
 	
 }
 

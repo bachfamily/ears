@@ -56,7 +56,7 @@ t_ears_err ears_buffer_soundtouch(t_object *ob, t_buffer_obj *source, t_buffer_o
     int SAMPLE_BLOCK_SIZE = 2048;
     
     
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_channel = NULL, *processed_sample = NULL, *processed_sample_channel_wk;
 
     if (!orig_sample) {
@@ -144,7 +144,7 @@ t_ears_err ears_buffer_soundtouch(t_object *ob, t_buffer_obj *source, t_buffer_o
                 processed_sample[f * channelcount + c] = processed_sample_channel_wk[f];
         }
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
         
         if (source == dest) { // inplace operation!
             ears_buffer_set_size_samps(ob, source, outframecount);
@@ -152,7 +152,7 @@ t_ears_err ears_buffer_soundtouch(t_object *ob, t_buffer_obj *source, t_buffer_o
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, outframecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -166,7 +166,7 @@ t_ears_err ears_buffer_soundtouch(t_object *ob, t_buffer_obj *source, t_buffer_o
             sysmem_copyptr(processed_sample, dest_sample, channelcount * outframecount * sizeof(float));
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         bach_freeptr(processed_sample);

@@ -419,7 +419,7 @@ void buf_collect_bang(t_buf_collect *x)
                 ears_buffer_set_size_and_numchannels((t_object *)x, out, x->e_collections_size[c][b], x->e_collections_numchannels[c][b]);
             }
             
-            float *sample = buffer_locksamples(out);
+            float *sample = ears_buffer_locksamples(out);
             if (!sample) {
                 object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
             } else {
@@ -433,7 +433,7 @@ void buf_collect_bang(t_buf_collect *x)
                 }
                 buffer_setdirty(out);
             }
-            buffer_unlocksamples(out);
+            ears_buffer_unlocksamples(out);
             
             if (earsbufobj_iter_progress((t_earsbufobj *)x, c * num_buffers + b, num_outlets * num_buffers)) break;
         }

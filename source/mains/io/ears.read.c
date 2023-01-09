@@ -922,12 +922,12 @@ t_max_err buf_read_WAV_native(t_buf_read *x, t_buffer_obj *outbuf, const char *f
         ears_buffer_set_numchannels((t_object *)x, outbuf, channels);
         ears_buffer_set_size_samps((t_object *)x, outbuf, nSamples);
         
-        t_float *bufsamps = buffer_locksamples(outbuf);
+        t_float *bufsamps = ears_buffer_locksamples(outbuf);
         for (long c = 0; c < channels; c++) {
             for (long i = 0; i < nSamples; i++)
                 bufsamps[i*channels + c] = audioFile.samples[c][i];
         }
-        buffer_unlocksamples(outbuf);
+        ears_buffer_unlocksamples(outbuf);
     }
     
     *markers = AudioCues_to_llll(x, audioFile);
@@ -968,12 +968,12 @@ t_max_err buf_read_AIFF_native(t_buf_read *x, t_buffer_obj *outbuf, const char *
             if (start_samp > 0)
                 AIFF_Seek(ref, start_samp);
             
-            t_float *bufsamps = buffer_locksamples(outbuf);
+            t_float *bufsamps = ears_buffer_locksamples(outbuf);
             if (AIFF_ReadSamplesFloat(ref, bufsamps, num_samps * channels) >= 0) {
-                buffer_unlocksamples(outbuf);
+                ears_buffer_unlocksamples(outbuf);
             } else {
                 // error
-                buffer_unlocksamples(outbuf);
+                ears_buffer_unlocksamples(outbuf);
                 return MAX_ERR_GENERIC;
             }
         }

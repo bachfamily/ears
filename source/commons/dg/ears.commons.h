@@ -282,6 +282,10 @@ t_max_err ears_polybuffer_release(t_buffer_obj *polybuffer, t_symbol *polybuffer
 t_max_err ears_polybuffer_retain(t_buffer_obj *polybuffer, t_symbol *polybuffername);
 
 
+/// WRAPPERS FOR MAX FUNCTIONS
+t_float *ears_buffer_locksamples(t_buffer_obj *buf);
+void ears_buffer_unlocksamples(t_buffer_obj *buf);
+
 
 /// BUFFER MANIPULATION
 

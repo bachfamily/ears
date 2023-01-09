@@ -112,7 +112,7 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
         
         long numsamps = ears_buffer_get_size_samps(ob, buf);
         
-        float *sample = buffer_locksamples(buf);
+        float *sample = ears_buffer_locksamples(buf);
         
         if (!sample) {
             err = EARS_ERR_CANT_READ;
@@ -125,7 +125,7 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
              } */
             sysmem_copyptr(buffer, sample, buffer_size * sizeof(unsigned char));
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
             
         }
     }
@@ -215,7 +215,7 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
     ears_set_mp3_encodingsettings(lame, settings);
     lame_init_params(lame);
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     if (!sample) {
         error("Can't read buffer!");
     } else {
@@ -235,7 +235,7 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
             i += nsamples;
         }
         write = lame_encode_flush(lame, mp3_buffer, MP3_SIZE);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     lame_close(lame);

@@ -116,7 +116,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
 
     if (!orig_sample) {
@@ -129,14 +129,14 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
 
         if (channelcount == 0) {
             object_error(ob, "Buffer has no channels!");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
         
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, outchannelcount);
         } else {
             orig_sample_wk = orig_sample;
@@ -146,7 +146,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
 
         if (order == 0) {
             // special case, not much to do
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -155,7 +155,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                     dest_sample[i] = orig_sample_wk[channelcount * i];
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         } else if (dimension == 3) {
             hoa::Encoder<hoa::Hoa3d, float> encoder(order);
             
@@ -192,7 +192,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
             encoder.setElevation(e);
             encoder.setRadius(d);
             
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -241,7 +241,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
 
         } else {
 
@@ -280,7 +280,7 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
 //            encoder.setElevation(e);
             encoder.setRadius(d);
             
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -323,13 +323,13 @@ t_ears_err ears_buffer_hoa_encode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -354,7 +354,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
     }
 
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
 
     if (!orig_sample) {
@@ -368,7 +368,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
         
@@ -380,7 +380,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         } else {
             orig_sample_wk = orig_sample;
@@ -398,7 +398,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
             }
             decoder.prepare(128); // 128 doesn't really matter, it's the vector size for binaural decoding, but we don't use that here
             
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -410,7 +410,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         } else {
             hoa::DecoderRegular<hoa::Hoa2d, float> decoder(order, num_out_channels);
             
@@ -418,7 +418,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 decoder.setPlanewaveAzimuth(c, -out_channels_azimuth[c]); // flip rotation convention
             }
             
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -430,13 +430,13 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -455,7 +455,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
     
     long num_out_channels = 2;
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
 
     if (!orig_sample) {
@@ -469,7 +469,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
         
         if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels!");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
         
@@ -477,7 +477,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         } else {
             orig_sample_wk = orig_sample;
@@ -500,7 +500,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
             hoa::DecoderBinaural<hoa::Hoa3d, float, hoa::hrir::Listen_1002C_3D> decoder(order);
 #endif
             decoder.prepare(block_size);
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -522,7 +522,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
                 }
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         } else {
 #ifdef EARS_HOA_BINAURAL_SADIE
             hoa::DecoderBinaural<hoa::Hoa2d, float, hoa::hrir::Sadie_D2_2D> decoder(order);
@@ -530,7 +530,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
             hoa::DecoderBinaural<hoa::Hoa2d, float, hoa::hrir::Listen_1002C_2D> decoder(order);
 #endif
             decoder.prepare(block_size);
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
                 object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -540,7 +540,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
                 }
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         for (long c = 0; c < channelcount; c++)
@@ -554,7 +554,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -576,7 +576,7 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -590,20 +590,20 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
 
         if (order > 21 && dimension == 3) {
             object_error(ob, "3D rotation are only supported up to the 21st order.");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
 
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         } else {
             orig_sample_wk = orig_sample;
@@ -643,7 +643,7 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
 
             rotator.setYawPitchRoll(-y, p, r);
 
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -664,7 +664,7 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         } else {
             hoa::Rotate<hoa::Hoa2d, float, float> rotator(order);
             
@@ -672,7 +672,7 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
             if (yaw && yaw->l_head)
                 rotator.setYaw(-hatom_getdouble(&yaw->l_head->l_hatom));
             
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -684,13 +684,13 @@ t_ears_err ears_buffer_hoa_rotate(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -720,7 +720,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float sr = ears_buffer_get_sr(ob, source);
     float *orig_sample_wk = NULL;
     
@@ -738,13 +738,13 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
         
         if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
         
         if (order > 21 && dimension == 3) {
             object_error(ob, "3D shifts are only supported up to the 21st order.");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
         
@@ -753,7 +753,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             ears_buffer_set_size_and_numchannels(ob, dest, outframecount, channelcount);
         } else {
             orig_sample_wk = orig_sample;
@@ -793,7 +793,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
 
             shifter.setShiftAmount(dx, dy, dz);
             
-            float *dest_sample = buffer_locksamples(dest);
+            float *dest_sample = ears_buffer_locksamples(dest);
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -887,7 +887,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
                 bach_freeptr(window);
             }
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         } else {
             // TO DO
 
@@ -896,7 +896,7 @@ t_ears_err ears_buffer_hoa_shift(t_object *ob, t_buffer_obj *source, t_buffer_ob
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -929,7 +929,7 @@ t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_o
     }
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -942,7 +942,7 @@ t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels.");
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
             return EARS_ERR_GENERIC;
         }
         
@@ -955,7 +955,7 @@ t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_o
                 ears_buffer_clone(ob, source, dest);
             buffer_setdirty(dest);
         } else {
-            float *dest_sample = (source == dest ? orig_sample : buffer_locksamples(dest));
+            float *dest_sample = (source == dest ? orig_sample : ears_buffer_locksamples(dest));
             
             if (!dest_sample) {
                 err = EARS_ERR_CANT_WRITE;
@@ -1009,10 +1009,10 @@ t_ears_err ears_buffer_hoa_mirror(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
                 buffer_setdirty(dest);
                 if (source != dest)
-                    buffer_unlocksamples(dest);
+                    ears_buffer_unlocksamples(dest);
             }
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;

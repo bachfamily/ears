@@ -131,7 +131,7 @@ t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source,
         ears_buffer_copy_format(ob, source, dest);
     }
     
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -154,7 +154,7 @@ t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source,
                 buffer_setdirty(source);
             } else {
                 ears_buffer_set_size_samps(ob, dest, framecount);
-                float *dest_sample = buffer_locksamples(dest);
+                float *dest_sample = ears_buffer_locksamples(dest);
                 if (!dest_sample) {
                     err = EARS_ERR_CANT_WRITE;
                     object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -165,12 +165,12 @@ t_ears_err ears_buffer_apply_window_essentia(t_object *ob, t_buffer_obj *source,
                 }
                 
                 buffer_setdirty(dest);
-                buffer_unlocksamples(dest);
+                ears_buffer_unlocksamples(dest);
             }
             
             bach_freeptr(win);
         }
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -235,8 +235,8 @@ t_ears_err ears_vector_stft_essentia(t_object *ob, std::vector<Real> samples, do
     } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  return EARS_ERR_ESSENTIA;   }
 
     
-    float *dest_sample1 = buffer_locksamples(dest1);
-    float *dest_sample2 = buffer_locksamples(dest2);
+    float *dest_sample1 = ears_buffer_locksamples(dest1);
+    float *dest_sample2 = ears_buffer_locksamples(dest2);
     
     if (!dest_sample1 || !dest_sample2) {
         err = EARS_ERR_CANT_WRITE;
@@ -296,8 +296,8 @@ t_ears_err ears_vector_stft_essentia(t_object *ob, std::vector<Real> samples, do
 
         buffer_setdirty(dest1);
         buffer_setdirty(dest2);
-        buffer_unlocksamples(dest1);
-        buffer_unlocksamples(dest2);
+        ears_buffer_unlocksamples(dest1);
+        ears_buffer_unlocksamples(dest2);
 
     }
     
@@ -321,14 +321,14 @@ t_ears_err ears_griffin_lim_essentia(t_object *ob, t_buffer_obj *amplitudes, t_b
     ears_buffer_set_size_and_numchannels(ob, dest, outframecount, 1);
     
     // initialize audio
-    float *tempout_sample = buffer_locksamples(dest);
+    float *tempout_sample = ears_buffer_locksamples(dest);
     if (tempout_sample) {
         t_atom_long    channelcount = buffer_getchannelcount(dest); // must be 1
         t_atom_long    framecount   = buffer_getframecount(dest); // must be outframecount
         
         for (long j = 0; j < framecount*channelcount; j++)
             tempout_sample[j] = random_double_in_range(-1, 1);
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
     }
     
     for (int n = 0; n < params->numGriffinLimIterations; n++) {
@@ -368,7 +368,7 @@ t_ears_err ears_griffin_lim_essentia_2(t_object *ob, t_buffer_obj *amplitudes, t
     float *previous_imag = (float *)bach_newptrclear((wincount + 10) * bincount * sizeof(float));
 
     // initialize audio
-    float *estimate_phases_sample = buffer_locksamples(estimate_phases);
+    float *estimate_phases_sample = ears_buffer_locksamples(estimate_phases);
     if (estimate_phases_sample) {
         t_atom_long    channelcount = buffer_getchannelcount(estimate_phases); // must be 1
         t_atom_long    framecount   = buffer_getframecount(estimate_phases); // must be outframecount
@@ -376,7 +376,7 @@ t_ears_err ears_griffin_lim_essentia_2(t_object *ob, t_buffer_obj *amplitudes, t
         for (long j = 0; j < framecount*channelcount; j++)
             estimate_phases_sample[j] = random_double_in_range(0, TWOPI); // initial random phase
 //                            tempout_sample[j] = random_double_in_range(-1, 1); // white noise?
-        buffer_unlocksamples(estimate_phases);
+        ears_buffer_unlocksamples(estimate_phases);
     }
     
     for (int n = 0; n < params->numGriffinLimIterations; n++) {
@@ -388,8 +388,8 @@ t_ears_err ears_griffin_lim_essentia_2(t_object *ob, t_buffer_obj *amplitudes, t
         ears_vector_stft_essentia(ob, samples, audio_sr, estimate_amps, estimate_phases, polar, fullspectrum, params, angleunit);
         
         // apply momentum
-        float *estimate_amps_sample = buffer_locksamples(estimate_amps);
-        float *estimate_phases_sample = buffer_locksamples(estimate_phases);
+        float *estimate_amps_sample = ears_buffer_locksamples(estimate_amps);
+        float *estimate_phases_sample = ears_buffer_locksamples(estimate_phases);
         if (estimate_phases_sample && estimate_amps_sample) {
             t_atom_long    amps_channelcount = buffer_getchannelcount(estimate_amps); // must be bincount
             t_atom_long    amps_framecount   = buffer_getframecount(estimate_amps); // must be outframecount
@@ -398,8 +398,8 @@ t_ears_err ears_griffin_lim_essentia_2(t_object *ob, t_buffer_obj *amplitudes, t
 
             if (amps_channelcount != bincount || phases_channelcount != bincount || amps_framecount != phases_framecount || amps_framecount > wincount + 10) {
                 object_error(ob, "Error!");
-                buffer_unlocksamples(estimate_amps);
-                buffer_unlocksamples(estimate_phases);
+                ears_buffer_unlocksamples(estimate_amps);
+                ears_buffer_unlocksamples(estimate_phases);
                 break;
             }
             
@@ -415,8 +415,8 @@ t_ears_err ears_griffin_lim_essentia_2(t_object *ob, t_buffer_obj *amplitudes, t
                 previous_imag[j] = imag;
 
             }
-            buffer_unlocksamples(estimate_amps);
-            buffer_unlocksamples(estimate_phases);
+            ears_buffer_unlocksamples(estimate_amps);
+            ears_buffer_unlocksamples(estimate_phases);
         }
     }
 
@@ -507,7 +507,7 @@ t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, 
     
     
     
-    float *dest_sample = buffer_locksamples(dest);
+    float *dest_sample = ears_buffer_locksamples(dest);
     float **source1_sample = (float **)bach_newptr(num_input_buffers * sizeof(float *));
     float **source2_sample = (float **)bach_newptr(num_input_buffers * sizeof(float *));
 
@@ -516,8 +516,8 @@ t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, 
     bool startFromZero = params->startFromZero;
     
     for (long b = 0; b < num_input_buffers; b++) {
-        source1_sample[b] = buffer_locksamples(source1[b]);
-        source2_sample[b] = source2[b] ? buffer_locksamples(source2[b]) : NULL; // no phases?
+        source1_sample[b] = ears_buffer_locksamples(source1[b]);
+        source2_sample[b] = source2[b] ? ears_buffer_locksamples(source2[b]) : NULL; // no phases?
         if (!source2[b])
             all_phases_defined = false; //TO DO check source1_sample != NULL
         if (!source1[b])
@@ -601,7 +601,7 @@ t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, 
 
                     ears_griffin_lim_essentia(ob, source1[c], tempout, polar, fullspectrum, params, angleunit, audio_sr, outframecount);
                     
-                    float *tempout_sample = buffer_locksamples(tempout);
+                    float *tempout_sample = ears_buffer_locksamples(tempout);
                     if (!tempout_sample) {
                         err = EARS_ERR_CANT_WRITE;
                         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
@@ -617,7 +617,7 @@ t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, 
                         for (; i < outframecount; i++) {
                             dest_sample[i * numoutputchannels + c] = 0;
                         }
-                        buffer_unlocksamples(tempout);
+                        ears_buffer_unlocksamples(tempout);
                     }
 
                     ears_buffer_free(tempout);
@@ -630,14 +630,14 @@ t_ears_err ears_specbuffer_istft_essentia(t_object *ob, long num_input_buffers, 
         }
 
         buffer_setdirty(dest);
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
         
     }
     
     for (long b = 0; b < num_input_buffers; b++) {
-        buffer_unlocksamples(source1[b]);
+        ears_buffer_unlocksamples(source1[b]);
         if (source2[b])
-            buffer_unlocksamples(source2[b]);
+            ears_buffer_unlocksamples(source2[b]);
     }
     
     bach_freeptr(source1_sample);
@@ -721,8 +721,8 @@ t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t
     } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  return EARS_ERR_ESSENTIA;   }
 
     
-    float *dest_sample1 = buffer_locksamples(dest1);
-    float *dest_sample2 = buffer_locksamples(dest2);
+    float *dest_sample1 = ears_buffer_locksamples(dest1);
+    float *dest_sample2 = ears_buffer_locksamples(dest2);
     
     if (!dest_sample1 || !dest_sample2) {
         err = EARS_ERR_CANT_WRITE;
@@ -768,8 +768,8 @@ t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t
         
         buffer_setdirty(dest1);
         buffer_setdirty(dest2);
-        buffer_unlocksamples(dest1);
-        buffer_unlocksamples(dest2);
+        ears_buffer_unlocksamples(dest1);
+        ears_buffer_unlocksamples(dest2);
         
     }
     
@@ -812,8 +812,8 @@ t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *ph
     } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  *err = EARS_ERR_ESSENTIA; return out;   }
     
     
-    float *mags_sample = buffer_locksamples(mags);
-    float *phases_sample = phases ? buffer_locksamples(phases) : NULL;
+    float *mags_sample = ears_buffer_locksamples(mags);
+    float *phases_sample = phases ? ears_buffer_locksamples(phases) : NULL;
 
     if (!mags_sample) {
         *err = EARS_ERR_CANT_READ;
@@ -884,9 +884,9 @@ t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *ph
         {
             object_error(ob, e.what());
         }
-        buffer_unlocksamples(mags);
+        ears_buffer_unlocksamples(mags);
         if (phases)
-            buffer_unlocksamples(phases);
+            ears_buffer_unlocksamples(phases);
     }
     
     return out;
@@ -1024,7 +1024,7 @@ t_ears_err ears_vector_tempogram(t_object *ob, std::vector<Real> samples, double
     ears_spectralbuf_metadata_set(ob, dest, &data);
     llll_free(bins);
     
-    float *dest_sample = buffer_locksamples(dest);
+    float *dest_sample = ears_buffer_locksamples(dest);
     
     if (!dest_sample) {
         err = EARS_ERR_CANT_WRITE;
@@ -1047,7 +1047,7 @@ t_ears_err ears_vector_tempogram(t_object *ob, std::vector<Real> samples, double
         }
         
         buffer_setdirty(dest);
-        buffer_unlocksamples(dest);
+        ears_buffer_unlocksamples(dest);
         
     }
     
@@ -4319,7 +4319,7 @@ t_ears_err ears_essentia_fill_buffer_from_vector(t_object *x, t_buffer_obj *buf,
         double new_sr = audiosr * ((values.size()*1.)/dur_samps);
         ears_buffer_set_size_and_numchannels(x, buf, values.size(), numchannels);
         ears_buffer_set_sr(x, buf, new_sr);
-        float *sample = buffer_locksamples(buf);
+        float *sample = ears_buffer_locksamples(buf);
         if (!sample) {
             err = EARS_ERR_CANT_READ;
             object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
@@ -4339,7 +4339,7 @@ t_ears_err ears_essentia_fill_buffer_from_vector(t_object *x, t_buffer_obj *buf,
 //                }
             
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
         
         t_ears_spectralbuf_metadata data;
@@ -4358,7 +4358,7 @@ t_ears_err ears_essentia_fill_buffer_from_vector(t_object *x, t_buffer_obj *buf,
         ears_buffer_set_sr(x, buf, audiosr);
 
         ears_buffer_set_size_and_numchannels(x, buf, dur_samps, numchannels);
-        float *sample = buffer_locksamples(buf);
+        float *sample = ears_buffer_locksamples(buf);
         
         if (!sample) {
             err = EARS_ERR_CANT_READ;
@@ -4404,7 +4404,7 @@ t_ears_err ears_essentia_fill_buffer_from_vector(t_object *x, t_buffer_obj *buf,
                 buffer_setdirty(buf);
             }
             
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
         }
     }
     return err;
@@ -4416,7 +4416,7 @@ t_ears_err ears_essentia_fill_buffer_from_samples(t_object *x, t_buffer_obj *buf
 {
     t_ears_err err = EARS_ERR_NONE;
     ears_buffer_set_size_and_numchannels(x, buf, values.size(), 1);
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -4432,7 +4432,7 @@ t_ears_err ears_essentia_fill_buffer_from_samples(t_object *x, t_buffer_obj *buf
             buffer_setdirty(buf);
         }
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }
@@ -4443,7 +4443,7 @@ t_ears_err ears_essentia_fill_buffer_from_samples(t_object *x, t_buffer_obj *buf
     t_ears_err err = EARS_ERR_NONE;
     long numchannels = values.size() > 0 ? values.size() : 1;
     ears_buffer_set_size_and_numchannels(x, buf, values.size(), numchannels);
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -4459,7 +4459,7 @@ t_ears_err ears_essentia_fill_buffer_from_samples(t_object *x, t_buffer_obj *buf
             buffer_setdirty(buf);
         }
         
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     return err;
 }

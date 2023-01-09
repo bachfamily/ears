@@ -548,7 +548,7 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
         jgraphics_surface_destroy(x->n_surface);
     x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, numframes, numbins);
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
@@ -560,7 +560,7 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
         }
     }
     
-    buffer_unlocksamples(buf);
+    ears_buffer_unlocksamples(buf);
     
     systhread_mutex_unlock(x->n_mutex);
 }
