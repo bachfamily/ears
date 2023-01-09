@@ -1,5 +1,5 @@
 #include "ears.commons.h"
-#ifdef EARS_MP3_SUPPORT
+#if defined EARS_MP3_WRITE_SUPPORT || defined EARS_MP3_READ_SUPPORT
 #include "ears.mp3.h"
 #endif
 
@@ -245,6 +245,10 @@ double ears_buffer_get_size_ms(t_object *ob, t_buffer_obj *buf)
 
 t_atom_float ears_buffer_get_sr(t_object *ob, t_buffer_obj *buf, bool use_original_audio_sr_for_spectral_buffers)
 {
+    if (!buf) {
+        object_bug(ob, "Trying to compute sample rate of NULL buffer.");
+        return ears_get_current_Max_sr();
+    }
     if (use_original_audio_sr_for_spectral_buffers && ears_buffer_is_spectral(ob, buf))
         return ears_spectralbuf_get_original_audio_sr(ob, buf);
     
@@ -393,6 +397,10 @@ t_symbol *ears_buffer_get_name(t_object *ob, t_buffer_obj *buf)
 {
     t_buffer_info info;
     info.b_name = NULL;
+    if (!buf) {
+        object_bug(ob, "Trying to get name of NULL buffer.");
+        return NULL;
+    }
     buffer_getinfo(buf, &info);
     return info.b_name;
 }
@@ -1008,12 +1016,62 @@ long ears_resample_sinc(float *in, long num_in_frames, float **out, long num_out
     return num_out_frames * num_channels;
 }
 
+// EXPERIMENTAL, single channel for now
+// beware: <in> should be allocated with num_in_frames * num_channels floats
+long ears_resample_sinc_env_speed_circular(float *in, long num_in_frames, float **out, double start_factor, double end_factor, double factor_factor, long num_channels, double orig_sr, double window_width, long maxlen_samps)
+{
+    long actual_num_out_frames = 0;
+    for (long ch = 0; ch < 1 /*num_channels*/; ch++) {
+        long alloc = EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC * orig_sr * num_channels;
+        *out = (float *)bach_newptr(alloc * sizeof(float));
+        
+        double factor = start_factor;
+        bool rall = (end_factor >= start_factor);
+        double x = 0;
+        long s = 0;
+        double sr = orig_sr * factor;
+        while (((rall && factor < end_factor) || (!rall && factor > end_factor)) && (maxlen_samps <= 0 || s < maxlen_samps)) {
+            long i, j;
+            double r_w, r_a, r_snc;
+            double fmax = sr / 2.; // TO DO
+            double r_g = 2 * fmax / sr; // Calc gain correction factor
+            double r_y = 0;
+            for (i = -window_width/2; i < window_width/2; i++) { // For 1 window width
+//                x = s / factor;
+                j = (long)(x + i);          // Calc input sample index
+                //rem calculate von Hann Window. Scale and calculate Sinc
+                r_w     = 0.5 - 0.5 * cos(TWOPI*(0.5 + (j - x)/window_width));
+                r_a     = TWOPI*(j - x)*fmax/sr;
+                r_snc   = (r_a != 0 ? r_snc = sin(r_a)/r_a : 1); ///<< sin(r_a) is slow. Do we have other options?
+                j = positive_mod(j, num_in_frames);
+//                if (j >= 0 && j < num_in_frames)
+                r_y   = r_y + r_g * r_w * r_snc * in[num_channels * j + ch];
+            }
+
+            long t = num_channels * s + ch;
+            if (t >= alloc) {
+                alloc += EARS_BUFFER_ASSEMBLE_ALLOCATION_STEP_SEC * orig_sr * num_channels;
+                *out = (float *)bach_resizeptr(*out, alloc * sizeof(float));
+            }
+            (*out)[num_channels * s + ch] = r_y;                  // Return new filtered sample
+            x += 1 / factor;
+            s++;
+            factor *= factor_factor;
+            sr = orig_sr * factor;
+        }
+        actual_num_out_frames = s;
+    }
+    return actual_num_out_frames * num_channels;
+}
+
+
 // Could be improved
 // beware: <in> should be allocated with num_in_frames * num_channels floats, and <out> might be allocated with num_out_frames * num_channels float
 long ears_resample_sinc_env(float *in, long num_in_frames, float **out, long num_out_frames, t_ears_envelope_iterator *factor_env, long num_channels, double fmax, double sr, double window_width)
 {
     double maxfactor = ears_envelope_iterator_get_max_y(factor_env);
-    if (num_out_frames <= 0)
+    long actual_num_out_frames = num_out_frames;
+    if (num_out_frames <= 0) // num_out_frames is an estimate in any case
         num_out_frames = (long)ceil(num_in_frames * maxfactor);
     if (out && !*out)
         *out = (float *)bach_newptr(num_out_frames * num_channels * sizeof(float));
@@ -1028,6 +1086,10 @@ long ears_resample_sinc_env(float *in, long num_in_frames, float **out, long num
             double r_w, r_a, r_snc;
             double r_g = 2 * fmax / sr; // Calc gain correction factor
             double r_y = 0;
+            if (x - window_width/2 > num_in_frames) {
+                actual_num_out_frames = s;
+                break;
+            }
             for (i = -window_width/2; i < window_width/2; i++) { // For 1 window width
 //                x = s / factor;
                 j = (long)(x + i);          // Calc input sample index
@@ -1046,7 +1108,7 @@ long ears_resample_sinc_env(float *in, long num_in_frames, float **out, long num
             }
         }
     }
-    return num_out_frames * num_channels;
+    return actual_num_out_frames * num_channels;
 }
 
 
@@ -1290,6 +1352,47 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
 }
 
 
+// THIS ONE IS EXPERIMENTAL
+// resampling without converting sr
+t_ears_err ears_buffer_resample_envelope_speed_circualar(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    double curr_sr = buffer_getsamplerate(buf);
+    
+    float *sample = buffer_locksamples(buf);
+    
+    if (!sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+        
+        float *outsample = NULL;
+        long out_framecount = ears_resample_sinc_env_speed_circular(sample, framecount, &outsample, factor_start, factor_end, factor_factor, channelcount, curr_sr, window_width, maxlen_samps);
+        
+        buffer_unlocksamples(buf);
+
+        ears_buffer_set_size_samps(ob, buf, out_framecount);
+        
+        float *sample = buffer_locksamples(buf);
+        
+        if (!sample) {
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            bach_copyptr(outsample, sample, out_framecount * sizeof(float));
+            bach_freeptr(outsample);
+            buffer_setdirty(buf);
+            buffer_unlocksamples(buf);
+        }
+    }
+    
+    return err;
+}
+
+
+
 // resampling without converting sr
 t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, e_slope_mapping slopemapping)
 {
@@ -1325,9 +1428,11 @@ t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             ears_envelope_iterator_reset(&eei);
-            ears_resample_sinc_env(temp, framecount, &sample, new_framecount, &eei, channelcount, fmax, sr, window_width);
+            long out_samps_times_channels = ears_resample_sinc_env(temp, framecount, &sample, new_framecount, &eei, channelcount, fmax, sr, window_width);
+            long out_framecount = out_samps_times_channels / channelcount;
             buffer_setdirty(buf);
             ears_buffer_unlocksamples(buf);
+            ears_buffer_set_size_samps_preserve(ob, buf, out_framecount);
         }
         bach_freeptr(temp);
     }
@@ -2152,35 +2257,93 @@ t_ears_err ears_buffer_pack_from_llll(t_object *ob, t_llll *sources_ll, t_buffer
     }
 }
 
-t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *right, t_buffer_obj *dest)
+t_ears_err ears_buffer_lace(t_object *ob, long num_sources, t_buffer_obj **sources, t_buffer_obj *dest)
 {
     t_ears_err err = EARS_ERR_NONE;
     
-    if (!dest)
+    if (!dest || num_sources <= 0) {
+        object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
         return EARS_ERR_NO_BUFFER;
+    }
     
-    long num_channels_left = ears_buffer_get_numchannels(ob, left);
-    long num_channels_right = ears_buffer_get_numchannels(ob, right);
-    long num_channels = num_channels_left + num_channels_right;
-    long max_num_frames = MAX(ears_buffer_get_size_samps(ob, left), ears_buffer_get_size_samps(ob, right));
+    for (long i = 0; i < num_sources; i++) {
+        if (!sources[i]) {
+            object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+            return EARS_ERR_NO_BUFFER;
+        }
+    }
+
+    long *num_channels = (long *)bach_newptr(num_sources * sizeof(long));
+    long *num_samps = (long *)bach_newptr(num_sources * sizeof(long));
+    long *count = (long *)bach_newptrclear(num_sources * sizeof(long));
+    long tot_num_channels = 0, max_num_samps = 0;
+    for (long i = 0; i < num_sources; i++) {
+        num_channels[i] = ears_buffer_get_numchannels(ob, sources[i]);
+        num_samps[i] = ears_buffer_get_size_samps(ob, sources[i]);
+        tot_num_channels += num_channels[i];
+        max_num_samps = MAX(max_num_samps, num_samps[i]);
+    }
     
-    ears_buffer_set_size_and_numchannels(ob, dest, max_num_frames, num_channels);
+    ears_buffer_set_size_and_numchannels(ob, dest, max_num_samps, tot_num_channels);
     
-    long left_i = 0, right_i = 0;
-    for (long i = 0; i < num_channels; i++) {
-        if (i % 2 == 0 && left_i < num_channels_left) {
-            t_ears_err this_err = ears_buffer_copychannel(ob, left, left_i++, dest, i);
-            if (err == EARS_ERR_NONE)
-                err = this_err;
-        } else if (right_i < num_channels_right) {
-            t_ears_err this_err = ears_buffer_copychannel(ob, right, right_i++, dest, i);
+    for (long i = 0; i < tot_num_channels; i++) {
+        long j = i % num_sources;
+        if (count[j] < num_channels[j]) {
+            t_ears_err this_err = ears_buffer_copychannel(ob, sources[j], count[j]++, dest, i);
             if (err == EARS_ERR_NONE)
                 err = this_err;
         }
     }
     
+    bach_freeptr(num_channels);
+    bach_freeptr(num_samps);
+    bach_freeptr(count);
+
     return err;
 }
+
+t_ears_err ears_buffer_delace(t_object *ob, t_buffer_obj *source, long num_dests, t_buffer_obj **dests)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (!source || num_dests <= 0) {
+        object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+        return EARS_ERR_NO_BUFFER;
+    }
+    
+    for (long i = 0; i < num_dests; i++) {
+        if (!dests[i]) {
+            object_error(ob, EARS_ERROR_BUF_NO_BUFFER);
+            return EARS_ERR_NO_BUFFER;
+        }
+    }
+    
+    long num_channels = ears_buffer_get_numchannels(ob, source);
+    long num_samps = ears_buffer_get_size_samps(ob, source);
+    long *num_channels_dest = (long *)bach_newptrclear(num_dests * sizeof(long));
+    long *count = (long *)bach_newptrclear(num_dests * sizeof(long));
+
+    for (long i = 0; i < num_channels; i++) {
+        long j = i % num_dests;
+        num_channels_dest[j]++;
+    }
+    for (long j = 0; j < num_dests; j++) {
+        ears_buffer_set_size_and_numchannels(ob, dests[j], num_samps, num_channels_dest[j]);
+    }
+    for (long i = 0; i < num_channels; i++) {
+        long j = i % num_dests;
+        t_ears_err this_err = ears_buffer_copychannel(ob, source, i, dests[j], count[j]);
+        if (err == EARS_ERR_NONE)
+            err = this_err;
+        count[j]++;
+    }
+    
+    bach_freeptr(num_channels_dest);
+    bach_freeptr(count);
+    
+    return err;
+}
+
 
 
 t_ears_err ears_buffer_get_minmax(t_object *ob, t_buffer_obj *source, double *ampmin, double *ampmax, long *ampminsample, long *ampmaxsample)
@@ -3992,7 +4155,7 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
         return EARS_ERR_NONE;
     } else if (num_sources == 1) {
         if (also_fade_boundaries)
-            return ears_buffer_fade(ob, source[0], dest, xfade_samples ? xfade_samples[0] : 0, xfade_samples ? xfade_samples[0] : 0, fade_type, fade_type, fade_curve, fade_curve, slopemapping);
+            return ears_buffer_fade(ob, source[0], dest, xfade_samples && xfade_samples[0] > 0 ? xfade_samples[0] : 0, xfade_samples && xfade_samples[0] > 0 ? xfade_samples[0] : 0, fade_type, fade_type, fade_curve, fade_curve, slopemapping);
         else
             return ears_buffer_clone(ob, source[0], dest);
     }
@@ -4090,7 +4253,7 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
             
             
             // "sustain"
-            for ( ; j < sample_fadeout_start[i]; j++) {
+            for ( ; j < MIN(sample_end[i], sample_fadeout_start[i]); j++) {
                 // copying samples
                 // TO DO: can be done via sysmem_copyptr()
                 long l = j - sample_start[i];
@@ -4277,7 +4440,7 @@ t_ears_err ears_buffer_from_buffer(t_object *ob, t_buffer_obj **dest, t_symbol *
     t_symbol *name = default_filepath2buffername(buffername, buffer_idx);
     *dest = ears_buffer_make(name);
     
-    t_ears_err this_err = ears_buffer_clone(ob, ears_buffer_getobject(buffername), *dest);
+    t_ears_err this_err = ears_buffer_clone(ob, ears_buffer_get_object(buffername), *dest);
     
     if (start_ms > 0 || end_ms >= 0)
         ears_buffer_crop_ms(ob, *dest, *dest, start_ms, end_ms);
@@ -4300,7 +4463,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
             err = EARS_ERR_GENERIC;
         } else {
             
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
             if (ears_symbol_ends_with(filepath, ".mp3", true)) {
                 err = ears_buffer_read_handle_mp3(ob, filepath->s_name, start_ms, end_ms, *dest, EARS_TIMEUNIT_MS);
             } else {
@@ -4315,7 +4478,7 @@ t_ears_err ears_buffer_from_file(t_object *ob, t_buffer_obj **dest, t_symbol *fi
                     ears_buffer_crop_ms_inplace(ob, *dest, start_ms, end_ms);
                 }
                 
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
             }
 #endif
         }
@@ -4959,8 +5122,47 @@ t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *
     return err;
 }
 
+t_ears_err ears_buffer_dcfilter(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest)
+{
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    t_ears_err err = EARS_ERR_NONE;
+
+    if (dest != source)
+        ears_buffer_clone(ob, source, dest);
+    
+    float *dest_sample = buffer_locksamples(dest);
+    
+    if (!dest_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        for (long c = 0; c < channelcount; c++) {
+            // computing dc offset iteratively (avoids numeric issues!)
+            double dcoffset = 0;
+            long t = 1;
+            for (long f = 0; f < framecount; f++) {
+                dcoffset += (dest_sample[f * channelcount + c] - dcoffset) / t;
+                t++;
+            }
+
+            // removing it
+            for (long f = 0; f < framecount; f++) {
+                dest_sample[f * channelcount + c] -= dcoffset;
+            }
+        }
+        
+        buffer_unlocksamples(dest);
+    }
+    return err;
+}
 
 
+// that is channels/samples transposition; NOT musical transposition
 t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest)
 {
     
@@ -5015,7 +5217,7 @@ t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_ob
 
 
 
-t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
+t_ears_err ears_buffer_expr(t_object *ob, void *expr, /* this can be either a t_expr* or a t_lexpr* depending on EARS_EXPR_USE_LEXPR */
                             t_hatom *arguments, long num_arguments,
                             t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping,
                             e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode)
@@ -5158,10 +5360,15 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         // erasing samples
         memset(dest_sample, 0, total_length_samps * channelcount * sizeof(float));
         
+#ifdef EARS_EXPR_USE_LEXPR
         t_hatom vars[LEXPR_MAX_VARS];
         t_hatom stack[L_MAX_TOKENS];
         hatom_setdouble(stack, 0);
-        
+#else
+        t_atom vars[9];
+        t_atom res;
+        atom_setfloat(&res, 0);
+#endif
 /*        // clearing all variables
         for (long i = 0; i < LEXPR_MAX_VARS; i++)
             hatom_setdouble(vars + i, 0.);
@@ -5171,11 +5378,17 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
         if (expr) {
             long j, c;
             // first: setting all numeric args which are going to be constant
+#ifdef EARS_EXPR_USE_LEXPR
             for (long i = 0; i < num_arguments && i < LEXPR_MAX_VARS; i++) {
                 if (argtype[i] == 1) // number
                     hatom_setdouble(vars+i, numericargs[i]);
             }
-            
+#else
+            for (long i = 0; i < num_arguments && i < 9; i++) {
+                if (argtype[i] == 1) // number
+                    atom_setfloat(vars+i, numericargs[i]);
+            }
+#endif
 
             for (c = 0; c < channelcount; c++) {
                 
@@ -5185,6 +5398,7 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
                     if (argtype[i] == 2) // function
                         ears_envelope_iterator_reset(eei+i);
                 
+#ifdef EARS_EXPR_USE_LEXPR
                 for (j = 0; j < total_length_samps; j++) {
                     // setting variables
                     for (long i = 0; i < num_arguments && i < LEXPR_MAX_VARS; i++) {
@@ -5213,9 +5427,33 @@ t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
   //                  hatom_setdouble(vars+253, total_length_samps > 0 ? ((double)j)/(total_length_samps - 1) : 0);
     //                hatom_setdouble(vars+252, j + 1);
 
-                    lexpr_eval_upon(expr, vars, stack); // optimized version of lexpr_eval for many evaluations
+                    lexpr_eval_upon((t_lexpr *)expr, vars, stack); // optimized version of lexpr_eval for many evaluations
                     dest_sample[j * channelcount + c] = hatom_getdouble(stack);
                 }
+#else
+                for (j = 0; j < total_length_samps; j++) {
+                    // setting variables
+                    for (long i = 0; i < num_arguments && i < 9; i++) {
+                        // could be optimized by stripping the numeric arguments from the cycle, this is not the bottleneck though
+                        switch (argtype[i]) {
+                            case 0: // buffer
+                                atom_setfloat(vars+i, (c < num_channels[i] && j < num_samples[i]) ?
+                                                samples[i][j * num_channels[i] + c] : 0);
+                                break;
+                                
+                            case 2: // envelope
+                                atom_setfloat(vars+i, ears_envelope_iterator_walk_interp(eei+i, j, total_length_samps));
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
+                    expr_eval((t_expr *)expr, MIN(num_arguments, 9), vars, &res);
+                    dest_sample[j * channelcount + c] = atom_getfloat(&res);
+                }
+#endif
+                
             }
         }
         
@@ -5335,6 +5573,37 @@ const char *get_filename_ext(const char *filename)
     return dot + 1;
 }
 
+void ears_print_supported_extensions(t_object *culprit, const char *unsupported_ext, bool write)
+{
+    char error_msg1[2048];
+    char error_msg2[2048];
+#ifdef EARS_MP3_WRITE_SUPPORT
+    bool supportsmp3write = true;
+#else
+    bool supportsmp3write = false;
+#endif
+#ifdef EARS_MP3_READ_SUPPORT
+    bool supportsmp3read = true;
+#else
+    bool supportsmp3read = false;
+#endif
+#ifdef EARS_WAVPACK_SUPPORT
+    bool supportswavpack = true;
+#else
+    bool supportswavpack = false;
+#endif
+    bool supportsmp3 = (write ? supportsmp3write : supportsmp3read);
+    if (unsupported_ext) {
+        snprintf_zero(error_msg1, 2048, "The extension '%s' is not supported for %s.", unsupported_ext, write ? "writing" : "reading");
+        snprintf_zero(error_msg2, 2048, "       Please use one of the following extensions: aif(f), wav(e),%s flac,%s or data.", supportsmp3 ? " mp3," : "", supportswavpack ? " wv (wavpack)," : "");
+    } else {
+        snprintf_zero(error_msg2, 2048, "Supported extensions for %s are: aif(f), wav(e),%s flac,%s or data.", write ? "writing" : "reading", supportsmp3 ? " mp3," : "", supportswavpack ? " wv (wavpack)," : "");
+
+    }
+    object_error(culprit, error_msg1);
+    object_error(culprit, error_msg2);
+}
+
 void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings)
 {
     const char *ext = get_filename_ext(filename->s_name);
@@ -5346,7 +5615,7 @@ void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_e
         ears_writeflac(buf, filename);
     else if (!strcmp(ext, "data"))
         ears_writeraw(buf, filename);
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_WRITE_SUPPORT
     else if (!strcmp(ext, "mp3"))
         ears_writemp3(buf, filename, settings);
 #endif
@@ -5354,25 +5623,8 @@ void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_e
     else if (!strcmp(ext, "wv") || !strcmp(ext, "wavpack"))
         ears_writewavpack(buf, filename, settings);
 #endif
-    else {
-        char error_msg1[2048];
-        char error_msg2[2048];
-#ifdef EARS_MP3_SUPPORT
-        bool supportsmp3 = true;
-#else
-        bool supportsmp3 = false;
-#endif
-#ifdef EARS_WAVPACK_SUPPORT
-        bool supportswavpack = true;
-#else
-        bool supportswavpack = false;
-#endif
-        snprintf_zero(error_msg1, 2048, "The extension '%s' is not supported.", ext);
-        snprintf_zero(error_msg2, 2048, "       Please use one of the following extensions: aif(f), wav(e),%s flac,%s or data.", supportsmp3 ? " mp3," : "", supportswavpack ? " wv (wavpack)," : "");
-        object_error(culprit, ".");
-        object_error(culprit, error_msg1);
-        object_error(culprit, error_msg2);
-    }
+    else
+        ears_print_supported_extensions(culprit, ext, true);
 }
 
 
@@ -5973,7 +6225,7 @@ t_ears_err ears_buffer_squash_waveform(t_object *ob, t_buffer_obj *source, t_buf
     ears_buffer_clone(ob, envelope, mask);
     ears_buffer_fill_inplace(ob, mask, 1.);
 
-    t_buffer_obj *TESTenv = ears_buffer_getobject(gensym("env"));
+    t_buffer_obj *TESTenv = ears_buffer_get_object(gensym("env"));
     ears_buffer_clone(ob, envelope, TESTenv);
 
     long orig_num_samps = ears_buffer_get_size_samps(ob, envelope);
@@ -6201,17 +6453,17 @@ e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s)
         object_warn(ob, "Invalid resampling mode! Defaulting to sinc.");
         return EARS_RESAMPLINGMODE_SINC;
     }
-    if (strcasecmp(s->s_name, "linear") == 0)
+    if (strcmp_case_insensitive(s->s_name, "linear") == 0)
         return EARS_RESAMPLINGMODE_LINEAR;
-    if (strcasecmp(s->s_name, "quadratic") == 0)
+    if (strcmp_case_insensitive(s->s_name, "quadratic") == 0)
         return EARS_RESAMPLINGMODE_QUADRATIC;
-    if (strcasecmp(s->s_name, "cubic") == 0)
+    if (strcmp_case_insensitive(s->s_name, "cubic") == 0)
         return EARS_RESAMPLINGMODE_CUBIC;
-    if (strcasecmp(s->s_name, "sah") == 0 || strcasecmp(s->s_name, "sampleandhold") == 0 || strcasecmp(s->s_name, "sample and hold") == 0 || strcasecmp(s->s_name, "sample and hold") == 0)
+    if (strcmp_case_insensitive(s->s_name, "sah") == 0 || strcmp_case_insensitive(s->s_name, "sampleandhold") == 0 || strcmp_case_insensitive(s->s_name, "sample and hold") == 0 || strcmp_case_insensitive(s->s_name, "sample and hold") == 0)
         return EARS_RESAMPLINGMODE_SAMPLEANDHOLD;
-    if (strcasecmp(s->s_name, "nn") == 0 || strcasecmp(s->s_name, "nearestneighbor") == 0 || strcasecmp(s->s_name, "nearestneighbour") == 0 ||  strcasecmp(s->s_name, "nearest neighbor") == 0 || strcasecmp(s->s_name, "nearest neighbour") == 0 || strcasecmp(s->s_name, "nearest neighbor") == 0 || strcasecmp(s->s_name, "nearest neighbour") == 0)
+    if (strcmp_case_insensitive(s->s_name, "nn") == 0 || strcmp_case_insensitive(s->s_name, "nearestneighbor") == 0 || strcmp_case_insensitive(s->s_name, "nearestneighbour") == 0 ||  strcmp_case_insensitive(s->s_name, "nearest neighbor") == 0 || strcmp_case_insensitive(s->s_name, "nearest neighbour") == 0 || strcmp_case_insensitive(s->s_name, "nearest neighbor") == 0 || strcmp_case_insensitive(s->s_name, "nearest neighbour") == 0)
         return EARS_RESAMPLINGMODE_NEARESTNEIGHBOR;
-    if (strcasecmp(s->s_name, "sinc") == 0)
+    if (strcmp_case_insensitive(s->s_name, "sinc") == 0)
         return EARS_RESAMPLINGMODE_SINC;
 
     object_warn(ob, "Invalid resampling mode! Defaulting to sinc.");

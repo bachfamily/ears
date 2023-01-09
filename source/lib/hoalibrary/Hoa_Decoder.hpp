@@ -697,7 +697,7 @@ namespace hoa
         //! @brief This method performs the binaural decoding and the convolution.
         inline void processBlock(const T** inputs, T** outputs) noexcept
         {
-            const auto ins = std::min(Decoder<Hoa3d, T>::getNumberOfHarmonics(),
+            const auto ins = (std::min)(Decoder<Hoa3d, T>::getNumberOfHarmonics(),
                                       hrir_t::getNumberOfColumns());
             
             for(auto i = 0; i < ins; ++i)

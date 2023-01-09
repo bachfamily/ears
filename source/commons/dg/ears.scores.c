@@ -249,7 +249,7 @@ char is_slot_in_decibel(t_llll *header, long slotnum)
     t_llll *repr_ll = get_slotinfo_field_from_header(header, slotnum, _llllobj_sym_representation);
     if (repr_ll && repr_ll->l_head && hatom_gettype(&repr_ll->l_head->l_hatom) == H_SYM) {
         t_symbol *s = hatom_getsym(&repr_ll->l_head->l_hatom);
-        if (strcasecmp(s->s_name, "db") == 0 || strcasecmp(s->s_name, "dbs") == 0 || strcasecmp(s->s_name, "decibel") == 0 || strcasecmp(s->s_name, "decibels") == 0)
+        if (strcmp_case_insensitive(s->s_name, "db") == 0 || strcmp_case_insensitive(s->s_name, "dbs") == 0 || strcmp_case_insensitive(s->s_name, "decibel") == 0 || strcmp_case_insensitive(s->s_name, "decibels") == 0)
             ans = 1;
     }
     llll_free(repr_ll);
@@ -262,7 +262,7 @@ char is_slot_temporal_absolute(t_llll *header, long slotnum)
     t_llll *repr_ll = get_slotinfo_field_from_header(header, slotnum, _llllobj_sym_temporalmode);
     if (repr_ll && repr_ll->l_head && hatom_gettype(&repr_ll->l_head->l_hatom) == H_SYM) {
         t_symbol *s = hatom_getsym(&repr_ll->l_head->l_hatom);
-        if (strcasecmp(s->s_name, "milliseconds") == 0 || strcasecmp(s->s_name, "ms") == 0)
+        if (strcmp_case_insensitive(s->s_name, "milliseconds") == 0 || strcmp_case_insensitive(s->s_name, "ms") == 0)
             ans = 1;
     }
     llll_free(repr_ll);
@@ -339,7 +339,9 @@ t_ears_err ears_roll_to_buffer_get_buffer(t_earsbufobj *e_ob,
     
     newinfo.buffer = *buf;
     
-    if (rate != 1) {
+    if (rate <= 0) {
+        object_error((t_object *)e_ob, "Can't resample with non-positive rate!");
+    } else if (rate != 1) {
         ears_buffer_resample((t_object *)e_ob, *buf, 1./rate, 11);
     }
     /*                    if (ps_slot || ts_slot) {
@@ -899,7 +901,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                     // This part is definitely overkill: if the timeunit is not MS we LOAD the content into a buffer just to get
                     // the proper samplerate/duration; there should be no need for this, one may probably get those info from the file itself
                     if (is_buffer) {
-                        buf = ears_buffer_getobject(filename);
+                        buf = ears_buffer_get_object(filename);
                         if (!buf)
                             object_warn((t_object *)e_ob, "Cannot retrieve buffer.");
                     } else {
@@ -956,7 +958,7 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                         if (copy_media) {
                             if (is_buffer) {
                                 if (!is_symbol_in_llll_first_level(copied_buffers, filename)) {  // has it already been copied?
-                                    t_buffer_obj *buf = ears_buffer_getobject(filename);
+                                    t_buffer_obj *buf = ears_buffer_get_object(filename);
                                     llll_appendsym(copied_buffers, filename);
                                     
                                     char outfilename[MAX_FILENAME_CHARS];

@@ -412,7 +412,9 @@ namespace hoa
                 }
                 
                 // Processing
-                std::complex<T> temp_in[N], temp_out[N];
+                std::complex<T>* temp_in = new std::complex<T>[N];
+                std::complex<T>* temp_out = new std::complex<T>[N];
+                //std::complex<T> temp_in[N], temp_out[N];
                 for (int bin = 0; bin < HOA_SHIFT_FFT_SIZE / 2 + 1; bin++) {
                     
                     // rotating
@@ -439,7 +441,8 @@ namespace hoa
                     for (long i = 0; i < N; i++)
                         outputs[i][bin] = std::conj(outputs[i][HOA_SHIFT_FFT_SIZE - bin]);
                 }
-
+                delete[] temp_in;
+                delete[] temp_out;
             }
         }
         

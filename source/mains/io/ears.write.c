@@ -38,15 +38,17 @@
 	Daniele Ghisi
  */
 
+#define TAGLIB_STATIC
+
 #include "ears.h"
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_WRITE_SUPPORT
 #include "ears.mp3.h"
 #endif
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 
 #define LIBAIFF_NOCOMPAT 1 // do not use LibAiff 2 API compatibility
@@ -67,6 +69,7 @@ typedef struct _buf_write {
     t_symbol           *sampleformat;
     
     t_symbol           *mp3_vbrmode;
+    double             mp3_quality; // for VBR
     long               mp3_bitrate;
     long               mp3_bitrate_min;
     long               mp3_bitrate_max;
@@ -134,17 +137,28 @@ t_max_err buf_write_setattr_format(t_buf_write *x, void *attr, long argc, t_atom
     return err;
 }
 
+t_max_err buf_write_setattr_vbrmode(t_buf_write *x, void *attr, long argc, t_atom *argv)
+{
+    t_max_err err = MAX_ERR_NONE;
+    if (argc && argv && atom_gettype(argv) == A_SYM) {
+        x->mp3_vbrmode = atom_getsym(argv);
+        object_attr_setdisabled((t_object *)x, gensym("quality"), x->mp3_vbrmode != gensym("VBR"));
+    } else {
+        object_error((t_object *)x, "Invalid sample format.");
+        err = MAX_ERR_GENERIC;
+    }
+    return err;
+}
+
+
 void C74_EXPORT ext_main(void* moduleRef)
 {
-#ifdef EARS_MP3_SUPPORT
-    ears_mpg123_init();
-#endif
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -175,13 +189,19 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     CLASS_ATTR_SYM(c, "vbrmode", 0, t_buf_write, mp3_vbrmode);
     CLASS_ATTR_STYLE_LABEL(c, "vbrmode", 0, "enum", "MP3 Variable Bitrate Mode");
+    CLASS_ATTR_ACCESSORS(c, "vbrmode", NULL, buf_write_setattr_vbrmode);
     CLASS_ATTR_ENUM(c,"vbrmode", 0, "CBR ABR VBR");
     // @description Sets the variable bitrate mode for MP3 encoding: <br />
     // "CBR": constant bit rate (set via the <m>bitrate</m> attribute); <br />
     // "ABR": average bit rate (set via the <m>bitrate</m> attribute, possibly with
     // maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes); <br />
-    // "VBR" (default): variable bit rate (with
+    // "VBR" (default): variable bit rate (with a quality factor defined by the <m>quality</m> attribute; and/or
     // maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes).
+
+    CLASS_ATTR_DOUBLE(c, "quality", 0, t_buf_write, mp3_quality);
+    CLASS_ATTR_STYLE_LABEL(c, "quality", 0, "text", "MP3 VBR Quality");
+    // @description Sets the variable bit-rate quality for MP3 encoding, from 0. (highest quality, largest file)
+    // to 9.999 (lowest quality, smallest file).
 
     CLASS_ATTR_LONG(c, "bitrate", 0, t_buf_write, mp3_bitrate);
     CLASS_ATTR_STYLE_LABEL(c, "bitrate", 0, "text", "MP3 Bitrate in kbps");
@@ -209,7 +229,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 
@@ -265,6 +284,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_write*)object_alloc_debug(s_tag_class);
     if (x) {
         x->mp3_vbrmode = gensym("VBR");
+        x->mp3_quality = 4.;
         x->sampleformat = EARS_DEFAULT_WRITE_FORMAT;
         x->write_spectral_annotations = true;
         
@@ -303,15 +323,15 @@ void buf_write_free(t_buf_write *x)
 
 t_symbol *increment_symbol(t_symbol *base, long index)
 {
-    char outfilename[PATH_MAX];
+    char outfilename[MAX_PATH_CHARS];
     const char *dot = strrchr(base->s_name, '.');
     if (!dot || dot == base->s_name) {
-        snprintf_zero(outfilename, PATH_MAX, "%s.%d", base->s_name, index);
+        snprintf_zero(outfilename, MAX_PATH_CHARS, "%s.%d", base->s_name, index);
         return gensym(outfilename);
     } else {
         long len = dot - base->s_name;
         strncpy(outfilename, base->s_name, len);
-        snprintf_zero(outfilename + len, PATH_MAX, ".%d.%s", index, dot+1);
+        snprintf_zero(outfilename + len, MAX_PATH_CHARS, ".%d.%s", index, dot+1);
         return gensym(outfilename);
     }
 }
@@ -320,6 +340,9 @@ void buf_write_fill_encode_settings(t_buf_write *x, t_ears_encoding_settings *se
 {
     // default:
     settings->vbr_type = EARS_MP3_VBRMODE_VBR;
+    
+    settings->quality = (x->mp3_quality >= 0 ? x->mp3_quality : 4.);
+    
     // 0 = use LAME defaults
     settings->bitrate = 0;
     settings->bitrate_min = 0;
@@ -525,15 +548,15 @@ void buf_write_tags_ID3v1(t_buf_write *x, TagLib::ID3v1::Tag *tags, t_llll *ll)
                 if (el_ll && el_ll->l_size >= 2) {
                     t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
                     if (s) {
-                        if (strcasecmp(s->s_name, "title") == 0) {
+                        if (strcmp_case_insensitive(s->s_name, "title") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setTitle(val->s_name);
-                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "album") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setAlbum(val->s_name);
-                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "genre") == 0) {
                             if (hatom_gettype(&el_ll->l_head->l_next->l_hatom) == H_LONG) {
                                 tags->setGenreNumber(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                             } else {
@@ -541,17 +564,17 @@ void buf_write_tags_ID3v1(t_buf_write *x, TagLib::ID3v1::Tag *tags, t_llll *ll)
                                 if (val)
                                     tags->setGenre(val->s_name);
                             }
-                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "artist") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setArtist(val->s_name);
-                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "comment") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setComment(val->s_name);
-                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "year") == 0) {
                             tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
-                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "track") == 0) {
                             tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                         }
                     }
@@ -571,29 +594,29 @@ void buf_write_tags_XIPHCOMMENT(t_buf_write *x, TagLib::Ogg::XiphComment *tags, 
                 if (el_ll && el_ll->l_size >= 2) {
                     t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
                     if (s) {
-                        if (strcasecmp(s->s_name, "title") == 0) {
+                        if (strcmp_case_insensitive(s->s_name, "title") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setTitle(val->s_name);
-                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "album") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setAlbum(val->s_name);
-                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "genre") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setGenre(val->s_name);
-                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "artist") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setArtist(val->s_name);
-                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "comment") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setComment(val->s_name);
-                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "year") == 0) {
                             tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
-                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "track") == 0) {
                             tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                         }
                     }
@@ -612,29 +635,29 @@ void buf_write_tags_APE(t_buf_write *x, TagLib::APE::Tag *tags, t_llll *ll)
                 if (el_ll && el_ll->l_size >= 2) {
                     t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
                     if (s) {
-                        if (strcasecmp(s->s_name, "title") == 0) {
+                        if (strcmp_case_insensitive(s->s_name, "title") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setTitle(val->s_name);
-                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "album") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setAlbum(val->s_name);
-                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "genre") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setGenre(val->s_name);
-                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "artist") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setArtist(val->s_name);
-                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "comment") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setComment(val->s_name);
-                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "year") == 0) {
                             tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
-                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "track") == 0) {
                             tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                         } else {
                             char *txtbuf = NULL;
@@ -660,29 +683,29 @@ void buf_write_tags_INFO(t_buf_write *x, TagLib::RIFF::Info::Tag *tags, t_llll *
                 if (el_ll && el_ll->l_size >= 2) {
                     t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
                     if (s) {
-                        if (strcasecmp(s->s_name, "title") == 0) {
+                        if (strcmp_case_insensitive(s->s_name, "title") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setTitle(val->s_name);
-                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "album") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setAlbum(val->s_name);
-                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "genre") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setGenre(val->s_name);
-                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "artist") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setArtist(val->s_name);
-                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "comment") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setComment(val->s_name);
-                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "year") == 0) {
                             tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
-                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "track") == 0) {
                             tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                         } else {
                             char *txtbuf = NULL;
@@ -707,29 +730,29 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                 if (el_ll && el_ll->l_size >= 2) {
                     t_symbol *s = hatom_getsym(&el_ll->l_head->l_hatom);
                     if (s && strlen(s->s_name) > 0) {
-                        if (strcasecmp(s->s_name, "title") == 0) {
+                        if (strcmp_case_insensitive(s->s_name, "title") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setTitle(val->s_name);
-                        } else if (strcasecmp(s->s_name, "album") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "album") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setAlbum(val->s_name);
-                        } else if (strcasecmp(s->s_name, "genre") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "genre") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setGenre(val->s_name);
-                        } else if (strcasecmp(s->s_name, "artist") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "artist") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setArtist(val->s_name);
-                        } else if (strcasecmp(s->s_name, "comment") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "comment") == 0) {
                             t_symbol *val = hatom_getsym(&el_ll->l_head->l_next->l_hatom);
                             if (val)
                                 tags->setComment(val->s_name);
-                        } else if (strcasecmp(s->s_name, "year") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "year") == 0) {
                             tags->setYear(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
-                        } else if (strcasecmp(s->s_name, "track") == 0) {
+                        } else if (strcmp_case_insensitive(s->s_name, "track") == 0) {
                             tags->setTrack(hatom_getlong(&el_ll->l_head->l_next->l_hatom));
                         } else {
                             long l = strlen(s->s_name);

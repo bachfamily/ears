@@ -73,14 +73,14 @@ void ears_out_finalize(t_ears_out *x, long n);
 void ears_out_iteration(t_ears_out *x, long n);
 
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     ears_out_class = class_new("ears.out",
@@ -149,8 +149,6 @@ int C74_EXPORT main()
     // If the <m>direct</m> attribute is set to 1, the <m>outwrap</m> attribute has no effect.
     
     class_register(CLASS_BOX, ears_out_class);
-    
-    return 0;
 }
 
 void ears_out_bang(t_ears_out *x)

@@ -41,9 +41,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 #include "ears.spectral.h"
 
@@ -86,7 +86,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -124,7 +124,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_paulstretch_assist(t_buf_paulstretch *x, void *b, long m, long a, char *s)

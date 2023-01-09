@@ -10,7 +10,7 @@
 #define _EARS_BUF_SPECTRAL_H_
 
 #include "ears.commons.h"
-#include "spectral.h"
+#include "math/spectral.h"
 
 #ifndef PI
 #define PI 3.14159265358979323846

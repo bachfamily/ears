@@ -10,7 +10,7 @@
 	</digest>
 
 	<description>
-		Resample the buffer content, without changing its sample rate
+		Resamples the buffer content, optionally changing the sampling rate accordingly
 	</description>
 
 	<!--METADATA-->
@@ -281,6 +281,21 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="changesr" get="1" set="1" type="int" size="1">
+			<digest>
+				Change Sampling Rate
+			</digest>
+			<description>
+				Toggles the ability to change the sampling rate of the buffer
+				according to the resampling factor. If this is turned off, then
+				the attribute will retain the original sampling rate.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Change Sampling Rate" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -356,6 +371,7 @@
 				which provides bandlimited interpolation.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Mode" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
@@ -391,11 +407,6 @@
 		</attribute>
 	</attributelist>
 
-	<!--DISCUSSION-->
-	<discussion>
-		If you need to modify the buffer sample rate, use <o>ears.format</o>
-	</discussion>
-
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ears.format~" />
@@ -414,19 +425,6 @@
 		<entry name ="Outlet 1 (symbol/list)">
 			<description>
 				Resampled buffer names.
-			</description>
-		</entry>
-	</misc>
-
-	<misc name = "Discussion">
-		<entry name ="More details">
-			<description>
-		If you need to modify the buffer sample rate, use <o>ears.format</o>
-			</description>
-		</entry>
-		<entry name ="Keywords">
-			<description>
-buffer, resample, property, change, vinyl.
 			</description>
 		</entry>
 	</misc>

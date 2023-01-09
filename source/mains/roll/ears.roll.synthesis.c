@@ -40,9 +40,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.scores.h"
 
 
@@ -147,7 +147,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -326,7 +326,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_roll_synthesis_assist(t_buf_roll_synthesis *x, void *b, long m, long a, char *s)
@@ -419,7 +418,7 @@ void buf_roll_synthesis_bang(t_buf_roll_synthesis *x)
     t_buffer_obj *buf = NULL;
     if (x->wavetable && x->wavetable != _llllobj_sym_empty_symbol) {
         if (ears_buffer_symbol_is_buffer(x->wavetable)) {
-            buf = ears_buffer_getobject(x->wavetable);
+            buf = ears_buffer_get_object(x->wavetable);
             if (buf) {
                 wavetable_length = ears_buffer_get_size_samps((t_object *)x, buf);
                 wavetable = ears_buffer_locksamples(buf);

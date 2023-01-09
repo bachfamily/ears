@@ -1,5 +1,5 @@
 #include "ears.object.h"
-#ifdef EARS_MP3_SUPPORT
+#if defined EARS_MP3_WRITE_SUPPORT || defined EARS_MP3_READ_SUPPORT
 #include "ears.mp3.h"
 #endif
 
@@ -278,7 +278,7 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
                     post("--- ears allocation: Buffer %s.%ld inside polybuffer has been created via 'appendempty'.", polybuffer_name->s_name, i+1);
 #endif
 /*                t_symbol *newbuffer_sym = ears_buffer_name_get_for_polybuffer(polybuffer_name, i+1);
-                t_buffer_obj *newbuffer_obj = ears_buffer_getobject(newbuffer_sym);
+                t_buffer_obj *newbuffer_obj = ears_buffer_get_object(newbuffer_sym);
                 if (newbuffer_sym && newbuffer_obj) {
                     ears_hashtab_store(newbuffer_sym);
                     ears_hashtab_inccount(newbuffer_sym);
@@ -318,7 +318,7 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
     } else {
         // buffer already exists. Cool. Let's just get it.
 //        *buf = buffer_ref_getobject(*ref);
-        *buf = ears_buffer_getobject(buf_name);
+        *buf = ears_buffer_get_object(buf_name);
         
         t_llll *generated_outnames = earsbufobj_generated_names_llll_getlist(e_ob->l_generated_outnames, store_index, buffer_index);
         
@@ -1262,7 +1262,7 @@ void fill_encoding_settings(t_object *ob, t_llll *args, t_ears_encoding_settings
 {
     // parsing args
     t_symbol *vbrmode = gensym("vbr"), *format = NULL;
-    long bitrate = 0, bitrate_min = 0, bitrate_max = 0, correction = 0;
+    t_atom_long bitrate = 0, bitrate_min = 0, bitrate_max = 0, correction = 0;
     llll_parseattrs(ob, args, true, "siiisi",
                     gensym("vbrmode"), &vbrmode,
                     gensym("bitrate"), &bitrate,
@@ -1319,6 +1319,8 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
         }
         
         if (msg == gensym("writemp3")) {
+
+#ifdef EARS_MP3_WRITE_SUPPORT
             t_fourcc outtype;
 //            t_fourcc filetype = 'MPEG';
             t_symbol *outfilepath = NULL;
@@ -1330,7 +1332,14 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
             if (outfilepath)
                 ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
             
+#else
+            ears_print_supported_extensions((t_object *)e_ob, "mp3", true);
+#endif
+            
         } else if (msg == gensym("writewavpack") || msg == gensym("writewv")) {
+
+#ifdef EARS_WAVPACK_SUPPORT
+
             t_fourcc outtype;
 //            t_fourcc filetype = 'WAVE';
             t_symbol *outfilepath = NULL;
@@ -1346,6 +1355,10 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
                 ears_buffer_write(buf, outfilepath, (t_object *)e_ob, &settings);
             }
             
+#else
+            ears_print_supported_extensions((t_object *)e_ob, "wv", true);
+#endif
+
         } else {
             // all other cases are handled natively via Max API
             if (parsed && parsed->l_size > 0) {
@@ -1396,7 +1409,7 @@ void earsbufobj_add_common_methods(t_class *c, long flags)
     
     class_addmethod(c, (method)earsbufobj_open, "open", 0);
 
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
     ears_mpg123_init();
 #endif
 }
@@ -1717,6 +1730,7 @@ void earsbufobj_class_add_resamplingmode_attr(t_class *c)
     CLASS_ATTR_STYLE_LABEL(c,"resamplingmode",0,"enum","Resampling Mode");
     CLASS_ATTR_ENUM(c,"resamplingmode",0,"sinc nearest neighbor sample and hold linear quadratic cubic");
     CLASS_ATTR_ACCESSORS(c, "resamplingmode", NULL, earsbufobj_setattr_resamplingmode);
+    CLASS_ATTR_CATEGORY(c, "resamplingmode", 0, "Resampling");
     // @description Sets the resampling mode (Sinc, Nearest Neighbor, Sample and Hold, Linear, Quadratic or Cubic). The default is "Sinc",
     // which provides band-limited interpolation.
 }
@@ -1769,7 +1783,7 @@ void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob)
     for (t_llllelem *el = temp->l_head; el; el = el->l_next) {
         t_symbol *s = hatom_getsym(&el->l_hatom);
         if (s) {
-            t_object *buf = ears_buffer_getobject(s);
+            t_object *buf = ears_buffer_get_object(s);
             if (buf) {
 //                ears_hashtab_clipcount(s);
                 if (!earsbufobj_buffer_is_part_of_polybuffer(e_ob, s))
@@ -2022,7 +2036,7 @@ t_object *earsbufobj_get_inlet_buffer_obj(t_earsbufobj *e_ob, long store_idx, lo
     } else {
         if (store_idx >= 0 && store_idx < e_ob->l_numbufins && buffer_idx >= 0 && buffer_idx < e_ob->l_instore[store_idx].num_stored_bufs) {
             t_symbol *s = e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_name;
-            t_object *ob = ears_buffer_getobject(s);
+            t_object *ob = ears_buffer_get_object(s);
             if (ob != e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_buf) {
                 // update object
                 e_ob->l_instore[store_idx].stored_buf[buffer_idx].l_buf = ob;
@@ -2479,7 +2493,7 @@ void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                     t_earsbufobj_store *store = &e_ob->l_instore[store_idx];
                     if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS)) {
                         store->stored_buf[buffer_idx].l_name = buffername;
-                        store->stored_buf[buffer_idx].l_buf = ears_buffer_getobject(buffername);
+                        store->stored_buf[buffer_idx].l_buf = ears_buffer_get_object(buffername);
                     } else {
                         /*                    t_atom a;
                          ears_buffer_copy_format((t_object *)e_ob, temp_obj, store->stored_buf[buffer_idx].l_buf);
@@ -2503,7 +2517,7 @@ void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
                     t_earsbufobj_store *store = &e_ob->l_outstore[store_idx];
                     if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
                         store->stored_buf[buffer_idx].l_name = buffername;
-                        store->stored_buf[buffer_idx].l_buf = ears_buffer_getobject(buffername);
+                        store->stored_buf[buffer_idx].l_buf = ears_buffer_get_object(buffername);
                     } else {
                         /*                    t_atom a;
                          atom_setsym(&a, buffername);
@@ -3398,8 +3412,8 @@ void earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(t_earsbufobj *e_
                                                                 e_ears_timeunit dest_envtimeunit,
                                                                 double orig_from, double orig_to, char convert_from_decibels)
 {
-    double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
-    double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    double dur_samps = buf ? ears_buffer_get_size_samps((t_object *)e_ob, buf) : 0;
+    double sr = buf ? ears_buffer_get_sr((t_object *)e_ob, buf) : ears_get_current_Max_sr();
     
     if (orig_from != 0 || orig_to != 1 || convert_from_decibels) {
         for (t_llllelem *el = out->l_head; el; el = el->l_next) {

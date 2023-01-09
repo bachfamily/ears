@@ -3,8 +3,13 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
+<<<<<<< HEAD
 			"minor" : 3,
 			"revision" : 1,
+=======
+			"minor" : 5,
+			"revision" : 2,
+>>>>>>> devel
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -52,8 +57,13 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -208,8 +218,13 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -792,8 +807,13 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1134,8 +1154,13 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1669,8 +1694,13 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2032,8 +2062,13 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2479,14 +2514,19 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 887.0, 410.0 ],
+						"rect" : [ 62.0, 126.0, 887.0, 410.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3171,8 +3211,13 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
+<<<<<<< HEAD
 							"minor" : 3,
 							"revision" : 1,
+=======
+							"minor" : 5,
+							"revision" : 2,
+>>>>>>> devel
 							"architecture" : "x64",
 							"modernui" : 1
 						}

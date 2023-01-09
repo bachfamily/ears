@@ -200,7 +200,7 @@ t_earstaskdata * buf_ ## NAME ## _create_taskdata(t_earsbufobj *e_ob, t_symbol *
     t_earstaskdata *data = (t_earstaskdata *)sysmem_newptr(sizeof(t_earstaskdata));\
     data->e_ob = e_ob;\
     if (s == _llllobj_sym_bach_llll) {\
-        post("This could be a probblem. Check."); \
+        post("This could be a problem. Check."); \
         llllobj_get_retained_native_llll_from_args(ac, av);\
     }\
     data->s = s;\
@@ -242,7 +242,7 @@ void buf_ ## NAME ## _anything_wrapper_task(t_earstaskdata *data)\
     buf_ ## NAME ## _free_thread_and_data(data);\
 }\
 \
-void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
+void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
 { \
     switch (x->e_ob.l_blocking) { \
         case EARSBUFOBJ_BLOCKING_OWNTHREAD: \
@@ -251,25 +251,25 @@ void buf_ ## NAME ## _bang_handlethread(t_buf_ ## NAME *x) \
                 object_error((t_object *)x, "Already running.");\
                 return;\
             }\
-            t_earstaskdata *data = buf_ ## NAME ##_create_taskdata((t_earsbufobj *)x, NULL, 0, NULL);\
-            systhread_create((method) buf_ ## NAME ##_bang_wrapper_task, data, 0, 0, 0, &x->e_ob.l_thread);\
+            t_earstaskdata *data = buf_ ## NAME ##_create_taskdata((t_earsbufobj *)x, NULL, 0, NULL);\
+            systhread_create((method) buf_ ## NAME ##_bang_wrapper_task, data, 0, 0, 0, &x->e_ob.l_thread);\
         }\
         break; \
         case EARSBUFOBJ_BLOCKING_CALLINGTHREAD: \
-            buf_ ## NAME ##_bang(x); \
+            buf_ ## NAME ##_bang(x); \
         break; \
         case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
         default: \
-            defer(x, (method)buf_ ## NAME ##_bang, NULL, 0, NULL); \
+            defer(x, (method)buf_ ## NAME ##_bang, NULL, 0, NULL); \
         break; \
     } \
 } \
 \
-void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av) \
+void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, long ac, t_atom *av) \
 { \
     x->e_ob.l_curr_proxy = proxy_getinlet((t_object *) x); \
     if (!x->e_ob.l_inlet_hot[x->e_ob.l_curr_proxy]) { \
-        buf_ ## NAME ##_anything(x, msg, ac, av); \
+        buf_ ## NAME ##_anything(x, msg, ac, av); \
         return; \
     } \
     switch (x->e_ob.l_blocking) { \
@@ -279,16 +279,16 @@ void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, l
                 object_error((t_object *)x, "Already running.");\
                 return;\
             }\
-            t_earstaskdata *data = buf_ ## NAME ##_create_taskdata((t_earsbufobj *)x, msg, ac, av);\
-            systhread_create((method) buf_ ## NAME ##_anything_wrapper_task, data, 0, 0, 0, &x->e_ob.l_thread);\
+            t_earstaskdata *data = buf_ ## NAME ##_create_taskdata((t_earsbufobj *)x, msg, ac, av);\
+            systhread_create((method) buf_ ## NAME ##_anything_wrapper_task, data, 0, 0, 0, &x->e_ob.l_thread);\
         }\
         break; \
         case EARSBUFOBJ_BLOCKING_CALLINGTHREAD: \
-            buf_ ## NAME ##_anything(x, msg, ac, av); \
+            buf_ ## NAME ##_anything(x, msg, ac, av); \
         break; \
         case EARSBUFOBJ_BLOCKING_MAINTHREAD: \
         default: \
-            defer(x, (method)buf_ ## NAME ##_anything, msg, ac, av); \
+            defer(x, (method)buf_ ## NAME ##_anything, msg, ac, av); \
         break; \
     } \
 } \
@@ -296,21 +296,21 @@ void buf_ ## NAME ## _anything_handlethread(t_buf_ ## NAME *x, t_symbol *msg, l
 
 
 #define EARSBUFOBJ_ADD_INT_FLOAT_METHODS(NAME) \
-void buf_ ## NAME ## _int_handlethread(t_buf_ ## NAME *x, t_atom_long num); \
-void buf_ ## NAME ## _float_handlethread(t_buf_ ## NAME *x, t_atom_float num); \
+void buf_ ## NAME ## _int_handlethread(t_buf_ ## NAME *x, t_atom_long num); \
+void buf_ ## NAME ## _float_handlethread(t_buf_ ## NAME *x, t_atom_float num); \
 \
-void buf_ ## NAME ## _int_handlethread(t_buf_ ## NAME *x, t_atom_long num) \
+void buf_ ## NAME ## _int_handlethread(t_buf_ ## NAME *x, t_atom_long num) \
 { \
     t_atom argv[1]; \
     atom_setlong(argv, num); \
-    buf_ ## NAME ## _anything_handlethread(x, _sym_list, 1, argv); \
+    buf_ ## NAME ## _anything_handlethread(x, _sym_list, 1, argv); \
 } \
 \
-void buf_ ## NAME ## _float_handlethread(t_buf_ ## NAME *x, t_atom_float num) \
+void buf_ ## NAME ## _float_handlethread(t_buf_ ## NAME *x, t_atom_float num) \
 { \
     t_atom argv[1]; \
     atom_setfloat(argv, num); \
-    buf_ ## NAME ## _anything_handlethread(x, _sym_list, 1, argv); \
+    buf_ ## NAME ## _anything_handlethread(x, _sym_list, 1, argv); \
 } \
 
 

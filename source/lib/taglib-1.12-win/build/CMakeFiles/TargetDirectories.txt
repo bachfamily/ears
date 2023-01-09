@@ -1,0 +1,10 @@
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/CMakeFiles/docs.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/CMakeFiles/uninstall.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/CMakeFiles/INSTALL.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/taglib/CMakeFiles/tag.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/taglib/CMakeFiles/INSTALL.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/bindings/CMakeFiles/INSTALL.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/bindings/c/CMakeFiles/tag_c.dir
+C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/bindings/c/CMakeFiles/INSTALL.dir

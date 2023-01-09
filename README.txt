@@ -15,6 +15,10 @@ The official repository is https://github.com/bachfamily/ears. You can find the 
 Dependencies
 =================
 
+For building ears, we provide project files for Xcode and Visual Studio 2022.
+Detailed instructions for building on Mac are provided below.
+For Visual Studio, unless specified otherwise, all is taken care of by the Visual Studio project.
+
 • bach (https://github.com/bachfamily/bach)
 
 • the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). The essentia library is not needed for the whole project, but for a certain number of its modules (including ears.essentia~, ears.cqt~, ears.tempogram~, ears.peaks~ and all the ears.model.*~).
@@ -77,7 +81,7 @@ A modified version of the library is included in the repository.
 The modifications extend the functionalities of the library in order to support marker and cues in WAV files.
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
-• the mpg123 library 1.23.4 (released under LGPLv2.1). 
+• the mpg123 library 1.23.4 (released under LGPLv2.1).
 We have tested with versio 1.29.3 (and, previously with version 1.23.4). It may work with following versions also. The source code is, for convenience, also in the source/lib/ folder (if you want to try a later version you can download it from https://www.mpg123.de), but importantly there is an issue in the "make" portion of the procedure if your path has spaces. So first of all make sure you copy the folder in a path position with no spaces, then enter the folder and run
 MACOSX_DEPLOYMENT_TARGET=10.11 ./configure --enable-static=yes
 MACOSX_DEPLOYMENT_TARGET=10.11 make
@@ -120,7 +124,7 @@ You do not need to compile or install the library separately: sources are direct
 • for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
-• for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2)
+• for the [ears.write~] and [ears.read~] modules: a modified version of the id3 library (released under GPLv2)
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
 • for the [ears.rubberband~] module: the Rubberband library (released under GPLv2); a slightly modified version of commit f42a369 is included in the repository.
@@ -135,8 +139,10 @@ This creates  /usr/local/lib/libsamplerate.a
 3) then combine them
     lipo /usr/local/lib/libsamplerate.a /opt/homebrew/lib/libsamplerate.a -create -output /usr/local/lib/libsamplerate.a
 
-• for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
-You do not need to compile or install the library separately: sources are directly compiled within the project.
+• for the [ears.hoa.*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
+You do not need to compile or install the HOA and Eigen libraries separately: sources are directly compiled within the project.
+On the other hand, the Boost library is required. On a Mac, it can by installed through Homebrew (no need for separate procedures for Intel and M1, since we only use the header-only part).
+On Windows, ears uses the same version (and in the same location) as the dada library.
 
 • for the [ears.soundtouch~] module: the SoundTouch library, released under LGPL v2.1
 You do not need to compile or install the library separately: sources are directly compiled within the project.
@@ -146,7 +152,7 @@ To compile on a Mac Intel, go to the library folder and run
 make -f build/Makefile.osx
 To compile on a Mac M1, go to the library folder and run
 make -f build/Makefile.osxm1 sdk
-Note that, on the M1, building the vamp example plugins is potentially problematic because of their dependencies that should all be built for the arm64 architecture. 
+Note that, on the M1, building the vamp example plugins is potentially problematic because of their dependencies that should all be built for the arm64 architecture.
 
 
 -------------------------

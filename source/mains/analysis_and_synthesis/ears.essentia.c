@@ -40,9 +40,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 
 #include "ears.essentia_commons.h"
@@ -149,7 +149,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -351,7 +351,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 
@@ -1630,6 +1629,14 @@ t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buf
     params.summarization = (e_ears_analysis_summarization) x->summarization;
     params.summarizationweight = (e_ears_analysis_summarizationweight) x->summarizationweight;
     params.summarizationpositiveonly = x->summarizationpositiveonly;
+
+    params.TEMPO_bigFrameSize = 4;
+    params.TEMPO_bigOverlap = 16;
+    params.TEMPO_maxBpm = 30;
+    params.TEMPO_minBpm = 560;
+    params.TEMPO_maxPeaks = 50;
+
+    params.numGriffinLimIterations = 10;
 
     params.CQT_binsPerOctave = x->CQT_binsPerOctave;
     params.CQT_minFrequency = earsbufobj_pitch_to_hz((t_earsbufobj *)x, x->CQT_minPitch);

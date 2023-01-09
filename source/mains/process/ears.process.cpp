@@ -236,14 +236,14 @@ typedef enum {
 } e_durationPolicies;
 
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     CLASS_NEW_CHECK_SIZE(earsprocess_class, "ears.process~", (method)earsprocess_new, (method)earsprocess_free, sizeof(t_earsprocess), NULL, A_GIMME, 0);
@@ -371,7 +371,9 @@ int C74_EXPORT main()
     
     llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);
 
-    CLASS_ATTR_OBJ(earsprocess_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsprocess, e_ob);
+    // TODO FIXME @Andrea : controlla questa riga qui sotto, dà negative subscript
+//    CLASS_ATTR_OBJ(earsprocess_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsprocess, e_ob);
+    class_addattr((earsprocess_class), attr_offset_new("ownsdspchain", USESYM(object), (ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER), (method)0L, (method)0L, 0));
     CLASS_ATTR_ACCESSORS(earsprocess_class, "ownsdspchain", (method) earsprocess_get_ownsdspchain, NULL);
     CLASS_ATTR_INVISIBLE(earsprocess_class, "ownsdspchain", 0);
     
@@ -483,9 +485,6 @@ int C74_EXPORT main()
     emptyLl = llll_get();
     
     class_register(CLASS_BOX, earsprocess_class);
-
-    
-    return 0;
 }
 
 t_max_err earsprocess_set_vs(t_earsprocess *x, t_object *attr, long argc, t_atom *argv)

@@ -67,14 +67,14 @@ void ears_outtilde_perform64(t_ears_outtilde *x, t_dspchain *dsp64, double **ins
 
 
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     ears_outtilde_class = class_new("ears.out~",
@@ -110,8 +110,6 @@ int C74_EXPORT main()
     class_dspinit(ears_outtilde_class);
     
     class_register(CLASS_BOX, ears_outtilde_class);
-    
-    return 0;
 }
 
 void *ears_outtilde_new(t_symbol *s, t_atom_long ac, t_atom* av)

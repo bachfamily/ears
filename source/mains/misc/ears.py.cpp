@@ -128,7 +128,7 @@ int C74_EXPORT main()
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     CLASS_NEW_CHECK_SIZE(earspy_class, "ears.py~", (method)earspy_new, (method)earspy_free, sizeof(t_earspy), NULL, A_GIMME, 0);

@@ -1,0 +1,489 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{209683F1-39D8-3EB8-9848-3A8A43B55724}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>tag</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tag.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tag.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tag.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tag.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;TAGLIB_STATIC;HAVE_CONFIG_H;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm;C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/taglib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win" "-BC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build" --check-stamp-file "C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/taglib/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/taglib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win" "-BC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build" --check-stamp-file "C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/taglib/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/taglib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win" "-BC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build" --check-stamp-file "C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/taglib/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/taglib/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win" "-BC:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build" --check-stamp-file "C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/taglib/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\mpegfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\mpegproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\mpegheader.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\xingheader.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1\id3v1tag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1\id3v1genres.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2framefactory.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2synchdata.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2tag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2header.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2frame.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2footer.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2extendedheader.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\attachedpictureframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\commentsframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\eventtimingcodesframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\generalencapsulatedobjectframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\ownershipframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\popularimeterframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\privateframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\relativevolumeframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\synchronizedlyricsframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\textidentificationframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\uniquefileidentifierframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\unknownframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\unsynchronizedlyricsframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\urllinkframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\chapterframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\tableofcontentsframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\podcastframe.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\oggfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\oggpage.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\oggpageheader.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\xiphcomment.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis\vorbisfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis\vorbisproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac\oggflacfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc\mpcfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc\mpcproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apetag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apefooter.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apeitem.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apefile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apeproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstring.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstringlist.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevector.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevectorlist.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevectorstream.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tiostream.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tfilestream.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tdebug.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tpropertymap.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\trefcounter.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tdebuglistener.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tzlib.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacpicture.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacmetadatablock.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacunknownmetadatablock.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack\wavpackfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack\wavpackproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex\speexfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex\speexproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio\trueaudiofile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio\trueaudioproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\rifffile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff\aifffile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff\aiffproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav\wavfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav\wavproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav\infotag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asftag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asffile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asfproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asfattribute.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asfpicture.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4file.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4atom.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4tag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4item.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4properties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4coverart.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modfilebase.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modtag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m\s3mfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m\s3mproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it\itfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it\itproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm\xmfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm\xmproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus\opusfile.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus\opusproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\tag.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\tagunion.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\fileref.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\audioproperties.cpp" />
+    <ClCompile Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\tagutils.cpp" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\tag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\fileref.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\audioproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\taglib_export.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib_config.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\taglib.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstring.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tlist.h" />
+    <None Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tlist.tcc">
+    </None>
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstringlist.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevector.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevectorlist.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevectorstream.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tiostream.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tfilestream.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tmap.h" />
+    <None Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tmap.tcc">
+    </None>
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tpropertymap.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\trefcounter.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tdebuglistener.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\mpegfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\mpegproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\mpegheader.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\xingheader.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1\id3v1tag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v1\id3v1genres.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2extendedheader.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2frame.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2header.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2synchdata.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2footer.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2framefactory.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\id3v2tag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\attachedpictureframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\commentsframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\eventtimingcodesframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\generalencapsulatedobjectframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\ownershipframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\popularimeterframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\privateframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\relativevolumeframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\synchronizedlyricsframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\textidentificationframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\uniquefileidentifierframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\unknownframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\unsynchronizedlyricsframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\urllinkframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\chapterframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\tableofcontentsframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpeg\id3v2\frames\podcastframe.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\oggfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\oggpage.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\oggpageheader.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\xiphcomment.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis\vorbisfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\vorbis\vorbisproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\flac\oggflacfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex\speexfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\speex\speexproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus\opusfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\opus\opusproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacpicture.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\flac\flacmetadatablock.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apefile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apeproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apetag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apefooter.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ape\apeitem.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc\mpcfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mpc\mpcproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack\wavpackfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\wavpack\wavpackproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio\trueaudiofile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\trueaudio\trueaudioproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\rifffile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff\aifffile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\aiff\aiffproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav\wavfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav\wavproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\riff\wav\infotag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asffile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asfproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asftag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asfattribute.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\asf\asfpicture.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4file.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4atom.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4tag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4item.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4properties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mp4\mp4coverart.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modfilebase.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modtag.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\mod\modproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it\itfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\it\itproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m\s3mfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\s3m\s3mproperties.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm\xmfile.h" />
+    <ClInclude Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\xm\xmproperties.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\ZERO_CHECK.vcxproj">
+      <Project>{FBBD0E72-8551-3DF0-BE82-C1FE3162DE97}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

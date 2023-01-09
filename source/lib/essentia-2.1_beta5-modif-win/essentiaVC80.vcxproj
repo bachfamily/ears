@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugAllDepsExceptXml_Intel|Win32">
+      <Configuration>DebugAllDepsExceptXml_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugAllDepsExceptXml_VC80|Win32">
+      <Configuration>DebugAllDepsExceptXml_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugAllDeps_Intel|Win32">
+      <Configuration>DebugAllDeps_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugAllDeps_VC80|Win32">
+      <Configuration>DebugAllDeps_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugNoDeps_Intel|Win32">
+      <Configuration>DebugNoDeps_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugNoDeps_VC80|Win32">
+      <Configuration>DebugNoDeps_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOnlyWav_Intel|Win32">
+      <Configuration>DebugOnlyWav_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugOnlyWav_VC80|Win32">
+      <Configuration>DebugOnlyWav_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseAllDepsExceptMp3_Intel|Win32">
+      <Configuration>ReleaseAllDepsExceptMp3_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseAllDepsExceptMp3_VC80|Win32">
+      <Configuration>ReleaseAllDepsExceptMp3_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseAllDepsExceptXml_Intel|Win32">
+      <Configuration>ReleaseAllDepsExceptXml_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseAllDepsExceptXml_VC80|Win32">
+      <Configuration>ReleaseAllDepsExceptXml_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseAllDeps_Intel|Win32">
+      <Configuration>ReleaseAllDeps_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseAllDeps_VC80|Win32">
+      <Configuration>ReleaseAllDeps_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseNoDeps_Intel|Win32">
+      <Configuration>ReleaseNoDeps_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseNoDeps_VC80|Win32">
+      <Configuration>ReleaseNoDeps_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseOnlyWav_Intel|Win32">
+      <Configuration>ReleaseOnlyWav_Intel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseOnlyWav_VC80|Win32">
+      <Configuration>ReleaseOnlyWav_VC80</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>MakeFileProj</Keyword>
+    <ProjectName>essentia</ProjectName>
+    <ProjectGuid>{02791F57-A813-4065-A3B5-1CB8D4A0573A}</ProjectGuid>
+    <RootNamespace>essentia</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDepsExceptXml_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDepsExceptXml_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptXml_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptXml_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOnlyWav_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOnlyWav_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptMp3_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDeps_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDeps_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDeps_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOnlyWav_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOnlyWav_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptMp3_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDeps_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoDeps_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNoDeps_VC80|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNoDeps_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoDeps_Intel|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDepsExceptXml_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDepsExceptXml_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptXml_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptXml_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOnlyWav_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugOnlyWav_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptMp3_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDeps_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDeps_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDeps_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOnlyWav_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOnlyWav_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptMp3_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDeps_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoDeps_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNoDeps_VC80|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNoDeps_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoDeps_Intel|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>17.0.32203.90</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoDeps_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons mode=debug -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNoDeps_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNoDeps_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons  -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugNoDeps_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons mode=debug -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=false use_mp3=false use_ogg=false use_taglib=false use_xml=false mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDeps_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons  -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptMp3_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons  -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOnlyWav_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=true use_xml=false -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons intel=False -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons intel=False -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=true use_xml=false -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOnlyWav_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=false use_xml=false -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons intel=True -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons intel=True -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=false use_xml=false -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDeps_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons  -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDeps_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons mode=debug -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDeps_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons mode=debug -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=true mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptMp3_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons  -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=true use_taglib=true use_xml=true -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOnlyWav_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=true use_xml=false mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=true use_xml=false mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOnlyWav_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=false use_xml=false mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=false use_ogg=false use_taglib=false use_xml=false mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptXml_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=false -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons  -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=false -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAllDepsExceptXml_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_ffmpeg=true use_xml=false -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons  -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_ffmpeg=true use_xml=false -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDepsExceptXml_Intel|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=false mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons mode=debug -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=True vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=false mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugAllDepsExceptXml_VC80|Win32'">
+    <IntDir>build/$(Configuration)\</IntDir>
+    <OutDir>build/$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=false mode=debug -f ./Sconstruct -j2</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>scons mode=debug -f ./Sconstruct -c</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>.;src/base;src/streaming;src/streaming/algorithms;src/utils;..\essentia-thirdparty-msvc2005sp1-32bit\include;..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib;..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb;src/utils/svm;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeOutput />
+    <NMakeReBuildCommandLine>scons mode=debug -f ./Sconstruct -c &amp;&amp; scons intel=False vsconf=$(Configuration) use_wav=true use_mp3=true use_ogg=true use_taglib=true use_xml=false mode=debug -f ./Sconstruct -j2</NMakeReBuildCommandLine>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\algorithms\complex\cartesiantopolar.cpp" />
+    <ClCompile Include="src\algorithms\complex\magnitude.cpp" />
+    <ClCompile Include="src\algorithms\complex\polartocartesian.cpp" />
+    <ClCompile Include="src\algorithms\filters\allpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\bandpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\bandreject.cpp" />
+    <ClCompile Include="src\algorithms\filters\dcremoval.cpp" />
+    <ClCompile Include="src\algorithms\filters\equalloudness.cpp" />
+    <ClCompile Include="src\algorithms\filters\highpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\iir.cpp" />
+    <ClCompile Include="src\algorithms\filters\lowpass.cpp" />
+    <ClCompile Include="src\algorithms\filters\movingaverage.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\beatsloudness.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\danceability.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\dynamiccomplexity.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\fadedetection.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\intensity.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\onsetdetection.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\onsetrate.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\onsets.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\pca.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\sbic.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\singlebeatloudness.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\streamingonsetrate.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\streamingtempotap.cpp" />
+    <ClCompile Include="src\algorithms\highlevel\svmclassifier.cpp" />
+    <ClCompile Include="src\algorithms\io\audioloader.cpp" />
+    <ClCompile Include="src\algorithms\io\audioonsetsmarker.cpp" />
+    <ClCompile Include="src\algorithms\io\easyloader.cpp" />
+    <ClCompile Include="src\algorithms\io\eqloudloader.cpp" />
+    <ClCompile Include="src\algorithms\io\metadatareader.cpp" />
+    <ClCompile Include="src\algorithms\io\monoloader.cpp" />
+    <ClCompile Include="src\algorithms\io\ringbufferinput.cpp" />
+    <ClCompile Include="src\algorithms\io\ringbufferoutput.cpp" />
+    <ClCompile Include="src\algorithms\io\ringbuffervectoroutput.cpp" />
+    <ClCompile Include="src\algorithms\io\valuefile.cpp" />
+    <ClCompile Include="src\algorithms\io\yamlinput.cpp" />
+    <ClCompile Include="src\algorithms\io\yamloutput.cpp" />
+    <ClCompile Include="src\algorithms\sfx\aftermaxtobeforemaxenergyratio.cpp" />
+    <ClCompile Include="src\algorithms\sfx\derivativesfx.cpp" />
+    <ClCompile Include="src\algorithms\sfx\flatnesssfx.cpp" />
+    <ClCompile Include="src\algorithms\sfx\maxtototal.cpp" />
+    <ClCompile Include="src\algorithms\sfx\mintototal.cpp" />
+    <ClCompile Include="src\algorithms\sfx\pitchsalience.cpp" />
+    <ClCompile Include="src\algorithms\sfx\spectralsfx.cpp" />
+    <ClCompile Include="src\algorithms\sfx\tctototal.cpp" />
+    <ClCompile Include="src\algorithms\spectral\barkbands.cpp" />
+    <ClCompile Include="src\algorithms\spectral\energyband.cpp" />
+    <ClCompile Include="src\algorithms\spectral\energybandratio.cpp" />
+    <ClCompile Include="src\algorithms\spectral\flatnessdb.cpp" />
+    <ClCompile Include="src\algorithms\spectral\flux.cpp" />
+    <ClCompile Include="src\algorithms\spectral\frequencybands.cpp" />
+    <ClCompile Include="src\algorithms\spectral\hfc.cpp" />
+    <ClCompile Include="src\algorithms\spectral\hpcp.cpp" />
+    <ClCompile Include="src\algorithms\spectral\maxmagfreq.cpp" />
+    <ClCompile Include="src\algorithms\spectral\melbands.cpp" />
+    <ClCompile Include="src\algorithms\spectral\mfcc.cpp" />
+    <ClCompile Include="src\algorithms\spectral\rolloff.cpp" />
+    <ClCompile Include="src\algorithms\spectral\spectralcomplexity.cpp" />
+    <ClCompile Include="src\algorithms\spectral\spectralcontrast.cpp" />
+    <ClCompile Include="src\algorithms\spectral\spectralpeaks.cpp" />
+    <ClCompile Include="src\algorithms\spectral\spectralwhitening.cpp" />
+    <ClCompile Include="src\algorithms\spectral\strongpeak.cpp" />
+    <ClCompile Include="src\algorithms\spectral\tuningfrequency.cpp" />
+    <ClCompile Include="src\algorithms\standard\binaryoperator.cpp" />
+    <ClCompile Include="src\algorithms\standard\bpf.cpp" />
+    <ClCompile Include="src\algorithms\standard\dct.cpp" />
+    <ClCompile Include="src\algorithms\standard\derivative.cpp" />
+    <ClCompile Include="src\algorithms\standard\envelope.cpp" />
+    <ClCompile Include="src\algorithms\standard\fftw.cpp" />
+    <ClCompile Include="src\algorithms\standard\framecreator.cpp" />
+    <ClCompile Include="src\algorithms\standard\framecutter.cpp" />
+    <ClCompile Include="src\algorithms\standard\ifftw.cpp" />
+    <ClCompile Include="src\algorithms\standard\max.cpp" />
+    <ClCompile Include="src\algorithms\standard\monomixer.cpp" />
+    <ClCompile Include="src\algorithms\standard\multiplexer.cpp" />
+    <ClCompile Include="src\algorithms\standard\noisegenerator.cpp" />
+    <ClCompile Include="src\algorithms\standard\panning.cpp" />
+    <ClCompile Include="src\algorithms\standard\peakdetection.cpp" />
+    <ClCompile Include="src\algorithms\standard\powerspectrum.cpp" />
+    <ClCompile Include="src\algorithms\standard\realaccumulator.cpp" />
+    <ClCompile Include="src\algorithms\standard\replaygain.cpp" />
+    <ClCompile Include="src\algorithms\standard\resample.cpp" />
+    <ClCompile Include="src\algorithms\standard\scale.cpp" />
+    <ClCompile Include="src\algorithms\standard\silencerate.cpp" />
+    <ClCompile Include="src\algorithms\standard\slicer.cpp" />
+    <ClCompile Include="src\algorithms\standard\spectrum.cpp" />
+    <ClCompile Include="src\algorithms\standard\startstopsilence.cpp" />
+    <ClCompile Include="src\algorithms\standard\stereodemuxer.cpp" />
+    <ClCompile Include="src\algorithms\standard\trimmer.cpp" />
+    <ClCompile Include="src\algorithms\standard\unaryoperator.cpp" />
+    <ClCompile Include="src\algorithms\standard\windowing.cpp" />
+    <ClCompile Include="src\algorithms\stats\autocorrelation.cpp" />
+    <ClCompile Include="src\algorithms\stats\centralmoments.cpp" />
+    <ClCompile Include="src\algorithms\stats\centroid.cpp" />
+    <ClCompile Include="src\algorithms\stats\crest.cpp" />
+    <ClCompile Include="src\algorithms\stats\crosscorrelation.cpp" />
+    <ClCompile Include="src\algorithms\stats\decrease.cpp" />
+    <ClCompile Include="src\algorithms\stats\distributionshape.cpp" />
+    <ClCompile Include="src\algorithms\stats\energy.cpp" />
+    <ClCompile Include="src\algorithms\stats\flatness.cpp" />
+    <ClCompile Include="src\algorithms\stats\geometricmean.cpp" />
+    <ClCompile Include="src\algorithms\stats\instantpower.cpp" />
+    <ClCompile Include="src\algorithms\stats\mean.cpp" />
+    <ClCompile Include="src\algorithms\stats\median.cpp" />
+    <ClCompile Include="src\algorithms\stats\poolaggregator.cpp" />
+    <ClCompile Include="src\algorithms\stats\powermean.cpp" />
+    <ClCompile Include="src\algorithms\stats\rawmoments.cpp" />
+    <ClCompile Include="src\algorithms\stats\rms.cpp" />
+    <ClCompile Include="src\algorithms\stats\singlegaussian.cpp" />
+    <ClCompile Include="src\algorithms\stats\variance.cpp" />
+    <ClCompile Include="src\algorithms\stats\warpedautocorrelation.cpp" />
+    <ClCompile Include="src\algorithms\temporal\duration.cpp" />
+    <ClCompile Include="src\algorithms\temporal\effectiveduration.cpp" />
+    <ClCompile Include="src\algorithms\temporal\larm.cpp" />
+    <ClCompile Include="src\algorithms\temporal\leq.cpp" />
+    <ClCompile Include="src\algorithms\temporal\logattacktime.cpp" />
+    <ClCompile Include="src\algorithms\temporal\loudness.cpp" />
+    <ClCompile Include="src\algorithms\temporal\loudnessvicker.cpp" />
+    <ClCompile Include="src\algorithms\temporal\lpc.cpp" />
+    <ClCompile Include="src\algorithms\temporal\rhythmtransform.cpp" />
+    <ClCompile Include="src\algorithms\temporal\strongdecay.cpp" />
+    <ClCompile Include="src\algorithms\temporal\zerocrossingrate.cpp" />
+    <ClCompile Include="src\algorithms\tempotap\bpmhistogramdescriptors.cpp" />
+    <ClCompile Include="src\algorithms\tempotap\bpmrubato.cpp" />
+    <ClCompile Include="src\algorithms\tempotap\temposcalebands.cpp" />
+    <ClCompile Include="src\algorithms\tempotap\tempotap.cpp" />
+    <ClCompile Include="src\algorithms\tempotap\tempotapticks.cpp" />
+    <ClCompile Include="src\algorithms\tonal\chordsdescriptors.cpp" />
+    <ClCompile Include="src\algorithms\tonal\chordsdetection.cpp" />
+    <ClCompile Include="src\algorithms\tonal\dissonance.cpp" />
+    <ClCompile Include="src\algorithms\tonal\harmonicpeaks.cpp" />
+    <ClCompile Include="src\algorithms\tonal\highresolutionfeatures.cpp" />
+    <ClCompile Include="src\algorithms\tonal\inharmonicity.cpp" />
+    <ClCompile Include="src\algorithms\tonal\key.cpp" />
+    <ClCompile Include="src\algorithms\tonal\oddtoevenharmonicenergyratio.cpp" />
+    <ClCompile Include="src\algorithms\tonal\pitchdetection.cpp" />
+    <ClCompile Include="src\algorithms\tonal\tristimulus.cpp" />
+    <ClCompile Include="src\algorithms\_registration\essentia_algorithms_reg.cpp" />
+    <ClCompile Include="src\base\algorithm.cpp" />
+    <ClCompile Include="src\base\configurable.cpp" />
+    <ClCompile Include="src\base\essentia.cpp" />
+    <ClCompile Include="src\base\essentiautils.cpp" />
+    <ClCompile Include="src\base\logger.cpp" />
+    <ClCompile Include="src\base\parameter.cpp" />
+    <ClCompile Include="src\base\pool.cpp" />
+    <ClCompile Include="src\base\range.cpp" />
+    <ClCompile Include="src\streaming\algorithms\devnull.cpp" />
+    <ClCompile Include="src\streaming\algorithms\poolstorage.cpp" />
+    <ClCompile Include="src\streaming\algorithms\valuefilestorage.cpp" />
+    <ClCompile Include="src\streaming\network.cpp" />
+    <ClCompile Include="src\streaming\streamingalgorithm.cpp" />
+    <ClCompile Include="src\streaming\streamingalgorithmcomposite.cpp" />
+    <ClCompile Include="src\streaming\streamingalgorithmwrapper.cpp" />
+    <ClCompile Include="src\streaming\taskqueue.cpp" />
+    <ClCompile Include="src\utils\svm\svm.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avcodec.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avformat.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avio.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\avutil.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\common.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\integer.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\intfloat_readwrite.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\log.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\mathematics.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\mem.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\ffmpeg\rational.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\fftw3.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\inttypes.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\pthread.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\samplerate.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\sched.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\stdint.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\audioproperties.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\fileref.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tag.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\taglib.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\taglib_export.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tbytevector.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tbytevectorlist.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tfile.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tlist.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tstring.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tstringlist.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\concurrent_queue.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\linux_em64t.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\linux_ia32.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\linux_itanium.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\mac_ppc.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\windows_em64t.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\machine\windows_ia32.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\parallel_while.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\spin_mutex.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\task.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\task_scheduler_init.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\tbb_machine.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\tbb_stddef.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\tbb\_tbb_windef.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\unistd.h" />
+    <ClInclude Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\yaml.h" />
+    <ClInclude Include="src\algorithms\complex\cartesiantopolar.h" />
+    <ClInclude Include="src\algorithms\complex\magnitude.h" />
+    <ClInclude Include="src\algorithms\complex\polartocartesian.h" />
+    <ClInclude Include="src\algorithms\filters\allpass.h" />
+    <ClInclude Include="src\algorithms\filters\bandpass.h" />
+    <ClInclude Include="src\algorithms\filters\bandreject.h" />
+    <ClInclude Include="src\algorithms\filters\dcremoval.h" />
+    <ClInclude Include="src\algorithms\filters\equalloudness.h" />
+    <ClInclude Include="src\algorithms\filters\highpass.h" />
+    <ClInclude Include="src\algorithms\filters\iir.h" />
+    <ClInclude Include="src\algorithms\filters\lowpass.h" />
+    <ClInclude Include="src\algorithms\filters\movingaverage.h" />
+    <ClInclude Include="src\algorithms\highlevel\beatsloudness.h" />
+    <ClInclude Include="src\algorithms\highlevel\danceability.h" />
+    <ClInclude Include="src\algorithms\highlevel\dynamiccomplexity.h" />
+    <ClInclude Include="src\algorithms\highlevel\fadedetection.h" />
+    <ClInclude Include="src\algorithms\highlevel\intensity.h" />
+    <ClInclude Include="src\algorithms\highlevel\onsetdetection.h" />
+    <ClInclude Include="src\algorithms\highlevel\onsetrate.h" />
+    <ClInclude Include="src\algorithms\highlevel\onsets.h" />
+    <ClInclude Include="src\algorithms\highlevel\pca.h" />
+    <ClInclude Include="src\algorithms\highlevel\sbic.h" />
+    <ClInclude Include="src\algorithms\highlevel\singlebeatloudness.h" />
+    <ClInclude Include="src\algorithms\highlevel\streamingonsetrate.h" />
+    <ClInclude Include="src\algorithms\highlevel\streamingtempotap.h" />
+    <ClInclude Include="src\algorithms\highlevel\svmclassifier.h" />
+    <ClInclude Include="src\algorithms\io\audioloader.h" />
+    <ClInclude Include="src\algorithms\io\audioonsetsmarker.h" />
+    <ClInclude Include="src\algorithms\io\easyloader.h" />
+    <ClInclude Include="src\algorithms\io\eqloudloader.h" />
+    <ClInclude Include="src\algorithms\io\metadatareader.h" />
+    <ClInclude Include="src\algorithms\io\monoloader.h" />
+    <ClInclude Include="src\algorithms\io\ringbufferinput.h" />
+    <ClInclude Include="src\algorithms\io\ringbufferoutput.h" />
+    <ClInclude Include="src\algorithms\io\ringbuffervectoroutput.h" />
+    <ClInclude Include="src\algorithms\io\valuefile.h" />
+    <ClInclude Include="src\algorithms\io\yamlinput.h" />
+    <ClInclude Include="src\algorithms\io\yamloutput.h" />
+    <ClInclude Include="src\algorithms\sfx\aftermaxtobeforemaxenergyratio.h" />
+    <ClInclude Include="src\algorithms\sfx\derivativesfx.h" />
+    <ClInclude Include="src\algorithms\sfx\flatnesssfx.h" />
+    <ClInclude Include="src\algorithms\sfx\maxtototal.h" />
+    <ClInclude Include="src\algorithms\sfx\mintototal.h" />
+    <ClInclude Include="src\algorithms\sfx\pitchsalience.h" />
+    <ClInclude Include="src\algorithms\sfx\spectralsfx.h" />
+    <ClInclude Include="src\algorithms\sfx\tctototal.h" />
+    <ClInclude Include="src\algorithms\spectral\barkbands.h" />
+    <ClInclude Include="src\algorithms\spectral\energyband.h" />
+    <ClInclude Include="src\algorithms\spectral\energybandratio.h" />
+    <ClInclude Include="src\algorithms\spectral\flatnessdb.h" />
+    <ClInclude Include="src\algorithms\spectral\flux.h" />
+    <ClInclude Include="src\algorithms\spectral\frequencybands.h" />
+    <ClInclude Include="src\algorithms\spectral\hfc.h" />
+    <ClInclude Include="src\algorithms\spectral\hpcp.h" />
+    <ClInclude Include="src\algorithms\spectral\maxmagfreq.h" />
+    <ClInclude Include="src\algorithms\spectral\melbands.h" />
+    <ClInclude Include="src\algorithms\spectral\mfcc.h" />
+    <ClInclude Include="src\algorithms\spectral\rolloff.h" />
+    <ClInclude Include="src\algorithms\spectral\spectralcomplexity.h" />
+    <ClInclude Include="src\algorithms\spectral\spectralcontrast.h" />
+    <ClInclude Include="src\algorithms\spectral\spectralpeaks.h" />
+    <ClInclude Include="src\algorithms\spectral\spectralwhitening.h" />
+    <ClInclude Include="src\algorithms\spectral\strongpeak.h" />
+    <ClInclude Include="src\algorithms\spectral\tuningfrequency.h" />
+    <ClInclude Include="src\algorithms\standard\binaryoperator.h" />
+    <ClInclude Include="src\algorithms\standard\bpf.h" />
+    <ClInclude Include="src\algorithms\standard\dct.h" />
+    <ClInclude Include="src\algorithms\standard\derivative.h" />
+    <ClInclude Include="src\algorithms\standard\envelope.h" />
+    <ClInclude Include="src\algorithms\standard\fftw.h" />
+    <ClInclude Include="src\algorithms\standard\framecreator.h" />
+    <ClInclude Include="src\algorithms\standard\framecutter.h" />
+    <ClInclude Include="src\algorithms\standard\ifftw.h" />
+    <ClInclude Include="src\algorithms\standard\max.h" />
+    <ClInclude Include="src\algorithms\standard\monomixer.h" />
+    <ClInclude Include="src\algorithms\standard\multiplexer.h" />
+    <ClInclude Include="src\algorithms\standard\noisegenerator.h" />
+    <ClInclude Include="src\algorithms\standard\panning.h" />
+    <ClInclude Include="src\algorithms\standard\peakdetection.h" />
+    <ClInclude Include="src\algorithms\standard\powerspectrum.h" />
+    <ClInclude Include="src\algorithms\standard\realaccumulator.h" />
+    <ClInclude Include="src\algorithms\standard\replaygain.h" />
+    <ClInclude Include="src\algorithms\standard\resample.h" />
+    <ClInclude Include="src\algorithms\standard\scale.h" />
+    <ClInclude Include="src\algorithms\standard\silencerate.h" />
+    <ClInclude Include="src\algorithms\standard\slicer.h" />
+    <ClInclude Include="src\algorithms\standard\spectrum.h" />
+    <ClInclude Include="src\algorithms\standard\startstopsilence.h" />
+    <ClInclude Include="src\algorithms\standard\stereodemuxer.h" />
+    <ClInclude Include="src\algorithms\standard\trimmer.h" />
+    <ClInclude Include="src\algorithms\standard\unaryoperator.h" />
+    <ClInclude Include="src\algorithms\standard\windowing.h" />
+    <ClInclude Include="src\algorithms\stats\autocorrelation.h" />
+    <ClInclude Include="src\algorithms\stats\centralmoments.h" />
+    <ClInclude Include="src\algorithms\stats\centroid.h" />
+    <ClInclude Include="src\algorithms\stats\crest.h" />
+    <ClInclude Include="src\algorithms\stats\crosscorrelation.h" />
+    <ClInclude Include="src\algorithms\stats\decrease.h" />
+    <ClInclude Include="src\algorithms\stats\distributionshape.h" />
+    <ClInclude Include="src\algorithms\stats\energy.h" />
+    <ClInclude Include="src\algorithms\stats\flatness.h" />
+    <ClInclude Include="src\algorithms\stats\geometricmean.h" />
+    <ClInclude Include="src\algorithms\stats\instantpower.h" />
+    <ClInclude Include="src\algorithms\stats\mean.h" />
+    <ClInclude Include="src\algorithms\stats\median.h" />
+    <ClInclude Include="src\algorithms\stats\poolaggregator.h" />
+    <ClInclude Include="src\algorithms\stats\powermean.h" />
+    <ClInclude Include="src\algorithms\stats\rawmoments.h" />
+    <ClInclude Include="src\algorithms\stats\rms.h" />
+    <ClInclude Include="src\algorithms\stats\singlegaussian.h" />
+    <ClInclude Include="src\algorithms\stats\variance.h" />
+    <ClInclude Include="src\algorithms\stats\warpedautocorrelation.h" />
+    <ClInclude Include="src\algorithms\temporal\duration.h" />
+    <ClInclude Include="src\algorithms\temporal\effectiveduration.h" />
+    <ClInclude Include="src\algorithms\temporal\larm.h" />
+    <ClInclude Include="src\algorithms\temporal\leq.h" />
+    <ClInclude Include="src\algorithms\temporal\logattacktime.h" />
+    <ClInclude Include="src\algorithms\temporal\loudness.h" />
+    <ClInclude Include="src\algorithms\temporal\loudnessvicker.h" />
+    <ClInclude Include="src\algorithms\temporal\lpc.h" />
+    <ClInclude Include="src\algorithms\temporal\rhythmtransform.h" />
+    <ClInclude Include="src\algorithms\temporal\strongdecay.h" />
+    <ClInclude Include="src\algorithms\temporal\zerocrossingrate.h" />
+    <ClInclude Include="src\algorithms\tempotap\bpmhistogramdescriptors.h" />
+    <ClInclude Include="src\algorithms\tempotap\bpmrubato.h" />
+    <ClInclude Include="src\algorithms\tempotap\temposcalebands.h" />
+    <ClInclude Include="src\algorithms\tempotap\tempotap.h" />
+    <ClInclude Include="src\algorithms\tempotap\tempotapticks.h" />
+    <ClInclude Include="src\algorithms\tonal\chordsdescriptors.h" />
+    <ClInclude Include="src\algorithms\tonal\chordsdetection.h" />
+    <ClInclude Include="src\algorithms\tonal\dissonance.h" />
+    <ClInclude Include="src\algorithms\tonal\harmonicpeaks.h" />
+    <ClInclude Include="src\algorithms\tonal\highresolutionfeatures.h" />
+    <ClInclude Include="src\algorithms\tonal\inharmonicity.h" />
+    <ClInclude Include="src\algorithms\tonal\key.h" />
+    <ClInclude Include="src\algorithms\tonal\oddtoevenharmonicenergyratio.h" />
+    <ClInclude Include="src\algorithms\tonal\pitchdetection.h" />
+    <ClInclude Include="src\algorithms\tonal\tristimulus.h" />
+    <ClInclude Include="src\base\algorithm.h" />
+    <ClInclude Include="src\base\algorithmfactory.h" />
+    <ClInclude Include="src\base\algorithmfactory_impl.h" />
+    <ClInclude Include="src\base\config.h" />
+    <ClInclude Include="src\base\configurable.h" />
+    <ClInclude Include="src\base\essentia.h" />
+    <ClInclude Include="src\base\essentiamath.h" />
+    <ClInclude Include="src\base\essentiautils.h" />
+    <ClInclude Include="src\base\iotypewrappers.h" />
+    <ClInclude Include="src\base\iotypewrappers_impl.h" />
+    <ClInclude Include="src\base\logger.h" />
+    <ClInclude Include="src\base\parameter.h" />
+    <ClInclude Include="src\base\pool.h" />
+    <ClInclude Include="src\base\range.h" />
+    <ClInclude Include="src\base\roguevector.h" />
+    <ClInclude Include="src\base\sinkbase.h" />
+    <ClInclude Include="src\base\sourcebase.h" />
+    <ClInclude Include="src\base\streamconnector.h" />
+    <ClInclude Include="src\base\streamutil.h" />
+    <ClInclude Include="src\base\threading.h" />
+    <ClInclude Include="src\base\types.h" />
+    <ClInclude Include="src\streaming\algorithms\devnull.h" />
+    <ClInclude Include="src\streaming\algorithms\poolstorage.h" />
+    <ClInclude Include="src\streaming\algorithms\valuefilestorage.h" />
+    <ClInclude Include="src\streaming\algorithms\vectorinput.h" />
+    <ClInclude Include="src\streaming\algorithms\vectorstorage.h" />
+    <ClInclude Include="src\streaming\debug.h" />
+    <ClInclude Include="src\streaming\multiratebuffer.h" />
+    <ClInclude Include="src\streaming\network.h" />
+    <ClInclude Include="src\streaming\phantombuffer.h" />
+    <ClInclude Include="src\streaming\phantombuffer_impl.h" />
+    <ClInclude Include="src\streaming\sink.h" />
+    <ClInclude Include="src\streaming\source.h" />
+    <ClInclude Include="src\streaming\streamingalgorithm.h" />
+    <ClInclude Include="src\streaming\streamingalgorithmcomposite.h" />
+    <ClInclude Include="src\streaming\streamingalgorithmwrapper.h" />
+    <ClInclude Include="src\streaming\taskqueue.h" />
+    <ClInclude Include="src\utils\atomic.h" />
+    <ClInclude Include="src\utils\MersenneTwister.h" />
+    <ClInclude Include="src\utils\output.h" />
+    <ClInclude Include="src\utils\ringbufferimpl.h" />
+    <ClInclude Include="src\utils\svm\svm.h" />
+    <ClInclude Include="src\utils\tnt\jama_eig.h" />
+    <ClInclude Include="src\utils\tnt\jama_lu.h" />
+    <ClInclude Include="src\utils\tnt\tnt.h" />
+    <ClInclude Include="src\utils\tnt\tnt2essentiautils.h" />
+    <ClInclude Include="src\utils\tnt\tnt2vector.h" />
+    <ClInclude Include="src\utils\tnt\tnt_array1d.h" />
+    <ClInclude Include="src\utils\tnt\tnt_array1d_utils.h" />
+    <ClInclude Include="src\utils\tnt\tnt_array2d.h" />
+    <ClInclude Include="src\utils\tnt\tnt_array2d_utils.h" />
+    <ClInclude Include="src\utils\tnt\tnt_array3d.h" />
+    <ClInclude Include="src\utils\tnt\tnt_array3d_utils.h" />
+    <ClInclude Include="src\utils\tnt\tnt_cmat.h" />
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array1d.h" />
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array1d_utils.h" />
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array2d.h" />
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array2d_utils.h" />
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array3d.h" />
+    <ClInclude Include="src\utils\tnt\tnt_fortran_array3d_utils.h" />
+    <ClInclude Include="src\utils\tnt\tnt_i_refvec.h" />
+    <ClInclude Include="src\utils\tnt\tnt_math_utils.h" />
+    <ClInclude Include="src\utils\tnt\tnt_sparse_matrix_csr.h" />
+    <ClInclude Include="src\utils\tnt\tnt_stopwatch.h" />
+    <ClInclude Include="src\utils\tnt\tnt_subscript.h" />
+    <ClInclude Include="src\utils\tnt\tnt_vec.h" />
+    <ClInclude Include="src\utils\tnt\tnt_version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\..\..\..\essentia-thirdparty-msvc2005sp1-32bit\include\taglib\tlist.tcc" />
+    <None Include="..\..\..\..\..\..\..\..\..\Program Files\Microsoft Visual Studio 8\VC\bin\cl.EXE" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

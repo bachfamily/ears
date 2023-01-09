@@ -14,7 +14,7 @@
 #include "vamp-hostsdk/PluginHostAdapter.h"
 #include "vamp-hostsdk/PluginInputDomainAdapter.h"
 #include "vamp-hostsdk/PluginLoader.h"
-#include <vamp-hostsdk/PluginSummarisingAdapter.h>
+#include "vamp-hostsdk/PluginSummarisingAdapter.h"
 
 #include <iostream>
 #include <fstream>
@@ -24,7 +24,9 @@
 #include <cstring>
 #include <cstdlib>
 
+#ifdef MAC_VERSION
 #include "system.h"
+#endif
 
 #include <cmath>
 

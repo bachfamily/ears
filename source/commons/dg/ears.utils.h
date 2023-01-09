@@ -23,7 +23,7 @@ char ears_file_exists(const char *filename, const short path);
 long ears_saveasdialog(t_object *e_ob, const char *default_filename, t_fourcc *types, long numtypes, t_fourcc *outtype, t_symbol **filepath_sym, bool force_extension); // forced extension is inferred from default_filename
 
 long ears_buffer_symbol_is_buffer(t_symbol *s);
-t_object *ears_buffer_getobject(t_symbol *name);
+t_object *ears_buffer_get_object(t_symbol *name);
 
 long ears_polybuffer_symbol_is_polybuffer(t_symbol *s);
 t_object *ears_polybuffer_getobject(t_symbol *name);

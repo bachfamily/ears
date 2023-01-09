@@ -38,11 +38,13 @@
 	Daniele Ghisi
  */
 
+#define TAGLIB_STATIC
+
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 #include "ears.mp3.h"
 #include "ears.wavpack.h"
@@ -111,7 +113,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -189,7 +191,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 long buf_read_acceptsdrag(t_buf_read *x, t_object *drag, t_object *view)
@@ -337,7 +338,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         
         buf_read_addpathsym(x, filepath, idx);
         
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
         if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
             sampleformat = gensym("compressed");
             long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
@@ -392,7 +393,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
             }
 #endif
             
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
         }
 #endif
         // cleaning spectral data
@@ -425,7 +426,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         // TODO store metadata
         char *txtbuf = NULL;
         hatom_to_text_buf(&elem->l_hatom, &txtbuf);
-        object_warn((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
+        object_error((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
         buf_read_addpathsym(x, _llllobj_sym_none, idx);
         earsbufobj_store_empty_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx);
         bach_freeptr(txtbuf);
@@ -556,7 +557,7 @@ void buf_read_load_deferred(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 void buf_read_anything(t_buf_read *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = earsbufobj_proxy_getinlet((t_earsbufobj *) x);
-    long append = false;
+    t_atom_long append = false;
     
     t_llll *parsed = earsbufobj_parse_gimme((t_earsbufobj *) x, LLLL_OBJ_VANILLA, msg, ac, av);
     if (!parsed) return;
@@ -586,22 +587,22 @@ t_llll *buf_get_tags_INFO(t_buf_read *x, TagLib::RIFF::Info::Tag *tags)
             TagLib::ByteVector key = it->first;
             TagLib::String fr = it->second;
             t_llll *this_tags_ll = llll_get();
-            if (strcasecmp(key.data(), "ICRD") == 0) {
+            if (strcmp_case_insensitive(key.data(), "ICRD") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("YEAR") : gensym(key.data()));
                 llll_appendlong(this_tags_ll, tags->year());
-            } else if (strcasecmp(key.data(), "IPRT") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IPRT") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("TRACK") : gensym(key.data()));
                 llll_appendlong(this_tags_ll, tags->track());
-            } else if (strcasecmp(key.data(), "IPRD") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IPRD") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("ALBUM") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
-            } else if (strcasecmp(key.data(), "INAM") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "INAM") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("TITLE") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
-            } else if (strcasecmp(key.data(), "IART") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IART") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("ARTIST") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
-            } else if (strcasecmp(key.data(), "IGNR") == 0) {
+            } else if (strcmp_case_insensitive(key.data(), "IGNR") == 0) {
                 llll_appendsym(this_tags_ll, x->human_readable_frame_ids ? gensym("GENRE") : gensym(key.data()));
                 llll_appendsym(this_tags_ll, gensym(fr.toCString()));
             } else {

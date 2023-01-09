@@ -79,14 +79,14 @@ void ears_mcintilde_perform64(t_ears_mcintilde *x, t_dspchain *dsp64, double **i
 
 
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     ears_mcintilde_class = class_new("ears.mc.in~",
@@ -128,8 +128,6 @@ int C74_EXPORT main()
     class_dspinit(ears_mcintilde_class);
     
     class_register(CLASS_BOX, ears_mcintilde_class);
-    
-    return 0;
 }
 
 
@@ -295,14 +293,15 @@ long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
     x->inletOk = x->inlet;
     x->firstChanOk = x->firstChan;
     x->chansOk = x->chans;
-    if (auto b = &x->bufs[x->inletOk - 1]) {
-        if (x->chansOk > 0)
-            return x->chansOk;
-        else {
-            return MIN(MAX(b->chans - x->firstChan, 0) + 1, 1024);
+    if (x->bufs) {
+        if (auto b = &x->bufs[x->inletOk - 1]) {
+            if (x->chansOk > 0)
+                return x->chansOk;
+            else {
+                return MIN(MAX(b->chans - x->firstChan, 0) + 1, 1024);
+            }
         }
-    } else {
-        object_error((t_object *) x, "Invalid buffer");
-        return 1;
     }
+    //object_error((t_object *) x, "Invalid buffer");
+    return 1;
 }

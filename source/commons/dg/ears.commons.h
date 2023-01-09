@@ -32,16 +32,16 @@
 #include "ext_buffer.h"
 #include "ext_strings.h"
 
-#include "llll_commons_ext.h"
+#include "foundation/llll_commons_ext.h"
 #include "ears.conversions.h" // llllstuff is included in here
-#include "lexpr.h"
-#include "bach_math_utilities.h"
+#include "math/lexpr.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h" // already included in previous one
 #include "ears.utils.h"
-#include "notation.h"
-#include "bach_threads.h"
+#include "notation/notation.h"
+#include "foundation/bach_threads.h"
 
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
 #include "mpg123.h"
 #endif
 
@@ -103,9 +103,10 @@ typedef enum {
 typedef struct _ears_encoding_settings
 {
     e_ears_mp3_encoding_vbrmode  vbr_type;
+    float                       quality; // for VBR encoding
     int                         bitrate;
-    int                         bitrate_max;
-    int                         bitrate_min;
+    int                         bitrate_max; // for VBR encoding
+    int                         bitrate_min; // for VBR encoding
     
     // For wavpack
     char        use_correction_file;
@@ -147,7 +148,7 @@ typedef enum _ears_split_modes {
     EARS_SPLIT_MODE_NUMBER = 1,
     EARS_SPLIT_MODE_LIST = 2,
     EARS_SPLIT_MODE_SILENCE = 3,
-    EARS_SPLIT_MODE_ONSET = 4,
+//    EARS_SPLIT_MODE_ONSET = 4,
 } e_ears_split_modes;
 
 
@@ -351,7 +352,7 @@ t_ears_err ears_buffer_number_op(t_object *ob, t_buffer_obj *source, double num,
 t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *env, t_buffer_obj *dest, e_ears_op op, e_slope_mapping slopemapping);
 
 
-t_ears_err ears_buffer_expr(t_object *ob, t_lexpr *expr,
+t_ears_err ears_buffer_expr(t_object *ob, void *expr,
                             t_hatom *arguments, long num_arguments,
                             t_buffer_obj *dest, e_ears_normalization_modes normalization_mode, char envtimeunit, e_slope_mapping slopemapping,
                             e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
@@ -374,7 +375,8 @@ t_ears_err ears_buffer_pack(t_object *ob, long num_sources, t_buffer_obj **sourc
                             e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 t_ears_err ears_buffer_pack_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest,
                                       e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
-t_ears_err ears_buffer_lace(t_object *ob, t_buffer_obj *left, t_buffer_obj *right, t_buffer_obj *dest);
+t_ears_err ears_buffer_delace(t_object *ob, t_buffer_obj *source, long num_dests, t_buffer_obj **dests);
+t_ears_err ears_buffer_lace(t_object *ob, long num_sources, t_buffer_obj **sources, t_buffer_obj *dest);
 t_ears_err ears_buffer_slice(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest_left, t_buffer_obj *dest_right, long split_sample);
 t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **dest, long *start_samples, long *end_samples, long num_regions);
 
@@ -421,6 +423,7 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
 t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double cutoff_freq, char highpass); // also works inplace
 t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double a0, double a1, double a2, double b1, double b2); // also works inplace
 t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long factor);
+t_ears_err ears_buffer_dcfilter(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest); // also works inplace
 
 // Transposition
 t_ears_err ears_buffer_transpose(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
@@ -484,6 +487,9 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
 t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, e_slope_mapping slopemapping);
 e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s);
 
+// experimental, don't use
+t_ears_err ears_buffer_resample_envelope_speed_circualar(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps);
+
 
 /// WRITE FILES
 void ears_buffer_write(t_object *buf, t_symbol *filename, t_object *culprit, t_ears_encoding_settings *settings);
@@ -492,6 +498,7 @@ void ears_writeflac(t_object *buf, t_symbol *filename);
 void ears_writewave(t_object *buf, t_symbol *filename);
 void ears_writeraw(t_object *buf, t_symbol *filename);
 t_symbol *get_conformed_resolved_path(t_symbol *filename);
+void ears_print_supported_extensions(t_object *culprit, const char *unsupported_ext, bool write);
 
 /// RESAMPLING
 // Sinc-resampling and sinc-interpolation (band-limited)
