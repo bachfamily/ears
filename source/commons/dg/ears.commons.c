@@ -4197,14 +4197,15 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
         }
     }
     
-    ears_buffer_preprocess_sr_policies(ob, source, num_sources, resamplingpolicy, resamplingfiltersize, resamplingmode, &sr, &resampled, samples, num_samples, must_free_samples, source_first_unique_idx);
-    
-    ears_buffer_set_sr(ob, dest, sr);
-    
     for (i = 0; i < num_sources; i++) {
         num_samples[i] = buffer_getframecount(source[i]);
         num_channels[i] = buffer_getchannelcount(source[i]);
     }
+    
+    ears_buffer_preprocess_sr_policies(ob, source, num_sources, resamplingpolicy, resamplingfiltersize, resamplingmode, &sr, &resampled, samples, num_samples, must_free_samples, source_first_unique_idx);
+    
+    ears_buffer_set_sr(ob, dest, sr);
+
     
     // Calculating total length in samples of dest buffer
     channelcount = buffer_getchannelcount(source[0]);		// number of floats in a frame
