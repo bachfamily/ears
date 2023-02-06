@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 2,
+			"minor" : 5,
 			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 35.0, 100.0, 773.0, 521.0 ],
+		"rect" : [ 652.0, 173.0, 773.0, 521.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -45,8 +45,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 317.0, 111.0, 125.0, 22.0 ],
-					"text" : "/tmp/myclicktrack.wav"
+					"patching_rect" : [ 261.0, 105.0, 55.0, 22.0 ],
+					"text" : "anton.aif"
 				}
 
 			}
