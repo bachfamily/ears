@@ -491,7 +491,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 976.0, 583.0 ],
+						"rect" : [ 194.0, 126.0, 976.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -522,6 +522,36 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-32",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 739.0, 338.5, 131.0, 40.0 ],
+									"presentation_linecount" : 2,
+									"text" : "Choose the resampling mode"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "resamplingmode",
+									"id" : "obj-30",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 432.0, 347.0, 305.0, 23.0 ],
+									"text_width" : 139.0
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-26",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -538,11 +568,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-24",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 739.0, 349.0, 131.0, 25.0 ],
-									"text" : "Filter size (quality)"
+									"patching_rect" : [ 739.0, 376.0, 171.0, 40.0 ],
+									"text" : "Filter size (quality), for the sinc resampling only"
 								}
 
 							}
@@ -622,7 +653,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 432.0, 349.0, 305.0, 23.0 ],
+									"patching_rect" : [ 432.0, 389.0, 305.0, 23.0 ],
 									"text_width" : 139.0
 								}
 
@@ -857,7 +888,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 107.0, 843.0, 50.0 ],
-									"text" : "Some objects operate on several buffers at once (ears.mix~, ears.pack~, ears.join~...). \nWhen the sample rates do not match, a resampling is automatically performed.\nThe resampling policy is handled via the \"resamplingpolicy\" attribute, while the resampling filter size can be set via \"resamplingfiltersize\" attribute.",
+									"text" : "Some objects operate on several buffers at once (ears.mix~, ears.pack~, ears.join~, ears.+~, ears.*~, etc.). \nWhen the sample rates do not match, a resampling is automatically performed.\nThe resampling policy is handled via the \"resamplingpolicy\" attribute, while the resampling filter size can be set via \"resamplingfiltersize\" attribute.",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 
@@ -1004,6 +1035,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-28", 0 ],
 									"source" : [ "obj-29", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-1", 0 ],
+									"source" : [ "obj-30", 0 ]
 								}
 
 							}
@@ -7081,7 +7119,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 194.0, 126.0, 976.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 976.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

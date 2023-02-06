@@ -40,9 +40,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 
 
@@ -92,7 +92,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -167,7 +167,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_collect_assist(t_buf_collect *x, void *b, long m, long a, char *s)
@@ -307,7 +306,7 @@ void buf_collect_bang(t_buf_collect *x)
         ears_buffer_set_sr((t_object *)x, out, x->e_sr <= 0 ? ears_get_current_Max_sr() : x->e_sr);
         ears_buffer_set_size_and_numchannels((t_object *)x, out, x->collections_size[c], x->collections_numchannels[c]);
 
-        float *sample = buffer_locksamples(out);
+        float *sample = ears_buffer_locksamples(out);
         if (!sample) {
             object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
         } else {
@@ -321,7 +320,7 @@ void buf_collect_bang(t_buf_collect *x)
             }
             buffer_setdirty(out);
         }
-        buffer_unlocksamples(out);
+        ears_buffer_unlocksamples(out);
         
         if (earsbufobj_iter_progress((t_earsbufobj *)x, c, x->e_num_outlets)) break;
     }

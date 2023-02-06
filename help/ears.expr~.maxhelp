@@ -90,6 +90,63 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"buffername" : "earsfadehelpbuf1",
+									"id" : "obj-23",
+									"maxclass" : "waveform~",
+									"numinlets" : 5,
+									"numoutlets" : 6,
+									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
+									"patching_rect" : [ 415.0, 408.0, 182.5, 39.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-12",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 415.0, 343.5, 111.0, 23.0 ],
+									"text" : "earsfadehelpbuf1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-13",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 415.0, 373.0, 118.0, 23.0 ],
+									"text" : "ears.expr~ = $f1/2."
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 0,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"hyperlinkcolor" : [ 0.741176, 0.356863, 0.047059, 1.0 ],
+									"id" : "obj-8",
+									"linecount" : 2,
+									"linkstart" : [ "h" ],
+									"maxclass" : "bach.hypercomment",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 15.0, 377.599853515625, 410.0, 36.0 ],
+									"presentation_linecount" : 2,
+									"text" : "If you use ears.expr~ with the in-place operation mode, then the FIRST inlet buffers are modified destructively:"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-9",
 									"maxclass" : "button",
 									"numinlets" : 1,
@@ -311,6 +368,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-14", 1 ],
 									"source" : [ "obj-11", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-13", 0 ],
+									"source" : [ "obj-12", 0 ]
 								}
 
 							}
@@ -810,7 +874,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u827000570",
+									"buffername" : "u144000609",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

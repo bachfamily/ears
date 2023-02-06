@@ -160,7 +160,7 @@
     ]
   },
   "ears.model.stochastic.analysis~": {
-    "digest": "Sinusoidal-plus-residual analysis model",
+    "digest": "Stochastic analysis model",
     "module": "ears",
     "category": [
       "ears spectral"
@@ -194,7 +194,7 @@
     ]
   },
   "ears.model.sps.analysis~": {
-    "digest": "Sinusoidal-plus-residual analysis model",
+    "digest": "Sinusoidal-plus-stochastic analysis model",
     "module": "ears",
     "category": [
       "ears spectral"
@@ -253,7 +253,7 @@
     ]
   },
   "ears.model.sps.synthesis~": {
-    "digest": "Sinusoidal synthesis model",
+    "digest": "Sinusoidal-plus-stochastic synthesis model",
     "module": "ears",
     "category": [
       "ears spectral"
@@ -344,7 +344,7 @@
     ]
   },
   "ears.model.stochastic.synthesis~": {
-    "digest": "Sinusoidal synthesis model",
+    "digest": "Stochastic synthesis model",
     "module": "ears",
     "category": [
       "ears spectral"
@@ -845,6 +845,26 @@
       "ears.fromdiffs~"
     ]
   },
+  "ears.delace~": {
+    "digest": "De-interleave buffer channels",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "buffer",
+      "delace",
+      "channel",
+      "pack",
+      "interleave",
+      "buffer",
+      "combine"
+    ],
+    "seealso": [
+      "ears.dedelace~",
+      "ears.channel~"
+    ]
+  },
   "ears.fromdiffs~": {
     "digest": "Reconstruct signal from sample or frame differences",
     "module": "ears",
@@ -1088,6 +1108,7 @@
       "factor"
     ],
     "seealso": [
+      "ears.*~",
       "ears.dynamics~",
       "ears.normalize~",
       "ears.envelope~"
@@ -1539,7 +1560,7 @@
     "digest": "Buffer linear interpolation",
     "module": "ears",
     "category": [
-      "ears distorsion"
+      "ears interpolation"
     ],
     "keywords": [
       "buffer",
@@ -1549,6 +1570,24 @@
     ],
     "seealso": [
       "ears.waveset.interp~"
+    ]
+  },
+  "ears.dcfilter~": {
+    "digest": "Filter DC offset",
+    "module": "ears",
+    "category": [
+      "ears filter"
+    ],
+    "keywords": [
+      "buffer",
+      "dcfilter",
+      "filter",
+      "average",
+      "dcoffset"
+    ],
+    "seealso": [
+      "ears.onepole~",
+      "ears.biquad~"
     ]
   },
   "ears.resample~": {

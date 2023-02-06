@@ -12,7 +12,7 @@
 
 #include <pocketsphinx.h>
 
-#include "llllobj.h" // you must include this.
+#include "foundation/llllobj.h" // you must include this.
 #include "ext.h"
 #include "ext_obex.h"
 #include "ext_common.h" // contains CLAMP macro
@@ -150,7 +150,6 @@ void C74_EXPORT ext_main(void* moduleRef)
 	class_register(CLASS_BOX, c);
 	sphinx_class = c;
 	
-	return 0;
 }
 
 
@@ -482,7 +481,7 @@ void sphinx_decode_buffer(t_sphinx *x)
 		object_warn((t_object *)x, "Warning: only mono buffers are supported for decoding. Considering first channel only.");
 	}
 	
-	tab = buffer_locksamples(buffer);
+	tab = ears_buffer_locksamples(buffer);
 	if (!tab) {
 		object_error((t_object *)x, "Error: can't read buffer");
 		return;
@@ -520,7 +519,7 @@ void sphinx_decode_buffer(t_sphinx *x)
 		return;
 	}
 
-	buffer_unlocksamples(buffer);
+	ears_buffer_unlocksamples(buffer);
 	sysmem_freeptr(buf);
 	
 	sphinx_output_word_info(x, 0);

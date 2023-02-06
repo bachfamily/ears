@@ -53,7 +53,7 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
     
     t_ears_err err = EARS_ERR_NONE;
 
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -65,7 +65,7 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
         sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
         
         // creating RubberBand stretcher
         RubberBandStretcher rb((long)sr, channelcount, options, ears_envelope_iterator_walk_interp(&ts_eei, 0, framecount), pow(2, ears_envelope_iterator_walk_interp(&ps_eei, 0, framecount)/1200.));
@@ -203,7 +203,7 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, outframecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -225,7 +225,7 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
                     dest_sample[f*dest_channelcount + c] = 0;
 
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         for (size_t i = 0; i < channelcount; ++i)

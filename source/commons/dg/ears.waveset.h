@@ -16,14 +16,14 @@
 #include "ext_buffer.h"
 #include "ext_strings.h"
 
-#include "llll_commons_ext.h"
+#include "foundation/llll_commons_ext.h"
 #include "ears.conversions.h" // llllstuff is included in here
-#include "lexpr.h"
-#include "bach_math_utilities.h"
+#include "math/lexpr.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h" // already included in previous one
 #include "ears.utils.h"
-#include "notation.h"
-#include "bach_threads.h"
+#include "notation/notation.h"
+#include "foundation/bach_threads.h"
 
 #include <vector>
 #include "ext_globalsymbol.h"

@@ -46,6 +46,7 @@
 <refpage name='ears.assemble~.maxref.xml'/>
 <refpage name='ears.repeat~.maxref.xml'/>
 <refpage name='ears.todiffs~.maxref.xml'/>
+<refpage name='ears.delace~.maxref.xml'/>
 <refpage name='ears.fromdiffs~.maxref.xml'/>
 <refpage name='ears.iter~.maxref.xml'/>
 <refpage name='ears.envelope~.maxref.xml'/>
@@ -84,6 +85,7 @@
 <refpage name='ears.hoa.rotate~.maxref.xml'/>
 <refpage name='ears.clip~.maxref.xml'/>
 <refpage name='ears.interp~.maxref.xml'/>
+<refpage name='ears.dcfilter~.maxref.xml'/>
 <refpage name='ears.resample~.maxref.xml'/>
 <refpage name='ears.onepole~.maxref.xml'/>
 <refpage name='ears.freeverb~.maxref.xml'/>

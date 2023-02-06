@@ -289,7 +289,6 @@ typedef struct _ears_essentia_analysis_params
     // windowing
     int      framesize_samps; // must be even
     Real     hopsize_samps;
-    e_ears_timeunit sizes_unit;
     long     duration_samps;
     
     const char  *windowType;

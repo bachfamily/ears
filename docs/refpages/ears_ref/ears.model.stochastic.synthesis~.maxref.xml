@@ -6,11 +6,11 @@
 <c74object name="ears.model.stochastic.synthesis~" module="ears">
 
 	<digest>
-		Sinusoidal synthesis model
+		Stochastic synthesis model
 	</digest>
 
 	<description>
-		Applies the Essentia sinusoidal synthesis model
+		Applies the Essentia stochastic synthesis model
 	</description>
 
 	<!--METADATA-->

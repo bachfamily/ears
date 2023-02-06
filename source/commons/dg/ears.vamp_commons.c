@@ -592,7 +592,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
         if (ida) adjustment = ida->getTimestampAdjustment();
     }
     
-    bufsamps = buffer_locksamples(buf);
+    bufsamps = ears_buffer_locksamples(buf);
     
     if (!bufsamps) {
         object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
@@ -658,7 +658,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
         
     } while (cur < num_samps);
     
-    buffer_unlocksamples(buf);
+    ears_buffer_unlocksamples(buf);
     
     
     rt = RealTime::frame2RealTime(currentStep * stepSize, sr);
@@ -775,7 +775,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
                 double new_sr = audiosr / hopsize_samps;
                 ears_buffer_set_size_and_numchannels(x, featuresbuf, numframes, numchannels);
                 ears_buffer_set_sr(x, featuresbuf, new_sr);
-                float *sample = buffer_locksamples(featuresbuf);
+                float *sample = ears_buffer_locksamples(featuresbuf);
                 if (!sample) {
                     err = EARS_ERR_CANT_READ;
                     object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
@@ -798,7 +798,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
                     }
                     
                     buffer_setdirty(featuresbuf);
-                    buffer_unlocksamples(featuresbuf);
+                    ears_buffer_unlocksamples(featuresbuf);
                 }
                 
                 t_ears_spectralbuf_metadata data;
@@ -813,7 +813,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
                  ears_buffer_set_sr(x, buf, audiosr);
                  
                  ears_buffer_set_size_and_numchannels(x, buf, dur_samps, numchannels);
-                 float *sample = buffer_locksamples(buf);
+                 float *sample = ears_buffer_locksamples(buf);
                  
                  if (!sample) {
                  err = EARS_ERR_CANT_READ;
@@ -859,7 +859,7 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
                  buffer_setdirty(buf);
                  }
                  
-                 buffer_unlocksamples(buf);
+                 ears_buffer_unlocksamples(buf);
                  }
                  } */
             }

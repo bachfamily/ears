@@ -24,7 +24,7 @@ t_ears_err ears_buffer_setchannel(t_object *ob, t_buffer_obj *source, long dest_
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(source);
+    float *sample = ears_buffer_locksamples(source);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -43,7 +43,7 @@ t_ears_err ears_buffer_setchannel(t_object *ob, t_buffer_obj *source, long dest_
         for (; i < source_framecount; i++)
             sample[i * source_channelcount + dest_channel] = 0;
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -57,7 +57,7 @@ t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long dest_
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *sample = buffer_locksamples(source);
+    float *sample = ears_buffer_locksamples(source);
     
     if (!sample) {
         err = EARS_ERR_CANT_READ;
@@ -72,7 +72,7 @@ t_ears_err ears_buffer_sumchannel(t_object *ob, t_buffer_obj *source, long dest_
         for (i = 0; i < lim; i++)
             sample[i * source_channelcount + dest_channel] += samps[i];
         
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -323,7 +323,6 @@ t_ears_err ears_model_sine_synthesis(t_object *ob, double sr,
     
     return err;
 }
-
 
 
 

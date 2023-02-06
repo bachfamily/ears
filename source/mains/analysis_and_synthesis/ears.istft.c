@@ -42,9 +42,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 #include "ears.spectral.h"
 
@@ -112,7 +112,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -182,7 +182,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_istft_assist(t_buf_istft *x, void *b, long m, long a, char *s)
@@ -283,8 +282,8 @@ void buf_istft_bang(t_buf_istft *x)
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     
     if (num_buffers > 0) {
-        t_buffer_obj *in1[num_buffers];
-        t_buffer_obj *in2[num_buffers];
+        t_buffer_obj **in1 = (t_buffer_obj **)bach_newptr(num_buffers * sizeof(t_buffer_obj *));
+        t_buffer_obj **in2 = (t_buffer_obj **)bach_newptr(num_buffers * sizeof(t_buffer_obj *));
         t_buffer_obj *dest = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
         t_buffer_obj *dest2 = cpx ? earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 0) : NULL;
 
@@ -303,7 +302,8 @@ void buf_istft_bang(t_buf_istft *x)
         ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, dest2, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect", x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary);
         
 #endif
-        
+        bach_freeptr(in1);
+        bach_freeptr(in2);
     }
     
     if (cpx)

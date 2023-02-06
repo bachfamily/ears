@@ -40,9 +40,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 
 
@@ -93,8 +93,8 @@ t_max_err buf_split_setattr_mode(t_buf_split *x, void *attr, long argc, t_atom *
                 x->e_mode = EARS_SPLIT_MODE_NUMBER;
             else if (s == gensym("silence") || s == gensym("Silence"))
                 x->e_mode = EARS_SPLIT_MODE_SILENCE;
-            else if (s == gensym("onset") || s == gensym("Onset"))
-                x->e_mode = EARS_SPLIT_MODE_ONSET;
+//            else if (s == gensym("onset") || s == gensym("Onset"))
+//                x->e_mode = EARS_SPLIT_MODE_ONSET;
             else
                 object_error((t_object *)x, "Unsupported attribute value.");
         } else if (atom_gettype(argv) == A_LONG){
@@ -113,7 +113,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -135,8 +135,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // in List mode: the position of split points (unit set by <m>timeunit</m> attribute); <br />
     // in Silence mode: amplitude threshold for silence (unit set by <m>ampunit</m> attribute)
     // and the minimum silence duration (unit set by <m>timeunit</m> attribute); <br />
-    // in Onset mode: amplitude threshold for attacks (unit set by <m>ampunit</m> attribute)
-    // and the minimum distance between attacks (unit set by <m>timeunit</m> attribute); <br />
+    // You can split a buffer by onsets if you combine <o>ears.split~</o> in list mode with an onset detector such as <o>ears.essentia~ onsets</o>
 
     // @method number @digest Set split parameter
     // @description A number in the second inlet sets the split parameter (see <m>list/llll</m>).
@@ -153,7 +152,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     CLASS_ATTR_LONG(c, "mode", 0, t_buf_split, e_mode);
     CLASS_ATTR_STYLE_LABEL(c,"mode",0,"enumindex","Split Mode");
-    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Duration Number List Silence Onset");
+    CLASS_ATTR_ENUMINDEX(c,"mode", 0, "Duration Number List Silence");
     CLASS_ATTR_ACCESSORS(c, "mode", NULL, buf_split_setattr_mode);
     CLASS_ATTR_BASIC(c, "mode", 0);
     // @description Sets the split mode: <br />
@@ -161,7 +160,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // 1 (Number): buffer is split into a fixed number of buffers (such number is set); <br />
     // 2 (List): buffer is split via a series of split points given as parameter (right inlet); <br />
     // 3 (Silence): buffer is split according to silence regions. <br />
-    // 4 (Onset): buffer is split according to onset thresholds (set in the right inlet). <br />
+    // You can split a buffer by onsets if you combine <o>ears.split~</o> in list mode with an onset detector such as <o>ears.essentia~ onsets</o>
     // Symbols: "duration", "number", "list" and "silence" can be used while defining the attribute in the object box.
 
     CLASS_ATTR_CHAR(c, "partials", 0, t_buf_split, e_partial_segments);
@@ -185,7 +184,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_split_assist(t_buf_split *x, void *b, long m, long a, char *s)
@@ -306,7 +304,13 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
         {
             double duration_samps = earsbufobj_time_to_fsamps(e_ob, x->params && x->params->l_head ? hatom_getdouble(&x->params->l_head->l_hatom) : 0, buf);
             double overlap_samps = earsbufobj_time_to_fsamps(e_ob, x->e_overlap, buf);
-            
+
+            if (duration_samps <= 0) {
+                object_error((t_object *)e_ob, "Split duration cannot be zero.");
+                object_error((t_object *)e_ob, "    Defaulting to 1 second.");
+                duration_samps = ears_ms_to_samps(1000, buf ? ears_buffer_get_sr((t_object *)e_ob, buf) : ears_get_current_Max_sr());
+            }
+
             if (overlap_samps >= duration_samps) {
                 object_error((t_object *)e_ob, "Overlap duration cannot be greater than or equal to the segment duration.");
                 object_error((t_object *)e_ob, "    Setting overlap to zero.");
@@ -396,7 +400,8 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
         }
             break;
 
-            
+
+        /*
         case EARS_SPLIT_MODE_ONSET:
         {
             double attackthresh = (x->params && x->params->l_head ? earsbufobj_amplitude_to_linear((t_earsbufobj *)x, hatom_getdouble(&x->params->l_head->l_hatom)) : 1.);
@@ -410,7 +415,7 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
                 object_error((t_object *)x, "Error finding split points.");
         }
             break;
-
+         */
             
         default:
             *start = llll_get();
@@ -448,7 +453,7 @@ void buf_split_bang(t_buf_split *x)
             return;
         }
         
-        t_buffer_obj *dest[num_out_buffers];
+        t_buffer_obj **dest = (t_buffer_obj **) bach_newptr(num_out_buffers * sizeof(t_buffer_obj *));
         for (long i = 0; i < num_out_buffers; i++)
             dest[i] = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, i);
         
@@ -470,6 +475,7 @@ void buf_split_bang(t_buf_split *x)
         
         bach_freeptr(start_array);
         bach_freeptr(end_array);
+        bach_freeptr(dest);
         
         earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
     }

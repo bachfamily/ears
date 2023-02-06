@@ -40,11 +40,10 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
-
 
 
 typedef struct _buf_expr {
@@ -55,8 +54,15 @@ typedef struct _buf_expr {
     
     t_hatom               *arguments;
     t_llll                **llll_arguments;
-    long                  n_maxvars;
+
+#ifdef EARS_EXPR_USE_LEXPR
     t_lexpr               *n_lexpr;
+#else
+    t_expr                *n_expr;
+    t_atom                n_expr_types[9];
+#endif
+    
+    long                  n_maxvars;
     t_llll                *n_dummy;
     t_llll                *n_empty;
     t_bach_atomic_lock    n_lock;
@@ -93,7 +99,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -140,7 +146,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_expr_assist(t_buf_expr *x, void *b, long m, long a, char *s)
@@ -190,7 +195,7 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
 
         x->normalization_mode = EARS_NORMALIZE_DONT;
         
-        earsbufobj_init((t_earsbufobj *)x, 0);
+        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
@@ -230,11 +235,7 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
         
         
         // @arg 1 @name expression @optional 0 @type anything @digest Expression to evaluate
-        // @description The expression can contain variables, in the form <m>$in</m>, <m>$rn</m>, <m>$fn</m>, <m>$xn</m>, where <m>n</m> stands for an inlet number.
-        // <m>$in</m> will refer to an integer value extracted from the llll received in the n-th inlet;
-        // likewise, <m>$rn</m> will refer to a rational or integer value and <m>$fn</m> to a floating-point value.
-        // <m>$xn</m> will refer to an untyped value, meaning that the type of the value extracted from the llll will be taken as-is, including symbols (see the description of the <m>llll</m> method).
-        // Unless specific needs, <m>$xn</m> should be considered the preferred way to express variables.
+        // @description The expression can contain floating point variables, in the form <m>$fn</m>, where <m>n</m> stands for an inlet number.
         // For a complete list of the mathematical operators and functions supported please refer to <o>expr</o>'s help file.
         
         if (true_ac) {
@@ -257,12 +258,25 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
 
             x->n_lexpr = lexpr_new(true_ac, true_av, ears_expr_lexpr_subs_count, ears_expr_lexpr_subs, (t_object *) x);
              */
+#ifdef EARS_EXPR_USE_LEXPR
             x->n_lexpr = lexpr_new(true_ac, true_av, 0, NULL, (t_object *) x);
-        }
-
-        if (!x->n_lexpr) {
-            object_error((t_object *) x, "Bad expression");
-            return NULL;
+            if (!x->n_lexpr) {
+                object_error((t_object *) x, "Bad expression");
+                return NULL;
+            }
+            x->n_maxvars = MAX(1, x->n_lexpr->l_numvars);
+#else
+            x->n_expr = (t_expr *)expr_new(true_ac, true_av, x->n_expr_types);
+            if (!x->n_expr) {
+                object_error((t_object *) x, "Bad expression");
+                return NULL;
+            }
+            x->n_maxvars = 1;
+            for (long i = 0; i < 9; i++) {
+                if (x->n_expr_types[i].a_type != A_NOTHING)
+                    x->n_maxvars = i+1;
+            }
+#endif
         }
 
 /*        t_lexpr *dummy = lexpr_new(true_ac, true_av, 0, NULL, (t_object *) x);
@@ -274,7 +288,6 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
         x->n_maxvars = dummy->l_numvars; // workaround to get the right number of variables
         lexpr_free(dummy);
 */
-        x->n_maxvars = MAX(1, x->n_lexpr->l_numvars);
         
         if (x->n_maxvars > 0) {
             x->arguments = (t_hatom *)bach_newptr(x->n_maxvars * sizeof(t_hatom));
@@ -355,7 +368,11 @@ void buf_expr_free(t_buf_expr *x)
 {
     
 //    t_llll *stored = x->e_ob.l_ob.l_incache[0].s_ll;
+#ifdef EARS_EXPR_USE_LEXPR
     lexpr_free(x->n_lexpr);
+#else
+    object_free(x->n_expr);
+#endif
     for (long i = 0; i < x->n_maxvars; i++)
         if (hatom_gettype(x->arguments + i) == H_LLLL)
             llll_free(hatom_getllll(x->arguments + i));
@@ -397,6 +414,9 @@ void buf_expr_bang(t_buf_expr *x)
     }
 
     
+    if (x->e_ob.l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) // this is only needed for COPY naming situations, otherwise we handle buffers manually
+        earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
+    
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_buffers, true);
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
 
@@ -419,14 +439,19 @@ void buf_expr_bang(t_buf_expr *x)
     }
                 
     for (long count = 0; count < num_buffers; count++) {
-        t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        bool inplace = false;
         for (long i = 0; i < maxvars; i++) {
             if (el[i] && is_hatom_number(&el[i]->l_hatom)) {
                 hatom_setdouble(x->arguments + i, hatom_getdouble(&el[i]->l_hatom));
             } else if (el[i] && hatom_gettype(&el[i]->l_hatom) == H_SYM) {
-                t_buffer_obj *obj = ears_buffer_getobject(hatom_getsym(&el[i]->l_hatom));
+                t_symbol *name = hatom_getsym(&el[i]->l_hatom);
+                t_buffer_obj *obj = ears_buffer_get_object(name);
                 if (obj) {
                     hatom_setobj(x->arguments + i, obj);
+                    if (i == 0 && x->e_ob.l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+                        earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count, name);
+                        inplace = true;
+                    }
                 } else {
                     object_warn((t_object *)x, EARS_ERROR_BUF_NO_BUFFER);
                     hatom_setdouble(x->arguments + i, 0);
@@ -438,11 +463,26 @@ void buf_expr_bang(t_buf_expr *x)
                 hatom_setdouble(x->arguments + i, 0);
             }
         }
-
-        ears_buffer_expr((t_object *)x, x->n_lexpr, x->arguments, x->e_ob.l_numins, out, (e_ears_normalization_modes)normalization_mode,
-                         x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
-
         
+        t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
+        t_buffer_obj *out_wk = out;
+        if (inplace) {
+            out_wk = ears_buffer_make(NULL);
+        }
+
+#ifdef EARS_EXPR_USE_LEXPR
+        ears_buffer_expr((t_object *)x, x->n_lexpr, x->arguments, x->e_ob.l_numins, out_wk, (e_ears_normalization_modes)normalization_mode,
+                         x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
+#else
+        ears_buffer_expr((t_object *)x, x->n_expr, x->arguments, x->e_ob.l_numins, out_wk, (e_ears_normalization_modes)normalization_mode,
+                         x->e_ob.l_envtimeunit, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode);
+#endif
+        
+        if (inplace) {
+            ears_buffer_clone((t_object *)x, out_wk, out);
+            ears_buffer_free(out_wk);
+        }
+
         // update el
         for (long i = 0; i < maxvars; i++) {
             if (el[i] && el[i]->l_next)

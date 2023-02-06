@@ -69,14 +69,14 @@ void ears_in_anything(t_ears_in *x, t_symbol *s, long ac, t_atom *av);
 void ears_in_llll(t_ears_in *x, t_llll *ll, long inlet);
 void ears_in_iteration(t_ears_in *x, long n);
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     CLASS_NEW_CHECK_SIZE(ears_in_class, "ears.in",
@@ -120,8 +120,6 @@ int C74_EXPORT main()
     llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
 
     class_register(CLASS_BOX, ears_in_class);
-    
-    return 0;
 }
 
 void ears_in_llll(t_ears_in *x, t_llll *ll, long inlet)

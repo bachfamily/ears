@@ -12,6 +12,9 @@
 #pragma once
 
 #include <type_traits>
+#ifdef WIN_VERSION
+#include <complex>
+#endif
 
 namespace hoa
 {

@@ -9,8 +9,8 @@
 #ifndef _EARS_CONVERSIONS_H_
 #define _EARS_CONVERSIONS_H_
 
-#include "llllobj.h"
-#include "llll_commons_ext.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
 
 typedef enum _ears_timeunit
 {

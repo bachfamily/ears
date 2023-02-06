@@ -7,7 +7,7 @@ t_ears_err ears_buffer_waveset_getnum(t_object *ob, t_buffer_obj *source, long c
     
     long count_waveset = 0;
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
@@ -54,7 +54,7 @@ t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buff
         return EARS_ERR_GENERIC;
 
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -67,7 +67,7 @@ t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buff
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
@@ -75,7 +75,7 @@ t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buff
         
         ears_buffer_set_size_and_numchannels(ob, dest, howmany * framecount, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -140,13 +140,13 @@ t_ears_err ears_buffer_waveset_repeat(t_object *ob, t_buffer_obj *source, t_buff
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -162,7 +162,7 @@ t_ears_err ears_buffer_waveset_decimate(t_object *ob, t_buffer_obj *source, t_bu
         return EARS_ERR_GENERIC;
 
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -175,7 +175,7 @@ t_ears_err ears_buffer_waveset_decimate(t_object *ob, t_buffer_obj *source, t_bu
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
@@ -184,7 +184,7 @@ t_ears_err ears_buffer_waveset_decimate(t_object *ob, t_buffer_obj *source, t_bu
         ears_buffer_clear(ob, dest);
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         long *out_framecount = (long *)sysmem_newptr(channelcount * sizeof(long));
         for (long i = 0; i < channelcount; i++)
             out_framecount[i] = 0;
@@ -253,7 +253,7 @@ t_ears_err ears_buffer_waveset_decimate(t_object *ob, t_buffer_obj *source, t_bu
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
             
             // find maximum
             long maxsamps = 0;
@@ -266,7 +266,7 @@ t_ears_err ears_buffer_waveset_decimate(t_object *ob, t_buffer_obj *source, t_bu
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
     return err;
@@ -281,7 +281,7 @@ t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer
     
     t_ears_err err = EARS_ERR_NONE;
 
-    float *waveform_sample = buffer_locksamples(waveform);
+    float *waveform_sample = ears_buffer_locksamples(waveform);
     if (!waveform_sample) {
         object_error(ob, "No waveform defined!");
         return EARS_ERR_NO_BUFFER;
@@ -290,18 +290,18 @@ t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer
     long waveform_len = ears_buffer_get_size_samps(ob, waveform);
     if (!waveform_sample) {
         object_error(ob, "Waveform is empty!");
-        buffer_unlocksamples(waveform);
+        ears_buffer_unlocksamples(waveform);
         return EARS_ERR_NO_BUFFER;
     }
     if (ears_buffer_get_numchannels(ob, waveform) > 1) {
         object_error(ob, "Waveform must have a single channel!");
-        buffer_unlocksamples(waveform);
+        ears_buffer_unlocksamples(waveform);
         return EARS_ERR_GENERIC;
     }
     
 
     double sr = ears_buffer_get_sr(ob, source);
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -313,7 +313,7 @@ t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer
         if (source == dest) { // inplace operation!
             orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
             sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format(ob, source, dest, true); // won't change channels/framecount: that'll be done later on
@@ -321,7 +321,7 @@ t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer
         
         ears_buffer_set_size_and_numchannels(ob, dest, framecount, channelcount);
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         float *temp = (float *)bach_newptr(framecount * sizeof(float));
         
         if (!dest_sample) {
@@ -374,17 +374,17 @@ t_ears_err ears_buffer_waveset_subs(t_object *ob, t_buffer_obj *source, t_buffer
             }
             
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         bach_freeptr(temp);
     
         if (source == dest) // inplace operation!
             bach_freeptr(orig_sample_wk);
         else
-            buffer_unlocksamples(source);
+            ears_buffer_unlocksamples(source);
     }
     
-    buffer_unlocksamples(waveform);
+    ears_buffer_unlocksamples(waveform);
     
     return err;
 }
@@ -403,7 +403,7 @@ t_ears_err ears_buffer_waveset_split(t_object *ob, t_buffer_obj *source, t_buffe
     ears_buffer_extractchannels(ob, source, sourcechannel, 1, &channel);
 
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);

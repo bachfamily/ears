@@ -40,9 +40,9 @@
 
 #include "ext.h"
 #include "ext_obex.h"
-#include "llllobj.h"
-#include "llll_commons_ext.h"
-#include "bach_math_utilities.h"
+#include "foundation/llllobj.h"
+#include "foundation/llll_commons_ext.h"
+#include "math/bach_math_utilities.h"
 #include "ears.object.h"
 
 
@@ -80,7 +80,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     t_class *c;
@@ -116,7 +116,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
-    return 0;
 }
 
 void buf_fromdiffs_assist(t_buf_fromdiffs *x, void *b, long m, long a, char *s)
@@ -199,7 +198,7 @@ void buf_fromdiffs_bang(t_buf_fromdiffs *x)
         long size = 0;
         if (x->e_initials->l_head && hatom_gettype(&x->e_initials->l_head->l_hatom) == H_SYM) {
             // using a buffer
-            t_buffer_obj *initialbuf = (t_buffer_obj *)ears_buffer_getobject(hatom_getsym(&x->e_initials->l_head->l_hatom));
+            t_buffer_obj *initialbuf = (t_buffer_obj *)ears_buffer_get_object(hatom_getsym(&x->e_initials->l_head->l_hatom));
             if (initialbuf) {
                 ears_buffer_fromdiffs((t_object *)x, in, out, initialbuf);
             } else {

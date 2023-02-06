@@ -5,7 +5,7 @@
  @ingroup	dada	
  */
 
-#include "llllobj.h" // you must include this.
+#include "foundation/llllobj.h" // you must include this.
 #include "ext.h"
 #include "ext_obex.h"
 #include "ext_common.h" // contains CLAMP macro
@@ -442,7 +442,6 @@ void C74_EXPORT ext_main(void* moduleRef)
 	class_register(CLASS_BOX, c);
 	seq_class = c;
 	
-	return 0;
 }
 
 void seq_task(t_seq *x)
@@ -634,7 +633,7 @@ void seq_perform64(t_seq *x, t_object *dsp64, double **ins, long numins, double 
 			double reg_fadein_slope = reg->fade_in.slope, reg_fadeout_slope = reg->fade_out.slope; 
 //			long reg_fadein_type = reg->fade_in.fade_type, reg_fadeout_type = reg->fade_out.fade_type;
 
-			t_float		*tab = buffer_locksamples(buffer);
+			t_float		*tab = ears_buffer_locksamples(buffer);
 			if (!tab)
 				continue;
 			
@@ -670,7 +669,7 @@ void seq_perform64(t_seq *x, t_object *dsp64, double **ins, long numins, double 
 					}
 				}
 			}
-			buffer_unlocksamples(buffer);
+			ears_buffer_unlocksamples(buffer);
 		}
 		
 		// Increase samples cursor
@@ -715,7 +714,7 @@ void seq_anything(t_seq *x, t_symbol *msg, long ac, t_atom *av)
 		} else if (router == gensym("addregion") && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
 			t_symbol *filename = hatom_getsym(&parsed->l_head->l_hatom);
 			double onset = 0, offset = 0, duration = -1, gain = 0, fadeindur = 0, fadeinslope = 0, fadeoutdur = 0, fadeoutslope = 0;
-			long track = 1;
+			t_atom_long track = 1;
 			llll_destroyelem(parsed->l_head);
 			llll_parseargs((t_object *)x, parsed, "iddd", gensym("track"), &track, gensym("onset"), 
 						   &onset, gensym("offset"), &offset, gensym("duration"), &duration, gensym("gain"), &gain,
@@ -1733,7 +1732,7 @@ void buffer_create_view(t_seq *x, t_seq_buffer *buffer, long view_idx, double sa
 	
 	long i, j, k = 1;
 	float *v = view->samples;
-	t_float	*tab = buffer_locksamples(buffer->buffer);
+	t_float	*tab = ears_buffer_locksamples(buffer->buffer);
 	for (i = 0, j = 0; i < num_view_samples_ceil && j < num_frames; v++) {
 		float abs_max = 0;
 		double k_subs = k * subsampling;
@@ -1749,7 +1748,7 @@ void buffer_create_view(t_seq *x, t_seq_buffer *buffer, long view_idx, double sa
 		*v = abs_max;
 		i++;
 	} 
-	buffer_unlocksamples(buffer->buffer);
+	ears_buffer_unlocksamples(buffer->buffer);
 	
 }
 

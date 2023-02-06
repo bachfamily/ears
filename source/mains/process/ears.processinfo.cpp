@@ -96,14 +96,14 @@ void ears_processinfo_dsp64(t_ears_processinfo *x, t_object *dsp64, short *count
 
 void ears_processinfo_perform64(t_ears_processinfo *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     this_class = class_new("ears.processinfo~",
@@ -131,8 +131,6 @@ int C74_EXPORT main()
     //class_addmethod(this_class, (method)ears_processinfo_bang, "bang", 0);
     
     class_register(CLASS_BOX, this_class);
-    
-    return 0;
 }
 
 

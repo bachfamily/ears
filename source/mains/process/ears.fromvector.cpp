@@ -64,14 +64,14 @@ void ears_fromvector_perform64(t_ears_fromvector *x, t_dspchain *dsp64, double *
 
 
 
-int C74_EXPORT main()
+void C74_EXPORT ext_main(void* moduleRef)
 {
     common_symbols_init();
     llllobj_common_symbols_init();
     
     if (llllobj_check_version(bach_get_current_llll_version()) || llllobj_test()) {
         ears_error_bachcheck();
-        return 1;
+        return;
     }
     
     ears_fromvector_class = class_new("ears.fromvector~",
@@ -86,8 +86,6 @@ int C74_EXPORT main()
     class_dspinit(ears_fromvector_class);
     
     class_register(CLASS_BOX, ears_fromvector_class);
-    
-    return 0;
 }
 
 void *ears_fromvector_new(t_symbol *s, t_atom_long ac, t_atom* av)

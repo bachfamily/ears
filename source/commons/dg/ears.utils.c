@@ -1,5 +1,5 @@
 #include "ears.utils.h"
-#include "llll_files.h"
+#include "foundation/llll_files.h"
 
 void ears_symbol_split_unit(t_symbol *s, double *val, t_symbol **unit)
 {
@@ -30,7 +30,7 @@ void ears_symbol_split_unit(t_symbol *s, double *val, t_symbol **unit)
 char ears_symbol_ends_with_char(const char *filename, const char *pattern, char ignore_case)
 {
     if (filename && strlen(filename)>=strlen(pattern) &&
-        ((ignore_case && strcasecmp(filename + strlen(filename) - strlen(pattern), pattern) == 0) ||
+        ((ignore_case && strcmp_case_insensitive(filename + strlen(filename) - strlen(pattern), pattern) == 0) ||
          (!ignore_case && strcmp(filename + strlen(filename) - strlen(pattern), pattern) == 0)))
         return 1;
     return 0;
@@ -40,7 +40,7 @@ char ears_symbol_ends_with_char(const char *filename, const char *pattern, char 
 char ears_symbol_ends_with(t_symbol *filename, const char *pattern, char ignore_case)
 {
     if (filename && filename->s_name && strlen(filename->s_name)>=strlen(pattern) &&
-        ((ignore_case && strcasecmp(filename->s_name + strlen(filename->s_name) - strlen(pattern), pattern) == 0) ||
+        ((ignore_case && strcmp_case_insensitive(filename->s_name + strlen(filename->s_name) - strlen(pattern), pattern) == 0) ||
          (!ignore_case && strcmp(filename->s_name + strlen(filename->s_name) - strlen(pattern), pattern) == 0)))
         return 1;
     return 0;
@@ -207,7 +207,7 @@ long ears_buffer_symbol_is_buffer(t_symbol *s)
         return (0);
 }
 
-t_object *ears_buffer_getobject(t_symbol *name)
+t_object *ears_buffer_get_object(t_symbol *name)
 {
     t_object *rtn = NULL;
     

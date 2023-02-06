@@ -1,6 +1,11 @@
+#include "ears.h"
+
+#ifdef EARS_WAVPACK_SUPPORT
+
 #include "ears.wavpack.h"
-
-
+#ifdef WIN_VERSION
+#include <io.h>
+#endif
 
 long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start, long end, t_buffer_obj *buf, t_symbol **sampleformat, e_ears_timeunit timeunit)
 {
@@ -81,7 +86,7 @@ long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start, l
     ears_buffer_set_size_and_numchannels(ob, buf, num_samples, num_channels);
     ears_buffer_set_sr(ob, buf, sr);
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         ears_err = EARS_ERR_CANT_READ;
@@ -103,7 +108,7 @@ long ears_buffer_read_handle_wavpack(t_object *ob, char *filename, long start, l
             }
         }
         buffer_setdirty(buf);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     WavpackSeekSample(wpc, start_sample);
@@ -283,7 +288,7 @@ void ears_writewavpack(t_object *buf, t_symbol *filename, t_ears_encoding_settin
     
     int32_t *sample_int32 = (int32_t *)sysmem_newptr(tot_num_samples * config.num_channels * sizeof (int32_t));
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     if (!sample) {
         error("Can't read buffer!");
     } else {
@@ -307,7 +312,7 @@ void ears_writewavpack(t_object *buf, t_symbol *filename, t_ears_encoding_settin
             }
         }
 
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     
@@ -340,6 +345,8 @@ void ears_writewavpack(t_object *buf, t_symbol *filename, t_ears_encoding_settin
     //    if (wvc_file.file)
     //        fclose(wvc_file.file);
 }
+
+#endif // EARS_WAVPACK_SUPPORT
 
 
 
