@@ -1,1 +1,10 @@
 ﻿  Checking Build System
+  CMake is re-running because C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/CMakeFiles/generate.stamp is out-of-date.
+    the file 'C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/cmake_uninstall.cmake.in'
+    is newer than 'C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build/CMakeFiles/generate.stamp.depend'
+    result='-1'
+  -- Selecting Windows SDK version 10.0.22000.0 to target Windows 10.0.19044.
+  -- Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR) 
+  -- Configuring done
+  -- Generating done
+  -- Build files have been written to: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/taglib-1.12-win/build

@@ -2,7 +2,7 @@
 	@file
 	ears.mp3.h
 	Common utilities for mp3 handling
- 
+
 	by Daniele Ghisi
  */
 
@@ -13,15 +13,11 @@
 
 #if defined EARS_MP3_WRITE_SUPPORT || defined EARS_MP3_READ_SUPPORT
 #include "ears.commons.h"
-<<<<<<< HEAD
+#endif
+
 #ifdef WIN_VERSION
 #include <lame.h>
 #else
-=======
-#endif
-
-#ifdef EARS_MP3_WRITE_SUPPORT
->>>>>>> devel-aa
 #include <lame/lame.h> // only used to export mp3s
 #endif
 
