@@ -9,7 +9,9 @@
 #ifndef _EARS_H_
 #define _EARS_H_
 
-//#define EARS_MP3_SUPPORT
+#ifdef __APPLE__
+#define EARS_MP3_SUPPORT
+#endif
 #define EARS_WAVPACK_SUPPORT
 
 // #define EARS_ALLOCATIONVERBOSE
