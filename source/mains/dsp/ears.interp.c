@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears distorsion
+	ears interpolation
  
 	@keywords
 	buffer, interp, interpolate, linear

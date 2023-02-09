@@ -41,7 +41,7 @@
 #define TAGLIB_STATIC
 
 #include "ears.h"
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_WRITE_SUPPORT
 #include "ears.mp3.h"
 #endif
 #include "ext.h"
@@ -69,6 +69,7 @@ typedef struct _buf_write {
     t_symbol           *sampleformat;
     
     t_symbol           *mp3_vbrmode;
+    double             mp3_quality; // for VBR
     long               mp3_bitrate;
     long               mp3_bitrate_min;
     long               mp3_bitrate_max;
@@ -136,11 +137,22 @@ t_max_err buf_write_setattr_format(t_buf_write *x, void *attr, long argc, t_atom
     return err;
 }
 
+t_max_err buf_write_setattr_vbrmode(t_buf_write *x, void *attr, long argc, t_atom *argv)
+{
+    t_max_err err = MAX_ERR_NONE;
+    if (argc && argv && atom_gettype(argv) == A_SYM) {
+        x->mp3_vbrmode = atom_getsym(argv);
+        object_attr_setdisabled((t_object *)x, gensym("quality"), x->mp3_vbrmode != gensym("VBR"));
+    } else {
+        object_error((t_object *)x, "Invalid sample format.");
+        err = MAX_ERR_GENERIC;
+    }
+    return err;
+}
+
+
 void C74_EXPORT ext_main(void* moduleRef)
 {
-#ifdef EARS_MP3_SUPPORT
-    ears_mpg123_init();
-#endif
     common_symbols_init();
     llllobj_common_symbols_init();
     
@@ -177,13 +189,19 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     CLASS_ATTR_SYM(c, "vbrmode", 0, t_buf_write, mp3_vbrmode);
     CLASS_ATTR_STYLE_LABEL(c, "vbrmode", 0, "enum", "MP3 Variable Bitrate Mode");
+    CLASS_ATTR_ACCESSORS(c, "vbrmode", NULL, buf_write_setattr_vbrmode);
     CLASS_ATTR_ENUM(c,"vbrmode", 0, "CBR ABR VBR");
     // @description Sets the variable bitrate mode for MP3 encoding: <br />
     // "CBR": constant bit rate (set via the <m>bitrate</m> attribute); <br />
     // "ABR": average bit rate (set via the <m>bitrate</m> attribute, possibly with
     // maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes); <br />
-    // "VBR" (default): variable bit rate (with
+    // "VBR" (default): variable bit rate (with a quality factor defined by the <m>quality</m> attribute; and/or
     // maximum and minimum rate set via the <m>maxbitrate</m> and <m>minbitrate</m> attributes).
+
+    CLASS_ATTR_DOUBLE(c, "quality", 0, t_buf_write, mp3_quality);
+    CLASS_ATTR_STYLE_LABEL(c, "quality", 0, "text", "MP3 VBR Quality");
+    // @description Sets the variable bit-rate quality for MP3 encoding, from 0. (highest quality, largest file)
+    // to 9.999 (lowest quality, smallest file).
 
     CLASS_ATTR_LONG(c, "bitrate", 0, t_buf_write, mp3_bitrate);
     CLASS_ATTR_STYLE_LABEL(c, "bitrate", 0, "text", "MP3 Bitrate in kbps");
@@ -266,6 +284,7 @@ t_buf_write *buf_write_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_write*)object_alloc_debug(s_tag_class);
     if (x) {
         x->mp3_vbrmode = gensym("VBR");
+        x->mp3_quality = 4.;
         x->sampleformat = EARS_DEFAULT_WRITE_FORMAT;
         x->write_spectral_annotations = true;
         
@@ -321,6 +340,9 @@ void buf_write_fill_encode_settings(t_buf_write *x, t_ears_encoding_settings *se
 {
     // default:
     settings->vbr_type = EARS_MP3_VBRMODE_VBR;
+    
+    settings->quality = (x->mp3_quality >= 0 ? x->mp3_quality : 4.);
+    
     // 0 = use LAME defaults
     settings->bitrate = 0;
     settings->bitrate_min = 0;

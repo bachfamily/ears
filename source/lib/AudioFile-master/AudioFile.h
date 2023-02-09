@@ -563,6 +563,12 @@ bool AudioFile<T>::load (std::string filePath, int start, int end, bool start_en
 		return false;
 	}
     
+    if (length == 0)
+    {
+        reportError ("ERROR: Empty file\n" + filePath);
+        return false;
+    }
+    
     // get audio file format
     audioFileFormat = determineAudioFileFormat (fileData);
     

@@ -49,7 +49,7 @@
 
 typedef struct _buf_lace {
     t_earsbufobj       e_ob;
-    
+    long               e_count;
 } t_buf_lace;
 
 
@@ -98,8 +98,8 @@ void C74_EXPORT ext_main(void* moduleRef)
                          0L);
     
     // @method symbol/llll @digest Process buffers
-    // @description A symbol or an llll with a single symbol in any of the two inlets will set the left or right buffer.
-    // The first inlet will als trigger the interleaving of the channels of the two buffers, and the output buffer name will be output.
+    // @description A symbol or an llll with a single symbol in any of the inlets will set the corresponding buffer.
+    // The first inlet will trigger the interleaving of the channels of the buffers, and the output buffer name will be output.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(lace)
     
     earsbufobj_class_add_outname_attr(c);
@@ -135,6 +135,8 @@ t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
     
     x = (t_buf_lace*)object_alloc_debug(s_tag_class);
     if (x) {
+        x->e_count = 2;
+
         earsbufobj_init((t_earsbufobj *)x, 0);
         
         t_llll *args = llll_parse(true_ac, argv);
@@ -144,9 +146,23 @@ t_buf_lace *buf_lace_new(t_symbol *s, short argc, t_atom *argv)
         // @digest Output buffer names
         // @description @copy EARS_DOC_OUTNAME_ATTR
 
+        // @arg 1 @name count @optional 1 @type int
+        // @digest Number of input buffers
+
+        if (args && args->l_head && hatom_gettype(&args->l_head->l_hatom) == H_LONG) {
+            x->e_count = CLAMP(hatom_getlong(&args->l_head->l_hatom), 1, LLLL_MAX_INLETS);
+        }
+        
+        char buf[LLLL_MAX_INLETS+1];
+        long i = 0;
+        for (; i < x->e_count; i++) {
+            buf[i] = 'e';
+        }
+        buf[i] = 0;
+        
         attr_args_process(x, argc, argv); // this must be called before llllobj_obj_setup
 
-        earsbufobj_setup((t_earsbufobj *)x, "ee", "e", names);
+        earsbufobj_setup((t_earsbufobj *)x, buf, "e", names);
         
         llll_free(args);
         llll_free(names);
@@ -164,23 +180,23 @@ void buf_lace_free(t_buf_lace *x)
 
 void buf_lace_bang(t_buf_lace *x)
 {
-    t_llll *buffers = llll_get();
+    long num_buffers = x->e_count;
     
     earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, 1, true);
     
-    t_buffer_obj *left = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-    t_buffer_obj *right = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 1, 0);
-
+    earsbufobj_mutex_lock((t_earsbufobj *)x);
+    t_buffer_obj **bufs = (t_buffer_obj **)bach_newptr(num_buffers * sizeof(t_buffer_obj *));
+    for (long i = 0; i < num_buffers; i++)
+        bufs[i] = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, i, 0);
     t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
-    if (left && right)
-        ears_buffer_lace((t_object *)x, left, right, out);
-    else {
-        object_error((t_object *)x, "One of the two buffers has not been input.");
-    }
     
+    ears_buffer_lace((t_object *)x, num_buffers, bufs, out);
+    
+    bach_freeptr(bufs);
+    earsbufobj_mutex_unlock((t_earsbufobj *)x);
+
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
-    llll_free(buffers);
 }
 
 

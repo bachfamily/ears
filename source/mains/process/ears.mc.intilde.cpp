@@ -293,14 +293,15 @@ long ears_mcintilde_multichanneloutputs(t_ears_mcintilde *x, long outletindex)
     x->inletOk = x->inlet;
     x->firstChanOk = x->firstChan;
     x->chansOk = x->chans;
-    if (auto b = &x->bufs[x->inletOk - 1]) {
-        if (x->chansOk > 0)
-            return x->chansOk;
-        else {
-            return MIN(MAX(b->chans - x->firstChan, 0) + 1, 1024);
+    if (x->bufs) {
+        if (auto b = &x->bufs[x->inletOk - 1]) {
+            if (x->chansOk > 0)
+                return x->chansOk;
+            else {
+                return MIN(MAX(b->chans - x->firstChan, 0) + 1, 1024);
+            }
         }
-    } else {
-        object_error((t_object *) x, "Invalid buffer");
-        return 1;
     }
+    //object_error((t_object *) x, "Invalid buffer");
+    return 1;
 }

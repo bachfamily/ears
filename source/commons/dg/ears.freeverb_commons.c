@@ -14,7 +14,7 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -27,7 +27,7 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
         
         orig_sample_wk = (float *)bach_newptrclear(channelcount * (framecount + framepad) * sizeof(float));
         sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
         
         if (source == dest) {
             ears_buffer_set_size_samps(ob, dest, framecount + framepad);
@@ -35,7 +35,7 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount + framepad);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -63,7 +63,7 @@ t_ears_err ears_buffer_freeverb(t_object *ob, t_buffer_obj *source, t_buffer_obj
                 end_sample = s + 1;
             }
 
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
             if (end_sample > 0)
                 ears_buffer_crop_inplace(ob, dest, 0, end_sample);
 //                ears_buffer_set_size_samps(ob, dest, end_sample);
@@ -89,7 +89,7 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
         return EARS_ERR_NO_BUFFER;
     
     t_ears_err err = EARS_ERR_NONE;
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -117,7 +117,7 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
 
         orig_sample_wk = (float *)bach_newptrclear(channelcount * (framecount + framepad) * sizeof(float));
         sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
         
         if (source == dest) {
             ears_buffer_set_size_samps(ob, dest, framecount + framepad);
@@ -125,7 +125,7 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount + framepad);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
@@ -153,7 +153,7 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
                 end_sample = s + 1;
             }
             
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
             if (end_sample > 0)
                 ears_buffer_crop_inplace(ob, dest, 0, end_sample);
             //                ears_buffer_set_size_samps(ob, dest, end_sample);

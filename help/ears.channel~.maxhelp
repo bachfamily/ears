@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 3,
-			"revision" : 0,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -53,13 +53,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 493.0, 447.0 ],
+						"rect" : [ 100.0, 126.0, 493.0, 447.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -99,7 +99,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 276.5, 263.0, 131.0, 40.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Same, with polybuffer output"
 								}
 
@@ -152,8 +151,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 192.5, 310.0, 246.0, 23.0 ],
-									"text" : "ears.channel~ mypolybuf @all 1 @poly 1"
+									"patching_rect" : [ 192.5, 310.0, 264.0, 23.0 ],
+									"text" : "ears.channel~ mypolybuf @all 1 @polyout 1"
 								}
 
 							}
@@ -343,13 +342,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 493.0, 447.0 ],
+						"rect" : [ 0.0, 26.0, 493.0, 447.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -710,7 +709,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 3,
-							"revision" : 0,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}

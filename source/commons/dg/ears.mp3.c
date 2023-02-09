@@ -1,9 +1,10 @@
 #include "ears.h"
 
-#ifdef EARS_MP3_SUPPORT
+#if defined EARS_MP3_WRITE_SUPPORT || defined EARS_MP3_READ_SUPPORT
 #include "ears.mp3.h"
+#endif
 
-
+#ifdef EARS_MP3_READ_SUPPORT
 bool mpg123_has_been_initialized = false;
 
 void *ears_mpg123_quit(t_symbol *s, short argc, t_atom *argv)
@@ -112,7 +113,7 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
         
         long numsamps = ears_buffer_get_size_samps(ob, buf);
         
-        float *sample = buffer_locksamples(buf);
+        float *sample = ears_buffer_locksamples(buf);
         
         if (!sample) {
             err = EARS_ERR_CANT_READ;
@@ -125,7 +126,7 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
              } */
             sysmem_copyptr(buffer, sample, buffer_size * sizeof(unsigned char));
             buffer_setdirty(buf);
-            buffer_unlocksamples(buf);
+            ears_buffer_unlocksamples(buf);
             
         }
     }
@@ -140,8 +141,11 @@ long ears_buffer_read_handle_mp3(t_object *ob, char *filename, double start, dou
     return ears_err;
 }
 
+#endif // EARS_MP3_READ_SUPPORT
 
 
+
+#ifdef EARS_MP3_WRITE_SUPPORT
 
 void ears_set_mp3_encodingsettings(lame_t lame, t_ears_encoding_settings *settings)
 {
@@ -170,6 +174,8 @@ void ears_set_mp3_encodingsettings(lame_t lame, t_ears_encoding_settings *settin
         case EARS_MP3_VBRMODE_VBR:
             // Variable Bitrate (new)
             lame_set_VBR(lame, vbr_default);
+            if (settings->quality >= 0)
+                lame_set_VBR_quality(lame, settings->quality);
             if (settings->bitrate_min > 0)
                 lame_set_VBR_min_bitrate_kbps(lame, settings->bitrate_min);
             if (settings->bitrate_max > 0)
@@ -181,7 +187,6 @@ void ears_set_mp3_encodingsettings(lame_t lame, t_ears_encoding_settings *settin
     }
     
 }
-
 
 
 void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *settings)
@@ -202,20 +207,24 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
         return;
     }
     
-    const int PCM_SIZE = 8192;
-    const int MP3_SIZE = PCM_SIZE*2;
+    lame_t lame = lame_init();
     
+    lame_set_in_samplerate(lame, ears_buffer_get_sr(NULL, buf));
+    ears_set_mp3_encodingsettings(lame, settings);
+    lame_set_write_id3tag_automatic(lame, 0);
+
+    if (lame_init_params(lame) < 0) {
+        error("Cannot write MP3 file %s with these parameters", conformed_path ? conformed_path->s_name : filename->s_name);
+        return;
+    }
+
+    const int MP3_SIZE = LAME_MAXMP3BUFFER;
+    const int PCM_SIZE = lame_get_maximum_number_of_samples(lame, MP3_SIZE);
     float pcm_buffer_l[PCM_SIZE];
     float pcm_buffer_r[PCM_SIZE];
     unsigned char mp3_buffer[MP3_SIZE];
-    int sr = ears_buffer_get_sr(NULL, buf);
-    
-    lame_t lame = lame_init();
-    lame_set_in_samplerate(lame, sr);
-    ears_set_mp3_encodingsettings(lame, settings);
-    lame_init_params(lame);
-    
-    float *sample = buffer_locksamples(buf);
+
+    float *sample = ears_buffer_locksamples(buf);
     if (!sample) {
         error("Can't read buffer!");
     } else {
@@ -235,11 +244,133 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
             i += nsamples;
         }
         write = lame_encode_flush(lame, mp3_buffer, MP3_SIZE);
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     }
     
     lame_close(lame);
     fclose(mp3);
 }
 
-#endif
+
+/*
+void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *settings)
+{
+    
+    if (false){
+        int write;
+        // TEST
+        lame_t lame = lame_init();
+        lame_set_in_samplerate(lame, 44100);
+//        lame_set_out_samplerate(lame, 44100);
+        lame_set_VBR(lame, vbr_default);
+//        lame_set_write_id3tag_automatic(lame, 0);
+//        lame_set_mode(lame, STEREO);
+//        lame_set_num_channels(lame, 2);
+//        lame_set_bWriteVbrTag(lame, 0);
+        lame_set_VBR_quality(lame, 4.);
+
+        lame_init_params(lame);
+
+        FILE *mp3 = fopen("/tmp/tmp.mp3", "wb");
+        
+        long nsamples = 1024;
+        long mp3size = nsamples * 2;
+        float pcm_buffer_l[nsamples];
+        float pcm_buffer_r[nsamples];
+        unsigned char mp3_buffer[nsamples];
+        for (long j = 0; j < nsamples; j++) {
+            pcm_buffer_l[j] = sin((double)j/100.);
+            pcm_buffer_r[j] = sin((double)j/100.);
+        }
+
+        write = lame_encode_buffer_ieee_float(lame, pcm_buffer_l, pcm_buffer_r, nsamples, mp3_buffer, mp3size);
+        fwrite(mp3_buffer, 1, write, mp3);
+
+        write = lame_encode_flush(lame, mp3_buffer, mp3size);
+        fwrite(mp3_buffer, 1, write, mp3);
+
+
+        fclose(mp3);
+        
+        lame_close(lame);
+        return;
+    }
+     
+    
+    int write;
+    t_symbol *conformed_path = get_conformed_resolved_path(filename);
+    
+    if (!conformed_path || !conformed_path->s_name || strlen(conformed_path->s_name)==0) {
+        error("Cannot open file %s for write", filename->s_name);
+        return;
+    }
+    
+    
+    FILE *mp3 = fopen(conformed_path->s_name, "wb");
+    
+    if (!mp3) {
+        error("Cannot open file %s for write", conformed_path ? conformed_path->s_name : filename->s_name);
+        return;
+    }
+    
+    lame_t lame = lame_init();
+    
+    lame_set_in_samplerate(lame, ears_buffer_get_sr(NULL, buf));
+    lame_set_VBR(lame, vbr_default);
+//    ears_set_mp3_encodingsettings(lame, settings);
+    lame_set_write_id3tag_automatic(lame, 0);
+
+    if (lame_init_params(lame) < 0) {
+        error("Cannot write MP3 file %s with these parameters", conformed_path ? conformed_path->s_name : filename->s_name);
+        return;
+    }
+
+
+
+    const int MP3_SIZE = LAME_MAXMP3BUFFER;
+    const int PCM_SIZE = lame_get_maximum_number_of_samples(lame, MP3_SIZE);
+
+    float pcm_buffer_l[PCM_SIZE];
+    float pcm_buffer_r[PCM_SIZE];
+    unsigned char mp3_buffer[MP3_SIZE];
+//    int L = ((std::numeric_limits<int>::max)()) * 0.99;
+    
+    float *sample = ears_buffer_locksamples(buf);
+    if (!sample) {
+        error("Can't read buffer!");
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(buf);        // number of floats in a frame
+        t_atom_long    framecount   = buffer_getframecount(buf);            // number of floats long the buffer is for a single channel
+        
+        long i = 0;
+        while (i < framecount) {
+            long nsamples = MIN(PCM_SIZE, framecount - i);
+            for (long j = 0; j < nsamples; j++) {
+                pcm_buffer_l[j] = sample[(i+j) * channelcount];
+                pcm_buffer_r[j] = (channelcount > 1 ? sample[(i+j) * channelcount + 1] : sample[(i+j) * channelcount]);
+
+            }
+//            write = lame_encode_buffer_int(lame, pcm_buffer_l, pcm_buffer_r, nsamples, mp3_buffer, sizeof(mp3_buffer));
+            write = lame_encode_buffer_ieee_float(lame, pcm_buffer_l, pcm_buffer_r, nsamples, mp3_buffer, MP3_SIZE);
+            if (fwrite(mp3_buffer, 1, write, mp3) != write) {
+                error("Error writing MP3 output.");
+            }
+            
+            i += nsamples;
+        }
+        
+//        if (settings->nogap)
+//            write = lame_encode_flush_nogap(lame, mp3_buffer, MP3_SIZE);
+///        else
+            write = lame_encode_flush(lame, mp3_buffer, MP3_SIZE);
+        fwrite(mp3_buffer, 1, write, mp3);
+        ears_buffer_unlocksamples(buf);
+    }
+    
+    lame_close(lame);
+    fclose(mp3);
+}
+*/
+
+#endif // EARS_MP3_WRITE_SUPPORT
+

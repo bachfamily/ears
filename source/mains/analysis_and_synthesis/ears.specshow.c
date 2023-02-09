@@ -324,7 +324,7 @@ void buf_specshow_set(t_buf_specshow *x, t_symbol *s)
     if (ears_buffer_symbol_is_buffer(s)) {
         if (x->n_last_buffer)
             ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
-        x->n_last_buffer = ears_buffer_getobject(s);
+        x->n_last_buffer = ears_buffer_get_object(s);
         x->n_buffername = s;
         ears_buffer_retain(x->n_last_buffer, x->n_buffername, NULL);
         
@@ -466,7 +466,7 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
                     if (ears_buffer_symbol_is_buffer(s)) {
                         if (x->n_last_buffer)
                             ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
-                        t_buffer_obj *obj = ears_buffer_getobject(s);
+                        t_buffer_obj *obj = ears_buffer_get_object(s);
                         x->n_last_buffer = obj;
                         ears_buffer_retain(x->n_last_buffer, s, NULL);
                         x->n_must_recreate_surface = true;
@@ -548,7 +548,7 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
         jgraphics_surface_destroy(x->n_surface);
     x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, numframes, numbins);
     
-    float *sample = buffer_locksamples(buf);
+    float *sample = ears_buffer_locksamples(buf);
     
     if (!sample) {
         object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
@@ -560,7 +560,7 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
         }
     }
     
-    buffer_unlocksamples(buf);
+    ears_buffer_unlocksamples(buf);
     
     systhread_mutex_unlock(x->n_mutex);
 }

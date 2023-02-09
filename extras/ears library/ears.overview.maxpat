@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 1,
+			"minor" : 5,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -255,8 +255,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -487,15 +487,14 @@
 									"fontsize" : 15.0,
 									"hyperlinkcolor" : [ 0.694117647058824, 0.4, 0.0, 1.0 ],
 									"id" : "obj-5",
-									"linecount" : 20,
 									"linkend" : [ ":", "!", "?", "\u002c", "\u003b", "(", ")", "[", "]", "{", "}" ],
 									"linkstart" : [ "" ],
 									"maxclass" : "bach.hypercomment",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 213.5, 348.0, 342.0 ],
-									"text" : "01. Reverse\n02. Random Mix\n03. Reverse Reverb\n04. Concatenate Files In A Folder\n05. Time And Pitch\n06. In-Place Processing\n07. Multiresample\n08. Off-line Panning\n09. Query And Process\n10. Splitting And Tagging MP3 Files\n11. Batch Separate Channels\n12. Batch Combine 5.1 Channels\n13. Export A Click Track\n14. Multi-Timestretch Echo Rallentando\n15. Generate Higher-Order Ambisonic Trajectories\n16. Batch Change Gain With Progress Bar\n17. Extract Audio Features\n18. Extract Onsets As Notes\n19. Wavesets\n20. Spectal Analysis And Group Delay"
+									"patching_rect" : [ 10.0, 213.5, 348.0, 23.0 ],
+									"text" : "null"
 								}
 
 							}
@@ -628,8 +627,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 429.0, 116.0, 163.0, 22.0 ],
-									"text" : "sprintf symout %s/Examples/"
+									"patching_rect" : [ 429.0, 116.0, 188.0, 22.0 ],
+									"text" : "sprintf symout %s/ears examples/"
 								}
 
 							}
@@ -726,7 +725,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 7.0, 3311.0, 812.0, 253.0 ],
-									"presentation_linecount" : 18,
 									"text" : "ears is relased under a GPLv3 license and embeds the following libraries\n• bach (https://github.com/bachfamily/bach)\n• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3), modified only to prevent a clash between function naming.\n• For the [ears.write~] and [ears.read~] module: the TagLib library (released under LGPL)\n• For the [ears.write~] and [ears.read~] module: the LibAIFF library (released under MIT License, compatible with GPLv3)\n• For the [ears.write~] and [ears.read~] module: A modified version of the AudioFile library (released under GPLv3)\n• the mpg123 library 1.23.4 (released under LGPLv2.1)\n• the mp3 LAME library 3.1.00 released under LGPLv2\n• WavPack (released under BSD license)\n• for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)\n• for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2) and of the id3tool library \n• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2) which in turns uses libsamplerate (released under BSD 2-Clause \"Simplified\" License)\n• for the [ears.soundtouch~] module: the SoundTouch library, released under LGPLv2.1\n• for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3\n• for the [ears.vamp~] module: the Vamp Plugin and Host SDK, released under the permissive license below",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
@@ -871,7 +869,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 7.0, 3282.0, 843.0, 21.0 ],
-									"presentation_linecount" : 2,
 									"text" : "The ears library is developed by Daniele Ghisi with the important exception of the whole ears.process~ ecosystem developed by Andrea Agostini.",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
@@ -1261,6 +1258,10 @@
 			}
  ],
 		"dependency_cache" : [ 			{
+				"name" : "bach.<=.mxo",
+				"type" : "iLaX"
+			}
+, 			{
 				"name" : "bach.args.mxo",
 				"type" : "iLaX"
 			}
@@ -1361,10 +1362,6 @@
 			}
 , 			{
 				"name" : "bach.length.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.leq.mxo",
 				"type" : "iLaX"
 			}
 , 			{

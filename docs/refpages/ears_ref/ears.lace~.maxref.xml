@@ -52,6 +52,13 @@
 				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
+		<objarg name="count" optional="1" type="int">
+			<digest>
+				Number of input buffers
+			</digest>
+			<description>
+			</description>
+		</objarg>
 	</objarglist>
 
 	<!--MESSAGES-->
@@ -93,8 +100,8 @@
 				Process buffers
 			</digest>
 			<description>
-				A symbol or an llll with a single symbol in any of the two inlets will set the left or right buffer.
-				The first inlet will als trigger the interleaving of the channels of the two buffers, and the output buffer name will be output.
+				A symbol or an llll with a single symbol in any of the inlets will set the corresponding buffer.
+				The first inlet will trigger the interleaving of the channels of the buffers, and the output buffer name will be output.
 			</description>
 		</method>
 		<method name="write">

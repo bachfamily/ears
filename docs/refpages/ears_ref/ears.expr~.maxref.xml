@@ -57,11 +57,7 @@
 				Expression to evaluate
 			</digest>
 			<description>
-				The expression can contain variables, in the form <m>$in</m>, <m>$rn</m>, <m>$fn</m>, <m>$xn</m>, where <m>n</m> stands for an inlet number.
-				<m>$in</m> will refer to an integer value extracted from the llll received in the n-th inlet;
-				likewise, <m>$rn</m> will refer to a rational or integer value and <m>$fn</m> to a floating-point value.
-				<m>$xn</m> will refer to an untyped value, meaning that the type of the value extracted from the llll will be taken as-is, including symbols (see the description of the <m>llll</m> method).
-				Unless specific needs, <m>$xn</m> should be considered the preferred way to express variables.
+				The expression can contain floating point variables, in the form <m>$fn</m>, where <m>n</m> stands for an inlet number.
 				For a complete list of the mathematical operators and functions supported please refer to <o>expr</o>'s help file.
 			</description>
 		</objarg>
@@ -348,6 +344,21 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Filter Size" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="resamplingmode" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Resampling Mode
+			</digest>
+			<description>
+				Sets the resampling mode (Sinc, Nearest Neighbor, Sample and Hold, Linear, Quadratic or Cubic). The default is "Sinc",
+				which provides bandlimited interpolation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 		<attribute name="resamplingpolicy" get="1" set="1" type="int" size="1">

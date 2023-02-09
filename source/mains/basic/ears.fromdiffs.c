@@ -198,7 +198,7 @@ void buf_fromdiffs_bang(t_buf_fromdiffs *x)
         long size = 0;
         if (x->e_initials->l_head && hatom_gettype(&x->e_initials->l_head->l_hatom) == H_SYM) {
             // using a buffer
-            t_buffer_obj *initialbuf = (t_buffer_obj *)ears_buffer_getobject(hatom_getsym(&x->e_initials->l_head->l_hatom));
+            t_buffer_obj *initialbuf = (t_buffer_obj *)ears_buffer_get_object(hatom_getsym(&x->e_initials->l_head->l_hatom));
             if (initialbuf) {
                 ears_buffer_fromdiffs((t_object *)x, in, out, initialbuf);
             } else {

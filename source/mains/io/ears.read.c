@@ -338,7 +338,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         
         buf_read_addpathsym(x, filepath, idx);
         
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
         if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
             sampleformat = gensym("compressed");
             long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
@@ -393,7 +393,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
             }
 #endif
             
-#ifdef EARS_MP3_SUPPORT
+#ifdef EARS_MP3_READ_SUPPORT
         }
 #endif
         // cleaning spectral data
@@ -426,7 +426,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         // TODO store metadata
         char *txtbuf = NULL;
         hatom_to_text_buf(&elem->l_hatom, &txtbuf);
-        object_warn((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
+        object_error((t_object *)x, "Error while importing file %s; empty buffer created.", txtbuf);
         buf_read_addpathsym(x, _llllobj_sym_none, idx);
         earsbufobj_store_empty_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx);
         bach_freeptr(txtbuf);
@@ -923,12 +923,12 @@ t_max_err buf_read_WAV_native(t_buf_read *x, t_buffer_obj *outbuf, const char *f
         ears_buffer_set_numchannels((t_object *)x, outbuf, channels);
         ears_buffer_set_size_samps((t_object *)x, outbuf, nSamples);
         
-        t_float *bufsamps = buffer_locksamples(outbuf);
+        t_float *bufsamps = ears_buffer_locksamples(outbuf);
         for (long c = 0; c < channels; c++) {
             for (long i = 0; i < nSamples; i++)
                 bufsamps[i*channels + c] = audioFile.samples[c][i];
         }
-        buffer_unlocksamples(outbuf);
+        ears_buffer_unlocksamples(outbuf);
     }
     
     *markers = AudioCues_to_llll(x, audioFile);
@@ -969,12 +969,12 @@ t_max_err buf_read_AIFF_native(t_buf_read *x, t_buffer_obj *outbuf, const char *
             if (start_samp > 0)
                 AIFF_Seek(ref, start_samp);
             
-            t_float *bufsamps = buffer_locksamples(outbuf);
+            t_float *bufsamps = ears_buffer_locksamples(outbuf);
             if (AIFF_ReadSamplesFloat(ref, bufsamps, num_samps * channels) >= 0) {
-                buffer_unlocksamples(outbuf);
+                ears_buffer_unlocksamples(outbuf);
             } else {
                 // error
-                buffer_unlocksamples(outbuf);
+                ears_buffer_unlocksamples(outbuf);
                 return MAX_ERR_GENERIC;
             }
         }

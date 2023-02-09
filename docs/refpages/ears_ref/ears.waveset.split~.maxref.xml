@@ -291,7 +291,7 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
-		<attribute name="normalize" get="1" set="1" type="float" size="1">
+		<attribute name="normalize" get="1" set="1" type="int" size="1">
 			<digest>
 				Normalize Wavesets
 			</digest>

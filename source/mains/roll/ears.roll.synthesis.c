@@ -418,10 +418,10 @@ void buf_roll_synthesis_bang(t_buf_roll_synthesis *x)
     t_buffer_obj *buf = NULL;
     if (x->wavetable && x->wavetable != _llllobj_sym_empty_symbol) {
         if (ears_buffer_symbol_is_buffer(x->wavetable)) {
-            buf = ears_buffer_getobject(x->wavetable);
+            buf = ears_buffer_get_object(x->wavetable);
             if (buf) {
                 wavetable_length = ears_buffer_get_size_samps((t_object *)x, buf);
-                wavetable = buffer_locksamples(buf);
+                wavetable = ears_buffer_locksamples(buf);
             }
         }
     }
@@ -438,7 +438,7 @@ void buf_roll_synthesis_bang(t_buf_roll_synthesis *x)
                         (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning, x->oversampling, x->e_ob.l_resamplingfilterwidth, false, x->use_assembly_line);
     
     if (wavetable)
-        buffer_unlocksamples(buf);
+        ears_buffer_unlocksamples(buf);
     
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
