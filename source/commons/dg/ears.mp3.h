@@ -16,7 +16,7 @@
 #endif
 
 #ifdef EARS_MP3_WRITE_SUPPORT
-#include <lame/lame.h> // only used to export mp3s
+#include "lame.h" // only used to export mp3s
 #endif
 
 #ifdef EARS_MP3_READ_SUPPORT

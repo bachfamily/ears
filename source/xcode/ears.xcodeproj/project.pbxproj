@@ -7727,6 +7727,7 @@
 				1EF151BF2851EA06005B55B0 /* ears.phasewrap~ */,
 				1E2BB9262851F4360083E71F /* ears.phaseunwrap~ */,
 				1E88A4DC2615D44700D1D20E /* ears.peaks~ */,
+				1EFF13151D1D4F5900B7C47A /* ears.playmp3~ */,
 				91319B59264C02A700364EAB /* ears.process~ */,
 				91319BEC264C16D200364EAB /* ears.processinfo~ */,
 				91ACB3512753EE4400EB3D95 /* ears.py~ */,
@@ -7753,7 +7754,6 @@
 				1E1743AD2616001A00AB2E7C /* ears.trans~ */,
 				1E5993F022F32AFE00E2EC64 /* ears.trim~ */,
 				1E784C77209DC6DF007CB12A /* ears.unpack~ */,
-				1EFF13151D1D4F5900B7C47A /* ears.playmp3~ */,
 				1E82F01427D55CB200582250 /* ears.vamp~ */,
 				1EF2EADF28365779009E11B4 /* ears.waveset.repeat~ */,
 				1ED132E128496AD000863FD2 /* ears.waveset.shuffle~ */,
@@ -14374,6 +14374,7 @@
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
 					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -14417,6 +14418,7 @@
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
 					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -17696,6 +17698,7 @@
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
 					"\"$(SRCROOT)/../lib/WavPack/src\"",
 					"\"$(SRCROOT)/../lib/essentia/\"",
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -17739,6 +17742,7 @@
 					"\"$(SRCROOT)/../lib/WavPack/include\"",
 					"\"$(SRCROOT)/../lib/WavPack/src\"",
 					"\"$(SRCROOT)/../lib/essentia/\"",
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -17855,6 +17859,7 @@
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
 					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -17897,6 +17902,7 @@
 					/usr/local/include/taglib/,
 					"\"$(SRCROOT)/../lib/libaiff-5.0/\"",
 					"\"$(SRCROOT)/../lib/libaiff-5.0/libaiff\"",
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -18624,6 +18630,7 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -18661,6 +18668,7 @@
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../lib/lame-3.100/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
