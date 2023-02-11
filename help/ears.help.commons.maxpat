@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 194.0, 126.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -110,8 +110,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 172.5, 398.5, 141.0, 54.0 ],
-									"presentation_linecount" : 3,
+									"patching_rect" : [ 172.5, 398.5, 142.0, 54.0 ],
 									"text" : "Extract all channels from a buffer as separate buffers"
 								}
 
@@ -163,7 +162,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 538.75, 408.5, 149.75, 54.0 ],
-									"presentation_linecount" : 4,
 									"text" : "Use ears.mixdown~ to quickly reduce the number of channels"
 								}
 
@@ -6982,7 +6980,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 194.0, 126.0, 960.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -7412,8 +7410,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 21.0, 115.0, 106.0, 23.0 ],
-									"text" : "earsBufHelpTest"
+									"patching_rect" : [ 21.0, 115.0, 114.0, 23.0 ],
+									"text" : "earsBufDrumLoop"
 								}
 
 							}
