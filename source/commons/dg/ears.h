@@ -13,11 +13,11 @@
 #define EARS_MP3_SUPPORT
 #endif
 #define EARS_WAVPACK_SUPPORT
+#define EARS_MP3_WRITE_SUPPORT // via lame
 
 // Change these defines here to tweak behavior
 #ifndef WIN_VERSION
 #define EARS_MP3_READ_SUPPORT // via mpg123
-#define EARS_MP3_WRITE_SUPPORT // via lame
 #endif
 
 
