@@ -211,6 +211,7 @@ void *playmp3_new(t_symbol *s, long argc, t_atom *argv)
 	}
 	return (x);
 #else
+    error("ears.playmp3~ is not supported on Windows");
     return NULL;
 #endif
 }
