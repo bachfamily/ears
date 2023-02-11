@@ -2,20 +2,24 @@
 	@file
 	ears.h
 	Basic stuff for the whole ears library
- 
+
 	by Daniele Ghisi
  */
 
 #ifndef _EARS_H_
 #define _EARS_H_
 
+#ifdef __APPLE__
+#define EARS_MP3_SUPPORT
+#endif
+#define EARS_WAVPACK_SUPPORT
 
 // Change these defines here to tweak behavior
 #ifndef WIN_VERSION
 #define EARS_MP3_READ_SUPPORT // via mpg123
+#define EARS_MP3_WRITE_SUPPORT // via lame
 #endif
 
-#define EARS_MP3_WRITE_SUPPORT // via lame
 
 #define EARS_WAVPACK_SUPPORT // via Wavpack library
 

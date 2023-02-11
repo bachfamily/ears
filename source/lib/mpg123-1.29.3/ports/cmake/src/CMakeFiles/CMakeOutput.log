@@ -1,0 +1,315 @@
+The system is: Windows - 10.0.19044 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler:  
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 6/19/2022 11:19:10 PM.
+Project "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\3.23.0-rc3\CompilerIdC\CompilerIdC.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "Debug\".
+  Creating directory "Debug\CompilerIdC.tlog\".
+InitializeBuildStatus:
+  Creating "Debug\CompilerIdC.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\HostX64\x64\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc143.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+  CMakeCCompilerId.c
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdC.lib" /MACHINE:X64 Debug\CMakeCCompilerId.obj
+  CompilerIdC.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\3.23.0-rc3\CompilerIdC\CompilerIdC.exe
+PostBuildEvent:
+  for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+  :VCEnd
+  CMAKE_C_COMPILER=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx64\x64\cl.exe
+FinalizeBuildStatus:
+  Deleting file "Debug\CompilerIdC.tlog\unsuccessfulbuild".
+  Touching "Debug\CompilerIdC.tlog\CompilerIdC.lastbuildstate".
+Done Building Project "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\3.23.0-rc3\CompilerIdC\CompilerIdC.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.86
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+
+The C compiler identification is MSVC, found in "C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/3.23.0-rc3/CompilerIdC/CompilerIdC.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler:  
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 6/19/2022 11:19:11 PM.
+Project "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\3.23.0-rc3\CompilerIdCXX\CompilerIdCXX.vcxproj" on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "Debug\".
+  Creating directory "Debug\CompilerIdCXX.tlog\".
+InitializeBuildStatus:
+  Creating "Debug\CompilerIdCXX.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\HostX64\x64\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+  CMakeCXXCompilerId.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdCXX.lib" /MACHINE:X64 Debug\CMakeCXXCompilerId.obj
+  CompilerIdCXX.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\3.23.0-rc3\CompilerIdCXX\CompilerIdCXX.exe
+PostBuildEvent:
+  for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+  :VCEnd
+  CMAKE_CXX_COMPILER=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx64\x64\cl.exe
+FinalizeBuildStatus:
+  Deleting file "Debug\CompilerIdCXX.tlog\unsuccessfulbuild".
+  Touching "Debug\CompilerIdCXX.tlog\CompilerIdCXX.lastbuildstate".
+Done Building Project "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\3.23.0-rc3\CompilerIdCXX\CompilerIdCXX.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.66
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+
+The CXX compiler identification is MSVC, found in "C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/3.23.0-rc3/CompilerIdCXX/CompilerIdCXX.exe"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_7848f.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CMakeCCompilerABI.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7848f.dir\Debug\\" /Fd"cmTC_7848f.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CMakeCCompilerABI.c"
+  cmTC_7848f.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_7848f.exe
+
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_311e2.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CMakeCXXCompilerABI.cpp
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_311e2.dir\Debug\\" /Fd"cmTC_311e2.dir\Debug\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CMakeCXXCompilerABI.cpp"
+  cmTC_311e2.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_311e2.exe
+
+
+
+Determining if the include file inttypes.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_155c6.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_155c6.dir\Debug\\" /Fd"cmTC_155c6.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_155c6.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_155c6.exe
+
+
+
+Determining if the include file limits.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_68c28.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_68c28.dir\Debug\\" /Fd"cmTC_68c28.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_68c28.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_68c28.exe
+
+
+
+Determining if the include file locale.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_484bf.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_484bf.dir\Debug\\" /Fd"cmTC_484bf.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_484bf.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_484bf.exe
+
+
+
+Determining if the include file signal.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_0a3dd.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0a3dd.dir\Debug\\" /Fd"cmTC_0a3dd.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_0a3dd.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_0a3dd.exe
+
+
+
+Determining if the include file stdio.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_6287b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_6287b.dir\Debug\\" /Fd"cmTC_6287b.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_6287b.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_6287b.exe
+
+
+
+Determining if the include file stdint.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_4b15f.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4b15f.dir\Debug\\" /Fd"cmTC_4b15f.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_4b15f.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_4b15f.exe
+
+
+
+Determining if the include file stdlib.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_9711b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_9711b.dir\Debug\\" /Fd"cmTC_9711b.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_9711b.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_9711b.exe
+
+
+
+Determining if the include file string.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_530f7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_530f7.dir\Debug\\" /Fd"cmTC_530f7.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_530f7.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_530f7.exe
+
+
+
+Determining if the include file sys/stat.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_53837.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_53837.dir\Debug\\" /Fd"cmTC_53837.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_53837.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_53837.exe
+
+
+
+Determining if the include file sys/types.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_14bc8.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_14bc8.dir\Debug\\" /Fd"cmTC_14bc8.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_14bc8.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_14bc8.exe
+
+
+
+Determining if the include file windows.h exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_43232.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_43232.dir\Debug\\" /Fd"cmTC_43232.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+  cmTC_43232.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_43232.exe
+
+
+
+Determining if the function atoll exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_263db.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=atoll /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_263db.dir\Debug\\" /Fd"cmTC_263db.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+  cmTC_263db.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_263db.exe
+
+
+
+Determining if the function setlocale exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_00408.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=setlocale /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_00408.dir\Debug\\" /Fd"cmTC_00408.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+  cmTC_00408.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_00408.exe
+
+
+
+Determining if the function strerror exists passed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_666ea.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=strerror /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_666ea.dir\Debug\\" /Fd"cmTC_666ea.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+  cmTC_666ea.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_666ea.exe
+
+
+

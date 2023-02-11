@@ -1,0 +1,4 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1553,5): warning MSB8012: TargetPath(C:\Users\aa\Documents\Max 8\Packages\ears\source\vs\x64\Debug\libmpg123-full.lib) does not match the Library's OutputFile property value (C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\Debug\libmpg123-full.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+  synth_i586.S
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(1540,5): error MSB6006: "Lib.exe" exited with code 1181.
+LINK : fatal error LNK1181: cannot open input file 'dct36_3dnow.o'

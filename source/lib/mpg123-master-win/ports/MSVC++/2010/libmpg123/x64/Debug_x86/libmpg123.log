@@ -1,0 +1,196 @@
+﻿  compat.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\compat\compat.c(134,72): warning C4267: 'function': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\compat\compat.c(153,93): warning C4267: 'function': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\compat\compat.c(170,51): warning C4267: 'function': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\compat\compat.c(185,46): warning C4267: 'function': conversion from 'size_t' to 'unsigned int', possible loss of data
+  dct64.c
+  dct64_i386.c
+  equalizer.c
+  feature.c
+  format.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\format.c(587,13): warning C4267: '=': conversion from 'size_t' to 'ssize_t', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\format.c(609,13): warning C4267: '=': conversion from 'size_t' to 'ssize_t', possible loss of data
+  frame.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\frame.c(706,18): warning C4267: '=': conversion from 'size_t' to 'off_t', possible loss of data
+  icy.c
+  icy2utf8.c
+  id3.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\id3.c(883,44): warning C4267: '+=': conversion from 'size_t' to 'unsigned long', possible loss of data
+  index.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\index.c(91,28): warning C4267: 'initializing': conversion from 'size_t' to 'off_t', possible loss of data
+  layer1.c
+  layer2.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\layer2.c(132,40): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\layer2.c(138,48): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\layer2.c(153,40): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\layer2.c(204,41): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\layer2.c(236,47): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+  layer3.c
+  libmpg123.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\libmpg123.c(879,25): warning C4267: 'function': conversion from 'size_t' to 'long', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\libmpg123.c(959,51): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\libmpg123.c(1099,67): warning C4267: 'function': conversion from 'size_t' to 'off_t', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\libmpg123.c(1103,69): warning C4267: 'function': conversion from 'size_t' to 'off_t', possible loss of data
+  msvc.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\msvc.c(24,39): warning C4113: 'int (__cdecl *)(int,void *,unsigned int)' differs in parameter lists from 'ssize_t (__cdecl *)(int,void *,size_t)'
+  ntom.c
+  optimize.c
+  parse.c
+  readers.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\readers.c(31,82): warning C4267: 'function': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\readers.c(178,29): warning C4267: 'function': conversion from 'size_t' to 'off_t', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\readers.c(159,21): warning C4267: 'initializing': conversion from 'size_t' to 'ssize_t', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\readers.c(464,36): warning C4267: '=': conversion from 'size_t' to 'ssize_t', possible loss of data
+  Generating Code...
+  Compiling...
+  stringbuf.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\stringbuf.c(186,16): warning C4267: '=': conversion from 'size_t' to 'ssize_t', possible loss of data
+  synth.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  synth_8bit.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_8bit.h(20,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_8bit.h(45,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_8bit.h(69,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  synth_real.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  synth_s32.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\src\libmpg123\synth_mono.h(29,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  tabinit.c
+  Generating Code...
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1553,5): warning MSB8012: TargetPath(C:\Users\aa\Documents\Max 8\Packages\ears\source\vs\x64\Debug_x86\libmpg123.lib) does not match the Library's OutputFile property value (C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\Debug\libmpg123.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+  dct36_3dnow.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  dct36_3dnowext.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  dct64_3dnow.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  dct64_3dnowext.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  dct64_mmx.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  dct64_sse.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  dct64_sse_float.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  equalizer_3dnow.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  getcpuflags.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_3dnow.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_3dnowext.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_i586.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_mmx.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_sse.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_sse_float.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_stereo_sse_float.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  tabinit_mmx.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_sse_accurate.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_sse_s32.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_stereo_sse_accurate.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+  synth_stereo_sse_s32.S
+  'yasm' is not recognized as an internal or external command,
+  operable program or batch file.
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: The command "cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\dct36_3dnow.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct36_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct36_3dnow.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct36_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\dct36_3dnowext.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct36_3dnowext.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct36_3dnowext.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct36_3dnowext.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\dct64_3dnow.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_3dnow.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\dct64_3dnowext.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_3dnowext.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_3dnowext.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_3dnowext.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\dct64_mmx.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_mmx.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_mmx.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_mmx.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\dct64_sse.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_sse.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_sse.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_sse.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\dct64_sse_float.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_sse_float.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_sse_float.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\dct64_sse_float.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\equalizer_3dnow.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\equalizer_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\equalizer_3dnow.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\equalizer_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\getcpuflags.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\getcpuflags.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\getcpuflags.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\getcpuflags.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_3dnow.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_3dnow.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_3dnow.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_3dnowext.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_3dnowext.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_3dnowext.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_3dnowext.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_i586.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_i586.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_i586.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_i586.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_mmx.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_mmx.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_mmx.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_mmx.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_sse.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_sse_float.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_float.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_float.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_float.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_stereo_sse_float.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_float.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_float.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_float.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\tabinit_mmx.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\tabinit_mmx.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\tabinit_mmx.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\tabinit_mmx.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_sse_accurate.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_accurate.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_accurate.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_accurate.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_sse_s32.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_s32.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_s32.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_sse_s32.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_stereo_sse_accurate.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_accurate.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_accurate.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_accurate.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: cl /I "..\.." /EP /TC "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\..\..\..\src\libmpg123\synth_stereo_sse_s32.S" /nologo > "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_s32.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: yasm -a x86 -p gas -r raw -f win32 -g null -m x86 -o "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_s32.o" "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\2010\libmpg123\..\libmpg123\Debug\synth_stereo_sse_s32.asm"
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: 
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(152,5): error MSB3073: :VCEnd" exited with code 9009.

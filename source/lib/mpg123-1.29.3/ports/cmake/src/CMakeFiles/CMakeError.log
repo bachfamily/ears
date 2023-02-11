@@ -1,0 +1,430 @@
+Determining if the include file arpa/inet.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_0496e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'arpa/inet.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_0496e.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0496e.dir\Debug\\" /Fd"cmTC_0496e.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file dirent.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_5b1f1.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'dirent.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_5b1f1.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5b1f1.dir\Debug\\" /Fd"cmTC_5b1f1.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file dlfcn.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_409b7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_409b7.dir\Debug\\" /Fd"cmTC_409b7.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'dlfcn.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_409b7.vcxproj]
+
+
+
+Determining if the include file langinfo.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_9d226.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_9d226.dir\Debug\\" /Fd"cmTC_9d226.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'langinfo.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_9d226.vcxproj]
+
+
+
+Determining if the include file netdb.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_ccb58.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ccb58.dir\Debug\\" /Fd"cmTC_ccb58.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'netdb.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_ccb58.vcxproj]
+
+
+
+Determining if the include file netinet/in.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_903d4.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'netinet/in.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_903d4.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_903d4.dir\Debug\\" /Fd"cmTC_903d4.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sched.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_b844c.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_b844c.dir\Debug\\" /Fd"cmTC_b844c.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sched.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_b844c.vcxproj]
+
+
+
+Determining if the include file sys/ioctl.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_63535.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/ioctl.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_63535.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_63535.dir\Debug\\" /Fd"cmTC_63535.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/ipc.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_f3291.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/ipc.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_f3291.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f3291.dir\Debug\\" /Fd"cmTC_f3291.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/param.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_a7267.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/param.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_a7267.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_a7267.dir\Debug\\" /Fd"cmTC_a7267.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/resource.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_4c899.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/resource.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_4c899.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4c899.dir\Debug\\" /Fd"cmTC_4c899.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/select.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_d9213.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/select.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_d9213.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_d9213.dir\Debug\\" /Fd"cmTC_d9213.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/shm.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_4a5f9.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/shm.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_4a5f9.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4a5f9.dir\Debug\\" /Fd"cmTC_4a5f9.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/signal.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_80fed.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/signal.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_80fed.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_80fed.dir\Debug\\" /Fd"cmTC_80fed.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/socket.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_5130d.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/socket.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_5130d.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5130d.dir\Debug\\" /Fd"cmTC_5130d.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/time.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_2d370.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_2d370.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_2d370.dir\Debug\\" /Fd"cmTC_2d370.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file sys/wait.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_ee326.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'sys/wait.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_ee326.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ee326.dir\Debug\\" /Fd"cmTC_ee326.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+
+
+
+Determining if the include file termios.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_5e8eb.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5e8eb.dir\Debug\\" /Fd"cmTC_5e8eb.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'termios.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_5e8eb.vcxproj]
+
+
+
+Determining if the include file unistd.h exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_aab6c.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckIncludeFile.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_aab6c.dir\Debug\\" /Fd"cmTC_aab6c.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c"
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_aab6c.vcxproj]
+
+
+
+Determining if the function sin exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_ab95e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=sin /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ab95e.dir\Debug\\" /Fd"cmTC_ab95e.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+LINK : fatal error LNK1104: cannot open file 'm.lib' [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_ab95e.vcxproj]
+
+
+
+Determining if the function getaddrinfo exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_78980.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=getaddrinfo /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_78980.dir\Debug\\" /Fd"cmTC_78980.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol getaddrinfo referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_78980.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_78980.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_78980.vcxproj]
+
+
+
+Determining if the function mkfifo exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_224af.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=mkfifo /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_224af.dir\Debug\\" /Fd"cmTC_224af.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol mkfifo referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_224af.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_224af.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_224af.vcxproj]
+
+
+
+Determining if the function mmap exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_0ef2b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=mmap /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0ef2b.dir\Debug\\" /Fd"cmTC_0ef2b.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol mmap referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_0ef2b.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_0ef2b.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_0ef2b.vcxproj]
+
+
+
+Determining if the function nl_langinfo exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_8c2c3.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=nl_langinfo /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_8c2c3.dir\Debug\\" /Fd"cmTC_8c2c3.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol nl_langinfo referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_8c2c3.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_8c2c3.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_8c2c3.vcxproj]
+
+
+
+Determining if the function random exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_c3fa5.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=random /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c3fa5.dir\Debug\\" /Fd"cmTC_c3fa5.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol random referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_c3fa5.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_c3fa5.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_c3fa5.vcxproj]
+
+
+
+Determining if the function setpriority exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_d32ad.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=setpriority /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_d32ad.dir\Debug\\" /Fd"cmTC_d32ad.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol setpriority referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_d32ad.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_d32ad.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_d32ad.vcxproj]
+
+
+
+Determining if the function shmget exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_2716e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=shmget /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_2716e.dir\Debug\\" /Fd"cmTC_2716e.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol shmget referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_2716e.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_2716e.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_2716e.vcxproj]
+
+
+
+Determining if the function shmat exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_4a19e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=shmat /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4a19e.dir\Debug\\" /Fd"cmTC_4a19e.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol shmat referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_4a19e.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_4a19e.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_4a19e.vcxproj]
+
+
+
+Determining if the function shmdt exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_d33dc.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=shmdt /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_d33dc.dir\Debug\\" /Fd"cmTC_d33dc.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol shmdt referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_d33dc.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_d33dc.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_d33dc.vcxproj]
+
+
+
+Determining if the function shmctl exists failed with the following output:
+Change Dir: C:/Users/aa/Documents/Max 8/Packages/ears/source/lib/mpg123-1.29.3/ports/cmake/src/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_7a38d.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.1.0+ae57d105c for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.31.31104 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=shmctl /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7a38d.dir\Debug\\" /Fd"cmTC_7a38d.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.23\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol shmctl referenced in function main [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_7a38d.vcxproj]
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\Debug\cmTC_7a38d.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-1.29.3\ports\cmake\src\CMakeFiles\CMakeTmp\cmTC_7a38d.vcxproj]
+
+
+

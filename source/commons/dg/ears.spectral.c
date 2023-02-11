@@ -753,13 +753,13 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
             
             for (long j = 0; j < amps_framecount * bincount; j++) {
                 // convert into polar coordinates
-                double real = estimate_amps_sample[j] * cos(estimate_phases_sample[j]);
+                double re = estimate_amps_sample[j] * cos(estimate_phases_sample[j]);
                 double imag = estimate_amps_sample[j] * sin(estimate_phases_sample[j]);
-                double newreal = real - (momentum/(1+momentum)) * previous_real[j];
+                double newreal = re - (momentum/(1+momentum)) * previous_real[j];
                 double newimag = imag - (momentum/(1+momentum)) * previous_imag[j];
                 estimate_amps_sample[j] = sqrt(newreal*newreal + newimag * newimag);
                 estimate_phases_sample[j] = atan2(newimag, newreal);
-                previous_real[j] = real;
+                previous_real[j] = re;
                 previous_imag[j] = imag;
 
             }

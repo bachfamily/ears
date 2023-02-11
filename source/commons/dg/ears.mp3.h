@@ -2,7 +2,7 @@
 	@file
 	ears.mp3.h
 	Common utilities for mp3 handling
- 
+
 	by Daniele Ghisi
  */
 
