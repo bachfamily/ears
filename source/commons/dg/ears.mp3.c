@@ -220,9 +220,9 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
 
     const int MP3_SIZE = LAME_MAXMP3BUFFER;
     const int PCM_SIZE = lame_get_maximum_number_of_samples(lame, MP3_SIZE);
-    float pcm_buffer_l[PCM_SIZE];
-    float pcm_buffer_r[PCM_SIZE];
-    unsigned char mp3_buffer[MP3_SIZE];
+    float *pcm_buffer_l = (float *)bach_newptr(PCM_SIZE * sizeof(float));
+    float *pcm_buffer_r = (float *)bach_newptr(PCM_SIZE * sizeof(float));
+    unsigned char *mp3_buffer = (unsigned char *)bach_newptr(MP3_SIZE * sizeof(unsigned char));
 
     float *sample = ears_buffer_locksamples(buf);
     if (!sample) {
@@ -249,6 +249,9 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
     
     lame_close(lame);
     fclose(mp3);
+    bach_freeptr(pcm_buffer_l);
+    bach_freeptr(pcm_buffer_r);
+    bach_freeptr(mp3_buffer);
 }
 
 
