@@ -1,0 +1,7 @@
+﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  scan.c
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\mpg123.h(37,20): error C2054: expected '(' to follow 'MPG123_EXPORT'
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\mpg123.h(37,71): error C2085: 'mpg123_topen': not in formal parameter list
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\mpg123.h(38,2): error C2061: syntax error: identifier 'MPG123_EXPORT'
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\examples\scan.c(33,15): warning C4013: 'mpg123_topen' undefined; assuming extern returning int
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\mpg123-master-win\ports\MSVC++\examples\scan.c(39,16): warning C4013: 'mpg123_tclose' undefined; assuming extern returning int

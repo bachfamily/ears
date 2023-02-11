@@ -140,7 +140,6 @@ void *ears_intilde_new(t_symbol *s, t_atom_long ac, t_atom* av)
     x->io_obj.earsProcessParent = getParentEarsProcess((t_object *) x);
     
     dsp_setup((t_pxobject *) x, 0);
-    MAC_VERSION
     x->io_obj.ioNum = 1;
     x->io_obj.nChans = 1;
     x->io_obj.chan[0] = 1;
