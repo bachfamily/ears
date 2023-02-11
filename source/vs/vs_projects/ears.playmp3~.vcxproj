@@ -108,7 +108,7 @@
     <OutDir>..\..\..\externals</OutDir>
     <IntDir>..\vs_stuff\ext_temp\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\lame-3.100\include;..\..\commons\dg;..\..\commons\aa;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

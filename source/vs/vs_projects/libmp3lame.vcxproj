@@ -38,6 +38,7 @@
     <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\util.c" />
     <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\vbrquantize.c" />
     <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\VbrTag.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\vector\xmm_quantize_sub.c" />
     <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\version.c" />
   </ItemGroup>
   <ItemGroup>
@@ -164,8 +165,8 @@
     <TargetExt>.lib</TargetExt>
     <OutDir>..\vs_stuff\lib\$(Configuration)\$(Platform)</OutDir>
     <IntDir>..\vs_stuff\lib_temp\</IntDir>
-    <TargetName>ears_lib</TargetName>
-    <IncludePath>..\..\commons\aa;..\..\commons\dg;..\..\lib\lame-3.100\include;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <TargetName>libmp3lame</TargetName>
+    <IncludePath>..\..\commons\aa;..\..\commons\dg;..\..\lib\lame-3.100\libmp3lame;..\..\lib\lame-3.100\include;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
