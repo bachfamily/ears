@@ -15,11 +15,9 @@
 #include "ears.commons.h"
 #endif
 
-#ifdef WIN_VERSION
-#include <lame.h>
-#else
-#include <lame/lame.h> // only used to export mp3s
-#endif
+#ifdef EARS_MP3_WRITE_SUPPORT
+#include "lame.h"
+#endif // EARS_MP3_WRITE_SUPPORT
 
 #ifdef EARS_MP3_READ_SUPPORT
 void ears_mpg123_init();
