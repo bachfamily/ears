@@ -1,25 +1,26 @@
-﻿  xingheader.cpp
-  oggflacfile.cpp
-  oggfile.cpp
-  oggpage.cpp
-  oggpageheader.cpp
-  opusfile.cpp
-  opusproperties.cpp
-  speexfile.cpp
-  speexproperties.cpp
-  vorbisfile.cpp
-  vorbisproperties.cpp
-  xiphcomment.cpp
-C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\ogg\xiphcomment.cpp(298,12): warning C4996: 'TagLib::String::isNull': was declared deprecated
-  aifffile.cpp
-  aiffproperties.cpp
-  rifffile.cpp
-  infotag.cpp
-  wavfile.cpp
-  wavproperties.cpp
-  s3mfile.cpp
-  s3mproperties.cpp
+﻿  tstring.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstring.cpp(158,16): warning C4996: 'TagLib::String::null': was declared deprecated
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tstring.cpp(414,15): warning C4996: 'TagLib::String::null': was declared deprecated
+  tstringlist.cpp
+  tbytevector.cpp
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevector.cpp(297,24): warning C4996: 'TagLib::ByteVector::null': was declared deprecated
+C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\taglib\toolkit\tbytevector.cpp(667,16): warning C4996: 'TagLib::ByteVector::null': was declared deprecated
+  tbytevectorlist.cpp
+  tbytevectorstream.cpp
+  tiostream.cpp
+  tfile.cpp
+  tfilestream.cpp
+  tdebug.cpp
+  tpropertymap.cpp
+  trefcounter.cpp
+  tdebuglistener.cpp
+  tzlib.cpp
+  wavpackfile.cpp
+  wavpackproperties.cpp
+  trueaudiofile.cpp
+  trueaudioproperties.cpp
+  xmfile.cpp
+  xmproperties.cpp
+  tagutils.cpp
   Generating Code...
-  Compiling...
-  tag.cpp
-  tagunion.cpp
+  tag.vcxproj -> C:\Users\aa\Documents\Max 8\Packages\ears\source\lib\taglib-1.12-win\build\taglib\Release\tag.lib
