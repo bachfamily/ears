@@ -142,8 +142,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 167.0, 471.0, 77.0, 23.0 ],
-									"text" : "startwindow"
+									"patching_rect" : [ 167.0, 471.0, 34.0, 23.0 ],
+									"text" : "start"
 								}
 
 							}

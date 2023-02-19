@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 573.0, 662.0, 821.0, 503.0 ],
+		"rect" : [ 100.0, 100.0, 821.0, 503.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 573.0, 688.0, 821.0, 477.0 ],
+						"rect" : [ 100.0, 126.0, 821.0, 477.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -108,6 +108,20 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-3",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 212.606537000000003, 208.0, 79.0, 25.0 ],
+									"text" : "Pick one!"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-13",
 									"maxclass" : "newobj",
@@ -166,7 +180,7 @@
 									"parameter_enable" : 0,
 									"patching_rect" : [ 3.0, 349.0, 237.0, 94.0 ],
 									"setminmax" : [ -0.100000001490116, 1.100000023841858 ],
-									"size" : 35
+									"size" : 29
 								}
 
 							}

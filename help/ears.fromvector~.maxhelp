@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 632.0, 377.0, 985.0, 599.0 ],
+		"rect" : [ 100.0, 100.0, 985.0, 599.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 632.0, 403.0, 985.0, 573.0 ],
+						"rect" : [ 100.0, 126.0, 985.0, 573.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -664,7 +664,7 @@
 									"fontname" : "Arial",
 									"fontsize" : 12.0,
 									"id" : "obj-12",
-									"loop" : [ 0, 1000 ],
+									"loop" : [ 0.0, 1000.0 ],
 									"maxclass" : "bach.roll",
 									"numinlets" : 6,
 									"numoutlets" : 8,

@@ -3349,8 +3349,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 136.0, 484.0, 210.0 ],
-									"text" : "Also, it is a very experimental object, abusing Max in various ways and doing ugly things all over the place. We've tried to make, if not robust, at least as predictable as possible, but there are messy corners we're aware of, and there may be more we're not. \n\nHere's one: if you have ears.process~ in a patch, and you start the DSP locally in another patch with the startwindow message, this will prevent ears.process~ from working until you restart the DSP either globally or for the patch containing ears.process~.\n\nAnyway. If you feel brave enough to use it in critical contexts such as concerts and performances, please stress-test it thoroughly first.\n\nWe hope you'll enjoy it, nonetheless!",
+									"patching_rect" : [ 10.0, 136.0, 485.0, 210.0 ],
+									"text" : "Also, it is a very experimental object, abusing Max in various ways and doing ugly things all over the place. We've tried to make, if not robust, at least as predictable as possible, but there are messy corners we're aware of, and there may be more we're not. \n\nHere's one: If you have ears.process~ in a patch, and you start the DSP locally in another patch with the startwindow message, this will prevent ears.process~ from working until you restart the DSP either globally or for the patch containing ears.process~.\n\nAnyway. If you feel brave enough to use it in critical contexts such as concerts and performances, please stress-test it thoroughly first.\n\nWe hope you'll enjoy it, nonetheless!",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 

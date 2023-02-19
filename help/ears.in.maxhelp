@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 123.0, 338.0, 913.0, 530.0 ],
+		"rect" : [ 100.0, 100.0, 913.0, 530.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -78,7 +78,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 123.0, 364.0, 913.0, 504.0 ],
+						"rect" : [ 100.0, 126.0, 913.0, 504.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -165,8 +165,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 175.0, 332.0, 77.0, 23.0 ],
-									"text" : "startwindow"
+									"patching_rect" : [ 175.0, 332.0, 34.0, 23.0 ],
+									"text" : "start"
 								}
 
 							}

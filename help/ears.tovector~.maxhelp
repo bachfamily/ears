@@ -109,6 +109,18 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-8",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 900.0, 426.0, 34.0, 23.0 ],
+									"text" : "start"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
@@ -117,7 +129,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 786.606537000000003, 217.0, 195.0, 25.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Synthesis with ears.tovector~"
 								}
 
@@ -208,7 +219,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u979000511",
-									"chanoffset" : 3,
 									"id" : "obj-68",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -221,7 +231,6 @@
 , 							{
 								"box" : 								{
 									"buffername" : "u979000511",
-									"chanoffset" : 2,
 									"id" : "obj-67",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -561,6 +570,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-71", 0 ],
 									"source" : [ "obj-75", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-72", 1 ],
+									"source" : [ "obj-8", 0 ]
 								}
 
 							}
