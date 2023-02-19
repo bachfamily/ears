@@ -33,7 +33,7 @@
  buffer, offline, patch, patcher, non-realtime
  
  @seealso
- ears.in~, ears.out, ears.out~
+ ears.process~, ears.in~, ears.out, ears.out~
  
  @owner
  Andrea Agostini
@@ -111,11 +111,10 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_LONG(ears_in_class, "unwrap", 0, t_ears_in, unwrap);
     CLASS_ATTR_STYLE_LABEL(ears_in_class, "unwrap", 0, "onoff", "Unwrap");
     CLASS_ATTR_FILTER_CLIP(ears_in_class, "unwrap", 0, 1);
-    // @description If the <m>unwrap</m> attribute is set to 1
+    // @description If the <m>unwrap</m> attribute is set to 1 (as per the default)
     // and the <m>direct</m> attribute is set to 0, the outermost level of
     // parentheses (if present) is removed from the llll output at each iteration.
     // If the <m>direct</m> attribute is set to 1, the <m>unwrap</m> attribute has no effect.
-    // The default is 0.
     
     llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
 
@@ -148,7 +147,7 @@ void ears_in_iteration(t_ears_in *x, long n)
             t_hatom *h = &el->l_hatom;
             t_llll *outll = llll_get();
             if (x->unwrap && hatom_gettype(h) == H_LLLL) {
-                llll_appendllll_clone(outll, hatom_getllll(h));
+                outll = llll_clone(hatom_getllll(h));
             } else {
                 llll_appendhatom_clone(outll, h);
             }
@@ -190,6 +189,9 @@ t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av)
         x->nOutlets = 1;
         x->inlet_nums[0] = 1;
     }
+    
+    x->unwrap = 1;
+    
     attr_args_process(x, ac, av);
     
     char outlets[LLLL_MAX_OUTLETS];
@@ -203,7 +205,7 @@ t_ears_in *ears_in_new(t_symbol *s, t_atom_long ac, t_atom* av)
     if (x->earsProcessParent) {
         object_method(x->earsProcessParent, gensym("ears.in_created"), x, x->nOutlets, x->inlet_nums);
     } else {
-        object_warn((t_object *) x, "ears.in only works in ears.process~");
+        //object_warn((t_object *) x, "ears.in only works in ears.process~");
     }
 
     

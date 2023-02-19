@@ -33,7 +33,7 @@
  buffer, offline, patch, patcher, non-realtime, multichannel
  
  @seealso
- ears.in, ears.in~, ears.out, ears.tovector~
+ ears.process~, ears.mc.in~, ears.in, ears.in~, ears.out
  
  @owner
  Andrea Agostini
@@ -84,8 +84,7 @@ void C74_EXPORT ext_main(void* moduleRef)
                                     (method) ears_mcouttilde_free,
                                     sizeof(t_ears_mcouttilde),
                                     NULL,
-                                    A_DEFLONG,
-                                    A_DEFLONG,
+                                    A_GIMME,
                                     0);
     
     class_addmethod(ears_mcouttilde_class, (method)ears_mcouttilde_dsp64, "dsp64", A_CANT, 0);

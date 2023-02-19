@@ -18,11 +18,11 @@
  Andrea Agostini, partly based upon work by Alexander J. Harker
  
  @digest
- Message input for a patch loaded by ears.process~
+ Message output for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.in~</o> object inside a patch loaded by ears.process~
- to create a multichannel signal inlet receiving data from the parent patch.
+ Use the <o>ears.out</o> object inside a patch loaded by ears.process~
+ to create an outlet passing data to the parent patch.
  
  @discussion
  
@@ -33,7 +33,7 @@
  buffer, offline, patch, patcher, non-realtime
  
  @seealso
- ears.in~, ears.out, ears.out~
+ ears.process~, ears.in~, ears.out, ears.out~
  
  @owner
  Andrea Agostini
@@ -91,33 +91,14 @@ void C74_EXPORT ext_main(void* moduleRef)
                                A_GIMME,
                                0);
     
-    // @method bang @digest Output bangs from the corresponding outlet of <o>ears.process~</o>
-    // @description
-    // A bang sent in any input of <o>ears.out</o> is sent out
-    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_bang, "bang", 0);
-    
-    // @method int @digest Output integers from the corresponding outlet of <o>ears.process~</o>
-    // @description
-    // An integer sent in any input of <o>ears.out</o> is sent out
-    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_int, "int", A_LONG, 0);
-    
-    // @method float @digest Output floats from the corresponding outlet of <o>ears.process~</o>
-    // @description
-    // A float sent in any input of <o>ears.out</o> is sent out
-    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_float, "float", A_FLOAT, 0);
-    
-    // @method list @digest Output lists from the corresponding outlet of <o>ears.process~</o>
-    // @description
-    // A list sent in any input of <o>ears.out</o> is sent out
-    // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_anything, "list", A_GIMME, 0);
     
-    // @method anything @digest Output messages from the corresponding outlet of <o>ears.process~</o>
+    // @method llll @digest Output lllls from the corresponding outlet of <o>ears.process~</o>
     // @description
-    // A message sent in any input of <o>ears.out</o> is sent out
+    // A message (in native llll format or not) sent to any input of <o>ears.out</o> is output
     // from the corresponding outlet of the <o>ears.process~</o> containing the patch
     class_addmethod(ears_out_class, (method) ears_out_anything, "anything", A_GIMME, 0);
     

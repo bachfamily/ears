@@ -2806,7 +2806,7 @@
 		91319BD7264C168400364EAB /* ears.out.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.out.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
 		91319BE9264C16A100364EAB /* ears.out~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.out~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91319BFB264C16D200364EAB /* ears.processinfo~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.processinfo~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91319C0E264C172500364EAB /* ears.tovector.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ears.tovector.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
+		91319C0E264C172500364EAB /* ears.tovector~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.tovector~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9148046C2753F2C600D2A0EA /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = "../../../../../../../../usr/local/Cellar/python@3.9/3.9.4/Frameworks/Python.framework"; sourceTree = "<group>"; };
 		91ACB3602753EE4400EB3D95 /* ears.py~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.py~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91ACB3642753F03A00EB3D95 /* cwalk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cwalk.c; sourceTree = "<group>"; };
@@ -3859,7 +3859,7 @@
 				91319BD7264C168400364EAB /* ears.out.mxo */,
 				91319BE9264C16A100364EAB /* ears.out~.mxo */,
 				91319BFB264C16D200364EAB /* ears.processinfo~.mxo */,
-				91319C0E264C172500364EAB /* ears.tovector.mxo */,
+				91319C0E264C172500364EAB /* ears.tovector~.mxo */,
 				1EFCFA0B265660AD0099BBB6 /* ears.model.stochastic.analysis~.mxo */,
 				1EFCFA1E265660BF0099BBB6 /* ears.model.stochastic.synthesis~.mxo */,
 				1EA11BA0273BF1BE00DA8E4C /* ears.assemble~.mxo */,
@@ -4525,16 +4525,16 @@
 		1EFF911B28536CF0003265C1 /* process */ = {
 			isa = PBXGroup;
 			children = (
-				1EFF911C28536CF0003265C1 /* ears.fromvector.cpp */,
-				1EFF911D28536CF0003265C1 /* ears.out.cpp */,
-				1EFF911E28536CF0003265C1 /* ears.tovector.cpp */,
 				1EFF911F28536CF0003265C1 /* ears.process.cpp */,
-				1EFF912028536CF0003265C1 /* ears.mc.intilde.cpp */,
 				1EFF912128536CF0003265C1 /* ears.processinfo.cpp */,
+				1EFF912428536CF0003265C1 /* ears.in.cpp */,
+				1EFF911D28536CF0003265C1 /* ears.out.cpp */,
 				1EFF912228536CF0003265C1 /* ears.intilde.cpp */,
 				1EFF912328536CF0003265C1 /* ears.outtilde.cpp */,
-				1EFF912428536CF0003265C1 /* ears.in.cpp */,
+				1EFF912028536CF0003265C1 /* ears.mc.intilde.cpp */,
 				1EFF912528536CF0003265C1 /* ears.mc.outtilde.cpp */,
+				1EFF911C28536CF0003265C1 /* ears.fromvector.cpp */,
+				1EFF911E28536CF0003265C1 /* ears.tovector.cpp */,
 			);
 			path = process;
 			sourceTree = "<group>";
@@ -7604,9 +7604,9 @@
 			productReference = 91319BFB264C16D200364EAB /* ears.processinfo~.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
-		91319BFF264C172500364EAB /* ears.tovector */ = {
+		91319BFF264C172500364EAB /* ears.tovector~ */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91319C0B264C172500364EAB /* Build configuration list for PBXNativeTarget "ears.tovector" */;
+			buildConfigurationList = 91319C0B264C172500364EAB /* Build configuration list for PBXNativeTarget "ears.tovector~" */;
 			buildPhases = (
 				91319C02264C172500364EAB /* Headers */,
 				91319C03264C172500364EAB /* Resources */,
@@ -7619,9 +7619,9 @@
 			dependencies = (
 				91319C00264C172500364EAB /* PBXTargetDependency */,
 			);
-			name = ears.tovector;
+			name = "ears.tovector~";
 			productName = iterator;
-			productReference = 91319C0E264C172500364EAB /* ears.tovector.mxo */;
+			productReference = 91319C0E264C172500364EAB /* ears.tovector~.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
 		91ACB3512753EE4400EB3D95 /* ears.py~ */ = {
@@ -7749,7 +7749,7 @@
 				1E17423D261E497800E6D9E8 /* ears.tempogram~ */,
 				1E9DDE372851DF4D0072018A /* ears.todiffs~ */,
 				1E3670BF1FDF492900E12DE6 /* ears.tosamps~ */,
-				91319BFF264C172500364EAB /* ears.tovector */,
+				91319BFF264C172500364EAB /* ears.tovector~ */,
 				1E1743AD2616001A00AB2E7C /* ears.trans~ */,
 				1E5993F022F32AFE00E2EC64 /* ears.trim~ */,
 				1E784C77209DC6DF007CB12A /* ears.unpack~ */,
@@ -10914,7 +10914,7 @@
 		};
 		1E8944DA26642B4400CBD13C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 91319BFF264C172500364EAB /* ears.tovector */;
+			target = 91319BFF264C172500364EAB /* ears.tovector~ */;
 			targetProxy = 1E8944D926642B4400CBD13C /* PBXContainerItemProxy */;
 		};
 		1E8D27031F5C3B2F00BE6205 /* PBXTargetDependency */ = {
@@ -20509,7 +20509,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;
 		};
-		91319C0B264C172500364EAB /* Build configuration list for PBXNativeTarget "ears.tovector" */ = {
+		91319C0B264C172500364EAB /* Build configuration list for PBXNativeTarget "ears.tovector~" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91319C0C264C172500364EAB /* Development */,
