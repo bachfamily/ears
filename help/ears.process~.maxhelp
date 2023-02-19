@@ -501,7 +501,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 780.0, 524.0 ],
+						"rect" : [ 0.0, 26.0, 780.0, 524.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3311,7 +3311,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 780.0, 524.0 ],
+						"rect" : [ 100.0, 126.0, 780.0, 524.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3345,12 +3345,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-1",
-									"linecount" : 7,
+									"linecount" : 14,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 136.0, 484.0, 108.0 ],
-									"text" : "Also, it is a very experimental object, abusing Max in various ways and doing ugly things all over the place. We've tried to make, if not robust, at least as predictable as possible, but there may be messy corners we're not even aware of. If you feel brave enough to use it in critical contexts such as concerts and performances, please stress-test it thoroughly first.\n\nWe hope you'll enjoy it, nonetheless!",
+									"patching_rect" : [ 10.0, 136.0, 484.0, 210.0 ],
+									"text" : "Also, it is a very experimental object, abusing Max in various ways and doing ugly things all over the place. We've tried to make, if not robust, at least as predictable as possible, but there are messy corners we're aware of, and there may be more we're not. \n\nHere's one: if you have ears.process~ in a patch, and you start the DSP locally in another patch with the startwindow message, this will prevent ears.process~ from working until you restart the DSP either globally or for the patch containing ears.process~.\n\nAnyway. If you feel brave enough to use it in critical contexts such as concerts and performances, please stress-test it thoroughly first.\n\nWe hope you'll enjoy it, nonetheless!",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 

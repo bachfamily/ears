@@ -35,7 +35,7 @@
  buffer, offline, patch, patcher, non-realtime
  
  @seealso
- ears.in~, ears.tovector~
+ ears.process~, ears.tovector~
  
  @owner
  Andrea Agostini

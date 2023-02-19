@@ -37,7 +37,7 @@
  buffer, offline, patch, patcher, non-realtime
  
  @seealso
- ears.out~, ears.tovector~
+ ears.process~, ears.fromvector~
  
  @owner
  Andrea Agostini
@@ -170,15 +170,15 @@ void ears_tovector_free(t_ears_tovector *x)
 
 void ears_tovector_int(t_ears_tovector *x, t_atom_long i)
 {
-    if (int n = x->n; n < EARS_PROCESS_MAX_VS) {
-        x->vec[n++] = i;
+    if (x->n < EARS_PROCESS_MAX_VS) {
+        x->vec[x->n++] = i;
     }
 }
 
 void ears_tovector_float(t_ears_tovector *x, double f)
 {
-    if (int n = x->n; n < EARS_PROCESS_MAX_VS) {
-        x->vec[n++] = f;
+    if (x->n < EARS_PROCESS_MAX_VS) {
+        x->vec[x->n++] = f;
     }
 }
 
@@ -232,12 +232,14 @@ void ears_tovector_perform64(t_ears_tovector *x, t_dspchain *dsp64, double **ins
     memcpy(outs[0] + pad, x->vec, (vec_size - pad) * sizeof(double));
     if (x->autoclear)
         ears_tovector_clear(x);
+    x->n = 0;
 }
 
 void ears_tovector_dsp64(t_ears_tovector *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
     object_method(dsp64, gensym("dsp_add64"), x, ears_tovector_perform64, 0, NULL);
     if (!x->earsProcessParent) {
-        object_warn((t_object *) x, "Can cause trouble if used outside ears.process~");
+        object_warn((t_object *) x, "May cause trouble if used outside ears.process~");
     }
+    //x->n = 0;
 }

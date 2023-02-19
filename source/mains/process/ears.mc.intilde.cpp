@@ -33,7 +33,7 @@
  buffer, offline, patch, patcher, non-realtime, multichannel
  
  @seealso
- ears.in, ears.in~, ears.out~, ears.tovector~
+ ears.process~, ears.mc.out~, ears.in, ears.in~, ears.out~
  
  @owner
  Andrea Agostini

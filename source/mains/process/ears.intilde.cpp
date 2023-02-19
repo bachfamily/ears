@@ -33,7 +33,7 @@
  buffer, offline, patch, patcher, non-realtime
  
  @seealso
- ears.in, ears.mc.in~, ears.out~, ears.tovector~
+ ears.process~, ears.in, ears.mc.in~, ears.out~
  
  @owner
  Andrea Agostini
@@ -87,7 +87,6 @@ void C74_EXPORT ext_main(void* moduleRef)
                               A_GIMME,
                               0);
     
-    class_addmethod(ears_intilde_class, (method)ears_intilde_dsp64, "dsp64", A_CANT, 0);
     
     // @method llll @digest Set input buffers and channels
     // @description The llll is composed of two parts:<br/>
@@ -110,7 +109,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     class_addmethod(ears_intilde_class, (method)ears_intilde_assist, "assist", A_CANT, 0);
     class_addmethod(ears_intilde_class, (method)ears_intilde_inletinfo, "inletinfo", A_CANT, 0);
-    
+    class_addmethod(ears_intilde_class, (method)ears_intilde_dsp64, "dsp64", A_CANT, 0);
+
     class_addmethod(ears_intilde_class, (method)ears_intilde_setbuffers, "setbuffers", A_CANT, 0);
 
     class_dspinit(ears_intilde_class);
@@ -225,7 +225,7 @@ void ears_intilde_inletinfo(t_ears_intilde *x, void *b, long a, char *t)
 void ears_intilde_assist(t_ears_intilde *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_OUTLET)
-        sprintf(s,"(signal) Audio From Channel %ld", (long) x->io_obj.chan[a]); // @out 0 @type signal @loop 1 @digest Input signal
+        sprintf(s,"(signal) Audio from Channel %ld of inlet %ld", (long) x->io_obj.chan[a], (long) x->io_obj.ioNum); // @out 0 @type signal @loop 1 @digest Input signal
     else
-        sprintf(s,"(int) Dummy");
+        sprintf(s,"(llll) Inlet and Channel");
 }

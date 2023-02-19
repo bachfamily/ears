@@ -735,6 +735,7 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
     outtypes[t] = 0;
 
     earsbufobj_setup((t_earsbufobj *) x, intypes, outtypes, names);
+
     llll_free(args);
     llll_free(names);
 

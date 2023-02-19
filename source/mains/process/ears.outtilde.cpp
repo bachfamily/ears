@@ -21,8 +21,8 @@
  Signal output for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.in~</o> object inside a patch loaded by ears.process~
- to create a signal inlet receiving data from an input buffer.
+ Use the <o>ears.out~</o> object inside a patch loaded by ears.process~
+ to create a signal outlet writing data to an output buffer.
  
  @discussion
  
@@ -33,7 +33,7 @@
  buffer, offline, patch, patcher, non-realtime
  
  @seealso
- ears.in, ears.mc.in~, ears.in~, ears.tovector~
+ ears.process~, ears.in, ears.in~, ears.mc.in~
  
  @owner
  Andrea Agostini
@@ -104,6 +104,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_addmethod(ears_outtilde_class, (method)ears_inouttilde_float, "float", A_FLOAT, 0);
     class_addmethod(ears_outtilde_class, (method)ears_inouttilde_anything, "list", A_GIMME, 0);
     
+    class_addmethod(ears_outtilde_class, (method)ears_outtilde_assist, "assist", A_CANT, 0);
     class_addmethod(ears_outtilde_class, (method)ears_outtilde_dsp64, "dsp64", A_CANT, 0);
     class_addmethod(ears_outtilde_class, (method)ears_outtilde_setchanmap, "setchanmap", A_CANT, 0);
 
