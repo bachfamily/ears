@@ -72,10 +72,10 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.process~" />
 		<seealso name="ears.in" />
 		<seealso name="ears.mc.in~" />
 		<seealso name="ears.out~" />
-		<seealso name="ears.tovector~" />
 	</seealsolist>
 
 	<misc name = "Output">

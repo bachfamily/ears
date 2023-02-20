@@ -108,14 +108,6 @@
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ears.process~" />
-		<seealso name="ears.in" />
-		<seealso name="ears.in~" />
-		<seealso name="ears.mc.in~" />
-		<seealso name="ears.out" />
-		<seealso name="ears.out~" />
-		<seealso name="ears.mc.out~" />
-		<seealso name="ears.tovector~" />
-		<seealso name="ears.fromvector~" />
 	</seealsolist>
 
 	<misc name = "Input">

@@ -121,7 +121,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u613011245",
+									"buffername" : "u068005392",
 									"id" : "obj-56",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,

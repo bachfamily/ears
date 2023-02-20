@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 1720.0, 658.0, 900.0, 284.0 ],
+		"rect" : [ 181.0, 561.0, 900.0, 284.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -262,17 +262,7 @@
 				}
 
 			}
- ],
-		"dependency_cache" : [ 			{
-				"name" : "ears.mc.in~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.mc.out~.mxo",
-				"type" : "iLaX"
-			}
- ],
-		"autosave" : 0
+ ]
 	}
 
 }

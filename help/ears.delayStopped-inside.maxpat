@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 0,
+			"minor" : 5,
+			"revision" : 3,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -47,7 +47,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 421.0, 288.5, 282.0, 51.0 ],
-					"presentation_linecount" : 4,
 					"text" : "...so as to calculate the RMS over one second. (1000000 is just a lot of leeway for the maximum window size)"
 				}
 
@@ -71,9 +70,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 28.0, 382.0, 249.0, 141.0 ],
-					"presentation_linecount" : 34,
-					"text" : "It would be nice to edge~ in place of this contraption, but it's impossible because it would only send bangs according to the global Max scheduler, which would not make sense within ears.process~.\nAlso, we can't use peakamp~'s internal timing, as it doesn't support ears.process~'s clock either.\nFeel free to file requests for setclock support to Cycling '74 ;)"
+					"patching_rect" : [ 26.0, 382.0, 249.0, 141.0 ],
+					"text" : "It would be nice to use edge~ in place of this contraption, but it's impossible because it would only send bangs according to the global Max scheduler, which would not make sense within ears.process~.\nAlso, we can't use peakamp~'s internal timing, as it doesn't support ears.process~'s clock either.\nFeel free to file requests for setclock support to Cycling '74 ;)"
 				}
 
 			}

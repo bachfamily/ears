@@ -57,8 +57,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 257.666666666666629, 366.0, 546.0, 33.0 ],
-					"text" : "The resulting buffer may be slightly shorter if ears.process~ \"crop\" attribute is on (as per the default), since the end of the processing will always coincide with the end of a vector."
+					"patching_rect" : [ 257.666666666666629, 366.0, 579.0, 33.0 ],
+					"text" : "The resulting buffer may be slightly shorter if the \"crop\" attribute of ears.process~ is on (as per the default), since the end of the processing will always coincide with the end of a vector."
 				}
 
 			}

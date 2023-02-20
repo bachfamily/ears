@@ -6,12 +6,12 @@
 <c74object name="ears.out" module="ears">
 
 	<digest>
-		Message input for a patch loaded by ears.process~
+		Message output for a patch loaded by ears.process~
 	</digest>
 
 	<description>
-		Use the <o>ears.in~</o> object inside a patch loaded by ears.process~
-		to create a multichannel signal inlet receiving data from the parent patch.
+		Use the <o>ears.out</o> object inside a patch loaded by ears.process~
+		to create an outlet passing data to the parent patch.
 	</description>
 
 	<!--METADATA-->
@@ -48,53 +48,13 @@
 
 	<!--MESSAGES-->
 	<methodlist>
-		<method name="anything">
+		<method name="llll">
 			<arglist />
 			<digest>
-				Output messages from the corresponding outlet of <o>ears.process~</o>
+				Output lllls from the corresponding outlet of <o>ears.process~</o>
 			</digest>
 			<description>
-				A message sent in any input of <o>ears.out</o> is sent out
-				from the corresponding outlet of the <o>ears.process~</o> containing the patch
-			</description>
-		</method>
-		<method name="bang">
-			<arglist />
-			<digest>
-				Output bangs from the corresponding outlet of <o>ears.process~</o>
-			</digest>
-			<description>
-				A bang sent in any input of <o>ears.out</o> is sent out
-				from the corresponding outlet of the <o>ears.process~</o> containing the patch
-			</description>
-		</method>
-		<method name="float">
-			<arglist />
-			<digest>
-				Output floats from the corresponding outlet of <o>ears.process~</o>
-			</digest>
-			<description>
-				A float sent in any input of <o>ears.out</o> is sent out
-				from the corresponding outlet of the <o>ears.process~</o> containing the patch
-			</description>
-		</method>
-		<method name="int">
-			<arglist />
-			<digest>
-				Output integers from the corresponding outlet of <o>ears.process~</o>
-			</digest>
-			<description>
-				An integer sent in any input of <o>ears.out</o> is sent out
-				from the corresponding outlet of the <o>ears.process~</o> containing the patch
-			</description>
-		</method>
-		<method name="list">
-			<arglist />
-			<digest>
-				Output lists from the corresponding outlet of <o>ears.process~</o>
-			</digest>
-			<description>
-				A list sent in any input of <o>ears.out</o> is sent out
+				A message (in native llll format or not) sent to any input of <o>ears.out</o> is output
 				from the corresponding outlet of the <o>ears.process~</o> containing the patch
 			</description>
 		</method>
@@ -145,6 +105,7 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.process~" />
 		<seealso name="ears.in~" />
 		<seealso name="ears.out" />
 		<seealso name="ears.out~" />

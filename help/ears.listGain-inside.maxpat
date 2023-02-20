@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 965.0, 472.0, 640.0, 480.0 ],
+		"rect" : [ 144.0, 186.0, 640.0, 480.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -85,7 +85,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 180.606537000000003, 111.0, 210.0, 25.0 ],
-					"presentation_linecount" : 2,
 					"text" : "...do whatever you want with it..."
 				}
 
@@ -124,7 +123,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 180.606537000000003, 62.0, 207.0, 25.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Get one signal vector as a list..."
 				}
 
@@ -170,25 +168,7 @@
 				}
 
 			}
- ],
-		"dependency_cache" : [ 			{
-				"name" : "ears.fromvector~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.in~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.out~.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.tovector~.mxo",
-				"type" : "iLaX"
-			}
- ],
-		"autosave" : 0
+ ]
 	}
 
 }

@@ -47,7 +47,7 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
-		<seealso name="ears.in~" />
+		<seealso name="ears.process~" />
 		<seealso name="ears.tovector~" />
 	</seealsolist>
 

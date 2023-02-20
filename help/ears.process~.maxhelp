@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 780.0, 550.0 ],
+		"rect" : [ 91.0, 171.0, 780.0, 550.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -174,8 +174,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 133.5, 646.0, 65.0 ],
-									"text" : "You can set the vector size of the internal DSP chain (128 by default), through the \"vs\" attribute. Lower vector sizes will result in better time accuracy for timed objects and a smaller minimum delay for tapin~ / tapout~, but might make the processing noticeably slower, especially for complex patches. Some MSP objects won't behave correctly with very small (< 16) vector sizes."
+									"patching_rect" : [ 10.0, 126.5, 646.0, 65.0 ],
+									"text" : "You can set the vector size of the internal DSP chain (128 by default) through the \"vs\" attribute. Lower vector sizes will result in better time accuracy for timed objects and a smaller minimum delay for tapin~ / tapout~, but might make the processing noticeably slower, especially for complex patches. Some MSP objects won't behave correctly with very small (< 16) vector sizes."
 								}
 
 							}
@@ -332,12 +332,12 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-15",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 72.5, 646.0, 50.0 ],
-									"text" : "ears.process~ manages its own DSP chain which, by default, runs at the sampling rate of the incoming buffers (according to the ubiquitous \"resampling\" attribute) or, if there is none, at the global sampling rate. This can be overridden through the \"sr\" attribute."
+									"patching_rect" : [ 10.0, 72.5, 646.0, 36.0 ],
+									"text" : "ears.process~ manages its own DSP chain which, by default, runs at the sampling rate of the incoming buffers  or, if there is none, at the global sampling rate. This can be overridden through the \"sr\" attribute."
 								}
 
 							}
@@ -582,7 +582,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 578.0, 466.0, 150.0, 47.0 ],
+													"patching_rect" : [ 578.0, 466.0, 153.0, 47.0 ],
 													"text" : "... and to save these patches renaming them as you see fit!"
 												}
 
@@ -2818,7 +2818,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u123001000",
+									"buffername" : "u904008717",
 									"id" : "obj-6",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -3311,7 +3311,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 780.0, 524.0 ],
+						"rect" : [ 91.0, 197.0, 780.0, 524.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3349,8 +3349,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 136.0, 485.0, 210.0 ],
-									"text" : "Also, it is a very experimental object, abusing Max in various ways and doing ugly things all over the place. We've tried to make, if not robust, at least as predictable as possible, but there are messy corners we're aware of, and there may be more we're not. \n\nHere's one: If you have ears.process~ in a patch, and you start the DSP locally in another patch with the startwindow message, this will prevent ears.process~ from working until you restart the DSP either globally or for the patch containing ears.process~.\n\nAnyway. If you feel brave enough to use it in critical contexts such as concerts and performances, please stress-test it thoroughly first.\n\nWe hope you'll enjoy it, nonetheless!",
+									"patching_rect" : [ 10.0, 136.0, 463.0, 210.0 ],
+									"text" : "Also, it is a very experimental object, abusing Max in various ways and doing ugly things all over the place. We've tried to make it, if not robust, at least as predictable as possible, but there are messy corners we're aware of, and there may be more we're not. \n\nHere's one: If you have ears.process~ in a patch, and you start the DSP locally in another patch with the startwindow message, this will prevent ears.process~ from working until you restart the DSP either globally or for the patch containing ears.process~.\n\nAnyway. If you feel brave enough to use it in critical contexts such as concerts and performances, please stress-test it thoroughly first.\n\nWe hope you'll enjoy it, nonetheless!",
 									"textcolor" : [ 0.50196099281311, 0.50196099281311, 0.50196099281311, 1.0 ]
 								}
 

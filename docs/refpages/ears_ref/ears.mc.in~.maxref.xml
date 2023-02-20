@@ -124,10 +124,11 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.process~" />
+		<seealso name="ears.mc.out~" />
 		<seealso name="ears.in" />
 		<seealso name="ears.in~" />
 		<seealso name="ears.out~" />
-		<seealso name="ears.tovector~" />
 	</seealsolist>
 
 	<misc name = "Output">

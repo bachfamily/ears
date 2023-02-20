@@ -1738,12 +1738,12 @@
       "non-realtime"
     ],
     "seealso": [
-      "ears.in~",
+      "ears.process~",
       "ears.tovector~"
     ]
   },
   "ears.out": {
-    "digest": "Message input for a patch loaded by ears.process~",
+    "digest": "Message output for a patch loaded by ears.process~",
     "module": "ears",
     "category": [
       "ears process"
@@ -1756,6 +1756,7 @@
       "non-realtime"
     ],
     "seealso": [
+      "ears.process~",
       "ears.in~",
       "ears.out",
       "ears.out~"
@@ -1775,8 +1776,8 @@
       "non-realtime"
     ],
     "seealso": [
-      "ears.out~",
-      "ears.tovector~"
+      "ears.process~",
+      "ears.fromvector~"
     ]
   },
   "ears.process~": {
@@ -1819,10 +1820,11 @@
       "multichannel"
     ],
     "seealso": [
+      "ears.process~",
+      "ears.mc.out~",
       "ears.in",
       "ears.in~",
-      "ears.out~",
-      "ears.tovector~"
+      "ears.out~"
     ]
   },
   "ears.processinfo~": {
@@ -1839,15 +1841,7 @@
       "non-realtime"
     ],
     "seealso": [
-      "ears.process~",
-      "ears.in",
-      "ears.in~",
-      "ears.mc.in~",
-      "ears.out",
-      "ears.out~",
-      "ears.mc.out~",
-      "ears.tovector~",
-      "ears.fromvector~"
+      "ears.process~"
     ]
   },
   "ears.in~": {
@@ -1864,10 +1858,10 @@
       "non-realtime"
     ],
     "seealso": [
+      "ears.process~",
       "ears.in",
       "ears.mc.in~",
-      "ears.out~",
-      "ears.tovector~"
+      "ears.out~"
     ]
   },
   "ears.out~": {
@@ -1884,10 +1878,10 @@
       "non-realtime"
     ],
     "seealso": [
+      "ears.process~",
       "ears.in",
-      "ears.mc.in~",
       "ears.in~",
-      "ears.tovector~"
+      "ears.mc.in~"
     ]
   },
   "ears.in": {
@@ -1904,6 +1898,7 @@
       "non-realtime"
     ],
     "seealso": [
+      "ears.process~",
       "ears.in~",
       "ears.out",
       "ears.out~"
@@ -1924,10 +1919,11 @@
       "multichannel"
     ],
     "seealso": [
+      "ears.process~",
+      "ears.mc.in~",
       "ears.in",
       "ears.in~",
-      "ears.out",
-      "ears.tovector~"
+      "ears.out"
     ]
   }
 }
