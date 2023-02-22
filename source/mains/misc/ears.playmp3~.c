@@ -17,6 +17,9 @@
  @author
  Daniele Ghisi
  
+ @status
+ hidden
+ 
  @digest
  Play mp3 natively
  

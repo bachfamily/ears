@@ -58,12 +58,24 @@
 				Output buffer name
 			</digest>
 			<description>
+				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
+				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
 	</objarglist>
 
 	<!--MESSAGES-->
 	<methodlist>
+		<method name="(mouse)">
+			<arglist />
+			<digest>
+				Open the buffer display window
+			</digest>
+			<description>
+				Double-clicking on the object will open the display window for the output buffer(s).
+				If more than 10 buffers are to be output, only the first 10 are displayed.
+			</description>
+		</method>
 		<method name="list/llll">
 			<arglist />
 			<digest>
@@ -74,10 +86,202 @@
 				buffer names (depending on the <m>naming</m> attribute).
 			</description>
 		</method>
+		<method name="reset">
+			<arglist />
+			<digest>
+				Restart naming cycle
+			</digest>
+			<description>
+				If the <m>naming</m> attribute is set to 'Dynamic',
+				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
+				used name. This is especially useful in combination with iterative mechanisms.
+			</description>
+		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
+			</description>
+		</method>
+		<method name="write">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as audio file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeaiff">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as AIFF file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeflac">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as FLAC file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writemp3">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as MP3 file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@vbrmode</m> (symbol, default: VBR): VBR mode ("VBR", "CBR" or "ABR")<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@minbitrate</m> (int): Minimum bitrate in kbps<br />
+				<m>@maxbitrate</m> (int): Maximum bitrate in kbps<br />
+				<br />
+				Save the buffer as lossy compressed MP3 file.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional message attributes specify the encoding properties (variable bitrate mode, bitrates). <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeraw">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as raw file with no header
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writewave">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as WAV file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writewv">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as WavPack file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@correction</m> (int, default: 0): Write correction file along with a lossy wv file<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				Save the buffer as lossless WavPack compression, or as lossy WavPack compression along with a
+				correction file (if the <m>correction</m> message attribute is set to 1). In this last case, a <m>bitrate</m>
+				message attribute specifies the bitrate of the lossy .wv file in kbps.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Optional message attributes specify the encoding properties (correction, bitrate, sample ). <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
 	</methodlist>
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="angleunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Angle Values Are In
+			</digest>
+			<description>
+				Sets the unit for angles: Radians (default), Degrees, or Turns.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Angle Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
+			<digest>
+				Blocking Mode
+			</digest>
+			<description>
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="fullspectrum" get="1" set="1" type="int" size="1">
 			<digest>
 				Full Spectrum
@@ -89,6 +293,27 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Full Spectrum" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="naming" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Naming Policy
+			</digest>
+			<description>
+				Chooses the output buffer naming policy: <br />
+				0 (Copy): the buffer name is copied from the input (in-place modification).
+				Notice that some objects do not allow this policy. <br />
+				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
+				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
+				Beware! This may allocate a lot of memory!
+				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
+				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
+				<b>-</b> for static and <b>!</b> for dynamic.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="numiter" get="1" set="1" type="int" size="1">
@@ -104,6 +329,35 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="outname" get="1" set="1" type="llll" size="1">
+			<digest>
+				Output Buffer Names
+			</digest>
+			<description>
+				Sets the name for each one of the buffer outlets. Leave blank to auto-assign
+				unique names.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Names" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="timeunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Time Values Are In
+			</digest>
+			<description>
+				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
+				The default varies depending on the modules.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="unitary" get="1" set="1" type="int" size="1">
 			<digest>
 				Unitary
@@ -116,6 +370,38 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Unitary" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="winstartfromzero" get="1" set="1" type="int" size="1">
+			<digest>
+				First Window Starts At Zero
+			</digest>
+			<description>
+				If on, the first window is centered at framesize/2; if off (default), the first window is centered at zero.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="First Window Starts At Zero" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="wintype" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Window Type
+			</digest>
+			<description>
+				Sets the window type.
+				Available windows are:
+				"rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+				For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+				analysis window, the second one being the synthesis window).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 	</attributelist>

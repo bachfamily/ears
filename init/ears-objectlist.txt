@@ -1,4 +1,3 @@
-max oblist "ears objects" ears.playmp3~;
 max oblist "ears objects" ears.clicks~;
 max oblist "ears objects" ears.roll.sampling~;
 max oblist "ears objects" ears.roll.toreaper~;

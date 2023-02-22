@@ -1,23 +1,4 @@
 {
-  "ears.playmp3~": {
-    "digest": "Play mp3 natively",
-    "module": "ears",
-    "category": [
-      "ears playback"
-    ],
-    "keywords": [
-      "play",
-      "mpeg",
-      "mp3",
-      "compressed",
-      "native",
-      "file"
-    ],
-    "seealso": [
-      "ears.writetags",
-      "ears.readtags"
-    ]
-  },
   "ears.clicks~": {
     "digest": "Put clicks at time points",
     "module": "ears",

@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <root>
-<refpage name='ears.playmp3~.maxref.xml'/>
 <refpage name='ears.clicks~.maxref.xml'/>
 <refpage name='ears.roll.sampling~.maxref.xml'/>
 <refpage name='ears.roll.toreaper~.maxref.xml'/>

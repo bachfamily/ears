@@ -47,6 +47,37 @@
 
 	<!--MESSAGES-->
 	<methodlist>
+		<method name="(mouse)">
+			<arglist />
+			<digest>
+				Open the buffer display window
+			</digest>
+			<description>
+				Double-clicking on the object will open the display window for the output buffer(s).
+				If more than 10 buffers are to be output, only the first 10 are displayed.
+			</description>
+		</method>
+		<method name="reset">
+			<arglist />
+			<digest>
+				Restart naming cycle
+			</digest>
+			<description>
+				If the <m>naming</m> attribute is set to 'Dynamic',
+				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
+				used name. This is especially useful in combination with iterative mechanisms.
+			</description>
+		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Abort computation
+			</digest>
+			<description>
+				When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
+				set to 0, the computation is aborted as soon as possible.
+			</description>
+		</method>
 		<method name="symbol/llll">
 			<arglist />
 			<digest>
@@ -57,15 +88,190 @@
 				organized with one parenthesis level for each channel.
 			</description>
 		</method>
+		<method name="write">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as audio file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeaiff">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as AIFF file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeflac">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as FLAC file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writemp3">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as MP3 file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@vbrmode</m> (symbol, default: VBR): VBR mode ("VBR", "CBR" or "ABR")<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@minbitrate</m> (int): Minimum bitrate in kbps<br />
+				<m>@maxbitrate</m> (int): Maximum bitrate in kbps<br />
+				<br />
+				Save the buffer as lossy compressed MP3 file.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional message attributes specify the encoding properties (variable bitrate mode, bitrates). <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writeraw">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as raw file with no header
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writewave">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as WAV file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				See equivalent <o>buffer~</o> method.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Additional optional <m>format</m> message attributes specifies the output sample type, if applicable. <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
+		<method name="writewv">
+			<arg name="bufferindex" optional="1" type="int" />
+			<arg name="filename_or_path" optional="1" type="symbol" />
+			<digest>
+				Save output as WavPack file
+			</digest>
+			<description>
+				Message attributes:<br />
+				<m>@correction</m> (int, default: 0): Write correction file along with a lossy wv file<br />
+				<m>@bitrate</m> (int): Bitrate in kbps<br />
+				<m>@format</m> (symbol, default: int16): Sample Format<br />
+				<br />
+				Save the buffer as lossless WavPack compression, or as lossy WavPack compression along with a
+				correction file (if the <m>correction</m> message attribute is set to 1). In this last case, a <m>bitrate</m>
+				message attribute specifies the bitrate of the lossy .wv file in kbps.
+				Additional optional arguments specify the buffer index (if more than one buffer are stored in the objct)
+				and the filename (otherwise a dialog menu will appear).
+				Optional message attributes specify the encoding properties (correction, bitrate, sample ). <br />
+				Accepted sampletype symbols are : 'int8' (8-bit integer), 'int16' (16-bit integer, default),
+				'int24' (24-bit integer), 'int32' (32-bit integer), 'float32' (32-bit floating-point),
+				'float64' (64-bit floating-point), 'mulaw' (8-bit mu-law encoding), 'alaw' (8-bit a-law encoding) <br />
+			</description>
+		</method>
 	</methodlist>
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="blocking" get="1" set="1" type="int" size="1">
+			<digest>
+				Blocking Mode
+			</digest>
+			<description>
+				Sets the blocking mode, i.e. the thread to be used for computation: <br />
+				0: the object uses its own separate thread; <br />
+				1: the object uses the main thread (default); <br />
+				2: the object uses its the scheduler thread. <br />
+				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="out" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Outlet Types
 			</digest>
 			<description>
+				The <m>out</m> attribute is a sequence of characters identifying the outlet types (one character for each llll outlet). Characters can be one of the following: <br />
+				<m>n</m> (default): 'native' output: faster and more precise between bach objects, but unreadable by standard Max objects (an "bach.llll" message appears instead). <br />
+				<m>t</m>: 'text' output: slower and limited in size, but readable by standard Max objects. A plain llll in text format is a generic Max message.
+				To keep the representation invertible (i.e., to allow a bach object receiving a text-format llll to interpret it exactly as if it was native format,
+				except for the size limitation), some specific kinds of symbols are preceded by a backtick: namely, symbols containing parens, or containing textual
+				representations of numbers or pitches, or beginning with a backtick, plus the symbols "null" and "nil" (distinct from the reserved words
+				"null" and "nil" representing the empty list and the empty sublist) are preceded by a backtick. Moreover, the symbols "int", "float" or "list"
+				are preceded by a backtick only if they are the first element of an llll, to distinguish them from the corresponding reserved messages of Max. <br />
+				<m>m</m>: 'max' output: mostly equivalent to the "t" specifier, but no symbol is backticket except "int", "float" and "list" at the beginning of an llll.
+				It is important to notice that, differently from text-format lllls proper, Max-format lllls might not be invertible even if they do not reach the size
+				limit for Max message. This means that a bach object receiving a Max-format llll output from another bach object might interpret it differently
+				from the original, or in some cases might even reject it. <br />
+				<m>x</m>: disabled output (nothing is output) <br />
+				<m>p</m>: 'portal' output: only used by bach.portal to intercept the @out attribute specified while creating the abstraction (see bach.portal). <br />
+				The native output is recommended, unless communication with standard Max messages is needed.
+				Disabling unused outputs can be useful if extreme optimization of the patch is needed.
+				<br /> <br />
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
