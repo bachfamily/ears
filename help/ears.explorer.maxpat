@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 5,
+			"minor" : 5,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -250,9 +250,9 @@
 					"patching_rect" : [ -24.5, 1328.5, 489.778137000000015, 267.0 ],
 					"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ],
 					"valign" : 3,
-					"versionnumber" : 80103,
+					"versionnumber" : 80300,
 					"vscatter" : 0.5,
-					"whole_wordcloud_data_0000000000" : [ "[", "3d", "3D", "3d", "add", "ambisonic", "amplitude", "apply", "arithmetic", "arithmetics", "attenuation", "band", "bandpass", "bandreject", "binaural", "biquad", "bounce", "bpf", "breakpoint", "buffer", "change", "channel", "chop", "circular", "circularly", "clip", "combine", "compress", "compressed", "convert", "create", "crop", "crossfade", "cut", "cycle", "decode", "delete", "distort", "empty", "encode", "envelope", "expand", "export", "expr", "extract", "factor", "fade", "fadein", "fadeout", "file", "filter", "format", "freeverb", "function", "gain", "generate", "get", "hamming", "hanning", "hard", "highpass", "hipass", "hishelf", "hoa", "HOA", "hoa", "id3", "id3tool", "id3v2", "import", "in", "info", "interleave", "invert", "iterate", "joinenate", "keep", "lace", "load", "loop", "lowpass", "lowshelf", "merge", "metadata", "mirror", "mix", "mono", "mp3", "mpeg", "multiply", "native", "normalize", "nth", "obtain", "offset", "onepole", "open", "operation", "overdrive", "pack", "pan", "panoramics", "peak", "pick", "pitch", "pitchshift", "play", "portion", "produce", "property", "read", "Reaper", "reg", "remove", "repeat", "replace", "resample", "resonant", "retrieve", "retrogradation", "retrograde", "rev", "reverb", "reverberation", "reverse", "rms", "roll", "rotate", "rotation", "rubber", "rubberband", "samples", "save", "scale", "segment", "sequence", "shift", "sieve", "silence", "sinusoids", "slice", "split", "stereo", "store", "stretch", "subbuffer", "sum", "superpose", "swap", "tag", "time", "timestretch", "transform", "tri", "triangular", "trim", "unpack", "vinyl", "window", "write", "]", "[", 1, 1, 2, 2, 4, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3, 1, 1, 47, 2, 4, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 4, 1, 2, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, "]" ],
+					"whole_wordcloud_data_0000000000" : [ "[", "3d", "3D", "3d", "add", "ambisonic", "amplitude", "analysis", "apply", "arithmetic", "arithmetics", "assemble", "attenuation", "average", "band", "bandpass", "bandreject", "binaural", "biquad", "bounce", "bpf", "breakpoint", "buffer", "carve", "change", "channel", "chop", "circular", "circularly", "click", "clicks", "clip", "collect", "combine", "compare", "compress", "condition", "constant", "content", "convert", "cqt", "create", "crop", "crossfade", "cut", "cycle", "dcfilter", "dcoffset", "decimate", "decode", "delace", "delete", "descriptor", "difference", "display", "distort", "div", "divide", "down", "downmix", "dx", "dx2x", "dynamics", "empty", "encode", "envelope", "equal", "essentia", "eternal", "expand", "export", "expr", "extract", "factor", "fade", "fadein", "fadeout", "feature", "features", "fft", "file", "filter", "format", "fourier", "freeverb", "freeze", "function", "gain", "generate", "get", "griffin", "griffinlim", "hamming", "hanning", "hard", "highpass", "hipass", "hishelf", "hoa", "HOA", "hoa", "import", "in", "inequality", "info", "interleave", "interp", "interpolate", "inverse", "invert", "istft", "iter", "iterate", "joinenate", "keep", "lace", "lim", "limit", "limiter", "linear", "load", "loop", "lowpass", "lowshelf", "merge", "minus", "mirror", "mix", "mixdown", "model", "mono", "multichannel", "multiply", "non-realtime", "normalize", "nth", "obtain", "offline", "offset", "onepole", "open", "operation", "overdrive", "pack", "pan", "panoramics", "patch", "patcher", "peak", "peaks", "phase retrieval", "phases", "phaseunwrap", "phasewrap", "pick", "pitch", "pitchshift", "plugin", "plus", "portion", "preserve", "produce", "property", "q", "rdiv", "read", "Reaper", "reconstruct", "reduce", "reg", "remove", "repeat", "replace", "resample", "resonant", "resynthesis", "retrieve", "retrogradation", "retrograde", "rev", "reverb", "reverberation", "reverse", "reversed", "rhythm", "rms", "roll", "rotate", "rotation", "rubber", "rubberband", "sample", "samples", "save", "scale", "seam", "segment", "sequence", "shift", "sieve", "silence", "slice", "sound", "soundtouch", "specshow", "spectral", "spectrogram", "spectrum", "split", "stereo", "stft", "store", "stretch", "subbuffer", "subtract", "sum", "superpose", "swap", "synthesis", "tempo", "tempogram", "time", "times", "timesquash", "timestretch", "todiffs", "touch", "trans", "transform", "transpose", "tri", "triangular", "trim", "unequal", "unpack", "unwrap", "vamp", "vinyl", "waveset", "window", "wrap", "write", "x2dx", "zero-crossing", "]", "[", 1, 1, 2, 3, 4, 2, 3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 1, 1, 106, 1, 2, 6, 1, 1, 1, 1, 1, 1, 2, 4, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 4, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 4, 1, 4, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 3, 2, 1, 3, 1, 6, 1, 2, 2, 10, 1, 1, 1, 10, 2, 1, 1, 1, 1, 3, 2, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 6, 2, 1, 1, 1, 1, 1, 3, 2, 1, 1, 3, 2, 1, 1, 1, 1, 2, 1, 4, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 7, 2, 1, 2, 1, 4, 1, 2, 1, 2, 2, 4, 1, 2, 1, 1, 1, 4, 2, 1, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 1, 1, 1, 1, 7, "]" ],
 					"whole_wordcloud_data_count" : [ 1 ]
 				}
 
@@ -754,7 +754,14 @@
 					"patching_rect" : [ 1.0, 453.0, 35.0, 15.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 1.0, 453.0, 35.0, 15.0 ],
-					"rightarrow" : 0
+					"rightarrow" : 0,
+					"saved_attribute_attributes" : 					{
+						"blinkcolor" : 						{
+							"expression" : ""
+						}
+
+					}
+
 				}
 
 			}
@@ -845,8 +852,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -925,8 +932,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -1084,8 +1091,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -1768,8 +1775,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1816,8 +1823,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -2393,8 +2400,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2483,8 +2490,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -3338,8 +3345,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3386,8 +3393,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -3605,8 +3612,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -4271,8 +4278,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4535,8 +4542,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4583,8 +4590,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -4778,8 +4785,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -5154,8 +5161,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -5632,8 +5639,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -5680,8 +5687,8 @@
 														"fileversion" : 1,
 														"appversion" : 														{
 															"major" : 8,
-															"minor" : 1,
-															"revision" : 5,
+															"minor" : 5,
+															"revision" : 2,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
@@ -5903,8 +5910,8 @@
 														"fileversion" : 1,
 														"appversion" : 														{
 															"major" : 8,
-															"minor" : 1,
-															"revision" : 5,
+															"minor" : 5,
+															"revision" : 2,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
@@ -6568,8 +6575,8 @@
 														"fileversion" : 1,
 														"appversion" : 														{
 															"major" : 8,
-															"minor" : 1,
-															"revision" : 5,
+															"minor" : 5,
+															"revision" : 2,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
@@ -6855,8 +6862,8 @@
 														"fileversion" : 1,
 														"appversion" : 														{
 															"major" : 8,
-															"minor" : 1,
-															"revision" : 5,
+															"minor" : 5,
+															"revision" : 2,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
@@ -7493,8 +7500,8 @@
 														"fileversion" : 1,
 														"appversion" : 														{
 															"major" : 8,
-															"minor" : 1,
-															"revision" : 5,
+															"minor" : 5,
+															"revision" : 2,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
@@ -7802,8 +7809,8 @@
 														"fileversion" : 1,
 														"appversion" : 														{
 															"major" : 8,
-															"minor" : 1,
-															"revision" : 5,
+															"minor" : 5,
+															"revision" : 2,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
@@ -8024,8 +8031,8 @@
 														"fileversion" : 1,
 														"appversion" : 														{
 															"major" : 8,
-															"minor" : 1,
-															"revision" : 5,
+															"minor" : 5,
+															"revision" : 2,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
@@ -9111,8 +9118,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -9319,8 +9326,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 5,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -9397,8 +9404,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 1,
-											"revision" : 5,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -10365,10 +10372,10 @@
 					"preventedit" : 1,
 					"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ],
 					"textdecayfactor" : 0.94,
-					"tree_openstate_data_0000000000" : [ "[", 0, 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, 0, "]" ],
+					"tree_openstate_data_0000000000" : [ "[", 0, 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "]", "[", 0, 0, 0, 0, 0, 0, 0, "]" ],
 					"tree_openstate_data_count" : [ 1 ],
-					"versionnumber" : 80103,
-					"whole_tree_data_0000000000" : [ "[", "ears ambisonic", "ears.hoa.decode~", "ears.hoa.encode~", "ears.hoa.mirror~", "ears.hoa.rotate~", "]", "[", "ears basic", "ears.channel~", "ears.crop~", "ears.envelope~", "ears.fade~", "ears.filterempty~", "ears.fromsamps~", "ears.gain~", "ears.info~", "ears.join~", "ears.lace~", "ears.mix~", "ears.normalize~", "ears.pack~", "ears.read~", "ears.reg~", "ears.repeat~", "ears.rev~", "ears.rot~", "ears.shift~", "ears.slice~", "ears.split~", "ears.tosamps~", "ears.trim~", "ears.unpack~", "ears.window~", "ears.write~", "]", "[", "ears conversions", "ears.format~", "ears.resample~", "]", "[", "ears distorsion", "ears.clip~", "ears.overdrive~", "]", "[", "ears export", "ears.roll.sampling~", "ears.roll.sinusoids~", "ears.roll.toreaper~", "]", "[", "ears filter", "ears.biquad~", "ears.onepole~", "]", "[", "ears math", "ears.expr~", "]", "[", "ears metadata", "ears.readtags", "ears.writetags", "]", "[", "ears pan", "ears.pan~", "]", "[", "ears playback", "ears.playmp3~", "]", "[", "ears reverb", "ears.freeverb~", "]", "[", "ears time and pitch", "ears.paulstretch~", "ears.rubberband~", "]" ],
+					"versionnumber" : 80300,
+					"whole_tree_data_0000000000" : [ "[", "ears ambisonic", "ears.hoa.decode~", "ears.hoa.encode~", "ears.hoa.mirror~", "ears.hoa.rotate~", "]", "[", "ears analysis", "ears.essentia~", "ears.vamp~", "]", "[", "ears basic", "ears.!=~", "ears.==~", "ears.assemble~", "ears.channel~", "ears.clicks~", "ears.collect~", "ears.crop~", "ears.delace~", "ears.envelope~", "ears.fade~", "ears.filterempty~", "ears.fromdiffs~", "ears.fromsamps~", "ears.gain~", "ears.info~", "ears.iter~", "ears.join~", "ears.lace~", "ears.mixdown~", "ears.mix~", "ears.normalize~", "ears.offset~", "ears.pack~", "ears.read~", "ears.reg~", "ears.repeat~", "ears.rev~", "ears.rot~", "ears.slice~", "ears.split~", "ears.todiffs~", "ears.tosamps~", "ears.trans~", "ears.trim~", "ears.unpack~", "ears.waveset.average~", "ears.waveset.decimate~", "ears.waveset.interp~", "ears.waveset.repeat~", "ears.waveset.shuffle~", "ears.waveset.split~", "ears.waveset.subs~", "ears.window~", "ears.write~", "]", "[", "ears conversions", "ears.format~", "ears.resample~", "]", "[", "ears display", "ears.specshow~", "]", "[", "ears distorsion", "ears.clip~", "ears.overdrive~", "]", "[", "ears dynamics", "ears.dynamics~", "]", "[", "ears export", "ears.roll.sampling~", "ears.roll.synthesis~", "ears.roll.toreaper~", "]", "[", "ears filter", "ears.biquad~", "ears.dcfilter~", "ears.onepole~", "]", "[", "ears interpolation", "ears.interp~", "]", "[", "ears math", "ears.!-~", "ears.!/~", "ears.*~", "ears.+~", "ears.-~", "ears./~", "ears.expr~", "]", "[", "ears pan", "ears.pan~", "]", "[", "ears process", "ears.fromvector~", "ears.in", "ears.in~", "ears.mc.in~", "ears.mc.out~", "ears.out", "ears.out~", "ears.processinfo~", "ears.process~", "ears.tovector~", "]", "[", "ears reverb", "ears.freeverb~", "]", "[", "ears spectral", "ears.cqt~", "ears.fft~", "ears.griffinlim~", "ears.istft~", "ears.model.sine.analysis~", "ears.model.sine.synthesis~", "ears.model.sps.analysis~", "ears.model.sps.synthesis~", "ears.model.stochastic.analysis~", "ears.model.stochastic.synthesis~", "ears.peaks~", "ears.phaseunwrap~", "ears.phasewrap~", "ears.stft~", "ears.tempogram~", "]", "[", "ears time and pitch", "ears.paulfreeze~", "ears.paulstretch~", "ears.rubberband~", "ears.soundtouch~", "ears.timesquash~", "]" ],
 					"whole_tree_data_count" : [ 1 ]
 				}
 
@@ -10382,6 +10389,7 @@
 					"enablevscroll" : 0,
 					"id" : "obj-43",
 					"lockeddragscroll" : 0,
+					"lockedsize" : 0,
 					"maxclass" : "bpatcher",
 					"name" : "ears.explorer.welcome.maxpat",
 					"numinlets" : 0,
