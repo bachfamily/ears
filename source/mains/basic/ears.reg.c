@@ -134,10 +134,12 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     CLASS_ATTR_LONG(c, "embed",    0,    t_buf_reg, embed);
     CLASS_ATTR_FILTER_CLIP(c, "embed", 0, 1);
-    CLASS_ATTR_LABEL(c, "embed", 0, "Save Buffer With Patcher");
-    CLASS_ATTR_STYLE(c, "embed", 0, "onoff");
+//    CLASS_ATTR_LABEL(c, "embed", 0, "Save Buffer With Patcher");
+//    CLASS_ATTR_STYLE(c, "embed", 0, "onoff");
     CLASS_ATTR_SAVE(c, "embed", 0);
-    CLASS_ATTR_BASIC(c, "embed", 0);
+//    CLASS_ATTR_BASIC(c, "embed", 0);
+    CLASS_ATTR_INVISIBLE(c, "embed", 0);
+    // @exclude all
     // @description When set to 1, the stored buffer is saved with the patcher
     // and will be available next time the patch is loaded.
     
