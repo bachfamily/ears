@@ -74,7 +74,6 @@
 				1EB4469325FD1A3D00EDA9B8 /* PBXTargetDependency */,
 				1EC7AA68253C5FDA00D72895 /* PBXTargetDependency */,
 				1E3C6888252F034900212E66 /* PBXTargetDependency */,
-				1E4A5455252A1ABD00EE9AC6 /* PBXTargetDependency */,
 				1EDF170E25273B9E00047C71 /* PBXTargetDependency */,
 				1E0E732A2525E7AA0026FD5C /* PBXTargetDependency */,
 				1E46D684251CA4360049B6A5 /* PBXTargetDependency */,
@@ -1349,13 +1348,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
 			remoteInfo = lib_dada;
-		};
-		1E4A5454252A1ABD00EE9AC6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1E32C57B2527621E00280DC4;
-			remoteInfo = "ears.hoa.shift~";
 		};
 		1E4AE4C72850E8F8002EF33A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -10646,11 +10638,6 @@
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
 			targetProxy = 1E4939871FDEE3BA0048410E /* PBXContainerItemProxy */;
-		};
-		1E4A5455252A1ABD00EE9AC6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1E32C57B2527621E00280DC4 /* ears.hoa.shift~ */;
-			targetProxy = 1E4A5454252A1ABD00EE9AC6 /* PBXContainerItemProxy */;
 		};
 		1E4AE4C62850E8F8002EF33A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
