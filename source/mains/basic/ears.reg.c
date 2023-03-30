@@ -183,6 +183,8 @@ void buf_reg_appendtodictionary(t_buf_reg *x, t_dictionary *d)
                 dictionary_appenddictionary(d, gensym(entryname), (t_object *)subdict);
             }
         }
+        long foo = 3;
+        foo++;
     }
 }
 
@@ -249,8 +251,7 @@ void buf_reg_free(t_buf_reg *x)
     earsbufobj_free((t_earsbufobj *)x);
 }
 
-
-void buf_reg_bang(t_buf_reg *x)
+void buf_reg_store_buffers(t_buf_reg *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
 
@@ -271,7 +272,10 @@ void buf_reg_bang(t_buf_reg *x)
     }
 
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
+}
 
+void buf_reg_bang(t_buf_reg *x)
+{
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 
@@ -289,6 +293,8 @@ void buf_reg_anything(t_buf_reg *x, t_symbol *msg, long ac, t_atom *av)
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_bufs, true);
         
         earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
+        
+        buf_reg_store_buffers(x);
         
         if (inlet == 0)
             buf_reg_bang(x);
