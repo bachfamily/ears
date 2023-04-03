@@ -457,6 +457,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
+    double sr = ears_buffer_get_sr(ob, source);
 
     if (!orig_sample) {
         err = EARS_ERR_CANT_READ;
@@ -466,7 +467,6 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
         
         long order = ears_hoa_num_channels_to_order(dimension, channelcount);
-        
         if (order < 0) {
             object_error(ob, "Buffer has the wrong number of channels!");
             ears_buffer_unlocksamples(source);
@@ -481,16 +481,17 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
             ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         } else {
             orig_sample_wk = orig_sample;
-            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
+            ears_buffer_set_sr(ob, dest, sr);
+            ears_buffer_set_size_and_numchannels(ob, dest, framecount, num_out_channels);
         }
         
         
         long block_size = blockSize;
         float **inputs = (float **) bach_newptr(channelcount * sizeof(float *));
-        float **outputs = (float **) bach_newptr(2 * sizeof(float *));
+        float **outputs = (float **) bach_newptr(num_out_channels * sizeof(float *));
         for (long c = 0; c < channelcount; c++)
             inputs[c] = (float *)bach_newptr(block_size * sizeof(float));
-        for (long c = 0; c < 2; c++)
+        for (long c = 0; c < num_out_channels; c++)
             outputs[c] = (float *)bach_newptr(block_size * sizeof(float));
 
         if (dimension == 3) {
@@ -516,7 +517,7 @@ t_ears_err ears_buffer_hoa_decode_binaural(t_object *ob, t_buffer_obj *source, t
                             inputs[c][q] = orig_sample_wk[channelcount * (i+q) + c];
                     
                     decoder.processBlock((const float **)inputs, outputs);
-                    for (long c = 0; c < 2; c++)
+                    for (long c = 0; c < 2; c++) // num_out_channels = 2 always in binaural
                         for (int q = 0; q < b; q++)
                             dest_sample[2 * (i+q) + c] = outputs[c][q];
                 }

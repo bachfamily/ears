@@ -77,7 +77,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 244.0, 11.0, 120.0, 19.0 ],
-					"text" : "v0.0.2 alpha",
+					"text" : "v0.0.3 alpha",
 					"textcolor" : [ 0.109804, 0.109804, 0.109804, 1.0 ],
 					"varname" : "autohelp_top_digest[3]"
 				}
@@ -487,14 +487,15 @@
 									"fontsize" : 15.0,
 									"hyperlinkcolor" : [ 0.694117647058824, 0.4, 0.0, 1.0 ],
 									"id" : "obj-5",
+									"linecount" : 22,
 									"linkend" : [ ":", "!", "?", "\u002c", "\u003b", "(", ")", "[", "]", "{", "}" ],
 									"linkstart" : [ "" ],
 									"maxclass" : "bach.hypercomment",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 213.5, 348.0, 23.0 ],
-									"text" : "null"
+									"patching_rect" : [ 10.0, 213.5, 348.0, 375.0 ],
+									"text" : "01. Reverse\n02. Random Mix\n03. Reverse Reverb\n04. Concatenate Files In A Folder\n05. Time And Pitch\n06. In-Place Processing\n07. Multiresample\n08. Off-line Panning\n09. Query And Process\n10. Splitting And Tagging MP3 Files\n11. Batch Separate Channels\n12. Batch Combine 5.1 Channels\n13. Export A Click Track\n14. Multi-Timestretch Echo Rallentando\n15. Generate Higher-Order Ambisonic Trajectories\n16. Batch Change Gain With Progress Bar\n17. Extract Audio Features\n18. Extract Onsets As Notes\n19. Wavesets\n20. Spectal Analysis And Group Delay\n21. Cepstral Processing\n22. Audio Transcription"
 								}
 
 							}
@@ -643,8 +644,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 525.727233999999953, 3872.090819999999894, 264.0, 35.0 ],
-									"text" : ";\rmax launchbrowser http://forum.bachproject.net"
+									"patching_rect" : [ 525.727233999999953, 3872.090819999999894, 291.0, 35.0 ],
+									"text" : ";\rmax launchbrowser http://www.bachproject.net/forum"
 								}
 
 							}
@@ -656,13 +657,13 @@
 									"hyperlinkcolor" : [ 0.827450980392157, 0.470588235294118, 0.050980392156863, 1.0 ],
 									"id" : "obj-120",
 									"linkend" : [ ":", "!", "?", "\u002c", "\u003b", "(", ")", "[", "]", "{", "}" ],
-									"linkstart" : [ "forum" ],
+									"linkstart" : [ "www" ],
 									"maxclass" : "bach.hypercomment",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 342.090941999999984, 3578.0, 136.0, 21.0 ],
-									"text" : "forum.bachproject.net"
+									"patching_rect" : [ 342.090941999999984, 3578.0, 165.0, 21.0 ],
+									"text" : "www.bachproject.net/forum"
 								}
 
 							}
@@ -720,11 +721,11 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-14",
-									"linecount" : 17,
+									"linecount" : 16,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 7.0, 3311.0, 812.0, 253.0 ],
+									"patching_rect" : [ 7.0, 3311.0, 857.0, 239.0 ],
 									"text" : "ears is relased under a GPLv3 license and embeds the following libraries\n• bach (https://github.com/bachfamily/bach)\n• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3), modified only to prevent a clash between function naming.\n• For the [ears.write~] and [ears.read~] module: the TagLib library (released under LGPL)\n• For the [ears.write~] and [ears.read~] module: the LibAIFF library (released under MIT License, compatible with GPLv3)\n• For the [ears.write~] and [ears.read~] module: A modified version of the AudioFile library (released under GPLv3)\n• the mpg123 library 1.23.4 (released under LGPLv2.1)\n• the mp3 LAME library 3.1.00 released under LGPLv2\n• WavPack (released under BSD license)\n• for the [ears.freeverb~] module: a slightly modified version of the Freeverb library for the freeverb algorithm (in the public domain)\n• for the [ears.writetags] and [ears.readtags] modules: a modified version of the id3 library (released under GPLv2) and of the id3tool library \n• for the [ears.rubberband~] module: the Rubberband library (released under GPLv2) which in turns uses libsamplerate (released under BSD 2-Clause \"Simplified\" License)\n• for the [ears.soundtouch~] module: the SoundTouch library, released under LGPLv2.1\n• for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3\n• for the [ears.vamp~] module: the Vamp Plugin and Host SDK, released under the permissive license below",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
@@ -766,15 +767,15 @@
 									"fontsize" : 13.0,
 									"hyperlinkcolor" : [ 0.827450980392157, 0.470588235294118, 0.050980392156863, 1.0 ],
 									"id" : "obj-6",
-									"linecount" : 5,
+									"linecount" : 6,
 									"linkend" : [ "!", "?", "\u002c", "\u003b", "(", ")", "[", "]", "{", "}" ],
 									"linkstart" : [ "www", "http" ],
 									"maxclass" : "bach.hypercomment",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 7.0, 3623.0, 457.0, 79.0 ],
-									"text" : "The official web page is http://www.bachproject.net/ears\nThe official repository for source files is https://github.com/bachfamily/ears\nDuring 2020 ears was supported by CNMAT/University of California, Berkeley.\n\n© 2016 - 2022 • Daniele Ghisi",
+									"patching_rect" : [ 7.0, 3623.0, 457.0, 94.0 ],
+									"text" : "The official web page is http://www.bachproject.net/ears\nThe official repository for source files is https://github.com/bachfamily/ears\nDuring 2020 ears was supported by CNMAT/University of California, Berkeley.\n\n\n© 2016 - 2023 • Daniele Ghisi",
 									"textcolor" : [ 0.25, 0.25, 0.25, 1.0 ]
 								}
 

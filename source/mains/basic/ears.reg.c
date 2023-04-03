@@ -134,10 +134,12 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     CLASS_ATTR_LONG(c, "embed",    0,    t_buf_reg, embed);
     CLASS_ATTR_FILTER_CLIP(c, "embed", 0, 1);
-    CLASS_ATTR_LABEL(c, "embed", 0, "Save Buffer With Patcher");
-    CLASS_ATTR_STYLE(c, "embed", 0, "onoff");
+//    CLASS_ATTR_LABEL(c, "embed", 0, "Save Buffer With Patcher");
+//    CLASS_ATTR_STYLE(c, "embed", 0, "onoff");
     CLASS_ATTR_SAVE(c, "embed", 0);
-    CLASS_ATTR_BASIC(c, "embed", 0);
+//    CLASS_ATTR_BASIC(c, "embed", 0);
+    CLASS_ATTR_INVISIBLE(c, "embed", 0);
+    // @exclude all
     // @description When set to 1, the stored buffer is saved with the patcher
     // and will be available next time the patch is loaded.
     
@@ -181,6 +183,8 @@ void buf_reg_appendtodictionary(t_buf_reg *x, t_dictionary *d)
                 dictionary_appenddictionary(d, gensym(entryname), (t_object *)subdict);
             }
         }
+        long foo = 3;
+        foo++;
     }
 }
 
@@ -247,8 +251,7 @@ void buf_reg_free(t_buf_reg *x)
     earsbufobj_free((t_earsbufobj *)x);
 }
 
-
-void buf_reg_bang(t_buf_reg *x)
+void buf_reg_store_buffers(t_buf_reg *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
 
@@ -269,7 +272,10 @@ void buf_reg_bang(t_buf_reg *x)
     }
 
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
+}
 
+void buf_reg_bang(t_buf_reg *x)
+{
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);
 }
 
@@ -287,6 +293,8 @@ void buf_reg_anything(t_buf_reg *x, t_symbol *msg, long ac, t_atom *av)
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_bufs, true);
         
         earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 0);
+        
+        buf_reg_store_buffers(x);
         
         if (inlet == 0)
             buf_reg_bang(x);

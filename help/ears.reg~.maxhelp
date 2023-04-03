@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 0,
+			"minor" : 5,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -44,214 +44,6 @@
 				"box" : 				{
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
-					"id" : "obj-5",
-					"maxclass" : "newobj",
-					"numinlets" : 0,
-					"numoutlets" : 0,
-					"patcher" : 					{
-						"fileversion" : 1,
-						"appversion" : 						{
-							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
-							"architecture" : "x64",
-							"modernui" : 1
-						}
-,
-						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 636.0, 440.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 13.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
-						"gridsize" : [ 5.0, 5.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
-						"showontab" : 1,
-						"assistshowspatchername" : 0,
-						"boxes" : [ 							{
-								"box" : 								{
-									"attr" : "buffername",
-									"id" : "obj-15",
-									"maxclass" : "attrui",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 130.0, 256.0, 23.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"bubble" : 1,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-12",
-									"linecount" : 4,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 296.0, 315.0, 233.0, 69.0 ],
-									"text" : "The buffer is saved within the objects and loaded automatically when you open the patch (see the waveform~ above)"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"buffername" : "earsBufHelpSavedBuffer",
-									"id" : "obj-10",
-									"maxclass" : "waveform~",
-									"numinlets" : 5,
-									"numoutlets" : 6,
-									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 10.0, 159.0, 256.0, 64.0 ]
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-5",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 407.0, 233.0, 109.0, 23.0 ],
-									"text" : "ears.fromsamps~"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-4",
-									"maxclass" : "multislider",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 407.0, 154.0, 159.0, 62.0 ],
-									"signed" : 1,
-									"size" : 132
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-1",
-									"maxclass" : "newobj",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 334.0, 278.0, 23.0 ],
-									"reg_buffer_0000000000" : 									{
-										"numchannels" : 1,
-										"numframes" : 132,
-										"sr" : 48000.0,
-										"name" : "earsBufHelpSavedBuffer",
-										"block_0000000000" : [ 0, 0, -1115414264, -1535115264, 1040457992, 1044787596, 1046952398, 1048846600, 1049929001, 1051011402, 1052093803, 1052093803, 1053176204, 1053176204, 1054258605, 1055341006, 1055341006, 1055341006, 1055341006, 1056423407, 1056423407, 1056423407, 1056423407, 1056423407, 1056423407, 1056423407, 1056423407, 1055341006, 1055341006, 1053176204, 1052093803, 1051011402, 1049929001, 1048846600, 1046952398, 1042622794, 1042622794, 1040457992, 1036398988, 1023680776, 0, -1123802872, -1123802872, -1115414264, -1107025656, -1107025656, -1104860854, -1102696052, -1100531250, -1098637048, -1098637048, -1097554647, -1096472246, -1096472246, -1095389845, -1095389845, -1095389845, -1095389845, -1094307444, -1094307444, -1094307444, -1094307444, -1094307444, -1095389845, -1095389845, -1097554647, -1097554647, -1098637048, -1102696052, -1104860854, -1104860854, -1107025656, -1111084660, -1115414264, -1115414264, -1123802872, 0, 0, 1032069384, 1032069384, 1036398988, 1040457992, 1040457992, 1042622794, 1042622794, 1042622794, 1042622794, 1042622794, 1042622794, 1040457992, 1040457992, 1036398988, 1032069384, 1028010380, 0, 0, -1123802872, -1115414264, -1111084660, -1111084660, -1107025656, -1107025656, -1104860854, -1102696052, -1102696052, -1102696052, -1100531250, -1100531250, -1100531250, -1100531250, -1100531250, -1100531250, -1100531250, -1100531250, -1100531250, -1100531250, -1100531250, -1102696052, -1102696052, -1102696052, -1104860854, -1104860854, -1107025656, -1107025656, -1107025656, -1111084660, -1111084660, -1115414264, -1115414264, -1115414264, -1123802872, -1123802872 ],
-										"block_count" : 1
-									}
-,
-									"reg_buffer_count" : 1,
-									"saved_object_attributes" : 									{
-										"embed" : 1
-									}
-,
-									"text" : "ears.reg~ earsBufHelpSavedBuffer @embed 1"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-14",
-									"linecount" : 2,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 77.0, 407.0, 36.0 ],
-									"style" : "helpfile_label",
-									"text" : "You may want to embed small buffers inside your patch directly. You can do so by using the \"embed\" attribute of ears.reg~"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"border" : 0,
-									"filename" : "helpname.js",
-									"id" : "obj-2",
-									"ignoreclick" : 1,
-									"jsarguments" : [ "ears.reg~" ],
-									"maxclass" : "jsui",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 10.0, 10.0, 198.415985107421875, 57.599853515625 ]
-								}
-
-							}
- ],
-						"lines" : [ 							{
-								"patchline" : 								{
-									"destination" : [ "obj-10", 0 ],
-									"source" : [ "obj-15", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-5", 0 ],
-									"source" : [ "obj-4", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-1", 0 ],
-									"source" : [ "obj-5", 0 ]
-								}
-
-							}
- ]
-					}
-,
-					"patching_rect" : [ 59.0, 176.0, 55.0, 22.0 ],
-					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"fontsize" : 13.0,
-						"globalpatchername" : "",
-						"tags" : ""
-					}
-,
-					"text" : "p embed",
-					"varname" : "basic_tab[2]"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
 					"id" : "obj-3",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
@@ -260,8 +52,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -487,8 +279,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -898,8 +690,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -956,10 +748,6 @@
 		"lines" : [  ],
 		"dependency_cache" : [ 			{
 				"name" : "bach.hypercomment.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ears.fromsamps~.mxo",
 				"type" : "iLaX"
 			}
 , 			{

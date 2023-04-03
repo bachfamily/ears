@@ -1486,7 +1486,7 @@ t_buf_essentia *buf_essentia_new(t_symbol *s, short argc, t_atom *argv)
         }
         
         if (warn_for_feature_default) {
-            object_warn((t_object *)x, "Different essentia have different defaults for analysis parameters.");
+            object_warn((t_object *)x, "Different essentia algorithms have different defaults for analysis parameters.");
             object_warn((t_object *)x, "A global default of 2048/1024 samples is used, consider using separate ears.essentia~ objects if results are not satisfactory.");
         }
 
