@@ -337,6 +337,13 @@ t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, 
 }
 
 
+void ears_buffer_set_size_and_numchannels_do_do(t_object *ob, t_symbol *s, long ac, t_atom *av)
+{
+    t_buffer_obj *buf = (t_buffer_obj *)atom_getobj(av+2);
+    typedmess(buf, gensym("sizeinsamps"), 2, av);
+    ((t_earsbufobj *)ob)->l_buffer_size_changed = 1;
+}
+
 
 void ears_buffer_set_size_and_numchannels_do(t_object *ob, t_symbol *s, long ac, t_atom *av)
 {
@@ -361,9 +368,9 @@ t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf,
     } else {
         if (buffer_getframecount(buf) != num_frames || buffer_getchannelcount(buf) != numchannels) {
             ((t_earsbufobj *)ob)->l_buffer_size_changed = 0;
-            defer(ob, (method)ears_buffer_set_size_and_numchannels_do, NULL, 3, a);
+            defer_low(ob, (method)ears_buffer_set_size_and_numchannels_do, NULL, 3, a);
             while (!((t_earsbufobj *)ob)->l_buffer_size_changed) {
-//                post("waiting");
+                cpost("ears is waiting for the main thread to resize a buffer...");
             }
         }
     }
@@ -1673,7 +1680,7 @@ t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer
 }
 
 
-// N.B. to sample is EXCLUDED!!!! The taken interval is [start_sample end_sample[
+// N.B. end_sample is EXCLUDED!!!! The taken interval is [start_sample end_sample[
 // end_sample is then the FIRST sample of the region after the crop
 t_ears_err ears_buffer_crop(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long start_sample, long end_sample)
 {
