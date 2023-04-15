@@ -337,14 +337,6 @@ t_ears_err ears_buffer_set_size_samps_preserve(t_object *ob, t_buffer_obj *buf, 
 }
 
 
-void ears_buffer_set_size_and_numchannels_do_do(t_object *ob, t_symbol *s, long ac, t_atom *av)
-{
-    t_buffer_obj *buf = (t_buffer_obj *)atom_getobj(av+2);
-    typedmess(buf, gensym("sizeinsamps"), 2, av);
-    ((t_earsbufobj *)ob)->l_buffer_size_changed = 1;
-}
-
-
 void ears_buffer_set_size_and_numchannels_do(t_object *ob, t_symbol *s, long ac, t_atom *av)
 {
     t_buffer_obj *buf = (t_buffer_obj *)atom_getobj(av+2);
