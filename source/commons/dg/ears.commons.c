@@ -360,7 +360,7 @@ t_ears_err ears_buffer_set_size_and_numchannels(t_object *ob, t_buffer_obj *buf,
     } else {
         if (buffer_getframecount(buf) != num_frames || buffer_getchannelcount(buf) != numchannels) {
             ((t_earsbufobj *)ob)->l_buffer_size_changed = 0;
-            defer_low(ob, (method)ears_buffer_set_size_and_numchannels_do, NULL, 3, a);
+            defer(ob, (method)ears_buffer_set_size_and_numchannels_do, NULL, 3, a);
             while (!((t_earsbufobj *)ob)->l_buffer_size_changed) {
                 cpost("ears is waiting for the main thread to resize a buffer...");
             }
