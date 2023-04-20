@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 0,
+			"minor" : 5,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -52,8 +52,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -262,8 +262,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 3,
-											"revision" : 0,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -606,8 +606,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 3,
-											"revision" : 0,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -1136,8 +1136,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1597,8 +1597,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1700,7 +1700,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "list" ],
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 527.0, 391.400146484375, 80.0, 23.0 ],
 									"text" : "ears.info~ sr"
 								}
@@ -1787,7 +1787,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
-									"outlettype" : [ "list", "list" ],
+									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 171.0, 191.0, 127.0, 23.0 ],
 									"text" : "ears.info~ sr audiosr"
 								}
@@ -2016,8 +2016,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2604,8 +2604,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2718,12 +2718,12 @@
 								"box" : 								{
 									"fontsize" : 12.0,
 									"id" : "obj-21",
-									"linecount" : 27,
+									"linecount" : 25,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 157.5, 155.0, 368.0 ],
-									"text" : "min\nmax\nwelch\nflux\nzerocrossingrate\nenergy\nenergyband\nenergybandratio\nmfcc\nbfcc\nbarkbands\nerbbands\nfrequencybands\ngfcc\nhfc\nlpc\nmaxmagfreq\nrolloff\ntimedomainspectralcentroid\nspectralcomplexity\nspectralcontrast\nstrongpeak\ntriangularbands\ntriangularbarkbands\nspectrum\npowerspectrum\nderivative"
+									"patching_rect" : [ 10.0, 157.5, 155.0, 342.0 ],
+									"text" : "welch\nflux\nzerocrossingrate\nenergy\nenergyband\nenergybandratio\nmfcc\nbfcc\nbarkbands\nerbbands\nfrequencybands\ngfcc\nhfc\nlpc\nmaxmagfreq\nrolloff\ntimedomainspectralcentroid\nspectralcomplexity\nspectralcontrast\nstrongpeak\ntriangularbands\ntriangularbarkbands\nspectrum\npowerspectrum\nderivative"
 								}
 
 							}
@@ -2987,8 +2987,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3035,8 +3035,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 3,
-											"revision" : 0,
+											"minor" : 5,
+											"revision" : 2,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -3910,8 +3910,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 0,
+							"minor" : 5,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
