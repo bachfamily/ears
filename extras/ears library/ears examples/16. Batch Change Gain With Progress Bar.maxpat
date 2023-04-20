@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 1,
+			"minor" : 5,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -58,7 +58,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 393.0, 78.03584905660378, 246.0, 34.0 ],
-					"presentation_linecount" : 3,
 					"text" : "more elaborate setup"
 				}
 
@@ -162,7 +161,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 54.0, 297.077380952380963, 114.0, 51.0 ],
-					"presentation_linecount" : 3,
 					"text" : "Drop directory containing files here"
 				}
 
@@ -193,12 +191,10 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-25",
-					"linecount" : 4,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 756.0, 357.0, 143.0, 60.0 ],
-					"text" : "Processing Macintosh HD:/Users/Shared/databases/_test/t2/1-7456-A-13.wav..."
+					"patching_rect" : [ 756.0, 357.0, 143.0, 20.0 ]
 				}
 
 			}
@@ -752,6 +748,10 @@
 			}
  ],
 		"dependency_cache" : [ 			{
+				"name" : "bach.<=.mxo",
+				"type" : "iLaX"
+			}
+, 			{
 				"name" : "bach.args.mxo",
 				"type" : "iLaX"
 			}
@@ -803,10 +803,6 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "bach.leq.mxo",
-				"type" : "iLaX"
-			}
-, 			{
 				"name" : "bach.neq.mxo",
 				"type" : "iLaX"
 			}
@@ -827,10 +823,6 @@
 			}
 , 			{
 				"name" : "bach.portal.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "bach.print.mxo",
 				"type" : "iLaX"
 			}
 , 			{

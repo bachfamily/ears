@@ -1442,7 +1442,7 @@ void earsbufobj_class_add_blocking_attr(t_class *c)
     CLASS_ATTR_BASIC(c, "blocking", 0);
     CLASS_ATTR_CATEGORY(c, "blocking", 0, "Behavior");
     CLASS_ATTR_ACCESSORS(c, "blocking", NULL, earsbufobj_setattr_blocking);
-    // @description Sets the blocking mode, i.e. the thread to be used for computation: <br />
+    // @description Sets the blocking mode (EXPERIMENTAL!), i.e. the thread to be used for computation: <br />
     // 0: the object uses its own separate thread; <br />
     // 1: the object uses the main thread (default); <br />
     // 2: the object uses its the scheduler thread. <br />

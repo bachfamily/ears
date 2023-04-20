@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 5,
-			"revision" : 2,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 194.0, 100.0, 960.0, 609.0 ],
+		"rect" : [ 228.0, 109.0, 960.0, 609.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -53,7 +53,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -566,7 +566,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -998,7 +998,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1668,7 +1668,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1705,6 +1705,18 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-39",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 802.0, 274.0, 29.5, 23.0 ],
+									"text" : "$1"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-37",
@@ -1729,7 +1741,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 788.25, 146.0, 143.0, 84.0 ],
+									"patching_rect" : [ 788.25, 111.0, 143.0, 84.0 ],
 									"text" : "Spectral information is saved by [ears.write~] in AIFF, WAV and WavPack formats"
 								}
 
@@ -1827,7 +1839,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 802.25, 276.0, 62.0, 23.0 ],
+									"patching_rect" : [ 802.25, 241.0, 62.0, 23.0 ],
 									"text" : "ears.stft~"
 								}
 
@@ -1839,7 +1851,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 802.25, 242.0, 114.0, 23.0 ],
+									"patching_rect" : [ 802.25, 207.0, 114.0, 23.0 ],
 									"text" : "earsBufDrumLoop"
 								}
 
@@ -2323,7 +2335,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 773.5, 245.0, 20.0, 20.0 ],
+									"patching_rect" : [ 773.5, 210.0, 20.0, 20.0 ],
 									"rounded" : 60.0,
 									"text" : "1",
 									"textcolor" : [ 0.34902, 0.34902, 0.34902, 1.0 ]
@@ -2465,16 +2477,9 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-25", 0 ],
-									"source" : [ "obj-4", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-44", 0 ],
 									"order" : 1,
-									"source" : [ "obj-42", 0 ]
+									"source" : [ "obj-39", 0 ]
 								}
 
 							}
@@ -2482,6 +2487,20 @@
 								"patchline" : 								{
 									"destination" : [ "obj-46", 0 ],
 									"order" : 0,
+									"source" : [ "obj-39", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-25", 0 ],
+									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-39", 0 ],
 									"source" : [ "obj-42", 0 ]
 								}
 
@@ -2558,7 +2577,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2868,7 +2887,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3083,7 +3102,7 @@
 										"appversion" : 										{
 											"major" : 8,
 											"minor" : 5,
-											"revision" : 2,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -3958,13 +3977,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 228.0, 135.0, 960.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3995,13 +4014,15 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"fontface" : 1,
+									"fontsize" : 13.0,
 									"id" : "obj-20",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 343.0, 387.0, 235.0, 21.0 ],
-									"text" : "(EXPERIMENTAL FEATURE)",
-									"textcolor" : [ 0.533333333333333, 0.011764705882353, 0.011764705882353, 1.0 ]
+									"patching_rect" : [ 343.0, 387.0, 195.0, 21.0 ],
+									"text" : "(EXPERIMENTAL FEATURE!)",
+									"textcolor" : [ 0.831372549019608, 0.023529411764706, 0.023529411764706, 1.0 ]
 								}
 
 							}
@@ -4183,13 +4204,11 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-15",
-									"linecount" : 3,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 186.0, 309.0, 178.0, 52.0 ],
-									"text" : "earsHelpCommonPolybuf.1 earsHelpCommonPolybuf.2 earsHelpCommonPolybuf.3"
+									"patching_rect" : [ 186.0, 309.0, 178.0, 23.0 ]
 								}
 
 							}
@@ -4725,7 +4744,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4762,13 +4781,15 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"fontface" : 1,
+									"fontsize" : 13.0,
 									"id" : "obj-31",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 209.0, 84.0, 235.0, 21.0 ],
-									"text" : "(EXPERIMENTAL FEATURE)",
-									"textcolor" : [ 0.533333333333333, 0.011764705882353, 0.011764705882353, 1.0 ]
+									"patching_rect" : [ 209.0, 84.0, 195.0, 21.0 ],
+									"text" : "(EXPERIMENTAL FEATURE!)",
+									"textcolor" : [ 0.831372549019608, 0.023529411764706, 0.023529411764706, 1.0 ]
 								}
 
 							}
@@ -4837,7 +4858,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u248000742",
+									"buffername" : "u439000629",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -4888,7 +4909,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u410002584",
+									"buffername" : "u612001823",
 									"id" : "obj-16",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -5003,7 +5024,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u246002209",
+									"buffername" : "u942007340",
 									"id" : "obj-8",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -5053,7 +5074,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u363002282",
+									"buffername" : "u267007345",
 									"id" : "obj-24",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -5316,7 +5337,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -5856,7 +5877,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -5982,7 +6003,7 @@
 										"appversion" : 										{
 											"major" : 8,
 											"minor" : 5,
-											"revision" : 2,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -6974,13 +6995,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 194.0, 126.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -7625,7 +7646,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 2,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}

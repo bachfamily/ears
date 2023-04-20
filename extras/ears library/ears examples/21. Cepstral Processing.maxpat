@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 1,
+			"minor" : 5,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 830.0, 303.0, 772.0, 642.0 ],
+		"rect" : [ 231.0, 171.0, 772.0, 642.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,19 +39,6 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
-				"box" : 				{
-					"id" : "obj-12",
-					"linecount" : 2,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 259.0, 320.548538684844971, 67.0, 33.0 ],
-					"presentation_linecount" : 2,
-					"text" : "spectral whitening"
-				}
-
-			}
-, 			{
 				"box" : 				{
 					"hidden" : 1,
 					"id" : "obj-27",
@@ -118,7 +105,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 561.0, 64.461723327636719, 144.0, 69.0 ],
+					"patching_rect" : [ 561.0, 64.461723327636719, 145.0, 69.0 ],
 					"text" : "This is the \"manual\" STFT we have seen in a previous example"
 				}
 
@@ -174,12 +161,12 @@
 					"fontname" : "Arial",
 					"fontsize" : 13.0,
 					"id" : "obj-4",
-					"linecount" : 4,
+					"linecount" : 5,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 406.0, 180.91175670588234, 187.0, 69.0 ],
-					"text" : "Complex Cepstrum: real part is the log(magnitude) and imaginary part is the original phase"
+					"patching_rect" : [ 406.0, 180.91175670588234, 187.0, 83.0 ],
+					"text" : "Complex Cepstrum: FFT of a complex value whose real part is the log(magnitude) and imaginary part is the original phase"
 				}
 
 			}
