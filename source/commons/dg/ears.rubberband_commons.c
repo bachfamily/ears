@@ -4,8 +4,27 @@
 #define RUBBERBAND_MAX_RATIO 128
 using namespace RubberBand;
 
-t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *timestretch_factor, t_llll *pitchshift_factor, RubberBandStretcher::Options options, long blocksize_samps)
+RubberBandStretcher::Options buf_rubberband_get_default_options()
 {
+    RubberBand::RubberBandStretcher::Options options = 0;
+    options |= RubberBand::RubberBandStretcher::OptionPitchHighConsistency;
+    options |= RubberBand::RubberBandStretcher::OptionStretchElastic;
+    options |= RubberBand::RubberBandStretcher::OptionTransientsSmooth;
+    options |= RubberBand::RubberBandStretcher::OptionDetectorCompound;
+    options |= RubberBand::RubberBandStretcher::OptionPhaseLaminar;
+    options |= RubberBand::RubberBandStretcher::OptionFormantShifted;
+    options |= RubberBand::RubberBandStretcher::OptionThreadingNever;
+    options |= RubberBand::RubberBandStretcher::OptionWindowStandard;
+    return options;
+}
+
+
+t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *timestretch_factor, t_llll *pitchshift_factor, RubberBandStretcher::Options options, long blocksize_samps, e_slope_mapping slopemapping, bool precise_output_time)
+{
+    int mask = (RubberBand::RubberBandStretcher::OptionPitchHighQuality |
+                RubberBand::RubberBandStretcher::OptionPitchHighSpeed |
+                RubberBand::RubberBandStretcher::OptionPitchHighConsistency);
+
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
     
@@ -16,8 +35,8 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
     
     double sr = ears_buffer_get_sr(ob, source);
     
-    char ts_is_static = !(timestretch_factor->l_size == 1 && timestretch_factor->l_depth == 1);
-    char ps_is_static = !(pitchshift_factor->l_size == 1 && pitchshift_factor->l_depth == 1);
+    char ts_is_static = (timestretch_factor->l_size == 1 && timestretch_factor->l_depth == 1);
+    char ps_is_static = (pitchshift_factor->l_size == 1 && pitchshift_factor->l_depth == 1);
     char all_static = ts_is_static && ps_is_static;
     
     if (all_static)
@@ -25,8 +44,8 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
     else
         options |= RubberBand::RubberBandStretcher::OptionProcessRealTime;
 
-    t_ears_envelope_iterator ts_eei = ears_envelope_iterator_create(timestretch_factor, 0., false);
-    t_ears_envelope_iterator ps_eei = ears_envelope_iterator_create(pitchshift_factor, 0., false);
+    t_ears_envelope_iterator ts_eei = ears_envelope_iterator_create(timestretch_factor, 0., false, slopemapping);
+    t_ears_envelope_iterator ps_eei = ears_envelope_iterator_create(pitchshift_factor, 0., false, slopemapping);
 
 //    double frequencyshift = 1.;
 //    if (pitchshift_cents != 0.0)
@@ -34,7 +53,7 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
     
     t_ears_err err = EARS_ERR_NONE;
 
-    float *orig_sample = buffer_locksamples(source);
+    float *orig_sample = ears_buffer_locksamples(source);
     float *orig_sample_wk = NULL;
     
     if (!orig_sample) {
@@ -46,7 +65,7 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         orig_sample_wk = (float *)bach_newptr(channelcount * framecount * sizeof(float));
         sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * framecount * sizeof(float));
-        buffer_unlocksamples(source);
+        ears_buffer_unlocksamples(source);
         
         // creating RubberBand stretcher
         RubberBandStretcher rb((long)sr, channelcount, options, ears_envelope_iterator_walk_interp(&ts_eei, 0, framecount), pow(2, ears_envelope_iterator_walk_interp(&ps_eei, 0, framecount)/1200.));
@@ -64,6 +83,16 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
         
         // STUDYING...
         for (long i = 0; i < numblocks; i++) {
+            if (!all_static) {
+                double new_time_ratio = ears_envelope_iterator_walk_interp(&ts_eei, i*blocksize, framecount);
+                double new_pitch_scale = pow(2.0, ears_envelope_iterator_walk_interp(&ps_eei, i*blocksize, framecount)/1200.);
+                // gotta ensure that new_time_ratio and new_pitch_scale are within reasonable limits, otherwise
+                new_time_ratio = CLAMP(new_time_ratio, 0., RUBBERBAND_MAX_RATIO);
+                new_pitch_scale = CLAMP(new_pitch_scale, 0., RUBBERBAND_MAX_RATIO);
+                rb.setTimeRatio(new_time_ratio);
+                rb.setPitchScale(new_pitch_scale);
+            }
+            
             long count = ((i+1)*blocksize > framecount ? framecount - i*blocksize : blocksize);
             for (long c = 0; c < channelcount; c++) {
                 for (long j = 0; j < count; j++)
@@ -71,12 +100,17 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
             }
             rb.study(ibuf, count, i==(numblocks-1));
         }
+        ears_envelope_iterator_reset(&ts_eei);
+        ears_envelope_iterator_reset(&ps_eei);
+        
 
         // PROCESSING...
         long outframecount = 0;
+        double old_pitch_scale = -1;
         long output_sample_wk_allocated_frames = framecount;
         float *output_sample_wk = (float *)bach_newptr(channelcount * output_sample_wk_allocated_frames * sizeof(float));
         for (long i = 0; i < numblocks; i++) {
+            char pitch_transit_across_1 = false;
             long count = ((i+1)*blocksize > framecount ? framecount - i*blocksize : blocksize);
             for (long c = 0; c < channelcount; c++) {
                 for (long j = 0; j < count; j++)
@@ -89,8 +123,16 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
                 // gotta ensure that new_time_ratio and new_pitch_scale are within reasonable limits, otherwise
                 new_time_ratio = CLAMP(new_time_ratio, 0., RUBBERBAND_MAX_RATIO);
                 new_pitch_scale = CLAMP(new_pitch_scale, 0., RUBBERBAND_MAX_RATIO);
+                
+                // This handles one particular case in which rubberband fails, ie. when the pitch goes from below to above 0
+                // the standard pitch modes have issues and create clicks; we force the consistency
+                if (old_pitch_scale > 0. && ((old_pitch_scale < 1 && new_pitch_scale >= 1.) || (old_pitch_scale >= 1. && new_pitch_scale < 1.))){                     pitch_transit_across_1 = true;
+                }
+                old_pitch_scale = new_pitch_scale;
+                
                 rb.setTimeRatio(new_time_ratio);
                 rb.setPitchScale(new_pitch_scale);
+                
             }
             
             rb.process(ibuf, count, i==(numblocks-1));
@@ -116,6 +158,28 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
                         output_sample_wk[(pivot + i)*channelcount + c] = obf[c][i];
                     }
                 }
+                
+                // rubberband doesn't seem to handle passage from negative to positive transposition smoothly, there's a click in here
+                // if would be nice to smooth it out but this doesn't seem to work. I am no expert in click removal
+                // it would be probably best to fix the rubberband library directly
+/*                if (pitch_transit_across_1 && !(options & RubberBand::RubberBandStretcher::OptionPitchHighConsistency)) {
+                    const int NUM_SAMPLES_TO_SMOOTH_ACROSS = 20;
+                    const int NUM_FILTER_APPLICATIONS = 20;
+                    int HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS = NUM_SAMPLES_TO_SMOOTH_ACROSS / 2;
+                    for (long c = 0; c < channelcount; c++) {
+                        float orig_channel[2 * HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS + 1];
+                        for (int r = 0; r < NUM_FILTER_APPLICATIONS; r++) {
+                            for (long j = MAX(0, pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS);
+                                 j < MIN(pivot + avail, pivot + HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS); j++)
+                                orig_channel[j - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)] = output_sample_wk[j*channelcount + c];
+                            for (long j = MAX(0, pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS) + 1;
+                                 j < MIN(pivot + avail, pivot + HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS) - 1; j++) {
+                                output_sample_wk[j*channelcount + c] = (orig_channel[(j-1) - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)] +
+                                                                        orig_channel[(j) - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)] + orig_channel[(j+1) - (pivot - HALF_NUM_SAMPLES_TO_SMOOTH_ACROSS)])/3.;
+                            }
+                        }
+                    }
+                } */
 
                 for (long c = 0; c < channelcount; c++)
                     delete[] obf[c];
@@ -126,23 +190,42 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
             
         }
         
-        if (source == dest) { // inplace operation!
-            ears_buffer_set_size(ob, source, outframecount);
-        } else {
-            ears_buffer_copy_format(ob, source, dest);
-            ears_buffer_set_size(ob, dest, outframecount);
+        long processed_outframcount = outframecount;
+        
+        if (precise_output_time && ts_is_static) {
+            double static_factor = hatom_getdouble(&timestretch_factor->l_head->l_hatom);
+            outframecount = round(static_factor * framecount);
         }
         
-        float *dest_sample = buffer_locksamples(dest);
+        if (source == dest) { // inplace operation!
+            ears_buffer_set_size_samps(ob, source, outframecount);
+        } else {
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, outframecount);
+        }
+        
+        float *dest_sample = ears_buffer_locksamples(dest);
         
         if (!dest_sample) {
             err = EARS_ERR_CANT_WRITE;
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
-            sysmem_copyptr(output_sample_wk, dest_sample, channelcount * outframecount * sizeof(float));
-            
+            t_atom_long    dest_channelcount = buffer_getchannelcount(dest);
+            t_atom_long    dest_framecount   = buffer_getframecount(dest);
+            long fc = outframecount;
+            if (fc > dest_framecount)
+                fc = dest_framecount;
+            if (fc > processed_outframcount)
+                fc = processed_outframcount;
+
+            sysmem_copyptr(output_sample_wk, dest_sample, channelcount * fc * sizeof(float));
+
+            // zero-out whatever is left
+            for (long f = fc; f < dest_framecount; f++)
+                for (long c = 0; c < dest_channelcount; c++)
+                    dest_sample[f*dest_channelcount + c] = 0;
+
             buffer_setdirty(dest);
-            buffer_unlocksamples(dest);
+            ears_buffer_unlocksamples(dest);
         }
         
         for (size_t i = 0; i < channelcount; ++i)

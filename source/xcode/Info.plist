@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.1.1</string>
 	<key>CFBundleLongVersionString</key>
-	<string>${PRODUCT_NAME} ${PRODUCT_VERSION}, Copyright 2015 Daniele Ghisi</string>
+	<string>${PRODUCT_NAME} ${PRODUCT_VERSION}, Copyright 2015-2022 Daniele Ghisi and Andrea Agostini</string>
 	<key>CFBundlePackageType</key>
 	<string>iLaX</string>
 	<key>CFBundleShortVersionString</key>

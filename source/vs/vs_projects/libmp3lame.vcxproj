@@ -1,0 +1,370 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\bitstream.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\encoder.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\fft.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\gain_analysis.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\id3tag.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\lame.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\mpglib_interface.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\newmdct.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\presets.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\psymodel.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\quantize.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\quantize_pvt.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\reservoir.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\set_get.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\tables.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\takehiro.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\util.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\vbrquantize.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\VbrTag.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\vector\xmm_quantize_sub.c" />
+    <ClCompile Include="..\..\lib\lame-3.100\libmp3lame\version.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\bitstream.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\encoder.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\fft.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\gain_analysis.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\id3tag.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\l3side.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\lame-analysis.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\lameerror.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\lame_global_flags.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\machine.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\newmdct.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\psymodel.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\quantize.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\quantize_pvt.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\reservoir.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\set_get.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\tables.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\util.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\vbrquantize.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\VbrTag.h" />
+    <ClInclude Include="..\..\lib\lame-3.100\libmp3lame\version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\lib\lame-3.100\libmp3lame\depcomp" />
+    <None Include="..\..\lib\lame-3.100\libmp3lame\Makefile.am" />
+    <None Include="..\..\lib\lame-3.100\libmp3lame\Makefile.in" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\lib\lame-3.100\libmp3lame\lame.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\lib\lame-3.100\libmp3lame\logoe.ico" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{98B7219E-D03B-4CFA-8EC7-F321F44D7737}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\ears_extern_common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.51106.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.lib</TargetExt>
+    <OutDir>..\vs_stuff\lib\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>..\vs_stuff\lib_temp\</IntDir>
+    <TargetName>ears_lib</TargetName>
+    <IncludePath>..\..\commons\aa;..\..\commons\dg;..\..\lib\lame-3.100\include;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.lib</TargetExt>
+    <OutDir>..\vs_stuff\lib\$(Configuration)\$(Platform)</OutDir>
+    <IntDir>..\vs_stuff\lib_temp\</IntDir>
+    <TargetName>ears_lib</TargetName>
+    <IncludePath>..\..\commons\aa;..\..\commons\dg;..\..\lib\lame-3.100\include;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.lib</TargetExt>
+    <OutDir>..\vs_stuff\lib\$(Configuration)\$(Platform)</OutDir>
+    <IntDir>..\vs_stuff\lib_temp\</IntDir>
+    <TargetName>ears_lib</TargetName>
+    <IncludePath>..\..\commons\aa;..\..\commons\dg;..\..\lib\lame-3.100\include;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.lib</TargetExt>
+    <OutDir>..\vs_stuff\lib\$(Configuration)\$(Platform)</OutDir>
+    <IntDir>..\vs_stuff\lib_temp\</IntDir>
+    <TargetName>libmp3lame</TargetName>
+    <IncludePath>..\..\commons\aa;..\..\commons\dg;..\..\lib\lame-3.100\libmp3lame;..\..\lib\lame-3.100\include;..\..\..\..\bach\source\commons;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes\x64;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes\x64;..\..\..\..\bach\source\vs\vs_stuff\lib\Release\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;BACH_MAX;HAVE_CONFIG_H;_DEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling />
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;BACH_MAX;HAVE_CONFIG_H;_DEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling />
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe64</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;BACH_MAX;HAVE_CONFIG_H;NDEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\..\max-sdk\source\max-sdk-base\c74support\max-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\msp-includes;..\..\..\..\max-sdk\source\max-sdk-base\c74support\jit-includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN_VERSION;WIN32;BACH_MAX;HAVE_CONFIG_H;NDEBUG;_WINDOWS;_USRDLL;WIN_EXT_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)$(TargetName).asm</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).mxe64</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <MapFileName>$(IntDir)$(ProjectName).map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(IntDir)$(ProjectName).lib</ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -5,8 +5,9 @@
 // This code is public domain
 
 #include "revmodel.hpp"
+#include "stdlib.h"
 
-void revmodel::initstuff()
+void revmodel::initstuff(bool from_scratch)
 {
     // allocating buffers
     combf = (comb ***)malloc(numcombs * sizeof(comb **));
@@ -68,12 +69,16 @@ void revmodel::initstuff()
     }
     
     // Set default values
-    setwet(initialwet);
-    setroomsize(initialroom);
-    setdry(initialdry);
-    setdamp(initialdamp);
-    setwidth(initialwidth);
-    setmode(initialmode);
+    if (from_scratch) {
+        setwet(initialwet);
+        setroomsize(initialroom);
+        setdry(initialdry);
+        setdamp(initialdamp);
+        setwidth(initialwidth);
+        setmode(initialmode);
+    } else {
+        update();
+    }
     
     // Buffer will be full of rubbish - so we MUST mute them
     mute();
@@ -107,7 +112,7 @@ revmodel::revmodel()
 {
     sr = 44100;
     numchannels = 2; // default
-    initstuff();
+    initstuff(true);
 }
 
 revmodel::~revmodel()
@@ -119,9 +124,9 @@ revmodel::~revmodel()
 void revmodel::setnumchannels(long num_channels)
 {
     if (num_channels != numchannels) {
-        numchannels = num_channels;
         freestuff();
-        initstuff();
+        numchannels = num_channels;
+        initstuff(false);
     }
 }
 
@@ -130,7 +135,7 @@ void revmodel::setsr(long new_sr)
     if (new_sr != sr) {
         sr = new_sr;
         freestuff();
-        initstuff();
+        initstuff(false);
     }
 }
 
@@ -157,8 +162,12 @@ void revmodel::processreplace(float *input, float *output, long numsamples)
     float *out = (float *)malloc(numchannels * sizeof(float));
     float inputmix;
 
-    double w1 = (1 - width) * 1 + width * 1./numchannels;
-    double w2 = (numchannels <= 1 ? 0. : (1. - w1)/(numchannels - 1));
+    wet1 = wet*(width/2 + 0.5f);
+    wet2 = wet*((1-width)/2);
+
+    
+    double w1 = wet * ((1 - width) * 1 + width * 1./numchannels);
+    double w2 = numchannels <= 1 ? 0. : (wet - w1)/(numchannels - 1);
     
 	while (numsamples-- > 0)
     {
@@ -197,6 +206,63 @@ void revmodel::processreplace(float *input, float *output, long numsamples)
     
     free(out);
 }
+
+// sample accurate envelope version for wet and dry
+void revmodel::processreplace_envelopes(float *input, float *output, long numsamples, float *thisdry, float *thiswet)
+{
+    float *out = (float *)malloc(numchannels * sizeof(float));
+    float inputmix;
+    
+    while (numsamples-- > 0)
+    {
+        setdry(*thisdry);
+        setwet(*thiswet);
+
+        wet1 = wet*(width/2 + 0.5f);
+        wet2 = wet*((1-width)/2);
+
+        double w1 = wet * ((1 - width) * 1 + width * 1./numchannels);
+        double w2 = numchannels <= 1 ? 0. : (wet - w1)/(numchannels - 1);
+        
+
+        for (int c = 0; c < numchannels; c++)
+            out[c] = 0;
+        
+        inputmix = 0;
+        for (int c = 0; c < numchannels; c++)
+            inputmix += *(input + c);
+        inputmix *= (2./numchannels) * gain; // normalize as if stereo was the default
+        
+        // Accumulate comb filters in parallel
+        for (int i=0; i<numcombs; i++){
+            for (int c=0; c < numchannels; c++)
+                out[c] += combf[i][c]->process(inputmix);
+        }
+        
+        // Feed through allpasses in series
+        for (int i=0; i<numallpasses; i++) {
+            for (int c=0; c < numchannels; c++)
+                out[c] = allpassf[i][c]->process(out[c]);
+        }
+        
+        // Calculate output REPLACING anything already there
+        for (int c=0; c < numchannels; c++) {
+            *(output + c) = *(input + c) * dry;
+            for (int d=0; d < numchannels; d++) {
+                *(output + c) += out[c] * (c==d ? w1 : w2);
+            }
+        }
+        
+        // Increment sample pointers, allowing for interleave (if any)
+        input += numchannels;
+        output += numchannels;
+        thiswet ++;
+        thisdry ++;
+    }
+    
+    free(out);
+}
+
 
 
 void revmodel::update()

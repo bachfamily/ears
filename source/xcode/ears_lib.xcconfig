@@ -14,15 +14,19 @@ PRODUCT_NAME = $(PROJECT_NAME)
 PRODUCT_VERSION = 0.1
 
 // Paths
-C74SUPPORT = $(SRCROOT)/../../../max-sdk-7.3.3/source/c74support
-HEADER_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes"
+MAXSDK = $(SRCROOT)/../../../max-sdk
+C74SUPPORT = $(MAXSDK)/source/max-sdk-base/c74support
+//C74SUPPORT = $(SRCROOT)/../../../max-sdk-8.0.3/source/c74support
+BACHSOURCE = $(SRCROOT)/../../../bach/source
+HEADER_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes" "$(BACHSOURCE)/commons/**" "/usr/local/include" /usr/local/include "$(SRCROOT)/../lib/WavPack/include" "$(SRCROOT)/../lib/WavPack/src" "$(SRCROOT)/../lib/essentia-2.1_beta5-modif/"
 FRAMEWORK_SEARCH_PATHS = "$(C74SUPPORT)/max-includes" "$(C74SUPPORT)/msp-includes" "$(C74SUPPORT)/jit-includes"
+LIBRARY_SEARCH_PATHS = $(BACHSOURCE)/lib
 DSTROOT = $(SRCROOT)/../lib ///Developer/SDKs/MaxSDK-6.1.4/ears/lib
 // (This next path is relative to DSTROOT)
 INSTALL_PATH = /
 
 // Special Files
-GCC_PREFIX_HEADER = $(C74SUPPORT)/max-includes/macho-prefix.pch
+//GCC_PREFIX_HEADER = $(C74SUPPORT)/max-includes/macho-prefix.pch
 INFOPLIST_FILE = $(SRCROOT)/Info.plist
 
 

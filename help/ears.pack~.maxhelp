@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 0,
+			"minor" : 1,
 			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 749.0, 473.0 ],
+		"rect" : [ 216.0, 200.0, 749.0, 473.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,7 @@
 		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontname" : "Arial",
@@ -70,14 +71,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 749.0, 447.0 ],
+						"rect" : [ 216.0, 226.0, 749.0, 447.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -105,7 +106,34 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-12",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 17.0, 377.0, 493.0, 21.0 ],
+									"text" : "In case of mismatch, the output sample rate is decided via the resampling attributes.",
+									"textcolor" : [ 0.501961, 0.501961, 0.501961, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-1",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 247.5, 266.0, 149.0, 23.0 ],
+									"text" : "ears.format~ @sr 96000"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-18",
 									"maxclass" : "newobj",
@@ -241,8 +269,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 17.0, 385.0, 393.0, 36.0 ],
-									"text" : "Click here to learn about the common features of ears modules, including in-place operations and dynamic allocation."
+									"patching_rect" : [ 17.0, 400.0, 465.0, 36.0 ],
+									"text" : "Click here to learn about the common features of ears modules, including resampling attributes, in-place operations and dynamic allocation."
 								}
 
 							}
@@ -376,6 +404,13 @@
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
+									"destination" : [ "obj-13", 0 ],
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-11", 0 ],
 									"source" : [ "obj-13", 0 ]
 								}
@@ -436,7 +471,7 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-13", 0 ],
+									"destination" : [ "obj-1", 0 ],
 									"source" : [ "obj-9", 0 ]
 								}
 
@@ -486,7 +521,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 0,
+							"minor" : 1,
 							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -521,6 +556,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [  ],
 						"lines" : [  ]
 					}
@@ -575,6 +611,10 @@
 			}
 , 			{
 				"name" : "ears.channel~.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ears.format~.mxo",
 				"type" : "iLaX"
 			}
  ],

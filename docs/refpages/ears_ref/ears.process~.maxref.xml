@@ -6,31 +6,32 @@
 <c74object name="ears.process~" module="ears">
 
 	<digest>
-		Process buffers through patches
+		Offline host for patches operating on buffers
 	</digest>
 
 	<description>
-		Processes the incoming buffers through a poly~-like system
+		Loads a DSP patch and runs it in non-realtime
+		reading from and writing to buffers
 	</description>
 
 	<!--METADATA-->
 	<metadatalist>
-		<metadata name="author">Daniele Ghisi</metadata>
-		<metadata name="tag">ears buffer operations</metadata>
+		<metadata name="author">Andrea Agostini, partly based upon work by Alexander J. Harker</metadata>
+		<metadata name="tag">ears process</metadata>
 	</metadatalist>
 
 	<!--INLETS-->
 	<inletlist>
 		<inlet id="0" type="INLET_TYPE">
 			<digest>
-				Incoming buffer names
+				Incoming buffer name
 			</digest>
 			<description>
 			</description>
 		</inlet>
 		<inlet id="1" type="INLET_TYPE">
 			<digest>
-				Pan position, envelope or buffer
+				Incoming data for <o>ears.in</o>.
 			</digest>
 			<description>
 			</description>
@@ -41,7 +42,14 @@
 	<outletlist>
 		<outlet id="0" type="INLET_TYPE">
 			<digest>
-				Output buffer names
+				Output buffer
+			</digest>
+			<description>
+			</description>
+		</outlet>
+		<outlet id="1" type="INLET_TYPE">
+			<digest>
+				Output data from <o>ears.out</o>.
 			</digest>
 			<description>
 			</description>
@@ -50,134 +58,219 @@
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="outnames" optional="1" type="symbol">
+		<objarg name="outnames" optional="1" type="symbol/llll">
 			<digest>
 				Output buffer names
 			</digest>
 			<description>
 				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'.
+				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
-		<objarg name="patchername" optional="0" type="symbol">
+		<objarg name="patcher" optional="1" type="symbol">
 			<digest>
 				Patcher name
 			</digest>
 			<description>
-				Sets the file name or pathof the patcher to be applied
+				Sets the name of the patch to be loaded
 			</description>
 		</objarg>
 	</objarglist>
 
 	<!--MESSAGES-->
 	<methodlist>
-		<method name="(mouse)">
+		<method name="(doubleclick)">
 			<arglist />
 			<digest>
-				double-click to open a display window to view loaded patch contents.
+				Open patcher
 			</digest>
 			<description>
-				Double-clicking opens a display window of the instance that is currently the target.
+				Double-clicking on the object
+				opens the patcher window loaded in the object, if any.
 			</description>
 		</method>
-		<method name="(mouse)">
+		<method name="bang">
 			<arglist />
 			<digest>
-				Open the buffer display window
+				Run process
 			</digest>
 			<description>
-				Double-clicking on the object will open the display window for the output buffer(s).
-				If more than 10 buffers are to be output, only the first 10 are displayed.
+				A <m>bang</m> in any of the buffer inlets causes the object
+				to perform the process with the latest received
+				buffer names and parameters. <br/>
+				A <m>bang</m> in any other inlet is routed
+				to the client patch through its <o>ears.in</o> objects.
 			</description>
 		</method>
-		<method name="list/llll">
+		<method name="float">
 			<arglist />
 			<digest>
-				Process buffers
+				Passed to ears.in
 			</digest>
 			<description>
-				A list or llll with buffer names will trigger the buffer processing and output the processed
-				buffer names (depending on the <m>naming</m> attribute).
+				A float received in one of <o>ears.process~</o>'s inlets
+				is passed to the corresponding <o>ears.in</o> object
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the float will be passed immediately to the receiving patch,
+				or at the beginning of the first buffer iteration.
 			</description>
 		</method>
-		<method name="open">
-			<arg name="instance-index" optional="1" type="int" />
-			<digest>
-				open a patcher instance for viewing.
-			</digest>
-			<description>
-				The word open, followed by a number, opens the specified instance of the patcher (depending on the process mode). You can view the activity of any instance of the patcher up to the number of loaded instances. With no arguments, the open message opens the instance that is current
-			</description>
-		</method>
-		<method name="reset">
+		<method name="int">
 			<arglist />
 			<digest>
-				Restart naming cycle
+				Passed to ears.in
 			</digest>
 			<description>
-				If the <m>naming</m> attribute is set to 'Dynamic',
-				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
-				used name. This is especially useful in combination with iterative mechanisms.
+				An integer received in one of <o>ears.process~</o>'s inlets
+				is passed to the corresponding <o>ears.in</o> object
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the integer will be passed immediately to the receiving patch,
+				or at the beginning of the first buffer iteration.
+			</description>
+		</method>
+		<method name="list">
+			<arglist />
+			<digest>
+				Passed to ears.in
+			</digest>
+			<description>
+				A list received in one of <o>ears.process~</o>'s inlets
+				is passed to the corresponding <o>ears.in</o> object
+				in the loaded patch.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the list will be passed immediately to the receiving patch,
+				or iterated along with the incoming buffers.
+			</description>
+		</method>
+		<method name="patchername">
+			<arglist />
+			<digest>
+				Load patch
+			</digest>
+			<description>
+				The <m>patchername</m> message in any of the buffer inlets causes the object
+				to stop immediately the process it is performing;
+				in any other inlet, it is routed
+				to the client patch through its <o>ears.in</o> objects.
+			</description>
+		</method>
+		<method name="stop">
+			<arglist />
+			<digest>
+				Stop process
+			</digest>
+			<description>
+				The <m>stop</m> message in any of the buffer inlets causes the object
+				to stop immediately the process it is performing;
+				in any other inlet, it is routed
+				to the client patch through its <o>ears.in</o> objects.
+			</description>
+		</method>
+		<method name="symbol/llll">
+			<arglist />
+			<digest>
+				Function depends on inlet
+			</digest>
+			<description>
+				If an llll with buffer names is passed to one of the buffer inlets,
+				The contents of the corresponding buffers will be passed
+				to the loaded patcher through the patcher's
+				<o>ears.in~</o> and <o>ears.mc.in~</o> objects,
+				for being processed by the DSP chain of the patcher itself.
+				The names of the buffers containing the processed audio,
+				as output by the patcher's <o>ears.out~</o> and <o>ears.mc.out~</o> objects,
+				will be subsequently output.<br/>
+				Lllls received in non-buffer inlets will be passed to the loaded patcher
+				through its <o>ears.in</o> objects.<br/>
+				If the llll is received in the first inlet, the processing will be triggered.<br/>
+				A single symbol, or any message starting with a symbol, will be treated as an llll anyway.<br/>
+				According to whether each instance of <o>ears.in</o> is in direct mode or not,
+				the llll will be passed immediately to the receiving patch,
+				or iterated along with the incoming buffers.
 			</description>
 		</method>
 		<method name="wclose">
-			<arg name="instance-index" optional="1" type="int" />
-			<digest>
-				close a numbered patcher instance's window.
-			</digest>
-			<description>
-				Closes the instance window.
-			</description>
-		</method>
-		<method name="writeaiff">
 			<arglist />
 			<digest>
-				Save output as FLAC file
+				Closes patcher
 			</digest>
 			<description>
-				See equivalent <o>buffer~</o> method.
+				The <m>wclose</m> message
+				closes the patcher window loaded in the object, if any.
 			</description>
 		</method>
-		<method name="writeaiff">
+		<method name="wopen">
 			<arglist />
 			<digest>
-				Save output as audio file
+				Open patcher
 			</digest>
 			<description>
-				See equivalent <o>buffer~</o> method.
-			</description>
-		</method>
-		<method name="writeaiff">
-			<arglist />
-			<digest>
-				Save output as raw file with no header
-			</digest>
-			<description>
-				See equivalent <o>buffer~</o> method.
-			</description>
-		</method>
-		<method name="writeaiff">
-			<arglist />
-			<digest>
-				Save output as AIFF file
-			</digest>
-			<description>
-				See equivalent <o>buffer~</o> method.
-			</description>
-		</method>
-		<method name="writeaiff">
-			<arglist />
-			<digest>
-				Save output as WAV file
-			</digest>
-			<description>
-				See equivalent <o>buffer~</o> method.
+				The <m>wopen</m> message
+				opens the patcher window loaded in the object, if any.
 			</description>
 		</method>
 	</methodlist>
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="autoclock" get="1" set="1" type="int" size="1">
+			<digest>
+				Automatic Clock Message
+			</digest>
+			<description>
+				The <o>ears.process~</o> objects manages an internal <o>clock</o>
+				to control scheduler-based objects such as
+				<o>metro</o> and <o>delay</o>, the playback capabilities
+				of <o>bach.roll</o> and <o>bach.score</o>, and more.
+				In this way, their timing will be correct with respect to
+				the non-realtime operation of the loaded patch,
+				rather than the physical time of the outside world.
+				The internal clock is synced to the non-realtime signal vector,
+				as with "Scheduler in Overdrive" and "Scheduler in Audio Interrupt" both on.<br/>
+				If the <o>autoclock</o> attribute is set to 1 (as per the default),
+				all the objects that declare a <o>clock</o> message or attribute, including the ones mentioned above,
+				will automatically have their clock set by <o>ears.process~</o> before each run of the patch.<br/>
+				If <o>autoclock</o> is set to 0, the <o>clock</o> method is not called
+				and it is the user's responsibility to pass the clock, whose name can be obtained from <o>ears.processinfo~</o>, to the relevant objects.<br/>
+				Notice that there might scheduler-based objects not accepting the clock method (such as <o>mtr</o>, <o>thresh</o> and <o>quickthresh</o> as of Max 8.1.1).
+				There is currently no way to use such objects with correct timing inside <o>ears.process~</o>.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatic Clock Message" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="duration" get="1" set="1" type="int" size="1">
+			<digest>
+				Duration Policy
+			</digest>
+			<description>
+				The <m>duration</m> attribute controls how the duration of the incoming buffers
+				affects the duration of the resulting ones.<br/>
+				If the duration policy is set to <m>0</m> (<b>shortest</b>), as per the default,
+				the duration of the processed (and therefore resulting) audio
+				is the duration of the shortest incoming buffer
+				plus the tail. If a list of buffers is passed, to be processed in sequence,
+				the processing duration refers to the shortest buffer in each iteration.<br/>
+				If the duration policy is set to <m>1</m> (<b>longest</b>),
+				the duration of the processed audio
+				is the duration of the longest incoming buffer plus the tail.<br/>
+				If the duration policy is set to <m>2</m> (<b>fixed</b>),
+				the duration of the processed audio is set to the value of the tail,
+				regardless of the duration of the incoming buffers.<br/>
+				If the loaded patcher has a single buffer inlet,
+				the <m>shortest</m> and <m>longest</m> policies are equivalent. If it has no buffer inlets, all three are equivalent
+				and the duration will anyway correspond to the value of the <m>tail</m> attribute.<br/>
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Duration Policy" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
 		<attribute name="naming" get="1" set="1" type="int" size="1">
 			<digest>
 				Output Naming Policy
@@ -185,11 +278,13 @@
 			<description>
 				Chooses the output buffer naming policy: <br />
 				0 (Copy): the buffer name is copied from the input (in-place modification).
-				This is only available for very few objects. <br />
+				Notice that some objects do not allow this policy. <br />
 				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
 				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
 				Beware! This may allocate a lot of memory!
 				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
+				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
+				<b>-</b> for static and <b>!</b> for dynamic.
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
@@ -211,29 +306,143 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="ownsdspchain" get="1" set="1" type="" size="1">
+			<digest>
+				
+			</digest>
+			<description>
+			</description>
+			<attributelist>
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="reload" get="1" set="1" type="int" size="1">
+			<digest>
+				Reload
+			</digest>
+			<description>
+				When set to 1, the patch is reloaded before each run.
+				In this case, initialisation data received through <o>ears.in</o> objects
+				have to be sent again after each reloading,
+				and the time required by the project might increase considerably,
+				especially for complex patches.
+				On the other hand, this guarantees that the patch
+				is always "clean" before running.<br/>
+				When set to 0 (as per the default), the patch is only loaded
+				when <o>ears.process</o> is instantiated
+				or when the <m>patchername</m> message is received.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Reload" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="scalarmode" get="1" set="1" type="int" size="1">
+			<digest>
+				Scalar Mode
+			</digest>
+			<description>
+				When set to 1, if a buffer inlet receives a single buffer
+				while other inlets receive lists of buffers,
+				then the single buffer will be iterated repeatedly against the list of buffers, until the end of the shortest list.<br/>
+				When set to 0 (as per the default), if a buffer inlet receives a single buffer
+				no iterator will be performed, and only the first buffer of each inlet will be processed.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Scalar Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="sr" get="1" set="1" type="float" size="1">
+			<digest>
+				Default Sample Rate
+			</digest>
+			<description>
+				The default sample rate of the loaded patcher,
+				only used for generator patches
+				(i.e., patches with no buffer inlets):
+				if a patcher has buffer inlets, the sample rate of each run of the patcher
+				corresponds to the sample rate of the incoming buffers.<br/>
+				The default is 0, meaning that generator patches will run at the system sample rate.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Default Sample Rate" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="tail" get="1" set="1" type="float" size="1">
+			<digest>
+				Tail Duration
+			</digest>
+			<description>
+				The <m>tail</m> attribute adds a duration (always measured in milliseconds)
+				to the processing duration as established by the <m>duration</m> attribute.
+				It defaults to 0.
+				If the loaded patch has no buffer inlets and the tail is not set to a value higher than 0 ms,
+				no processing will take place.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Tail Duration" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="vs" get="1" set="1" type="int" size="1">
+			<digest>
+				Vector Size
+			</digest>
+			<description>
+				The signal vector size of the loaded patcher, expressed in samples.
+				It must be a power of 2 between 1 and 4096.
+				The default is 128.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Vector Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 	</attributelist>
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ears.in" />
+		<seealso name="ears.in~" />
+		<seealso name="ears.mc.in~" />
+		<seealso name="ears.out" />
+		<seealso name="ears.out~" />
+		<seealso name="ears.mc.out~" />
+		<seealso name="ears.processinfo~" />
+		<seealso name="ears.tovector~" />
+		<seealso name="ears.fromvector~" />
 	</seealsolist>
 
 	<misc name = "Input">
-		<entry name ="Inlet 1 (symbol/list/llll)">
+		<entry name ="Inlets 1, 2, 3... (symbol/list/llll)">
 			<description>
-				Incoming buffer names.
+				Incoming buffer name.
 			</description>
 		</entry>
-		<entry name ="Inlet 2 (number)">
+		<entry name ="Inlets 2, 3, 4... (llll)">
 			<description>
-				Pan position, envelope or buffer.
+				Incoming data for <o>ears.in</o>..
 			</description>
 		</entry>
 	</misc>
 
 	<misc name = "Output">
-		<entry name ="Outlet 1 (symbol/list)">
+		<entry name ="Outlets 1, 2, 3... (symbol/llll)">
 			<description>
-				Output buffer names.
+				Output buffer.
+			</description>
+		</entry>
+		<entry name ="Outlets 2, 3, 4... (llll)">
+			<description>
+				Output data from <o>ears.out</o>..
 			</description>
 		</entry>
 	</misc>
