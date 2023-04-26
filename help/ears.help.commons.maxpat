@@ -3983,7 +3983,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 228.0, 135.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -7652,7 +7652,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 228.0, 135.0, 960.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -7947,7 +7947,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 116.5, 590.0, 36.0 ],
-									"text" : "Almost all ears objects work on buffers.\nIn practices, this means that you introduce the buffer names in order to perform operation upon them."
+									"text" : "Almost all ears objects work on buffers.\nIn practice, this means that you introduce the buffer names in order to perform operations upon them."
 								}
 
 							}
