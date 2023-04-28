@@ -553,9 +553,7 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                         ears_buffer_convert_sr((t_object *)e_ob, buf, sr_os, e_ob->l_resamplingfilterwidth);
 
                     if (ps_env) {
-                        llll_print(ps_env);
                         t_llll *ps_env_adapted = earsbufobj_pitch_llll_to_cents_and_samples(e_ob, ps_env, buf);
-                        llll_print(ps_env_adapted);
                         t_llll *ts_env = llll_from_text_buf("1.");
                         ears_buffer_rubberband((t_object *)e_ob, buf, buf, ts_env, ps_env_adapted, buf_rubberband_get_default_options(), 1024,
                                                /*buf_rubberband_get_options(x), , earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_blocksize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS), */
