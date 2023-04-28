@@ -388,6 +388,9 @@
 		1E5D94A71D39B0A800BFB88E /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1E5D94B61D39B2D800BFB88E /* ears.utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E5D94B41D39B2D800BFB88E /* ears.utils.c */; };
 		1E5D94B71D39B2D800BFB88E /* ears.utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E5D94B51D39B2D800BFB88E /* ears.utils.h */; };
+		1E5DCC1629FC79C000B8FD99 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E794F8A22F1A2EE009FA0CC /* Accelerate.framework */; };
+		1E5DCC1729FC79C400B8FD99 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E794F8A22F1A2EE009FA0CC /* Accelerate.framework */; };
+		1E5DCC1829FC79C900B8FD99 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E794F8A22F1A2EE009FA0CC /* Accelerate.framework */; };
 		1E5E18FF275E58DA00C3E0C3 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E5E1903275E58DA00C3E0C3 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E5E1904275E58DA00C3E0C3 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
@@ -651,8 +654,6 @@
 		1ECBF9D71FE1F83D00F71382 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1ECBF9D81FE1F83D00F71382 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1ECE21D9262A2C4F00C1AFDD /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 1ECE21D8262A2C4F00C1AFDD /* AudioFile.h */; };
-		1ECE416225D5AA920003CFA2 /* neon_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D763251CA91B0049B6A5 /* neon_mathfun.h */; };
-		1ECE416325D5AA920003CFA2 /* sse_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D764251CA91B0049B6A5 /* sse_mathfun.h */; };
 		1ECE416525D5AE8E0003CFA2 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
 		1ECE416625D5AE940003CFA2 /* ears.scores.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E459B951FE4417E003A487D /* ears.scores.c */; };
 		1ECE7A421FF67D7F005236BE /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
@@ -706,6 +707,174 @@
 		1EDF170125273A9A00047C71 /* ears.hoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E5F7D2D24FC266F00042C4B /* ears.hoa.c */; };
 		1EDF170325273A9A00047C71 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1EDF170425273A9A00047C71 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
+		1EE5CC1129FC761B0046A51F /* Profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D75D251CA91B0049B6A5 /* Profiler.cpp */; };
+		1EE5CC1229FC761B0046A51F /* float_cast.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D721251CA91B0049B6A5 /* float_cast.h */; };
+		1EE5CC1329FC761B0046A51F /* Resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D759251CA91B0049B6A5 /* Resampler.h */; };
+		1EE5CC1429FC761B0046A51F /* StretcherProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D739251CA91B0049B6A5 /* StretcherProcess.cpp */; };
+		1EE5CC1529FC761B0046A51F /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D749251CA91B0049B6A5 /* Thread.h */; };
+		1EE5CC1629FC761B0046A51F /* RubberBandStretcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D719251CA9150049B6A5 /* RubberBandStretcher.h */; };
+		1EE5CC1729FC761B0046A51F /* CompoundAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D733251CA91B0049B6A5 /* CompoundAudioCurve.cpp */; };
+		1EE5CC1829FC761B0046A51F /* VectorOpsComplex.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D747251CA91B0049B6A5 /* VectorOpsComplex.h */; };
+		1EE5CC1929FC761B0046A51F /* RingBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D760251CA91B0049B6A5 /* RingBuffer.h */; };
+		1EE5CC1A29FC761B0046A51F /* MovingMedian.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D753251CA91B0049B6A5 /* MovingMedian.h */; };
+		1EE5CC1B29FC761B0046A51F /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73E251CA91B0049B6A5 /* kiss_fftr.c */; };
+		1EE5CC1C29FC761B0046A51F /* resample.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D737251CA91B0049B6A5 /* resample.c */; };
+		1EE5CC1D29FC761B0046A51F /* SilentAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D730251CA91B0049B6A5 /* SilentAudioCurve.cpp */; };
+		1EE5CC1E29FC761B0046A51F /* speex_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D736251CA91B0049B6A5 /* speex_resampler.h */; };
+		1EE5CC1F29FC761B0046A51F /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D745251CA91B0049B6A5 /* Thread.cpp */; };
+		1EE5CC2029FC761B0046A51F /* kiss_fft.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D740251CA91B0049B6A5 /* kiss_fft.h */; };
+		1EE5CC2129FC761B0046A51F /* SpectralDifferenceAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D731251CA91B0049B6A5 /* SpectralDifferenceAudioCurve.cpp */; };
+		1EE5CC2229FC761B0046A51F /* PercussiveAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D72D251CA91B0049B6A5 /* PercussiveAudioCurve.cpp */; };
+		1EE5CC2329FC761B0046A51F /* kiss_fftr.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D742251CA91B0049B6A5 /* kiss_fftr.h */; };
+		1EE5CC2429FC761B0046A51F /* FFT.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D752251CA91B0049B6A5 /* FFT.h */; };
+		1EE5CC2529FC761B0046A51F /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D754251CA91B0049B6A5 /* FFT.cpp */; };
+		1EE5CC2629FC761B0046A51F /* StretcherChannelData.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D761251CA91B0049B6A5 /* StretcherChannelData.h */; };
+		1EE5CC2729FC761B0046A51F /* Resampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D75B251CA91B0049B6A5 /* Resampler.cpp */; };
+		1EE5CC2829FC761B0046A51F /* StretcherImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D73B251CA91B0049B6A5 /* StretcherImpl.h */; };
+		1EE5CC2929FC761B0046A51F /* _kiss_fft_guts.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D73F251CA91B0049B6A5 /* _kiss_fft_guts.h */; };
+		1EE5CC2A29FC761B0046A51F /* StretcherImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D71F251CA91B0049B6A5 /* StretcherImpl.cpp */; };
+		1EE5CC2B29FC761B0046A51F /* ConstantAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D729251CA91B0049B6A5 /* ConstantAudioCurve.cpp */; };
+		1EE5CC2C29FC761B0046A51F /* Scavenger.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75E251CA91B0049B6A5 /* Scavenger.h */; };
+		1EE5CC2D29FC761B0046A51F /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73D251CA91B0049B6A5 /* kiss_fft.c */; };
+		1EE5CC2E29FC761B0046A51F /* ConstantAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D734251CA91B0049B6A5 /* ConstantAudioCurve.h */; };
+		1EE5CC2F29FC761B0046A51F /* sysutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D748251CA91B0049B6A5 /* sysutils.h */; };
+		1EE5CC3029FC761B0046A51F /* Allocators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D746251CA91B0049B6A5 /* Allocators.cpp */; };
+		1EE5CC3129FC761B0046A51F /* sse_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D764251CA91B0049B6A5 /* sse_mathfun.h */; };
+		1EE5CC3229FC761B0046A51F /* Allocators.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D74A251CA91B0049B6A5 /* Allocators.h */; };
+		1EE5CC3329FC761B0046A51F /* PercussiveAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72E251CA91B0049B6A5 /* PercussiveAudioCurve.h */; };
+		1EE5CC3429FC761B0046A51F /* CompoundAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72F251CA91B0049B6A5 /* CompoundAudioCurve.h */; };
+		1EE5CC3529FC761B0046A51F /* VectorOpsComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74B251CA91B0049B6A5 /* VectorOpsComplex.cpp */; };
+		1EE5CC3629FC761B0046A51F /* SpectralDifferenceAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D732251CA91B0049B6A5 /* SpectralDifferenceAudioCurve.h */; };
+		1EE5CC3729FC761B0046A51F /* StretcherChannelData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D71E251CA91B0049B6A5 /* StretcherChannelData.cpp */; };
+		1EE5CC3829FC761B0046A51F /* rubberband-c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D743251CA91B0049B6A5 /* rubberband-c.cpp */; };
+		1EE5CC3929FC761B0046A51F /* RubberBandStretcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73A251CA91B0049B6A5 /* RubberBandStretcher.cpp */; };
+		1EE5CC3A29FC761B0046A51F /* AudioCurveCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75A251CA91B0049B6A5 /* AudioCurveCalculator.h */; };
+		1EE5CC3B29FC761B0046A51F /* AudioCurveCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D758251CA91B0049B6A5 /* AudioCurveCalculator.cpp */; };
+		1EE5CC3C29FC761B0046A51F /* rubberband-c.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D71A251CA9150049B6A5 /* rubberband-c.h */; };
+		1EE5CC3D29FC761B0046A51F /* SincWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D757251CA91B0049B6A5 /* SincWindow.h */; };
+		1EE5CC3E29FC761B0046A51F /* SampleFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D756251CA91B0049B6A5 /* SampleFilter.h */; };
+		1EE5CC3F29FC761B0046A51F /* Profiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75F251CA91B0049B6A5 /* Profiler.h */; };
+		1EE5CC4029FC761B0046A51F /* neon_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D763251CA91B0049B6A5 /* neon_mathfun.h */; };
+		1EE5CC4129FC761B0046A51F /* HighFrequencyAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72A251CA91B0049B6A5 /* HighFrequencyAudioCurve.h */; };
+		1EE5CC4229FC761B0046A51F /* StretchCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D722251CA91B0049B6A5 /* StretchCalculator.h */; };
+		1EE5CC4329FC761B0046A51F /* HighFrequencyAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D72B251CA91B0049B6A5 /* HighFrequencyAudioCurve.cpp */; };
+		1EE5CC4429FC761B0046A51F /* StretchCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74E251CA91B0049B6A5 /* StretchCalculator.cpp */; };
+		1EE5CC4529FC761B0046A51F /* VectorOps.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D74C251CA91B0049B6A5 /* VectorOps.h */; };
+		1EE5CC4629FC761B0046A51F /* Window.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D755251CA91B0049B6A5 /* Window.h */; };
+		1EE5CC4729FC761B0046A51F /* sysutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74D251CA91B0049B6A5 /* sysutils.cpp */; };
+		1EE5CC4829FC761B0046A51F /* SilentAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72C251CA91B0049B6A5 /* SilentAudioCurve.h */; };
+		1EE5CC4929FC761B0046A51F /* Profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D75D251CA91B0049B6A5 /* Profiler.cpp */; };
+		1EE5CC4A29FC761B0046A51F /* float_cast.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D721251CA91B0049B6A5 /* float_cast.h */; };
+		1EE5CC4B29FC761B0046A51F /* Resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D759251CA91B0049B6A5 /* Resampler.h */; };
+		1EE5CC4C29FC761B0046A51F /* StretcherProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D739251CA91B0049B6A5 /* StretcherProcess.cpp */; };
+		1EE5CC4D29FC761B0046A51F /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D749251CA91B0049B6A5 /* Thread.h */; };
+		1EE5CC4E29FC761B0046A51F /* RubberBandStretcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D719251CA9150049B6A5 /* RubberBandStretcher.h */; };
+		1EE5CC4F29FC761B0046A51F /* CompoundAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D733251CA91B0049B6A5 /* CompoundAudioCurve.cpp */; };
+		1EE5CC5029FC761B0046A51F /* VectorOpsComplex.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D747251CA91B0049B6A5 /* VectorOpsComplex.h */; };
+		1EE5CC5129FC761B0046A51F /* RingBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D760251CA91B0049B6A5 /* RingBuffer.h */; };
+		1EE5CC5229FC761B0046A51F /* MovingMedian.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D753251CA91B0049B6A5 /* MovingMedian.h */; };
+		1EE5CC5329FC761B0046A51F /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73E251CA91B0049B6A5 /* kiss_fftr.c */; };
+		1EE5CC5429FC761B0046A51F /* resample.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D737251CA91B0049B6A5 /* resample.c */; };
+		1EE5CC5529FC761B0046A51F /* SilentAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D730251CA91B0049B6A5 /* SilentAudioCurve.cpp */; };
+		1EE5CC5629FC761B0046A51F /* speex_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D736251CA91B0049B6A5 /* speex_resampler.h */; };
+		1EE5CC5729FC761B0046A51F /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D745251CA91B0049B6A5 /* Thread.cpp */; };
+		1EE5CC5829FC761B0046A51F /* kiss_fft.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D740251CA91B0049B6A5 /* kiss_fft.h */; };
+		1EE5CC5929FC761B0046A51F /* SpectralDifferenceAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D731251CA91B0049B6A5 /* SpectralDifferenceAudioCurve.cpp */; };
+		1EE5CC5A29FC761B0046A51F /* PercussiveAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D72D251CA91B0049B6A5 /* PercussiveAudioCurve.cpp */; };
+		1EE5CC5B29FC761B0046A51F /* kiss_fftr.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D742251CA91B0049B6A5 /* kiss_fftr.h */; };
+		1EE5CC5C29FC761B0046A51F /* FFT.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D752251CA91B0049B6A5 /* FFT.h */; };
+		1EE5CC5D29FC761B0046A51F /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D754251CA91B0049B6A5 /* FFT.cpp */; };
+		1EE5CC5E29FC761B0046A51F /* StretcherChannelData.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D761251CA91B0049B6A5 /* StretcherChannelData.h */; };
+		1EE5CC5F29FC761B0046A51F /* Resampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D75B251CA91B0049B6A5 /* Resampler.cpp */; };
+		1EE5CC6029FC761B0046A51F /* StretcherImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D73B251CA91B0049B6A5 /* StretcherImpl.h */; };
+		1EE5CC6129FC761C0046A51F /* _kiss_fft_guts.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D73F251CA91B0049B6A5 /* _kiss_fft_guts.h */; };
+		1EE5CC6229FC761C0046A51F /* StretcherImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D71F251CA91B0049B6A5 /* StretcherImpl.cpp */; };
+		1EE5CC6329FC761C0046A51F /* ConstantAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D729251CA91B0049B6A5 /* ConstantAudioCurve.cpp */; };
+		1EE5CC6429FC761C0046A51F /* Scavenger.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75E251CA91B0049B6A5 /* Scavenger.h */; };
+		1EE5CC6529FC761C0046A51F /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73D251CA91B0049B6A5 /* kiss_fft.c */; };
+		1EE5CC6629FC761C0046A51F /* ConstantAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D734251CA91B0049B6A5 /* ConstantAudioCurve.h */; };
+		1EE5CC6729FC761C0046A51F /* sysutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D748251CA91B0049B6A5 /* sysutils.h */; };
+		1EE5CC6829FC761C0046A51F /* Allocators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D746251CA91B0049B6A5 /* Allocators.cpp */; };
+		1EE5CC6929FC761C0046A51F /* sse_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D764251CA91B0049B6A5 /* sse_mathfun.h */; };
+		1EE5CC6A29FC761C0046A51F /* Allocators.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D74A251CA91B0049B6A5 /* Allocators.h */; };
+		1EE5CC6B29FC761C0046A51F /* PercussiveAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72E251CA91B0049B6A5 /* PercussiveAudioCurve.h */; };
+		1EE5CC6C29FC761C0046A51F /* CompoundAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72F251CA91B0049B6A5 /* CompoundAudioCurve.h */; };
+		1EE5CC6D29FC761C0046A51F /* VectorOpsComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74B251CA91B0049B6A5 /* VectorOpsComplex.cpp */; };
+		1EE5CC6E29FC761C0046A51F /* SpectralDifferenceAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D732251CA91B0049B6A5 /* SpectralDifferenceAudioCurve.h */; };
+		1EE5CC6F29FC761C0046A51F /* StretcherChannelData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D71E251CA91B0049B6A5 /* StretcherChannelData.cpp */; };
+		1EE5CC7029FC761C0046A51F /* rubberband-c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D743251CA91B0049B6A5 /* rubberband-c.cpp */; };
+		1EE5CC7129FC761C0046A51F /* RubberBandStretcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73A251CA91B0049B6A5 /* RubberBandStretcher.cpp */; };
+		1EE5CC7229FC761C0046A51F /* AudioCurveCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75A251CA91B0049B6A5 /* AudioCurveCalculator.h */; };
+		1EE5CC7329FC761C0046A51F /* AudioCurveCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D758251CA91B0049B6A5 /* AudioCurveCalculator.cpp */; };
+		1EE5CC7429FC761C0046A51F /* rubberband-c.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D71A251CA9150049B6A5 /* rubberband-c.h */; };
+		1EE5CC7529FC761C0046A51F /* SincWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D757251CA91B0049B6A5 /* SincWindow.h */; };
+		1EE5CC7629FC761C0046A51F /* SampleFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D756251CA91B0049B6A5 /* SampleFilter.h */; };
+		1EE5CC7729FC761C0046A51F /* Profiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75F251CA91B0049B6A5 /* Profiler.h */; };
+		1EE5CC7829FC761C0046A51F /* neon_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D763251CA91B0049B6A5 /* neon_mathfun.h */; };
+		1EE5CC7929FC761C0046A51F /* HighFrequencyAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72A251CA91B0049B6A5 /* HighFrequencyAudioCurve.h */; };
+		1EE5CC7A29FC761C0046A51F /* StretchCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D722251CA91B0049B6A5 /* StretchCalculator.h */; };
+		1EE5CC7B29FC761C0046A51F /* HighFrequencyAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D72B251CA91B0049B6A5 /* HighFrequencyAudioCurve.cpp */; };
+		1EE5CC7C29FC761C0046A51F /* StretchCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74E251CA91B0049B6A5 /* StretchCalculator.cpp */; };
+		1EE5CC7D29FC761C0046A51F /* VectorOps.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D74C251CA91B0049B6A5 /* VectorOps.h */; };
+		1EE5CC7E29FC761C0046A51F /* Window.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D755251CA91B0049B6A5 /* Window.h */; };
+		1EE5CC7F29FC761C0046A51F /* sysutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74D251CA91B0049B6A5 /* sysutils.cpp */; };
+		1EE5CC8029FC761C0046A51F /* SilentAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72C251CA91B0049B6A5 /* SilentAudioCurve.h */; };
+		1EE5CC8129FC761C0046A51F /* Profiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D75D251CA91B0049B6A5 /* Profiler.cpp */; };
+		1EE5CC8229FC761C0046A51F /* float_cast.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D721251CA91B0049B6A5 /* float_cast.h */; };
+		1EE5CC8329FC761C0046A51F /* Resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D759251CA91B0049B6A5 /* Resampler.h */; };
+		1EE5CC8429FC761C0046A51F /* StretcherProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D739251CA91B0049B6A5 /* StretcherProcess.cpp */; };
+		1EE5CC8529FC761C0046A51F /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D749251CA91B0049B6A5 /* Thread.h */; };
+		1EE5CC8629FC761C0046A51F /* RubberBandStretcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D719251CA9150049B6A5 /* RubberBandStretcher.h */; };
+		1EE5CC8729FC761C0046A51F /* CompoundAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D733251CA91B0049B6A5 /* CompoundAudioCurve.cpp */; };
+		1EE5CC8829FC761C0046A51F /* VectorOpsComplex.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D747251CA91B0049B6A5 /* VectorOpsComplex.h */; };
+		1EE5CC8929FC761C0046A51F /* RingBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D760251CA91B0049B6A5 /* RingBuffer.h */; };
+		1EE5CC8A29FC761C0046A51F /* MovingMedian.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D753251CA91B0049B6A5 /* MovingMedian.h */; };
+		1EE5CC8B29FC761C0046A51F /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73E251CA91B0049B6A5 /* kiss_fftr.c */; };
+		1EE5CC8C29FC761C0046A51F /* resample.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D737251CA91B0049B6A5 /* resample.c */; };
+		1EE5CC8D29FC761C0046A51F /* SilentAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D730251CA91B0049B6A5 /* SilentAudioCurve.cpp */; };
+		1EE5CC8E29FC761C0046A51F /* speex_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D736251CA91B0049B6A5 /* speex_resampler.h */; };
+		1EE5CC8F29FC761C0046A51F /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D745251CA91B0049B6A5 /* Thread.cpp */; };
+		1EE5CC9029FC761C0046A51F /* kiss_fft.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D740251CA91B0049B6A5 /* kiss_fft.h */; };
+		1EE5CC9129FC761C0046A51F /* SpectralDifferenceAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D731251CA91B0049B6A5 /* SpectralDifferenceAudioCurve.cpp */; };
+		1EE5CC9229FC761C0046A51F /* PercussiveAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D72D251CA91B0049B6A5 /* PercussiveAudioCurve.cpp */; };
+		1EE5CC9329FC761C0046A51F /* kiss_fftr.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D742251CA91B0049B6A5 /* kiss_fftr.h */; };
+		1EE5CC9429FC761C0046A51F /* FFT.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D752251CA91B0049B6A5 /* FFT.h */; };
+		1EE5CC9529FC761C0046A51F /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D754251CA91B0049B6A5 /* FFT.cpp */; };
+		1EE5CC9629FC761C0046A51F /* StretcherChannelData.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D761251CA91B0049B6A5 /* StretcherChannelData.h */; };
+		1EE5CC9729FC761C0046A51F /* Resampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D75B251CA91B0049B6A5 /* Resampler.cpp */; };
+		1EE5CC9829FC761C0046A51F /* StretcherImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D73B251CA91B0049B6A5 /* StretcherImpl.h */; };
+		1EE5CC9929FC761C0046A51F /* _kiss_fft_guts.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D73F251CA91B0049B6A5 /* _kiss_fft_guts.h */; };
+		1EE5CC9A29FC761C0046A51F /* StretcherImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D71F251CA91B0049B6A5 /* StretcherImpl.cpp */; };
+		1EE5CC9B29FC761C0046A51F /* ConstantAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D729251CA91B0049B6A5 /* ConstantAudioCurve.cpp */; };
+		1EE5CC9C29FC761C0046A51F /* Scavenger.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75E251CA91B0049B6A5 /* Scavenger.h */; };
+		1EE5CC9D29FC761C0046A51F /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73D251CA91B0049B6A5 /* kiss_fft.c */; };
+		1EE5CC9E29FC761C0046A51F /* ConstantAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D734251CA91B0049B6A5 /* ConstantAudioCurve.h */; };
+		1EE5CC9F29FC761C0046A51F /* sysutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D748251CA91B0049B6A5 /* sysutils.h */; };
+		1EE5CCA029FC761C0046A51F /* Allocators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D746251CA91B0049B6A5 /* Allocators.cpp */; };
+		1EE5CCA129FC761C0046A51F /* sse_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D764251CA91B0049B6A5 /* sse_mathfun.h */; };
+		1EE5CCA229FC761C0046A51F /* Allocators.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D74A251CA91B0049B6A5 /* Allocators.h */; };
+		1EE5CCA329FC761C0046A51F /* PercussiveAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72E251CA91B0049B6A5 /* PercussiveAudioCurve.h */; };
+		1EE5CCA429FC761C0046A51F /* CompoundAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72F251CA91B0049B6A5 /* CompoundAudioCurve.h */; };
+		1EE5CCA529FC761C0046A51F /* VectorOpsComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74B251CA91B0049B6A5 /* VectorOpsComplex.cpp */; };
+		1EE5CCA629FC761C0046A51F /* SpectralDifferenceAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D732251CA91B0049B6A5 /* SpectralDifferenceAudioCurve.h */; };
+		1EE5CCA729FC761C0046A51F /* StretcherChannelData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D71E251CA91B0049B6A5 /* StretcherChannelData.cpp */; };
+		1EE5CCA829FC761C0046A51F /* rubberband-c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D743251CA91B0049B6A5 /* rubberband-c.cpp */; };
+		1EE5CCA929FC761C0046A51F /* RubberBandStretcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D73A251CA91B0049B6A5 /* RubberBandStretcher.cpp */; };
+		1EE5CCAA29FC761C0046A51F /* AudioCurveCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75A251CA91B0049B6A5 /* AudioCurveCalculator.h */; };
+		1EE5CCAB29FC761C0046A51F /* AudioCurveCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D758251CA91B0049B6A5 /* AudioCurveCalculator.cpp */; };
+		1EE5CCAC29FC761C0046A51F /* rubberband-c.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D71A251CA9150049B6A5 /* rubberband-c.h */; };
+		1EE5CCAD29FC761C0046A51F /* SincWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D757251CA91B0049B6A5 /* SincWindow.h */; };
+		1EE5CCAE29FC761C0046A51F /* SampleFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D756251CA91B0049B6A5 /* SampleFilter.h */; };
+		1EE5CCAF29FC761C0046A51F /* Profiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D75F251CA91B0049B6A5 /* Profiler.h */; };
+		1EE5CCB029FC761C0046A51F /* neon_mathfun.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D763251CA91B0049B6A5 /* neon_mathfun.h */; };
+		1EE5CCB129FC761C0046A51F /* HighFrequencyAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72A251CA91B0049B6A5 /* HighFrequencyAudioCurve.h */; };
+		1EE5CCB229FC761C0046A51F /* StretchCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D722251CA91B0049B6A5 /* StretchCalculator.h */; };
+		1EE5CCB329FC761C0046A51F /* HighFrequencyAudioCurve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D72B251CA91B0049B6A5 /* HighFrequencyAudioCurve.cpp */; };
+		1EE5CCB429FC761C0046A51F /* StretchCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74E251CA91B0049B6A5 /* StretchCalculator.cpp */; };
+		1EE5CCB529FC761C0046A51F /* VectorOps.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D74C251CA91B0049B6A5 /* VectorOps.h */; };
+		1EE5CCB629FC761C0046A51F /* Window.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D755251CA91B0049B6A5 /* Window.h */; };
+		1EE5CCB729FC761C0046A51F /* sysutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1E46D74D251CA91B0049B6A5 /* sysutils.cpp */; };
+		1EE5CCB829FC761C0046A51F /* SilentAudioCurve.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E46D72C251CA91B0049B6A5 /* SilentAudioCurve.h */; };
 		1EED728A2833ED3700253F82 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1EED728E2833ED3700253F82 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1EED728F2833ED3700253F82 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
@@ -3108,6 +3277,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E5DCC1729FC79C400B8FD99 /* Accelerate.framework in Frameworks */,
 				1E3C687D252E24D800212E66 /* lib_ears.a in Frameworks */,
 				1E3C687E252E24D800212E66 /* MaxAudioAPI.framework in Frameworks */,
 			);
@@ -3126,6 +3296,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E5DCC1629FC79C000B8FD99 /* Accelerate.framework in Frameworks */,
 				1E49398E1FDEE3BA0048410E /* lib_ears.a in Frameworks */,
 				1E49398F1FDEE3BA0048410E /* MaxAudioAPI.framework in Frameworks */,
 			);
@@ -3496,6 +3667,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E5DCC1829FC79C900B8FD99 /* Accelerate.framework in Frameworks */,
 				1EC7AA5D253C4E7700D72895 /* lib_ears.a in Frameworks */,
 				1EC7AA5E253C4E7700D72895 /* MaxAudioAPI.framework in Frameworks */,
 			);
@@ -4878,7 +5050,40 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EE5CC6729FC761C0046A51F /* sysutils.h in Headers */,
+				1EE5CC6929FC761C0046A51F /* sse_mathfun.h in Headers */,
+				1EE5CC4B29FC761B0046A51F /* Resampler.h in Headers */,
+				1EE5CC4A29FC761B0046A51F /* float_cast.h in Headers */,
+				1EE5CC5229FC761B0046A51F /* MovingMedian.h in Headers */,
+				1EE5CC5C29FC761B0046A51F /* FFT.h in Headers */,
+				1EE5CC7D29FC761C0046A51F /* VectorOps.h in Headers */,
+				1EE5CC7A29FC761C0046A51F /* StretchCalculator.h in Headers */,
+				1EE5CC7929FC761C0046A51F /* HighFrequencyAudioCurve.h in Headers */,
+				1EE5CC4D29FC761B0046A51F /* Thread.h in Headers */,
+				1EE5CC7729FC761C0046A51F /* Profiler.h in Headers */,
+				1EE5CC5129FC761B0046A51F /* RingBuffer.h in Headers */,
+				1EE5CC5829FC761B0046A51F /* kiss_fft.h in Headers */,
+				1EE5CC6629FC761C0046A51F /* ConstantAudioCurve.h in Headers */,
+				1EE5CC6A29FC761C0046A51F /* Allocators.h in Headers */,
+				1EE5CC5629FC761B0046A51F /* speex_resampler.h in Headers */,
+				1EE5CC6C29FC761C0046A51F /* CompoundAudioCurve.h in Headers */,
+				1EE5CC7429FC761C0046A51F /* rubberband-c.h in Headers */,
+				1EE5CC4E29FC761B0046A51F /* RubberBandStretcher.h in Headers */,
+				1EE5CC6029FC761B0046A51F /* StretcherImpl.h in Headers */,
+				1EE5CC7E29FC761C0046A51F /* Window.h in Headers */,
 				1EC7AA51253C4E1100D72895 /* ears.scores.h in Headers */,
+				1EE5CC6129FC761C0046A51F /* _kiss_fft_guts.h in Headers */,
+				1EE5CC5B29FC761B0046A51F /* kiss_fftr.h in Headers */,
+				1EE5CC5029FC761B0046A51F /* VectorOpsComplex.h in Headers */,
+				1EE5CC5E29FC761B0046A51F /* StretcherChannelData.h in Headers */,
+				1EE5CC8029FC761C0046A51F /* SilentAudioCurve.h in Headers */,
+				1EE5CC7529FC761C0046A51F /* SincWindow.h in Headers */,
+				1EE5CC6E29FC761C0046A51F /* SpectralDifferenceAudioCurve.h in Headers */,
+				1EE5CC7629FC761C0046A51F /* SampleFilter.h in Headers */,
+				1EE5CC7229FC761C0046A51F /* AudioCurveCalculator.h in Headers */,
+				1EE5CC7829FC761C0046A51F /* neon_mathfun.h in Headers */,
+				1EE5CC6B29FC761C0046A51F /* PercussiveAudioCurve.h in Headers */,
+				1EE5CC6429FC761C0046A51F /* Scavenger.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4893,9 +5098,40 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1ECE416225D5AA920003CFA2 /* neon_mathfun.h in Headers */,
-				1ECE416325D5AA920003CFA2 /* sse_mathfun.h in Headers */,
+				1EE5CC2F29FC761B0046A51F /* sysutils.h in Headers */,
+				1EE5CC3129FC761B0046A51F /* sse_mathfun.h in Headers */,
+				1EE5CC1329FC761B0046A51F /* Resampler.h in Headers */,
+				1EE5CC1229FC761B0046A51F /* float_cast.h in Headers */,
+				1EE5CC1A29FC761B0046A51F /* MovingMedian.h in Headers */,
+				1EE5CC2429FC761B0046A51F /* FFT.h in Headers */,
+				1EE5CC4529FC761B0046A51F /* VectorOps.h in Headers */,
+				1EE5CC4229FC761B0046A51F /* StretchCalculator.h in Headers */,
+				1EE5CC4129FC761B0046A51F /* HighFrequencyAudioCurve.h in Headers */,
+				1EE5CC1529FC761B0046A51F /* Thread.h in Headers */,
+				1EE5CC3F29FC761B0046A51F /* Profiler.h in Headers */,
+				1EE5CC1929FC761B0046A51F /* RingBuffer.h in Headers */,
+				1EE5CC2029FC761B0046A51F /* kiss_fft.h in Headers */,
+				1EE5CC2E29FC761B0046A51F /* ConstantAudioCurve.h in Headers */,
+				1EE5CC3229FC761B0046A51F /* Allocators.h in Headers */,
+				1EE5CC1E29FC761B0046A51F /* speex_resampler.h in Headers */,
+				1EE5CC3429FC761B0046A51F /* CompoundAudioCurve.h in Headers */,
+				1EE5CC3C29FC761B0046A51F /* rubberband-c.h in Headers */,
+				1EE5CC1629FC761B0046A51F /* RubberBandStretcher.h in Headers */,
+				1EE5CC2829FC761B0046A51F /* StretcherImpl.h in Headers */,
+				1EE5CC4629FC761B0046A51F /* Window.h in Headers */,
 				1EC7AA50253C4E1000D72895 /* ears.scores.h in Headers */,
+				1EE5CC2929FC761B0046A51F /* _kiss_fft_guts.h in Headers */,
+				1EE5CC2329FC761B0046A51F /* kiss_fftr.h in Headers */,
+				1EE5CC1829FC761B0046A51F /* VectorOpsComplex.h in Headers */,
+				1EE5CC2629FC761B0046A51F /* StretcherChannelData.h in Headers */,
+				1EE5CC4829FC761B0046A51F /* SilentAudioCurve.h in Headers */,
+				1EE5CC3D29FC761B0046A51F /* SincWindow.h in Headers */,
+				1EE5CC3629FC761B0046A51F /* SpectralDifferenceAudioCurve.h in Headers */,
+				1EE5CC3E29FC761B0046A51F /* SampleFilter.h in Headers */,
+				1EE5CC3A29FC761B0046A51F /* AudioCurveCalculator.h in Headers */,
+				1EE5CC4029FC761B0046A51F /* neon_mathfun.h in Headers */,
+				1EE5CC3329FC761B0046A51F /* PercussiveAudioCurve.h in Headers */,
+				1EE5CC2C29FC761B0046A51F /* Scavenger.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5257,7 +5493,40 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EE5CC9F29FC761C0046A51F /* sysutils.h in Headers */,
+				1EE5CCA129FC761C0046A51F /* sse_mathfun.h in Headers */,
+				1EE5CC8329FC761C0046A51F /* Resampler.h in Headers */,
+				1EE5CC8229FC761C0046A51F /* float_cast.h in Headers */,
+				1EE5CC8A29FC761C0046A51F /* MovingMedian.h in Headers */,
+				1EE5CC9429FC761C0046A51F /* FFT.h in Headers */,
+				1EE5CCB529FC761C0046A51F /* VectorOps.h in Headers */,
+				1EE5CCB229FC761C0046A51F /* StretchCalculator.h in Headers */,
+				1EE5CCB129FC761C0046A51F /* HighFrequencyAudioCurve.h in Headers */,
+				1EE5CC8529FC761C0046A51F /* Thread.h in Headers */,
+				1EE5CCAF29FC761C0046A51F /* Profiler.h in Headers */,
+				1EE5CC8929FC761C0046A51F /* RingBuffer.h in Headers */,
+				1EE5CC9029FC761C0046A51F /* kiss_fft.h in Headers */,
+				1EE5CC9E29FC761C0046A51F /* ConstantAudioCurve.h in Headers */,
+				1EE5CCA229FC761C0046A51F /* Allocators.h in Headers */,
+				1EE5CC8E29FC761C0046A51F /* speex_resampler.h in Headers */,
+				1EE5CCA429FC761C0046A51F /* CompoundAudioCurve.h in Headers */,
+				1EE5CCAC29FC761C0046A51F /* rubberband-c.h in Headers */,
+				1EE5CC8629FC761C0046A51F /* RubberBandStretcher.h in Headers */,
+				1EE5CC9829FC761C0046A51F /* StretcherImpl.h in Headers */,
+				1EE5CCB629FC761C0046A51F /* Window.h in Headers */,
 				1EC7AA56253C4E7700D72895 /* ears.scores.h in Headers */,
+				1EE5CC9929FC761C0046A51F /* _kiss_fft_guts.h in Headers */,
+				1EE5CC9329FC761C0046A51F /* kiss_fftr.h in Headers */,
+				1EE5CC8829FC761C0046A51F /* VectorOpsComplex.h in Headers */,
+				1EE5CC9629FC761C0046A51F /* StretcherChannelData.h in Headers */,
+				1EE5CCB829FC761C0046A51F /* SilentAudioCurve.h in Headers */,
+				1EE5CCAD29FC761C0046A51F /* SincWindow.h in Headers */,
+				1EE5CCA629FC761C0046A51F /* SpectralDifferenceAudioCurve.h in Headers */,
+				1EE5CCAE29FC761C0046A51F /* SampleFilter.h in Headers */,
+				1EE5CCAA29FC761C0046A51F /* AudioCurveCalculator.h in Headers */,
+				1EE5CCB029FC761C0046A51F /* neon_mathfun.h in Headers */,
+				1EE5CCA329FC761C0046A51F /* PercussiveAudioCurve.h in Headers */,
+				1EE5CC9C29FC761C0046A51F /* Scavenger.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9652,8 +9921,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EE5CC6D29FC761C0046A51F /* VectorOpsComplex.cpp in Sources */,
+				1EE5CC5D29FC761B0046A51F /* FFT.cpp in Sources */,
+				1EE5CC4C29FC761B0046A51F /* StretcherProcess.cpp in Sources */,
+				1EE5CC6329FC761C0046A51F /* ConstantAudioCurve.cpp in Sources */,
+				1EE5CC7129FC761C0046A51F /* RubberBandStretcher.cpp in Sources */,
+				1EE5CC7B29FC761C0046A51F /* HighFrequencyAudioCurve.cpp in Sources */,
+				1EE5CC6229FC761C0046A51F /* StretcherImpl.cpp in Sources */,
+				1EE5CC7329FC761C0046A51F /* AudioCurveCalculator.cpp in Sources */,
+				1EE5CC6529FC761C0046A51F /* kiss_fft.c in Sources */,
 				1EFF916B28536E22003265C1 /* ears.roll.synthesis.c in Sources */,
+				1EE5CC5429FC761B0046A51F /* resample.c in Sources */,
+				1EE5CC5529FC761B0046A51F /* SilentAudioCurve.cpp in Sources */,
+				1EE5CC4F29FC761B0046A51F /* CompoundAudioCurve.cpp in Sources */,
+				1EE5CC7C29FC761C0046A51F /* StretchCalculator.cpp in Sources */,
+				1EE5CC6F29FC761C0046A51F /* StretcherChannelData.cpp in Sources */,
+				1EE5CC5A29FC761B0046A51F /* PercussiveAudioCurve.cpp in Sources */,
 				1ECE416625D5AE940003CFA2 /* ears.scores.c in Sources */,
+				1EE5CC5929FC761B0046A51F /* SpectralDifferenceAudioCurve.cpp in Sources */,
+				1EE5CC5F29FC761B0046A51F /* Resampler.cpp in Sources */,
+				1EE5CC4929FC761B0046A51F /* Profiler.cpp in Sources */,
+				1EE5CC7029FC761C0046A51F /* rubberband-c.cpp in Sources */,
+				1EE5CC5329FC761B0046A51F /* kiss_fftr.c in Sources */,
+				1EE5CC7F29FC761C0046A51F /* sysutils.cpp in Sources */,
+				1EE5CC5729FC761B0046A51F /* Thread.cpp in Sources */,
+				1EE5CC6829FC761C0046A51F /* Allocators.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9669,8 +9961,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EE5CC3529FC761B0046A51F /* VectorOpsComplex.cpp in Sources */,
+				1EE5CC2529FC761B0046A51F /* FFT.cpp in Sources */,
+				1EE5CC1429FC761B0046A51F /* StretcherProcess.cpp in Sources */,
+				1EE5CC2B29FC761B0046A51F /* ConstantAudioCurve.cpp in Sources */,
+				1EE5CC3929FC761B0046A51F /* RubberBandStretcher.cpp in Sources */,
+				1EE5CC4329FC761B0046A51F /* HighFrequencyAudioCurve.cpp in Sources */,
+				1EE5CC2A29FC761B0046A51F /* StretcherImpl.cpp in Sources */,
+				1EE5CC3B29FC761B0046A51F /* AudioCurveCalculator.cpp in Sources */,
+				1EE5CC2D29FC761B0046A51F /* kiss_fft.c in Sources */,
 				1EFF916A28536E1E003265C1 /* ears.roll.sampling.c in Sources */,
+				1EE5CC1C29FC761B0046A51F /* resample.c in Sources */,
+				1EE5CC1D29FC761B0046A51F /* SilentAudioCurve.cpp in Sources */,
+				1EE5CC1729FC761B0046A51F /* CompoundAudioCurve.cpp in Sources */,
+				1EE5CC4429FC761B0046A51F /* StretchCalculator.cpp in Sources */,
+				1EE5CC3729FC761B0046A51F /* StretcherChannelData.cpp in Sources */,
+				1EE5CC2229FC761B0046A51F /* PercussiveAudioCurve.cpp in Sources */,
 				1EC7AA4E253C4E0D00D72895 /* ears.scores.c in Sources */,
+				1EE5CC2129FC761B0046A51F /* SpectralDifferenceAudioCurve.cpp in Sources */,
+				1EE5CC2729FC761B0046A51F /* Resampler.cpp in Sources */,
+				1EE5CC1129FC761B0046A51F /* Profiler.cpp in Sources */,
+				1EE5CC3829FC761B0046A51F /* rubberband-c.cpp in Sources */,
+				1EE5CC1B29FC761B0046A51F /* kiss_fftr.c in Sources */,
+				1EE5CC4729FC761B0046A51F /* sysutils.cpp in Sources */,
+				1EE5CC1F29FC761B0046A51F /* Thread.cpp in Sources */,
+				1EE5CC3029FC761B0046A51F /* Allocators.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10028,8 +10343,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EE5CCA529FC761C0046A51F /* VectorOpsComplex.cpp in Sources */,
+				1EE5CC9529FC761C0046A51F /* FFT.cpp in Sources */,
+				1EE5CC8429FC761C0046A51F /* StretcherProcess.cpp in Sources */,
+				1EE5CC9B29FC761C0046A51F /* ConstantAudioCurve.cpp in Sources */,
+				1EE5CCA929FC761C0046A51F /* RubberBandStretcher.cpp in Sources */,
+				1EE5CCB329FC761C0046A51F /* HighFrequencyAudioCurve.cpp in Sources */,
+				1EE5CC9A29FC761C0046A51F /* StretcherImpl.cpp in Sources */,
+				1EE5CCAB29FC761C0046A51F /* AudioCurveCalculator.cpp in Sources */,
+				1EE5CC9D29FC761C0046A51F /* kiss_fft.c in Sources */,
 				1EFF916C28536E26003265C1 /* ears.roll.toreaper.c in Sources */,
+				1EE5CC8C29FC761C0046A51F /* resample.c in Sources */,
+				1EE5CC8D29FC761C0046A51F /* SilentAudioCurve.cpp in Sources */,
+				1EE5CC8729FC761C0046A51F /* CompoundAudioCurve.cpp in Sources */,
+				1EE5CCB429FC761C0046A51F /* StretchCalculator.cpp in Sources */,
+				1EE5CCA729FC761C0046A51F /* StretcherChannelData.cpp in Sources */,
+				1EE5CC9229FC761C0046A51F /* PercussiveAudioCurve.cpp in Sources */,
 				1ECE416525D5AE8E0003CFA2 /* ears.scores.c in Sources */,
+				1EE5CC9129FC761C0046A51F /* SpectralDifferenceAudioCurve.cpp in Sources */,
+				1EE5CC9729FC761C0046A51F /* Resampler.cpp in Sources */,
+				1EE5CC8129FC761C0046A51F /* Profiler.cpp in Sources */,
+				1EE5CCA829FC761C0046A51F /* rubberband-c.cpp in Sources */,
+				1EE5CC8B29FC761C0046A51F /* kiss_fftr.c in Sources */,
+				1EE5CCB729FC761C0046A51F /* sysutils.cpp in Sources */,
+				1EE5CC8F29FC761C0046A51F /* Thread.cpp in Sources */,
+				1EE5CCA029FC761C0046A51F /* Allocators.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13901,12 +14239,22 @@
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"\"CONFIGURATION_$(CONFIGURATION)\"",
+					"\"DENORM_WANT_FIX = 1\"",
+					"\"BACH_MAX\"",
+					HAVE_LIBSAMPLERATE,
+					NO_THREADING,
+					HAVE_VDSP,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master\"",
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -13917,6 +14265,7 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
+					/usr/local/lib/libsamplerate.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -13938,12 +14287,22 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"\"CONFIGURATION_$(CONFIGURATION)\"",
+					"\"DENORM_WANT_FIX = 1\"",
+					"\"BACH_MAX\"",
+					HAVE_LIBSAMPLERATE,
+					NO_THREADING,
+					HAVE_VDSP,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master\"",
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -13954,6 +14313,7 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
+					/usr/local/lib/libsamplerate.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -14051,12 +14411,22 @@
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"\"CONFIGURATION_$(CONFIGURATION)\"",
+					"\"DENORM_WANT_FIX = 1\"",
+					"\"BACH_MAX\"",
+					HAVE_LIBSAMPLERATE,
+					NO_THREADING,
+					HAVE_VDSP,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master\"",
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -14067,6 +14437,7 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
+					/usr/local/lib/libsamplerate.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -14088,12 +14459,22 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"\"CONFIGURATION_$(CONFIGURATION)\"",
+					"\"DENORM_WANT_FIX = 1\"",
+					"\"BACH_MAX\"",
+					HAVE_LIBSAMPLERATE,
+					NO_THREADING,
+					HAVE_VDSP,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master\"",
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -14104,6 +14485,7 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
+					/usr/local/lib/libsamplerate.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -17198,12 +17580,22 @@
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"\"CONFIGURATION_$(CONFIGURATION)\"",
+					"\"DENORM_WANT_FIX = 1\"",
+					"\"BACH_MAX\"",
+					HAVE_LIBSAMPLERATE,
+					NO_THREADING,
+					HAVE_VDSP,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master\"",
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -17214,6 +17606,7 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
+					/usr/local/lib/libsamplerate.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",
@@ -17235,12 +17628,22 @@
 					"\"$(C74SUPPORT)/msp-includes\"",
 				);
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"\"CONFIGURATION_$(CONFIGURATION)\"",
+					"\"DENORM_WANT_FIX = 1\"",
+					"\"BACH_MAX\"",
+					HAVE_LIBSAMPLERATE,
+					NO_THREADING,
+					HAVE_VDSP,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(C74SUPPORT)/max-includes\"",
 					"\"$(C74SUPPORT)/msp-includes\"",
 					"\"$(C74SUPPORT)/jit-includes\"",
 					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
 					/usr/local/include/,
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master\"",
+					"\"$(SRCROOT)/../../../ears/source/lib/rubberband-master/src\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -17251,6 +17654,7 @@
 					"-fvisibility=hidden",
 				);
 				OTHER_LDFLAGS = (
+					/usr/local/lib/libsamplerate.a,
 					/usr/local/lib/libmpg123.a,
 					/usr/local/lib/libmp3lame.a,
 					"$(C74_SYM_LINKER_FLAGS)",

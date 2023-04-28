@@ -109,7 +109,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
-    
+    earsbufobj_class_add_envtimeunit_attr(c);
+
     earsbufobj_class_add_resamplingfiltersize_attr(c);
     earsbufobj_class_add_resamplingmode_attr(c);
     earsbufobj_class_add_polyout_attr(c);

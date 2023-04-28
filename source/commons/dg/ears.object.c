@@ -3475,6 +3475,21 @@ t_llll *earsbufobj_llllelem_convert_envtimeunit_and_normalize_range(t_earsbufobj
     return out;
 }
 
+t_llll *earsbufobj_llll_convert_envtimeunit(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf,
+                                                                e_ears_timeunit dest_envtimeunit)
+{
+    if (!ll)
+        return NULL;
+    
+    t_llll *out = llll_get();
+    llll_appendllll_clone(out, ll);
+    llll_flatten(out, 1, 0);
+    
+    earsbufobj_llll_convert_envtimeunit_and_normalize_range_do(e_ob, out, buf, dest_envtimeunit, 0, 1, false);
+    
+    return out;
+}
+
 double earsbufobj_pitch_to_cents(t_earsbufobj *e_ob, double value)
 {
     switch (e_ob->l_pitchunit) {
@@ -3713,6 +3728,15 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
     return out;
 }
 
+
+// llllelem can be either a number or a t_pts
+t_llll *earsbufobj_pitch_llll_to_cents_and_samples(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf)
+{
+    t_llll *parent = llll_get();
+    llll_appendllll_clone(parent, ll); // TO BE CHECKED
+    t_llll *res = earsbufobj_pitch_llllelem_to_cents_and_samples(e_ob, parent->l_head, buf);
+    return res;
+}
 
 
 // llllelem can be either a number or a t_pts

@@ -65,7 +65,7 @@ typedef struct _buf_roll_sampling {
     long        pan_slot;
     long        rate_slot;
     // these two are currently unused
-    long        ps_slot; // pitch shift
+    t_atom      ps_slot; // pitch shift
     long        ts_slot; // time stretch
     
 
@@ -184,10 +184,10 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_STYLE_LABEL(c,"rateslot",0,"text","Slot Containing Rate");
     // @description Sets the number of the slot containing the rate (0 = none).
 
-//    CLASS_ATTR_LONG(c, "psslot", 0, t_buf_roll_sampling, ps_slot);
-//    CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Pitch Shift");
-    // @exclude all
+    CLASS_ATTR_ATOM(c, "transpslot", 0, t_buf_roll_sampling, ps_slot);
+    CLASS_ATTR_STYLE_LABEL(c,"transpslot",0,"text","Slot Containing Pitch Shift");
     // @description Sets the number of slots containing the pitch shift in cents (0 = none).
+    // Set this attribute to the symbol "durationline" to use the duration line as transposition
 
 //    CLASS_ATTR_LONG(c, "tsslot", 0, t_buf_roll_sampling, ts_slot);
 //    CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Time Stretch");
@@ -423,10 +423,11 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
     t_buffer_obj *outbuf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
 
     earsbufobj_mutex_lock((t_earsbufobj *)x);
+    long ps_slot = atom_gettype(&x->ps_slot) == A_SYM && atom_getsym(&x->ps_slot) == _llllobj_sym_durationline ? -1 : (atom_gettype(&x->ps_slot) == A_LONG ? atom_getlong(&x->ps_slot) : 0);
     ears_roll_to_buffer((t_earsbufobj *)x, EARS_SCORETOBUF_MODE_SAMPLING, roll_gs, outbuf,
                         EARS_SYNTHMODE_NONE, NULL, 0, //< we're not using synthesis
                         x->use_mute_solos, x->use_durations, x->num_channels,
-                        x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->rate_slot, x->ps_slot, x->ts_slot,
+                        x->filename_slot, x->offset_slot, x->gain_slot, x->pan_slot, x->rate_slot, ps_slot, x->ts_slot,
                         x->sr > 0 ? x->sr : ears_get_current_Max_sr(), (e_ears_normalization_modes)x->normalization_mode,
                         (e_ears_channel_convert_modes)x->channelmode,
                         x->fadein_amount, x->fadeout_amount, (e_ears_fade_types)x->fadein_type, (e_ears_fade_types)x->fadeout_type,

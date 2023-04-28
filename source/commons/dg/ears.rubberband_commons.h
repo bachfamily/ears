@@ -9,6 +9,11 @@
 #ifndef _EARS_BUF_RUBBERBAND_COMMONS_H_
 #define _EARS_BUF_RUBBERBAND_COMMONS_H_
 
+// Rubberband options via define
+#define HAVE_VDSP
+#define NO_THREADING
+// #define USE_PTHREADS
+
 #include "ears.commons.h"
 #include "RubberBandStretcher.h"
 
