@@ -1,0 +1,49 @@
+v 0.2
+
+*************************
+*** IMPORTANT CHANGES ***
+*************************
+
+These might break compatibility with older patches
+
+
+***********************
+*** VERSION CHANGES ***
+***********************
+
+- ears.roll.synthesis/sampling: 	
+		now if needed different voices can be bounced into different channels
+
+- ears.essentia: Fixed dozens of features that did not work
+
+
+v 0.2.4
+
+*********************
+*** COMPATIBILITY ***
+*********************
+
+dada 0.2.3 or higher requires bach 0.8.1.
+
+
+*************************
+*** IMPORTANT CHANGES ***
+*************************
+
+These might break compatibility with older patches
+
+- dada.segment		the presegment attribute now defaults at 0. 
+				to revert to the previous behavior, set it explicitly to 1
+
+
+
+***********************
+*** VERSION CHANGES ***
+***********************
+
+- dada.peanos~: experimental undocumented object
+
+- dada.cartesian, dada.distances 
+	are now binded to datasets AFTER dada.base
+		so that if datasets are file-attached no issues arise
+	now lllls are properly output even when db is attached to DB3 sqlite 

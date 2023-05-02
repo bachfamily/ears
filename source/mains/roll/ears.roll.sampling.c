@@ -90,6 +90,7 @@ typedef struct _buf_roll_sampling {
     
     char        optimize_for_identical_samples;
     char        use_assembly_line;
+    char        each_voice_has_own_channels;
 } t_buf_roll_sampling;
 
 
@@ -187,7 +188,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_ATOM(c, "transpslot", 0, t_buf_roll_sampling, ps_slot);
     CLASS_ATTR_STYLE_LABEL(c,"transpslot",0,"text","Slot Containing Pitch Shift");
     // @description Sets the number of slots containing the pitch shift in cents (0 = none).
-    // Set this attribute to the symbol "durationline" to use the duration line as transposition
+    // Set this attribute to the symbol "durationline" or "dl" to use the duration line as transposition
 
 //    CLASS_ATTR_LONG(c, "tsslot", 0, t_buf_roll_sampling, ts_slot);
 //    CLASS_ATTR_STYLE_LABEL(c,"panslot",0,"text","Slot Containing Time Stretch");
@@ -302,6 +303,12 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Toggles the ability to automatically reduce the gain of multichannel files by a factor of the number of channels, in order
     // to avoid possible clipping while panning then with low <m>spread</m> values. Defaults to 1.
     
+    CLASS_ATTR_CHAR(c, "separatevoicechannels",    0,    t_buf_roll_sampling, each_voice_has_own_channels);
+    CLASS_ATTR_STYLE_LABEL(c, "separatevoicechannels", 0, "onoff", "Separate Voice Channels");
+    CLASS_ATTR_BASIC(c, "separatevoicechannels", 0);
+    // @description Toggles the ability to render each voice in its own separate set of channels, thus rendering a multichannel buffer, with separate
+    // sets of channels for separate voices.
+    
     CLASS_STICKY_ATTR_CLEAR(c, "category");
 
     
@@ -331,8 +338,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // If set, the result may be less CPU-intensive, but also less optimized for identical samples.
     // In addition, harmonization of buffer properties across all the buffers is not carried out, and in particular the
     // first sample rate is used.
-    
-    
+
+
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -423,7 +430,7 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
     t_buffer_obj *outbuf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, 0);
 
     earsbufobj_mutex_lock((t_earsbufobj *)x);
-    long ps_slot = atom_gettype(&x->ps_slot) == A_SYM && atom_getsym(&x->ps_slot) == _llllobj_sym_durationline ? -1 : (atom_gettype(&x->ps_slot) == A_LONG ? atom_getlong(&x->ps_slot) : 0);
+    long ps_slot = atom_gettype(&x->ps_slot) == A_SYM && (atom_getsym(&x->ps_slot) == _llllobj_sym_durationline || atom_getsym(&x->ps_slot) == gensym("dl")) ? -1 : (atom_gettype(&x->ps_slot) == A_LONG ? atom_getlong(&x->ps_slot) : 0);
     ears_roll_to_buffer((t_earsbufobj *)x, EARS_SCORETOBUF_MODE_SAMPLING, roll_gs, outbuf,
                         EARS_SYNTHMODE_NONE, NULL, 0, //< we're not using synthesis
                         x->use_mute_solos, x->use_durations, x->num_channels,
@@ -434,7 +441,7 @@ void buf_roll_sampling_bang(t_buf_roll_sampling *x)
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples, x->use_assembly_line);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], 440, x->oversampling, EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH, x->optimize_for_identical_samples, x->use_assembly_line, x->each_voice_has_own_channels);
     earsbufobj_mutex_unlock((t_earsbufobj *)x);
     
     earsbufobj_outlet_buffer((t_earsbufobj *)x, 0);

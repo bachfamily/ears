@@ -54,6 +54,7 @@ typedef struct _buf_roll_synthesis {
     long        oversampling;
     
     char        use_assembly_line;
+    char        each_voice_has_own_channels;
     
     char        use_mute_solos;
 
@@ -292,6 +293,12 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Toggles the ability to automatically reduce the gain of multichannel files by a factor of the number of channels, in order
     // to avoid possible clipping while panning then with low <m>spread</m> values. Defaults to 1.
     
+    CLASS_ATTR_CHAR(c, "separatevoicechannels",    0,    t_buf_roll_synthesis, each_voice_has_own_channels);
+    CLASS_ATTR_STYLE_LABEL(c, "separatevoicechannels", 0, "onoff", "Separate Voice Channels");
+    CLASS_ATTR_BASIC(c, "separatevoicechannels", 0);
+    // @description Toggles the ability to render each voice in its own separate set of channels, thus rendering a multichannel buffer, with separate
+    // sets of channels for separate voices.
+
     CLASS_STICKY_ATTR_CLEAR(c, "category");
 
     
@@ -435,7 +442,7 @@ void buf_roll_synthesis_bang(t_buf_roll_synthesis *x)
                         x->fadein_curve, x->fadeout_curve,
                         x->panvoices,
                         (e_ears_pan_modes)x->pan_mode, (e_ears_pan_laws)x->pan_law, x->multichannel_spread, x->compensate_multichannel_gain_to_avoid_clipping,
-                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning, x->oversampling, x->e_ob.l_resamplingfilterwidth, false, x->use_assembly_line);
+                        (e_ears_veltoamp_modes)x->veltoamp_mode, x->velrange[0], x->velrange[1], x->middleAtuning, x->oversampling, x->e_ob.l_resamplingfilterwidth, false, x->use_assembly_line, x->each_voice_has_own_channels);
     
     if (wavetable)
         ears_buffer_unlocksamples(buf);

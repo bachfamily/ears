@@ -1636,14 +1636,14 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 {
                     double startCutoffFrequency = eCFI(0, EARS_FREQUNIT_HERTZ), stopCutoffFrequency = eCFI(100, EARS_FREQUNIT_HERTZ);
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "dd",
-                                    gensym("startcutofffrequency"), &startCutoffFrequency,
-                                    gensym("stopcutofffrequency"), &stopCutoffFrequency);
+                                    gensym("startfrequency"), &startCutoffFrequency,
+                                    gensym("stopfrequency"), &stopCutoffFrequency);
                     convert_frequnit(lib, i, startCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
                     convert_frequnit(lib, i, stopCutoffFrequency, NULL, EARS_FREQUNIT_HERTZ);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("EnergyBand",
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("EnergyBandRatio",
                                                                             "sampleRate", sr,
-                                                                            "startCutoffFrequency", startCutoffFrequency,
-                                                                            "stopCutoffFrequency", stopCutoffFrequency);
+                                                                            "startFrequency", startCutoffFrequency,
+                                                                            "stopFrequency", stopCutoffFrequency);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
                     set_essentia_outputs(lib, i, "f", "energyBandRatio");
                     set_custom_outputs(lib, i, "f", "energy band ratio");
@@ -1738,7 +1738,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     );
                     convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     convert_frequnit(lib, i, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("BFCC",
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("GFCC",
                                                                             "dctType", (int)dctType,
                                                                             "highFrequencyBound", highFrequencyBound,
                                                                             "sampleRate", sr,
@@ -1857,7 +1857,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "sampleRate", sr,
                                                                             "order", (int)order,
                                                                             "type", type->s_name);
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "frame");
                     set_essentia_outputs(lib, i, "vv", "lpc", "reflection");
                     set_custom_outputs(lib, i, "vv", "LPC coefficients", "reflection coefficients");
                 }
@@ -1885,7 +1885,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 {
                     lib->extractors[i].algorithm = AlgorithmFactory::create("PowerSpectrum",
                                                                             "size", params->framesize_samps);
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "spectrum");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "signal");
                     set_essentia_outputs(lib, i, "s", "powerSpectrum");
                     set_custom_outputs(lib, i, "s", "power spectrum");
                 }
@@ -1945,7 +1945,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("staticdistribution"), &staticDistribution);
                     convert_frequnit(lib, i, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("SpectralCentroidTime",
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("SpectralContrast",
                                                                             "sampleRate", sr,
                                                                             "frameSize", params->framesize_samps,
                                                                             "highFrequencyBound", (Real)highFrequencyBound,
@@ -2026,7 +2026,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("weighting"), &weighting);
                     convert_frequnit(lib, i, highFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
                     convert_frequnit(lib, i, lowFrequencyBound, NULL, EARS_FREQUNIT_HERTZ);
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("TriangularBands",
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("TriangularBarkBands",
                                                                             "sampleRate", sr,
                                                                             "inputSize", (int)spectrumsize,
                                                                             "highFrequencyBound", highFrequencyBound,
@@ -2626,7 +2626,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
 
                 case EARS_FEATURE_TEMPORALFLATNESS:
                     lib->extractors[i].algorithm = AlgorithmFactory::create("Flatness");
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_AUDIO, "array");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_ENVELOPE, "array");
                     set_essentia_outputs(lib, i, "f", "flatness");
                     set_custom_outputs(lib, i, "f", "temporal flatness");
                     break;
@@ -2766,7 +2766,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "size", (int)HPCP_size,
                                                                             "referenceFrequency", HPCP_referenceFrequency,
                                                                             "harmonics", (int)HPCP_harmonics,
-                                                                            "bandPreset", (int)HPCP_bandPreset,
+                                                                            "bandPreset", (bool)HPCP_bandPreset,
                                                                             "minFrequency", HPCP_minFrequency,
                                                                             "maxFrequency", HPCP_maxFrequency,
                                                                             "maxShifted", (int)HPCP_maxShifted,
@@ -2789,7 +2789,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                 case EARS_FEATURE_HARMONICPEAKS:
                 {
                     t_atom_long maxHarmonics = 20;
-                    double tolerance = 2000;
+                    double tolerance = 0.2;
                     llll_parseattrs((t_object *)e_ob, args[i], LLLL_PA_DONTWARNFORWRONGKEYS | LLLL_PA_CASEINSENSITIVE, "id",
                                     gensym("maxharmonics"), &maxHarmonics,
                                     gensym("tolerance"), &tolerance);
@@ -2811,7 +2811,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                     gensym("maxpeaks"), &maxPeaks);
                     lib->extractors[i].algorithm = AlgorithmFactory::create("HighResolutionFeatures",
                                                                             "maxPeaks", (int)maxPeaks);
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE, "pcp");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE, "hpcp");
                     set_essentia_outputs(lib, i, "fff", "equalTemperedDeviation", "nonTemperedEnergyRatio", "nonTemperedPeaksEnergyRatio");
                     set_custom_outputs(lib, i, "fff", "equal tempered deviation", "non-tempered energy ratio", "non-tempered peaks energy ratio");
                     lib->extractors[i].essentia_output_frequnit[0] = EARS_FREQUNIT_HERTZ;
@@ -3101,8 +3101,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                         thresholds = llll_to_vector_real(thresholds_llll);
                         convert_ampunit(lib, i, thresholds, NULL, EARS_AMPUNIT_DECIBEL);
                     }
-                    lib->extractors[i].algorithm = AlgorithmFactory::create("EffectiveDuration",
-                                                                            "sampleRate", sr,
+                    lib->extractors[i].algorithm = AlgorithmFactory::create("SilenceRate",
                                                                             "thresholds", thresholds);
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FRAME, "frame");
                     long num_outputs = thresholds.size();
@@ -3350,7 +3349,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "magnitudeCompression", magnitudeCompression,
                                                                             "magnitudeThreshold", magnitudeThreshold,
                                                                             "referenceFrequency", referenceFrequency,
-                                                                            "numberharmonics", (int)numberHarmonics);
+                                                                            "numberHarmonics", (int)numberHarmonics);
                     set_input2(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS, "frequencies", "magnitudes");
                     set_essentia_outputs(lib, i, "v", "salienceFunction");
                     set_custom_outputs(lib, i, "v", "array of the quantized pitch salience values");
@@ -3614,7 +3613,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "maxExtend", maxExtend,
                                                                             "minFrequency", minFrequency,
                                                                             "maxFrequency", maxFrequency);
-                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH, "signal");
+                    set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_FZEROBATCH, "pitch");
                     set_essentia_outputs(lib, i, "vv", "vibratoFrequency", "vibratoExtend");
                     set_custom_outputs(lib, i, "vv", "vibrato frequency", "vibrato pitch extent");
                     lib->extractors[i].essentia_output_frequnit[0] = EARS_FREQUNIT_HERTZ;

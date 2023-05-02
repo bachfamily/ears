@@ -349,7 +349,7 @@ void buf_assemble_once(t_buf_assemble *x)
         }
         
         
-        ears_buffer_assemble_once((t_object *)x, out, buf, gains_linear, offset_samps, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode, &x->curr_length_samps, &x->allocated_samps);
+        ears_buffer_assemble_once((t_object *)x, out, buf, gains_linear, offset_samps, earsbufobj_get_slope_mapping((t_earsbufobj *)x), (e_ears_resamplingpolicy)x->e_ob.l_resamplingpolicy, x->e_ob.l_resamplingfilterwidth, (e_ears_resamplingmode)x->e_ob.l_resamplingmode, &x->curr_length_samps, &x->allocated_samps, 0);
         
         x->assembly_line_status = 2;
     }

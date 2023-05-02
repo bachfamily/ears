@@ -4116,7 +4116,7 @@ end:
 }
 
 
-t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode)
+t_ears_err ears_buffer_mix_from_llll_do(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode)
 {
     long num_sources = sources_ll->l_size;
     
@@ -4139,6 +4139,52 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
         bach_freeptr(offset_samps);
         return err;
     }
+}
+
+t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    
+    if (sources_ll->l_depth == 2 && gains->l_depth == 2 && offset_samps_ll->l_depth == 2) {
+        // Special case: if lists have a level of parentheses, their elements are bounced in separate channels – i.e., "voice-wise" mixing, then all voices are kept separate
+        long numvoices = sources_ll->l_size;
+        if (gains->l_size != numvoices || offset_samps_ll->l_size != numvoices) {
+            err = EARS_ERR_GENERIC;
+            object_error((t_object *)ob, "Lists have different lengths!");
+            return err;
+        }
+        if (numvoices <= 0) {
+            err = EARS_ERR_GENERIC;
+            object_error((t_object *)ob, "Lists have zero length!");
+            return err;
+        }
+        t_buffer_obj **voicebuf = (t_buffer_obj **)bach_newptr(numvoices * sizeof(t_buffer_obj *));
+        for (long i = 0; i < numvoices; i++) {
+            voicebuf[i] = ears_buffer_make(NULL);
+        }
+        t_llllelem *sources_el = sources_ll->l_head, *gain_el = gains->l_head, *offset_samps_el = offset_samps_ll->l_head;
+        long i = 0;
+        for (; sources_el && gain_el && offset_samps_el; sources_el = sources_el->l_next, gain_el = gain_el->l_next, offset_samps_el = offset_samps_el->l_next, i++) {
+            if (hatom_gettype(&sources_el->l_hatom) == H_LLLL && hatom_gettype(&gain_el->l_hatom) == H_LLLL && hatom_gettype(&offset_samps_el->l_hatom) == H_LLLL) {
+                t_ears_err this_err = ears_buffer_mix_from_llll_do(ob, hatom_getllll(&sources_el->l_hatom), voicebuf[i], hatom_getllll(&gain_el->l_hatom), hatom_getllll(&offset_samps_el->l_hatom), normalization_mode, slopemapping, resamplingpolicy, resamplingfiltersize, resamplingmode);
+                
+                if (err == EARS_ERR_NONE && this_err != err) {
+                    err = this_err;
+                }
+            }
+        }
+        ears_buffer_pack(ob, numvoices, voicebuf, dest, resamplingpolicy, resamplingfiltersize, resamplingmode);
+        for (long i = 0; i < numvoices; i++) {
+            ears_buffer_free(voicebuf[i]);
+        }
+        bach_freeptr(voicebuf);
+
+    } else {
+        // standard easy case
+        
+        err = ears_buffer_mix_from_llll_do(ob, sources_ll, dest, gains, offset_samps_ll, normalization_mode, slopemapping, resamplingpolicy, resamplingfiltersize, resamplingmode);
+    }
+    return err;
 }
 
 
@@ -4298,7 +4344,7 @@ end:
 
 
 // take an existing buffer and mixes another one over it
-t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, long *basebuffer_numframes, long *basebuffer_allocatedframes)
+t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, long *basebuffer_numframes, long *basebuffer_allocatedframes, long channel_offset)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -4360,7 +4406,8 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
         t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., false, slopemapping);
         for (j = 0; j < new_numsamps; j++) {
             double this_gain = ears_envelope_iterator_walk_interp(&eei, j, new_numsamps);
-            for (c = 0; c < new_channelcount && c < channelcount; c++) {
+//            for (c = 0; c < new_channelcount && c < channelcount; c++) {
+            for (c = channel_offset; c < new_channelcount + channel_offset && c < channelcount; c++) {
                 base_sample[(j + this_onset_samps) * channelcount + c] += new_sample[j * new_channelcount + c] * this_gain;
             }
         }

@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 887.0, 569.0 ],
+		"rect" : [ 519.0, 114.0, 911.0, 569.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 887.0, 543.0 ],
+						"rect" : [ 0.0, 26.0, 911.0, 543.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -96,7 +96,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 574.0, 406.0, 136.0, 23.0 ],
-									"presentation_linecount" : 3,
 									"text" : "transpslot durationline"
 								}
 
@@ -119,7 +118,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 578.0, 286.0, 219.0, 36.0 ],
+									"patching_rect" : [ 578.0, 286.0, 220.0, 36.0 ],
 									"text" : "Pitch shift can be achieved either by using a slot:"
 								}
 
@@ -160,7 +159,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 159.0, 374.0, 147.0, 23.0 ]
+									"patching_rect" : [ 159.0, 385.0, 147.0, 23.0 ]
 								}
 
 							}
@@ -617,7 +616,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 887.0, 543.0 ],
+						"rect" : [ 519.0, 140.0, 911.0, 543.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -651,12 +650,39 @@
 									"bubble" : 1,
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
+									"id" : "obj-12",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 649.0, 370.0, 247.0, 25.0 ],
+									"text" : "Separate channels for separate voices"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "separatevoicechannels",
+									"id" : "obj-9",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 464.0, 370.0, 184.0, 23.0 ],
+									"text_width" : 158.0
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
 									"id" : "obj-4",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 598.0, 407.0, 268.0, 25.0 ],
-									"presentation_linecount" : 12,
+									"patching_rect" : [ 544.0, 407.0, 268.0, 25.0 ],
 									"text" : "Use duration lines as pitch shift envelopes"
 								}
 
@@ -668,8 +694,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 456.0, 407.0, 136.0, 23.0 ],
-									"text" : "transpslot durationline"
+									"patching_rect" : [ 456.0, 407.0, 79.0, 23.0 ],
+									"text" : "transpslot dl"
 								}
 
 							}
@@ -748,7 +774,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u462000707",
+									"buffername" : "u702000468",
 									"id" : "obj-25",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -992,6 +1018,14 @@
 								}
 
 							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-13", 0 ],
+									"midpoints" : [ 473.5, 402.0, 441.0, 402.0, 441.0, 366.0, 19.5, 366.0 ],
+									"source" : [ "obj-9", 0 ]
+								}
+
+							}
  ],
 						"styles" : [ 							{
 								"name" : "AudioStatus_Menu",
@@ -1191,7 +1225,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 887.0, 543.0 ],
+						"rect" : [ 0.0, 26.0, 911.0, 543.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

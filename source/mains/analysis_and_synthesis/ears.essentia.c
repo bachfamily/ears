@@ -1102,7 +1102,7 @@ e_ears_feature ears_essentia_feature_from_symbol(t_symbol *sym, long *temporalmo
         return EARS_FEATURE_SILENCERATE;
     
     // LOUDNESS/DYNAMICS
-    if (s == gensym("dynamiccomplecity"))
+    if (s == gensym("dynamiccomplexity"))
         return EARS_FEATURE_DYNAMICCOMPLEXITY;
     if (s == gensym("larm"))
         return EARS_FEATURE_LARM;
