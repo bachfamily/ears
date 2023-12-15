@@ -580,9 +580,21 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                     }
                     
                     if (gain_env) {
-                        t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARS_TIMEUNIT_SAMPS, gain_min, gain_max, false);
-                        ears_buffer_gain_envelope((t_object *)e_ob, buf, buf, gain_env_remapped, gain_is_in_decibel, earsbufobj_get_slope_mapping(e_ob));
-                        llll_free(gain_env_remapped);
+                        if (gain_is_in_decibel) {
+                            t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit(e_ob, gain_env, buf, EARS_TIMEUNIT_SAMPS);
+                            if (gain_env_remapped->l_head && gain_env_remapped->l_depth == 1)
+                                ears_buffer_gain((t_object *)e_ob, buf, buf, hatom_getdouble(&gain_env_remapped->l_head->l_hatom), gain_is_in_decibel);
+                            else
+                                ears_buffer_gain_envelope((t_object *)e_ob, buf, buf, gain_env_remapped, gain_is_in_decibel, earsbufobj_get_slope_mapping(e_ob));
+                            llll_free(gain_env_remapped);
+                        } else {
+                            t_llll *gain_env_remapped = earsbufobj_llll_convert_envtimeunit_and_normalize_range(e_ob, gain_env, buf, EARS_TIMEUNIT_SAMPS, gain_min, gain_max, false);
+                            if (gain_env_remapped->l_head && gain_env_remapped->l_depth == 1)
+                                ears_buffer_gain((t_object *)e_ob, buf, buf, hatom_getdouble(&gain_env_remapped->l_head->l_hatom), gain_is_in_decibel);
+                            else
+                                ears_buffer_gain_envelope((t_object *)e_ob, buf, buf, gain_env_remapped, gain_is_in_decibel, earsbufobj_get_slope_mapping(e_ob));
+                            llll_free(gain_env_remapped);
+                        }
                     }
                     
                     if (pan_env) {

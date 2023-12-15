@@ -2098,11 +2098,14 @@ t_ears_err ears_buffer_copychannel(t_object *ob, t_buffer_obj *source, long sour
     t_ears_err err = EARS_ERR_NONE;
     bool resampled = false;
     double sr = ears_buffer_get_sr(ob, source);
+    long sizesamps = ears_buffer_get_size_samps(ob, source);
     float *source_sample = ears_buffer_locksamples(source);
     
     if (!source_sample) {
-        err = EARS_ERR_CANT_READ;
-        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        if (sizesamps != 0) { // if it's an empty buffer, we won't complain
+            err = EARS_ERR_CANT_READ;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+        }
     } else {
         
         t_atom_long    source_channelcount = buffer_getchannelcount(source);
@@ -4150,12 +4153,12 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
         long numvoices = sources_ll->l_size;
         if (gains->l_size != numvoices || offset_samps_ll->l_size != numvoices) {
             err = EARS_ERR_GENERIC;
-            object_error((t_object *)ob, "Lists have different lengths!");
+            object_error((t_object *)ob, "Input lists have different lengths!");
             return err;
         }
         if (numvoices <= 0) {
             err = EARS_ERR_GENERIC;
-            object_error((t_object *)ob, "Lists have zero length!");
+            object_error((t_object *)ob, "Input lists have zero length!");
             return err;
         }
         t_buffer_obj **voicebuf = (t_buffer_obj **)bach_newptr(numvoices * sizeof(t_buffer_obj *));
@@ -4164,6 +4167,7 @@ t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_
         }
         t_llllelem *sources_el = sources_ll->l_head, *gain_el = gains->l_head, *offset_samps_el = offset_samps_ll->l_head;
         long i = 0;
+        bool entered = 0;
         for (; sources_el && gain_el && offset_samps_el; sources_el = sources_el->l_next, gain_el = gain_el->l_next, offset_samps_el = offset_samps_el->l_next, i++) {
             if (hatom_gettype(&sources_el->l_hatom) == H_LLLL && hatom_gettype(&gain_el->l_hatom) == H_LLLL && hatom_gettype(&offset_samps_el->l_hatom) == H_LLLL) {
                 t_ears_err this_err = ears_buffer_mix_from_llll_do(ob, hatom_getllll(&sources_el->l_hatom), voicebuf[i], hatom_getllll(&gain_el->l_hatom), hatom_getllll(&offset_samps_el->l_hatom), normalization_mode, slopemapping, resamplingpolicy, resamplingfiltersize, resamplingmode);

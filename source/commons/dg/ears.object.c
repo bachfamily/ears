@@ -1298,12 +1298,10 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
     t_buffer_obj *buf = NULL;
     long which_buffer = 0;
     
-    if (ac && atom_gettype(av) == A_LONG) {
-        which_buffer = atom_getlong(av) - 1;
-        ac--;
-        av++;
+    if (parsed && parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_LONG) {
+        which_buffer = hatom_getlong(&parsed->l_head->l_hatom) - 1;
+        llll_behead(parsed);
     }
-    
 
     
     if ((buf = earsbufobj_get_outlet_buffer_obj(e_ob, 0, which_buffer))) {

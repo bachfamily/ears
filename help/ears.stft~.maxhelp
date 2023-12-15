@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 1,
+			"minor" : 5,
+			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -52,8 +52,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -419,8 +419,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -673,14 +673,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 836.0, 581.0 ],
+						"rect" : [ 100.0, 126.0, 836.0, 581.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -730,7 +730,6 @@
 									"fontsize" : 10.0,
 									"id" : "obj-2",
 									"maxclass" : "ears.specshow~",
-									"maxvalue" : 0.01,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 214.0, 810.0, 320.0 ]
@@ -756,8 +755,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 149.0, 109.0, 23.0 ],
-									"text" : "ears.expr~ $f1**2"
+									"patching_rect" : [ 10.0, 149.0, 135.0, 23.0 ],
+									"text" : "ears.expr~ pow($f1\\,2)"
 								}
 
 							}
@@ -771,7 +770,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 121.0, 140.5, 107.0, 40.0 ],
+									"patching_rect" : [ 149.0, 140.5, 107.0, 40.0 ],
 									"text" : "Square the magnitude"
 								}
 
@@ -903,14 +902,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 836.0, 581.0 ],
+						"rect" : [ 0.0, 26.0, 836.0, 581.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1657,8 +1656,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
