@@ -89,6 +89,9 @@ long earsbufobj_proxy_getinlet(t_earsbufobj *e_ob)
 bool earsbufobj_buffer_is_part_of_polybuffer(t_earsbufobj *e_ob, t_symbol *buffername)
 {
     // find position for dot
+    if (!buffername)
+        return false;
+    
     long len = strlen(buffername->s_name);
     long dotpos = -1;
     for (long i = 0; i < len; i++) {
@@ -1381,6 +1384,8 @@ void earsbufobj_reset(t_earsbufobj *e_ob)
     for (long i = 0; i < LLLL_MAX_OUTLETS; i++)
         e_ob->l_generated_outname_count[i] = 0;
 }
+
+// hard reset? freeing space as well?
 
 void earsbufobj_stop(t_earsbufobj *e_ob)
 {

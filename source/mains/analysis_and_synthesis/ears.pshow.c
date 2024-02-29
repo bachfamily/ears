@@ -1,12 +1,13 @@
+
 /**
 	@file
-	ears.specshow.c
+	ears.pshow.c
  
 	@name
-	ears.specshow~
+	ears.pshow~
  
 	@realname
-	ears.specshow~
+	ears.pshow~
  
     @type
 	object
@@ -18,10 +19,10 @@
 	Daniele Ghisi
  
 	@digest
-	Display spectrograms
+	Display partials
  
 	@description
-	Display a spectrogram, typically obtained via a frequency transform (STFT, CQT, tempogram...)
+	Displays partial tracking
  
 	@discussion
  
@@ -29,7 +30,7 @@
 	ears display
  
 	@keywords
-	buffer, specshow, spectrogram, display, stft, cqt, tempogram
+	buffer, pshow, partials, display, peak, partial tracking
  
 	@seealso
 	waveform~
@@ -49,21 +50,19 @@
 
 
 
-typedef struct _buf_specshow {
+typedef struct _buf_pshow {
     t_jbox      n_obj;
 
-    t_symbol     *n_buffername;
-    t_buffer_ref *n_buffer_reference;
-    t_jsurface   *n_surface;
-    
-    long         n_must_recreate_surface;
-    t_buffer_obj *n_last_buffer;
-    double       n_framespersecond;
-    double       n_length_ms;
+    t_llll      *n_partials;
     
     long        n_autoscale_min;
     long        n_autoscale_max;
     double        n_colorcurve;
+    
+    double       n_length_ms;
+    char        n_autolength;
+
+    t_jrgba     n_bgcolor;
     
     t_jrgba     n_mincolor;
     t_jrgba     n_maxcolor;
@@ -71,28 +70,26 @@ typedef struct _buf_specshow {
     double      n_maxvalue;
     long        n_maxnumbins;
     double      n_maxfreq;
-    
+
+    char        n_frequnit;
+    char         n_ampunit;
+    t_symbol    *n_type;
+    double      n_freq_offset;
+
     char        n_displayinseconds;
-    
-    char        n_interpolate;
     
     // attributes
     double      n_display_start_ms;
     double      n_display_end_ms;
     double      n_last_patcherzoom;
     
+    double      n_peak_radius;
+    double      n_partials_line_width;
+    
     // actual values
     double      n_actual_display_start_ms;
     double      n_actual_display_end_ms;
 
-    // specdata
-    double      n_bin_offset;
-    double      n_bin_step;
-    long        n_num_bins;
-    t_llll      *n_bins;
-    e_ears_frequnit n_bin_unit;
-    t_symbol    *n_type;
-    
     // grids
     double      n_grid_time_step_ms;
     t_jrgba     n_grid_time_color;
@@ -107,36 +104,34 @@ typedef struct _buf_specshow {
     void        *n_proxy2;            // proxy inlet
     long        n_proxy_inletnum;    // # of inlet currently in use
 
-} t_buf_specshow;
+} t_buf_pshow;
 
 
 
-// Pspecshowotypes
-void            *buf_specshow_new(t_symbol *s, long argc, t_atom *argv);
-void			buf_specshow_free(t_buf_specshow *x);
-void			buf_specshow_bang(t_buf_specshow *x);
-void			buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av);
-void            buf_specshow_int(t_buf_specshow *x, t_atom_long num);
-void            buf_specshow_float(t_buf_specshow *x, t_atom_float num);
+// Ppshowotypes
+void            *buf_pshow_new(t_symbol *s, long argc, t_atom *argv);
+void			buf_pshow_free(t_buf_pshow *x);
+void			buf_pshow_bang(t_buf_pshow *x);
+void			buf_pshow_anything(t_buf_pshow *x, t_symbol *msg, long ac, t_atom *av);
+void            buf_pshow_int(t_buf_pshow *x, t_atom_long num);
+void            buf_pshow_float(t_buf_pshow *x, t_atom_float num);
 
-void buf_specshow_assist(t_buf_specshow *x, void *b, long m, long a, char *s);
-void buf_specshow_inletinfo(t_buf_specshow *x, void *b, long a, char *t);
-void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview);
-t_max_err buf_specshow_notify(t_buf_specshow *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
+void buf_pshow_assist(t_buf_pshow *x, void *b, long m, long a, char *s);
+void buf_pshow_inletinfo(t_buf_pshow *x, void *b, long a, char *t);
+void buf_pshow_paint(t_buf_pshow *x, t_object *patcherview);
 
-void buf_specshow_set(t_buf_specshow *x, t_symbol *s);
-t_max_err buf_specshow_setattr_buffername(t_buf_specshow *x, void *attr, long argc, t_atom *argv);
+t_max_err buf_pshow_setattr_buffername(t_buf_pshow *x, void *attr, long argc, t_atom *argv);
 
-void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf, t_rect *rect);
+void buf_pshow_create_surface(t_buf_pshow *x, t_buffer_obj *buf, t_rect *rect);
 
 // Globals and Statics
-static t_class	*s_buf_specshow_class = NULL;
+static t_class	*s_buf_pshow_class = NULL;
 
 
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-t_max_err buf_specshow_setattr_autoscalemin(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
+t_max_err buf_pshow_setattr_autoscalemin(t_buf_pshow *x, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
         if (is_atom_number(argv)) {
@@ -147,7 +142,7 @@ t_max_err buf_specshow_setattr_autoscalemin(t_buf_specshow *x, void *attr, long 
     return MAX_ERR_NONE;
 }
 
-t_max_err buf_specshow_setattr_autoscalemax(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
+t_max_err buf_pshow_setattr_autoscalemax(t_buf_pshow *x, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
         if (is_atom_number(argv)) {
@@ -169,7 +164,7 @@ void ext_main(void *r)
         return;
     }
 
-    c = class_new("ears.specshow~", (method)buf_specshow_new, (method)buf_specshow_free, sizeof(t_buf_specshow), 0L, A_GIMME, 0);
+    c = class_new("ears.pshow~", (method)buf_pshow_new, (method)buf_pshow_free, sizeof(t_buf_pshow), 0L, A_GIMME, 0);
     
     c->c_flags |= CLASS_FLAG_NEWDICTIONARY;
     jbox_initclass(c, JBOX_FIXWIDTH | JBOX_FONTATTR);
@@ -178,99 +173,141 @@ void ext_main(void *r)
     // @description A symbol is considered as a buffer containing a spectrogram, i.e.
     // one bin for channel and one window for sample. The spectrogram is displayed
 
-    class_addmethod(c, (method)buf_specshow_set, "set", A_SYM, 0);
-    class_addmethod(c, (method)buf_specshow_anything, "anything",    A_GIMME, 0);
-    class_addmethod(c, (method)buf_specshow_float, "float",    A_FLOAT, 0);
-    class_addmethod(c, (method)buf_specshow_int, "int",    A_LONG, 0);
-    class_addmethod(c, (method)buf_specshow_paint,     "paint",    A_CANT, 0);
-    class_addmethod(c, (method)buf_specshow_assist,    "assist",        A_CANT, 0);
-    class_addmethod(c, (method)buf_specshow_notify,        "notify",    A_CANT, 0);
+    class_addmethod(c, (method)buf_pshow_anything, "anything",    A_GIMME, 0);
+    class_addmethod(c, (method)buf_pshow_float, "float",    A_FLOAT, 0);
+    class_addmethod(c, (method)buf_pshow_int, "int",    A_LONG, 0);
+    class_addmethod(c, (method)buf_pshow_paint,     "paint",    A_CANT, 0);
+    class_addmethod(c, (method)buf_pshow_assist,    "assist",        A_CANT, 0);
 
     // attributes
+
+    CLASS_ATTR_RGBA(c, "bgcolor", 0, t_buf_pshow, n_bgcolor);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "bgcolor", 0, "1. 1. 1. 1.0");
+    CLASS_ATTR_STYLE_LABEL(c, "bgcolor", 0, "rgba", "Background Color");
+    CLASS_ATTR_BASIC(c, "bgcolor", 0);
+    CLASS_ATTR_CATEGORY(c, "bgcolor", 0, "Appearance");
+    // @description Sets the background color.
+
     
-    CLASS_ATTR_SYM(c, "buffername", ATTR_SET_DEFER_LOW, t_buf_specshow, n_buffername);
-    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "buffername", 0, "volatile");
-    CLASS_ATTR_STYLE_LABEL(c, "buffername", 0, "text", "buffer~ Object Name");
-    CLASS_ATTR_ACCESSORS(c, "buffername", NULL, buf_specshow_setattr_buffername);
-    CLASS_ATTR_BASIC(c, "buffername", 0);
-    CLASS_ATTR_CATEGORY(c, "buffername", 0, "Behavior");
-    // @description Sets the name of the buffer to which the object is attached.
-
-
-    CLASS_ATTR_CHAR(c, "interp", 0, t_buf_specshow, n_interpolate);
-    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "interp", 0, "1");
-    CLASS_ATTR_STYLE_LABEL(c, "interp", 0, "onoff", "Interpolate Image");
-    CLASS_ATTR_BASIC(c, "interp", 0);
-    CLASS_ATTR_CATEGORY(c, "interp", 0, "Appearance");
-    // @description Toggle the interpolation capability.
-
-    CLASS_ATTR_RGBA(c, "mincolor", 0, t_buf_specshow, n_mincolor);
+    CLASS_ATTR_RGBA(c, "mincolor", 0, t_buf_pshow, n_mincolor);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "mincolor", 0, "1. 1. 1. 1.0");
     CLASS_ATTR_STYLE_LABEL(c, "mincolor", 0, "rgba", "Lowest Color");
     CLASS_ATTR_BASIC(c, "mincolor", 0);
     CLASS_ATTR_CATEGORY(c, "mincolor", 0, "Appearance");
     // @description Sets the color corresponding to the minimum value.
     
-    CLASS_ATTR_RGBA(c, "maxcolor", 0, t_buf_specshow, n_maxcolor);
+    CLASS_ATTR_RGBA(c, "maxcolor", 0, t_buf_pshow, n_maxcolor);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxcolor", 0, "0. 0. 0. 1.0");
     CLASS_ATTR_STYLE_LABEL(c, "maxcolor", 0, "rgba", "Highest Color");
     CLASS_ATTR_BASIC(c, "maxcolor", 0);
     CLASS_ATTR_CATEGORY(c, "maxcolor", 0, "Appearance");
     // @description Sets the color corresponding to the maximum value.
     
-    CLASS_ATTR_DOUBLE(c, "minvalue", 0, t_buf_specshow, n_minvalue);
+    CLASS_ATTR_DOUBLE(c, "minvalue", 0, t_buf_pshow, n_minvalue);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "minvalue", 0, "0.");
     CLASS_ATTR_STYLE_LABEL(c, "minvalue", 0, "text", "Lowest Value");
     CLASS_ATTR_BASIC(c, "minvalue", 0);
     CLASS_ATTR_CATEGORY(c, "minvalue", 0, "Appearance");
     // @description Sets the value corresponding to <m>mincolor</m> (only if <m>autoscale</m> is off).
     
-    CLASS_ATTR_DOUBLE(c, "maxvalue", 0, t_buf_specshow, n_maxvalue);
+    CLASS_ATTR_DOUBLE(c, "maxvalue", 0, t_buf_pshow, n_maxvalue);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxvalue", 0, "1.");
     CLASS_ATTR_STYLE_LABEL(c, "maxvalue", 0, "text", "Highest Value");
     CLASS_ATTR_BASIC(c, "maxvalue", 0);
     CLASS_ATTR_CATEGORY(c, "maxvalue", 0, "Appearance");
     // @description Sets the value corresponding to <m>maxcolor</m> (only if <m>autoscale</m> is off).
     
-    CLASS_ATTR_LONG(c, "maxnumbins", 0, t_buf_specshow, n_maxnumbins);
+    CLASS_ATTR_LONG(c, "maxnumbins", 0, t_buf_pshow, n_maxnumbins);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxnumbins", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "maxnumbins", 0, "text", "Maximum Number Of Bins Displayed");
     CLASS_ATTR_CATEGORY(c, "maxnumbins", 0, "Appearance");
     // @description Sets the maximum number of bins displayed (leave 0 for all).
 
-    CLASS_ATTR_DOUBLE(c, "maxfreq", 0, t_buf_specshow, n_maxfreq);
-    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxfreq", 0, "0");
+    CLASS_ATTR_DOUBLE(c, "maxfreq", 0, t_buf_pshow, n_maxfreq);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxfreq", 0, "12000");
     CLASS_ATTR_STYLE_LABEL(c, "maxfreq", 0, "text", "Maximum Frequency");
     CLASS_ATTR_CATEGORY(c, "maxfreq", 0, "Appearance");
     // @description Sets the maximum represented frequency (leave 0 for all).
 
-    CLASS_ATTR_CHAR(c, "sec", 0, t_buf_specshow, n_displayinseconds);
+    CLASS_ATTR_CHAR(c, "sec", 0, t_buf_pshow, n_displayinseconds);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "sec", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "sec", 0, "onoff", "Display In Seconds");
     CLASS_ATTR_CATEGORY(c, "sec", 0, "Appearance");
     // @description Toggle the time display in seconds instead of milliseconds.
 
     
-    CLASS_ATTR_LONG(c, "autoscalemin", 0, t_buf_specshow, n_autoscale_min);
+    CLASS_ATTR_DOUBLE(c, "peaksize", 0, t_buf_pshow, n_peak_radius);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "peaksize", 0, "1");
+    CLASS_ATTR_STYLE_LABEL(c, "peaksize", 0, "text", "Peak Radius");
+    CLASS_ATTR_CATEGORY(c, "peaksize", 0, "Appearance");
+    // @description Sets the peak radius for display.
+
+    CLASS_ATTR_DOUBLE(c, "linewidth", 0, t_buf_pshow, n_partials_line_width);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "linewidth", 0, "1");
+    CLASS_ATTR_STYLE_LABEL(c, "linewidth", 0, "text", "Line Width");
+    CLASS_ATTR_CATEGORY(c, "linewidth", 0, "Appearance");
+    // @description Sets the line width for partials display.
+
+    
+
+    CLASS_ATTR_SYM(c, "spectype", 0, t_buf_pshow, n_type);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "spectype", 0, "stft");
+    CLASS_ATTR_STYLE_LABEL(c, "spectype", 0, "text", "Spectral Analysis Type");
+    CLASS_ATTR_CATEGORY(c, "spectype", 0, "Spectral Analysis");
+    // @description Sets the spectral analysis type ("stft", "cqt" or "tempogram").
+
+    CLASS_ATTR_DOUBLE(c, "freqoffset", 0, t_buf_pshow, n_freq_offset);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqoffset", 0, "0");
+    CLASS_ATTR_STYLE_LABEL(c, "freqoffset", 0, "text", "Frequency Offset");
+    CLASS_ATTR_CATEGORY(c, "freqoffset", 0, "Spectral Analysis");
+    // @description Sets the offset for the frequency display.
+    
+    CLASS_ATTR_CHAR(c, "frequnit", 0, t_buf_pshow, n_frequnit);
+    CLASS_ATTR_STYLE_LABEL(c,"frequnit",0,"enumindex","Frequency Values Are In");
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "frequnit", 0, "0");
+    CLASS_ATTR_ENUMINDEX(c,"frequnit", 0, "Hertz BPM Cents MIDI");
+    CLASS_ATTR_CATEGORY(c, "frequnit", 0, "Units");
+    // @description Sets the unit for pitch values: Hertz (default), BPM, Cents, MIDI
+
+    CLASS_ATTR_CHAR(c, "ampunit", 0, t_buf_pshow, n_ampunit);
+    CLASS_ATTR_STYLE_LABEL(c,"ampunit",0,"enumindex","Amplitude Values Are In");
+    CLASS_ATTR_ENUMINDEX(c,"ampunit", 0, "Linear Decibel");
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "ampunit", 0, "0");
+    CLASS_ATTR_CATEGORY(c, "ampunit", 0, "Units");
+    // @description Sets the unit for amplitudes: Linear (default) or Decibel (0dB corresponding to 1. in the linear scale).
+
+    
+    
+    CLASS_ATTR_CHAR(c, "autolength", 0, t_buf_pshow, n_autolength);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autolength", 0, "1");
+    CLASS_ATTR_STYLE_LABEL(c, "autolength", 0, "onoff", "Automatically Adjust Length");
+    CLASS_ATTR_BASIC(c, "autolength", 0);
+    CLASS_ATTR_CATEGORY(c, "autolength", 0, "Settings");
+    // @description Toggles the ability to adjust displayed length automatically according
+    // to introduced partials.
+
+
+    
+    CLASS_ATTR_LONG(c, "autoscalemin", 0, t_buf_pshow, n_autoscale_min);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscalemin", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "autoscalemin", 0, "onoff", "Automatically Rescale Minimum");
-    CLASS_ATTR_ACCESSORS(c, "autoscalemin", NULL, buf_specshow_setattr_autoscalemin);
+    CLASS_ATTR_ACCESSORS(c, "autoscalemin", NULL, buf_pshow_setattr_autoscalemin);
     CLASS_ATTR_BASIC(c, "autoscalemin", 0);
-    CLASS_ATTR_CATEGORY(c, "autoscalemin", 0, "Settings");
+    CLASS_ATTR_CATEGORY(c, "autoscalemax", 0, "Settings");
     // @description Toggles the ability to obtain <m>minvalue</m> automatically
     // from the minimum and maximum values in the input buffer.
 
-    CLASS_ATTR_LONG(c, "autoscalemax", 0, t_buf_specshow, n_autoscale_max);
+    CLASS_ATTR_LONG(c, "autoscalemax", 0, t_buf_pshow, n_autoscale_max);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscalemax", 0, "1");
     CLASS_ATTR_STYLE_LABEL(c, "autoscalemax", 0, "onoff", "Automatically Rescale Maximum");
-    CLASS_ATTR_ACCESSORS(c, "autoscalemax", NULL, buf_specshow_setattr_autoscalemax);
+    CLASS_ATTR_ACCESSORS(c, "autoscalemax", NULL, buf_pshow_setattr_autoscalemax);
     CLASS_ATTR_BASIC(c, "autoscalemax", 0);
     CLASS_ATTR_CATEGORY(c, "autoscalemax", 0, "Settings");
     // @description Toggles the ability to obtain <m>maxvalue</m> automatically
     // from the minimum and maximum values in the input buffer.
 
     
-    CLASS_ATTR_DOUBLE(c, "colorcurve", 0, t_buf_specshow, n_colorcurve);
+    CLASS_ATTR_DOUBLE(c, "colorcurve", 0, t_buf_pshow, n_colorcurve);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "colorcurve", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "colorcurve", 0, "text", "Color Range Curve");
     CLASS_ATTR_BASIC(c, "colorcurve", 0);
@@ -278,38 +315,38 @@ void ext_main(void *r)
     // @description Sets the curvature value for the color mapping.
 
     
-    CLASS_ATTR_RGBA(c, "timegridcolor", 0, t_buf_specshow, n_grid_time_color);
+    CLASS_ATTR_RGBA(c, "timegridcolor", 0, t_buf_pshow, n_grid_time_color);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timegridcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
     CLASS_ATTR_STYLE_LABEL(c, "timegridcolor", 0, "rgba", "Time Grid Color");
     CLASS_ATTR_CATEGORY(c, "timegridcolor", 0, "Grid");
     // @description Sets the color of the time grid
     
     
-    CLASS_ATTR_RGBA(c, "timelabelcolor", 0, t_buf_specshow, n_label_time_color);
+    CLASS_ATTR_RGBA(c, "timelabelcolor", 0, t_buf_pshow, n_label_time_color);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timelabelcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
     CLASS_ATTR_STYLE_LABEL(c, "timelabelcolor", 0, "rgba", "Time Grid Label Color");
     CLASS_ATTR_CATEGORY(c, "timelabelcolor", 0, "Grid");
     // @description Sets the color of the time grid labels.
     
-    CLASS_ATTR_DOUBLE(c, "timegrid", 0, t_buf_specshow, n_grid_time_step_ms);
+    CLASS_ATTR_DOUBLE(c, "timegrid", 0, t_buf_pshow, n_grid_time_step_ms);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "timegrid", 0, "1000.");
     CLASS_ATTR_STYLE_LABEL(c, "timegrid", 0, "text", "Time Grid Step");
     CLASS_ATTR_CATEGORY(c, "timegrid", 0, "Grid");
     // @description Sets the time grid step in milliseconds; use 0 to turn grid off.
 
-    CLASS_ATTR_RGBA(c, "freqgridcolor", 0, t_buf_specshow, n_grid_freq_color);
+    CLASS_ATTR_RGBA(c, "freqgridcolor", 0, t_buf_pshow, n_grid_freq_color);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqgridcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
     CLASS_ATTR_STYLE_LABEL(c, "freqgridcolor", 0, "rgba", "Frequency Grid Color");
     CLASS_ATTR_CATEGORY(c, "freqgridcolor", 0, "Grid");
     // @description Sets the color of the vertical grid.
 
-    CLASS_ATTR_RGBA(c, "freqlabelcolor", 0, t_buf_specshow, n_label_freq_color);
+    CLASS_ATTR_RGBA(c, "freqlabelcolor", 0, t_buf_pshow, n_label_freq_color);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqlabelcolor", 0, "0.678 0.756862745098039 0.764705882352941 0.7");
     CLASS_ATTR_STYLE_LABEL(c, "freqlabelcolor", 0, "rgba", "Frequency Grid Label Color");
     CLASS_ATTR_CATEGORY(c, "freqlabelcolor", 0, "Grid");
     // @description Sets the color of the vertical grid labels.
     
-    CLASS_ATTR_ATOM(c, "freqgrid", 0, t_buf_specshow, n_grid_freq_step);
+    CLASS_ATTR_ATOM(c, "freqgrid", 0, t_buf_pshow, n_grid_freq_step);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "freqgrid", 0, "auto");
     CLASS_ATTR_STYLE_LABEL(c, "freqgrid", 0, "text", "Frequency Grid Step");
     CLASS_ATTR_CATEGORY(c, "freqgrid", 0, "Grid");
@@ -321,11 +358,11 @@ void ext_main(void *r)
     CLASS_ATTR_DEFAULT(c,"patching_rect",0, "0. 0. 256. 128.");
     
     class_register(CLASS_BOX, c);
-    s_buf_specshow_class = c;
+    s_buf_pshow_class = c;
 }
 
 
-void buf_specshow_assist(t_buf_specshow *x, void *b, long m, long a, char *s)
+void buf_pshow_assist(t_buf_pshow *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
         sprintf(s, "symbol/llll: Buffer Containing spectrogram");
@@ -333,99 +370,30 @@ void buf_specshow_assist(t_buf_specshow *x, void *b, long m, long a, char *s)
     }
 }
 
-void buf_specshow_inletinfo(t_buf_specshow *x, void *b, long a, char *t)
+void buf_pshow_inletinfo(t_buf_pshow *x, void *b, long a, char *t)
 {
     if (a)
         *t = 1;
 }
 
-t_max_err buf_specshow_notify(t_buf_specshow *x, t_symbol *s, t_symbol *msg, void *sender, void *data)
-{
-    if (msg == _sym_attr_modified) {
-        x->n_must_recreate_surface = true;
-        jbox_redraw((t_jbox *)x);
-    }
-    
-    t_symbol *buffer_name = (t_symbol *)object_method((t_object *)sender, gensym("getname"));
-    if (msg == gensym("globalsymbol_unbinding") && buffer_name && buffer_name == x->n_buffername) {
-        systhread_mutex_lock(x->n_mutex);
-        object_free(x->n_buffer_reference);
-        if (x->n_surface)
-            jgraphics_surface_destroy(x->n_surface);
-        x->n_surface = NULL;
-        x->n_buffer_reference = NULL;
-        x->n_last_buffer = NULL;
-        x->n_buffername = _llllobj_sym_empty_symbol;
-        systhread_mutex_unlock(x->n_mutex);
-        jbox_redraw((t_jbox *)x);
-        return MAX_ERR_NONE;
-    } else {
-        return buffer_ref_notify(x->n_buffer_reference, s, msg, sender, data);
-    }
-}
-
-void buf_specshow_set(t_buf_specshow *x, t_symbol *s)
-{
-    systhread_mutex_lock(x->n_mutex);
-    if (ears_buffer_symbol_is_buffer(s)) {
-        if (x->n_last_buffer)
-            ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
-        x->n_last_buffer = ears_buffer_get_object(s);
-        x->n_buffername = s;
-        ears_buffer_retain(x->n_last_buffer, x->n_buffername, NULL);
-        
-        if (!x->n_buffer_reference)
-            x->n_buffer_reference = buffer_ref_new((t_object *)x, s);
-        else
-            buffer_ref_set(x->n_buffer_reference, s);
-        x->n_must_recreate_surface = true;
-        jbox_redraw((t_jbox *)x);
-        systhread_mutex_unlock(x->n_mutex);
-    } else {
-        systhread_mutex_unlock(x->n_mutex);
-        if (s != _llllobj_sym_empty_symbol)
-            object_error((t_object *)x, "Input symbol does not correspond to a buffer!");
-    }
-}
-
-t_max_err buf_specshow_setattr_buffername(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
-{
-    if (argc && argv) {
-        if (atom_gettype(argv) == A_SYM) {
-            if (atom_getsym(argv) == gensym("volatile") ) {
-                systhread_mutex_lock(x->n_mutex);
-                object_free(x->n_buffer_reference);
-                x->n_buffer_reference = NULL;
-                x->n_last_buffer = NULL;
-                x->n_buffername = gensym("volatile");
-                systhread_mutex_unlock(x->n_mutex);
-                jbox_redraw((t_jbox *)x);
-            } else
-                buf_specshow_set(x, atom_getsym(argv));
-        }
-    }
-    return MAX_ERR_NONE;
-}
 
 
-void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
+
+void *buf_pshow_new(t_symbol *s, long argc, t_atom *argv)
 {
-    t_buf_specshow *x = NULL;
+    t_buf_pshow *x = NULL;
     t_dictionary *d = NULL;
     long boxflags;
     
     if (!(d = object_dictionaryarg(argc,argv)))
         return NULL;
     
-    x = (t_buf_specshow *)object_alloc(s_buf_specshow_class);
+    x = (t_buf_pshow *)object_alloc(s_buf_pshow_class);
     if (x) {
-        x->n_surface = NULL;
-        x->n_last_buffer = NULL;
         x->n_display_start_ms = 0;
         x->n_display_end_ms = -1;
         x->n_autoscale_max = 1;
         x->n_autoscale_min = 0;
-        x->n_buffername = _llllobj_sym_empty_symbol;
 
         x->n_mincolor = get_grey(1.);
         x->n_maxcolor = get_grey(0.);
@@ -433,7 +401,11 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_maxvalue = 0.1;
         x->n_colorcurve = 0.;
         
-        x->n_bins = llll_get();
+        x->n_frequnit = EARS_FREQUNIT_HERTZ;
+        x->n_ampunit = EARS_AMPUNIT_LINEAR;
+        x->n_type = gensym("stft");
+        
+        x->n_partials = llll_get();
         
         boxflags = 0
         | JBOX_DRAWFIRSTIN
@@ -464,40 +436,38 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
     return x;
 }
 
-void buf_specshow_free(t_buf_specshow *x)
+void buf_pshow_free(t_buf_pshow *x)
 {
-    if (x->n_last_buffer)
-        ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
-    
     systhread_mutex_free_debug(x->n_mutex);
-    llll_free(x->n_bins);
-    if (x->n_surface)
-        jgraphics_surface_destroy(x->n_surface);
+    llll_free(x->n_partials);
     jbox_free((t_jbox *)x);
 }
 
 
-void buf_specshow_float(t_buf_specshow *x, t_atom_float num)
+void buf_pshow_float(t_buf_pshow *x, t_atom_float num)
 {
     t_atom argv[1];
     atom_setfloat(argv, num);
-    buf_specshow_anything(x, _sym_list, 1, argv);
+    buf_pshow_anything(x, _sym_list, 1, argv);
 }
 
-void buf_specshow_int(t_buf_specshow *x, t_atom_long num)
+void buf_pshow_int(t_buf_pshow *x, t_atom_long num)
 {
     t_atom argv[1];
     atom_setlong(argv, num);
-    buf_specshow_anything(x, _sym_list, 1, argv);
+    buf_pshow_anything(x, _sym_list, 1, argv);
 }
 
 
-void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av)
+void buf_pshow_anything(t_buf_pshow *x, t_symbol *msg, long ac, t_atom *av)
 {
     long inlet = proxy_getinlet((t_object *)x);
 
     t_llll *parsed = NULL;
-    if (msg == _llllobj_sym_bach_llll || msg == _sym_list) {
+    if (msg == _llllobj_sym_bach_llll) {
+        if (ac > 0 && atom_gettype(av) == A_LONG)
+            parsed = llll_retrieve_from_phonenumber_and_retain(atom_getlong(av));
+    } else if (msg == _sym_list) {
         parsed = llll_parse(ac, av);
     } else {
         parsed = llll_get();
@@ -506,23 +476,28 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
     if (!parsed) return;
     
     if (parsed && parsed->l_head) {
-        if (inlet == 0) {
-            if (hatom_gettype(&parsed->l_head->l_hatom) == H_SYM) {
-                t_symbol *s = hatom_getsym(&parsed->l_head->l_hatom);
-                if (x->n_buffername == gensym("volatile")) {
-                    if (ears_buffer_symbol_is_buffer(s)) {
-                        if (x->n_last_buffer)
-                            ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
-                        t_buffer_obj *obj = ears_buffer_get_object(s);
-                        x->n_last_buffer = obj;
-                        ears_buffer_retain(x->n_last_buffer, s, NULL);
-                        x->n_must_recreate_surface = true;
-                        jbox_redraw((t_jbox *)x);
+        if (inlet == 0) { // partials
+            systhread_mutex_lock(x->n_mutex);
+            llll_free(x->n_partials);
+            x->n_partials = llll_clone(parsed);
+            if (x->n_autolength) {
+                // automatically find length
+                double maxonset = 0;
+                for (t_llllelem *partial = x->n_partials->l_head; partial; partial = partial->l_next) {
+                    t_llll *partial_ll = hatom_getllll(&partial->l_hatom);
+                    if (partial_ll) {
+                        for (t_llllelem *peak = partial_ll->l_head; peak; peak = peak->l_next) {
+                            t_llll *peak_ll = hatom_getllll(&peak->l_hatom);
+                            if (peak_ll && peak_ll->l_head && is_hatom_number(&peak_ll->l_head->l_hatom)) { // onset, frequency, amplitude, phase
+                                maxonset = MAX(maxonset, hatom_getdouble(&peak_ll->l_head->l_hatom));
+                            }
+                        }
                     }
-                } else {
-                    buf_specshow_set(x, s);
                 }
+                x->n_length_ms = maxonset;
             }
+            systhread_mutex_unlock(x->n_mutex);
+            jbox_redraw((t_jbox *)x);
         } else if (inlet == 1) { // start display
             if (parsed && parsed->l_head && is_hatom_number(&parsed->l_head->l_hatom)) {
                 x->n_display_start_ms = hatom_getdouble(&parsed->l_head->l_hatom);
@@ -538,7 +513,7 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
     llll_free(parsed);
 }
 
-t_jrgba buf_specshow_value_to_color(t_buf_specshow *x, double value)
+t_jrgba buf_pshow_value_to_color(t_buf_pshow *x, double value)
 {
     if (x->n_colorcurve == 0)
         return color_interp(x->n_mincolor, x->n_maxcolor, CLAMP((value - x->n_minvalue)/(x->n_maxvalue-x->n_minvalue), 0, 1));
@@ -547,108 +522,21 @@ t_jrgba buf_specshow_value_to_color(t_buf_specshow *x, double value)
     
 }
 
-// rect is only used for pixelised view
-void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf, t_rect *rect)
-{
-    if (!buf)
-        return;
-    
-    systhread_mutex_lock(x->n_mutex);
-    
-    x->n_framespersecond = ears_buffer_get_sr((t_object *)x, buf);
-    x->n_length_ms = ears_buffer_get_size_ms((t_object *)x, buf);
-    
-    bool is_spectral = ears_buffer_is_spectral((t_object *)x, buf);
-    if (is_spectral) {
-        x->n_bin_offset = ears_spectralbuf_get_binoffset((t_object *)x, buf);
-        x->n_bin_step = ears_spectralbuf_get_binsize((t_object *)x, buf);
-        x->n_bin_unit = ears_spectralbuf_get_binunit((t_object *)x, buf);
-        if (x->n_bins)
-            llll_free(x->n_bins);
-        t_llll *bins = ears_spectralbuf_get_bins((t_object *)x, buf);
-        x->n_bins = bins ? llll_clone(bins) : llll_get();
-        x->n_type = ears_spectralbuf_get_spectype((t_object *)x, buf);
-    } else {
-        x->n_bin_offset = 0;
-        x->n_bin_step = 1;
-        x->n_bin_unit = EARS_FREQUNIT_UNKNOWN;
-        llll_clear(x->n_bins);
-    }
-    
-    
-    
-    if (x->n_autoscale_min || x->n_autoscale_max) {
-        double amin, amax;
-        if (ears_buffer_get_minmax((t_object *)x, buf, &amin, &amax) == EARS_ERR_NONE) {
-            if (x->n_autoscale_min)
-                x->n_minvalue = amin;
-            if (x->n_autoscale_max)
-                x->n_maxvalue = (amin == amax ? amin + 1 : amax);
-        }
-    }
 
-    long numframes = ears_buffer_get_size_samps((t_object *)x, buf);
-    long numchannels = ears_buffer_get_numchannels((t_object *)x, buf);
-    long numbins = numchannels;
-    if (x->n_maxnumbins > 0) {
-        numbins = MIN(numbins, x->n_maxnumbins);
-    }
-    if (x->n_maxfreq > 0) {
-        numbins = MIN(numbins, (long)(x->n_maxfreq/x->n_bin_step));
-    }
-    x->n_num_bins = numbins;
-    
-    if (x->n_surface)
-        jgraphics_surface_destroy(x->n_surface);
-
-    float *sample = ears_buffer_locksamples(buf);
-
-    if (x->n_interpolate) {
-        x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, numframes, numbins);
-        
-        if (!sample) {
-            object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
-        } else {
-            for (long f = 0; f < numframes; f++) {
-                for (long c = 0; c < numbins; c++) {
-                    jgraphics_image_surface_set_pixel(x->n_surface, f, numbins - c - 1, buf_specshow_value_to_color(x, sample[f*numchannels + c]));
-                }
-            }
-        }
-    } else {
-        
-        x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, rect->width, rect->height);
-        
-        if (!sample) {
-            object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
-        } else {
-            for (long i = 0; i < rect->width; i++) {
-                for (long j = 0; j < rect->height; j++) {
-                    long ifloor = (long)(((double)i)*numframes/(long)rect->width);
-                    long jfloor = (long)(((double)j)*numbins/(long)rect->height);
-                    jgraphics_image_surface_set_pixel(x->n_surface, i, rect->height - j - 1, buf_specshow_value_to_color(x, sample[ifloor*numchannels + jfloor]));
-                }
-            }
-        }
-    }
-    ears_buffer_unlocksamples(x->n_last_buffer);
-
-    systhread_mutex_unlock(x->n_mutex);
-}
-
-double onset_to_xpos(t_buf_specshow *x, t_rect *rect, double onset)
+double onset_to_xpos(t_buf_pshow *x, t_rect *rect, double onset)
 {
     return rect->width * (onset-x->n_actual_display_start_ms)/(x->n_actual_display_end_ms - x->n_actual_display_start_ms);
 }
 
-double freq_to_ypos(t_buf_specshow *x, t_rect *rect, double freq)
+double freq_to_ypos(t_buf_pshow *x, t_rect *rect, double freq)
 {
-    return rect->height * (1 - (freq-x->n_bin_offset)/(x->n_num_bins *x->n_bin_step));
+    return rect->height * (1 - freq/(x->n_maxfreq));
+//    return rect->height * (1 - (freq-x->n_bin_offset)/(x->n_num_bins *x->n_bin_step));
 }
 
-const char *get_frequnit_abbr(t_buf_specshow *x)
+const char *get_frequnit_abbr(t_buf_pshow *x)
 {
-    switch (x->n_bin_unit) {
+    switch (x->n_frequnit) {
         case EARS_FREQUNIT_HERTZ:
             return "Hz";
             break;
@@ -667,7 +555,7 @@ const char *get_frequnit_abbr(t_buf_specshow *x)
     }
 }
 
-void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
+void buf_pshow_paint(t_buf_pshow *x, t_object *patcherview)
 {
     t_rect src, rect;
     t_jgraphics *g = (t_jgraphics *) patcherview_get_jgraphics(patcherview);        // obtain graphics context
@@ -676,21 +564,9 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     double patcherzoom = patcherview_get_zoomfactor(patcherview);
     t_rect fullrect = build_rect(0, 0, rect.width, rect.height);
     
-    if ((x->n_must_recreate_surface && x->n_last_buffer) ||
-        (!x->n_interpolate && patcherzoom != x->n_last_patcherzoom)) {
-        t_rect temp_rect;
-        temp_rect.width = rect.width * patcherview_get_zoomfactor(patcherview);
-        temp_rect.height = rect.height * patcherview_get_zoomfactor(patcherview);
-        buf_specshow_create_surface(x, x->n_last_buffer, &temp_rect);
-        x->n_must_recreate_surface = false;
-    }
+    // paint background
+    paint_rectangle(g, x->n_bgcolor, x->n_bgcolor, 0, 0, rect.width, rect.height, 0);
     
-    if (!x->n_surface) {
-        t_jrgba white = get_grey(1.);
-        paint_rect(g, &fullrect, &white, &white, 0, 0);
-        return;
-    }
-
     systhread_mutex_lock(x->n_mutex);
     
     double dstart = x->n_display_start_ms <= 0 ? 0 : x->n_display_start_ms;
@@ -698,20 +574,45 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     x->n_actual_display_start_ms = dstart;
     x->n_actual_display_end_ms = dend;
     
-    if (x->n_interpolate) {
-        src.y = 0;
-        src.height = jgraphics_image_surface_get_height(x->n_surface);
-        if (x->n_display_start_ms <= 0 && x->n_display_end_ms <= 0) {
-            src.x = 0;
-            src.width = jgraphics_image_surface_get_width(x->n_surface);
-        } else {
-            src.x = x->n_framespersecond * dstart * 0.001;
-            src.width = x->n_framespersecond * (dend - dstart) * 0.001;
+    for (t_llllelem *partial = x->n_partials->l_head; partial; partial = partial->l_next) {
+        t_llll *partial_ll = hatom_getllll(&partial->l_hatom);
+        if (partial_ll) {
+            double prev_amplitude = -10, prev_onset = -10, prev_freq = -10, prev_xpos = 0, prev_ypos = 0;
+            t_jrgba prev_color = get_grey(0);
+            for (t_llllelem *peak = partial_ll->l_head; peak; peak = peak->l_next) {
+                t_llll *peak_ll = hatom_getllll(&peak->l_hatom);
+                if (peak_ll && peak_ll->l_size >= 2) { // onset, frequency, [amplitude, phase]
+                    double amplitude = 1; // default, if no amplitude inserted
+                    double onset = 0;
+                    double freq = 0;
+                    if (peak_ll && peak_ll->l_head && is_hatom_number(&peak_ll->l_head->l_hatom)) {
+                        onset = hatom_getdouble(&peak_ll->l_head->l_hatom);
+                    }
+                    if (peak_ll && peak_ll->l_head && peak_ll->l_head->l_next && is_hatom_number(&peak_ll->l_head->l_next->l_hatom)) {
+                        freq = hatom_getdouble(&peak_ll->l_head->l_next->l_hatom);
+                    }
+                    if (peak_ll && peak_ll->l_head && peak_ll->l_head->l_next && peak_ll->l_head->l_next->l_next  && is_hatom_number(&peak_ll->l_head->l_next->l_next->l_hatom)) {
+                        amplitude = hatom_getdouble(&peak_ll->l_head->l_next->l_next->l_hatom);
+                    }
+                    
+                    t_jrgba color = buf_pshow_value_to_color(x, amplitude);
+                    double xpos = onset_to_xpos(x, &rect, onset);
+                    double ypos = freq_to_ypos(x, &rect, freq);
+                    
+                    if (prev_onset >= 0) {
+                        paint_line(g, color, prev_xpos, prev_ypos, xpos, ypos, x->n_partials_line_width);
+                    }
+                    paint_circle_filled(g, color, xpos, ypos, x->n_peak_radius);
+
+                    prev_xpos = xpos;
+                    prev_ypos = ypos;
+                    prev_color = color;
+                    prev_amplitude = amplitude;
+                    prev_freq = freq;
+                    prev_onset = onset;
+                }
+            }
         }
-        
-        jgraphics_image_surface_draw(g, x->n_surface, src, fullrect);
-    } else {
-        jgraphics_image_surface_draw_fast(g, x->n_surface);
     }
     
     // paint grids
@@ -763,10 +664,10 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
         }
 
         if (grid_freq_step > 0) {
-            double numbins = x->n_num_bins;
-            double offset = x->n_bin_offset;
-            double step = x->n_bin_step;
-            double max = offset + step * numbins;
+//            double numbins = x->n_num_bins;
+            double offset = x->n_freq_offset;
+//            double step = x->n_bin_step;
+            double max = offset + x->n_maxfreq;
             const char *unit = get_frequnit_abbr(x);
             for (double b = offset; b < max; b += grid_freq_step) {
                 double v = freq_to_ypos(x, &rect, b);

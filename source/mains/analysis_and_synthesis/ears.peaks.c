@@ -56,6 +56,8 @@ typedef struct _buf_peaks {
     double      e_minPeakDistance;
     t_symbol    *e_orderBy;
     double      e_threshold;
+    
+    char        e_account_for_masking;
 } t_buf_peaks;
 
 
@@ -228,6 +230,11 @@ void buf_peaks_bang(t_buf_peaks *x)
         
         t_llll *out = ears_specbuffer_peaks((t_object *)x, in1, in2, x->e_interpolate, x->e_maxPeaks > 0 ? x->e_maxPeaks : INT_MAX, x->e_minPeakDistance, x->e_orderBy, x->e_threshold, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_angleunit)x->e_ob.l_angleunit, &err);
         
+        if (x->e_account_for_masking) {
+            // TO DO
+            //
+//            e^{-3.5\cdot \frac{0.24}{0.021\cdot f_1+19}\cdot (f_2-f_1)}-e^{-5.75\cdot \frac{0.24}{0.021\cdot f_1+19}\cdot (f_2-f_1)}
+        }
         earsbufobj_outlet_llll((t_earsbufobj *)x, 0, out);
         llll_free(out);
     }

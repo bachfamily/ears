@@ -3699,9 +3699,12 @@ e_ears_essentia_framemode ears_essentia_feature_to_framemode(t_object *x, e_ears
             return EARS_ESSENTIA_FRAMEMODE_FRAMEWISE;
             break;
             
+        case EARS_FEATURE_INSTANTPOWER:
+            return EARS_ESSENTIA_FRAMEMODE_FRAMEWISE;
+            break;
+            
         case EARS_FEATURE_ZEROCROSSINGRATE:
         case EARS_FEATURE_DANCEABILITY:
-        case EARS_FEATURE_INSTANTPOWER:
         case EARS_FEATURE_DYNAMICCOMPLEXITY:
         case EARS_FEATURE_LARM:
         case EARS_FEATURE_LEQ:

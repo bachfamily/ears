@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 1,
+			"minor" : 5,
+			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -52,8 +52,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -119,7 +119,6 @@
 							}
 , 							{
 								"box" : 								{
-									"autoscale" : 1,
 									"buffername" : "",
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
@@ -229,7 +228,6 @@
 							}
 , 							{
 								"box" : 								{
-									"autoscale" : 1,
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -384,8 +382,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -421,6 +419,20 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"attr" : "autoscalemin",
+									"id" : "obj-1",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"orientation" : 1,
+									"outlettype" : [ "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 508.0, 261.0, 113.0, 46.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"attr" : "freqgridcolor",
 									"id" : "obj-31",
@@ -593,14 +605,14 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 488.0, 244.5, 146.0, 69.0 ],
-									"text" : "Scale automatically maxvalue and minvalue according to input buffer"
+									"patching_rect" : [ 617.5, 244.5, 146.0, 69.0 ],
+									"text" : "Scale automatically maxvalue or minvalue according to input buffer"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"attr" : "autoscale",
+									"attr" : "autoscalemax",
 									"id" : "obj-20",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
@@ -608,7 +620,7 @@
 									"orientation" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 393.0, 261.0, 90.0, 46.0 ]
+									"patching_rect" : [ 393.0, 261.0, 113.0, 46.0 ]
 								}
 
 							}
@@ -692,7 +704,6 @@
 							}
 , 							{
 								"box" : 								{
-									"autoscale" : 1,
 									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -700,7 +711,7 @@
 									"id" : "obj-7",
 									"maxclass" : "ears.specshow~",
 									"maxnumbins" : 200,
-									"maxvalue" : 0.252623170614243,
+									"maxvalue" : 0.041030246764421,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 244.5, 375.02793296089385, 212.25 ],
@@ -835,6 +846,13 @@
 							}
  ],
 						"lines" : [ 							{
+								"patchline" : 								{
+									"destination" : [ "obj-7", 0 ],
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
 								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
 									"midpoints" : [ 582.5, 239.75, 19.5, 239.75 ],
@@ -1009,8 +1027,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 1,
+							"minor" : 5,
+							"revision" : 5,
 							"architecture" : "x64",
 							"modernui" : 1
 						}

@@ -157,7 +157,7 @@ t_buf_window *buf_window_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_window*)object_alloc_debug(s_tag_class);
     if (x) {
         
-        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         x->e_ob.a_winnorm = 0; // by default windows are NOT normalized
         x->e_ob.a_zeropadding = 0;
