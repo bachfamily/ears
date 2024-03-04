@@ -147,7 +147,7 @@ t_max_err buf_pshow_setattr_autoscalemax(t_buf_pshow *x, void *attr, long argc, 
     if (argc && argv) {
         if (is_atom_number(argv)) {
             x->n_autoscale_max = atom_getlong(argv);
-            object_attr_setdisabled((t_object *)x, gensym("maxvalue"), x->n_autoscale_min == 1);
+            object_attr_setdisabled((t_object *)x, gensym("maxvalue"), x->n_autoscale_max == 1);
         }
     }
     return MAX_ERR_NONE;
@@ -365,8 +365,15 @@ void ext_main(void *r)
 void buf_pshow_assist(t_buf_pshow *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        sprintf(s, "symbol/llll: Buffer Containing spectrogram");
-        // @in 0 @type symbol/llll @digest Buffer containing spectrogram
+        if (a == 0)
+            sprintf(s, "llll: Partials to show"); // @in 0 @type llll @digest Partials
+            // @description Partials as llll; each element at the root level is a partial, as one of the lists returned by <o>cage.sdif.ptrack.resolve</o>
+        else if (a == 1)
+            sprintf(s, "float: Display Start (ms)"); // @in 1 @type llll @digest Display Start (ms)
+            // @description Position of display start (in milliseconds)
+        else
+            sprintf(s, "float: Display End (ms)"); // @in 2 @type llll @digest Display Start (ms)
+            // @description Position of display end (in milliseconds)
     }
 }
 

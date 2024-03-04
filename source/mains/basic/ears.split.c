@@ -281,8 +281,22 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             *end = llll_get();
             llll_appendlong(*start, 0);
 
-            double overlap_samps = earsbufobj_time_to_fsamps(e_ob, x->e_overlap, buf);
-            double duration_samps = (size_samps + (num_buffers - 1) * overlap_samps)/num_buffers;
+            double overlap_samps;
+            double duration_samps;
+            // in this case the defining equation is
+            // duration_samps * num_buffers = size_samps + (num_buffers - 1) * overlap_samps
+            if (x->e_ob.l_timeunit == EARS_TIMEUNIT_DURATION_RATIO) {
+                double overlap_rel = x->e_overlap;
+                // but if overlap_samps is defined relatively to the duration of the small buffer, then
+                // duration_samps * num_buffers = size_samps + (num_buffers - 1) * overlap_rel * size_samps / num_buffers
+                // hence
+                // duration_samps * (num_buffers - num_buffers * overlap_rel + overlap_rel) = size_samps
+                duration_samps = (size_samps + (num_buffers - 1) * overlap_rel * size_samps / num_buffers) / num_buffers;
+                overlap_samps = overlap_rel * size_samps / num_buffers;
+            } else {
+                overlap_samps = earsbufobj_time_to_fsamps(e_ob, x->e_overlap, buf);
+                duration_samps = (size_samps + (num_buffers - 1) * overlap_samps)/num_buffers;
+            }
             
             if (overlap_samps >= duration_samps) {
                 object_error((t_object *)e_ob, "Overlap duration cannot be greater than or equal to the segment duration.");
@@ -437,9 +451,9 @@ void buf_split_bang(t_buf_split *x)
         
         long num_out_buffers = start->l_size;
         
-        earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_out_buffers, true);
-        
+        earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+
         long *start_array = NULL, *end_array = NULL;
         llll_to_long_array(start, &start_array);
         llll_to_long_array(end, &end_array);

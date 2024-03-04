@@ -103,6 +103,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_envtimeunit_attr(c);
+    earsbufobj_class_add_slopemapping_attr(c);
+    earsbufobj_class_add_frequnit_attr(c);
 
     earsbufobj_class_add_polyout_attr(c);
 
@@ -201,8 +204,15 @@ void buf_onepole_bang(t_buf_onepole *x)
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
         if (el) {
-            double cutoff_freq = hatom_getdouble(&el->l_hatom);
-            ears_buffer_onepole((t_object *)x, in, out, cutoff_freq, highpass);
+            if (hatom_gettype(&el->l_hatom) == H_LLLL) { // cutoff is envelope
+                t_llll *env = earsbufobj_pitch_llllelem_to_hertz_and_samples((t_earsbufobj *)x, el, in);
+                llll_print(env);
+                ears_buffer_onepole_envelope((t_object *)x, in, out, env, highpass, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                llll_free(env);
+            } else {
+                double cutoff_freq = earsbufobj_freq_to_hz((t_earsbufobj *)x, hatom_getdouble(&el->l_hatom));
+                ears_buffer_onepole((t_object *)x, in, out, cutoff_freq, highpass);
+            }
         }
 
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;

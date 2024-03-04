@@ -201,9 +201,9 @@ void buf_gain_bang(t_buf_gain *x)
 {
     long num_buffers = earsbufobj_get_instore_size((t_earsbufobj *)x, 0);
     
-    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
-    
+    earsbufobj_refresh_outlet_names((t_earsbufobj *)x);
+
     earsbufobj_mutex_lock((t_earsbufobj *)x);
     earsbufobj_init_progress((t_earsbufobj *)x, num_buffers);
     

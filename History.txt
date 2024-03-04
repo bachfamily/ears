@@ -6,16 +6,23 @@ v 0.2
 
 These might break compatibility with older patches
 
-- ears.specshow: now autoscale is split into "autoscalemin" (by default off) and "autoscalemax" (by default on)
+- ears.specshow~: now autoscale is split into "autoscalemin" (by default off) and "autoscalemax" (by default on)
 
+- ears.split~:	now a relative overlap refers to an evenly subdivided chunk, not to the original one
 
 ***********************
 *** VERSION CHANGES ***
 ***********************
 
-- ears.roll.synthesis/sampling: 	
+- all objects: fixed bug causing possible quirks and even crashes, especially when using objects with 
+		varying outlet lengths (especially ears.split~) and a ears object in = (copy) mode later on in the chain
+
+- ears.onepole~: now supports envelopes
+
+- ears.roll.synthesis~/sampling~: 	
 		now if needed different voices can be bounced into different channels
 
-- ears.specshow: new pixelized mode ("interp" attribute)
+- ears.specshow~: new pixelized mode ("interp" attribute)
 
-- ears.essentia: Fixed dozens of features that did not work
+- ears.essentia~: Fixed dozens of features that did not work
+

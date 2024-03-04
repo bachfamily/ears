@@ -570,6 +570,19 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="rateslot" get="1" set="1" type="int" size="1">
+			<digest>
+				Slot Containing Rate
+			</digest>
+			<description>
+				Sets the number of the slot containing the rate (0 = none).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Slots" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Slot Containing Rate" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="resamplingfiltersize" get="1" set="1" type="int" size="1">
 			<digest>
 				Resampling Filter Size
@@ -611,6 +624,20 @@
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Resampling" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Resampling Policy" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="separatevoicechannels" get="1" set="1" type="int" size="1">
+			<digest>
+				Separate Voice Channels
+			</digest>
+			<description>
+				Toggles the ability to render each voice in its own separate set of channels, thus rendering a multichannel buffer, with separate
+				sets of channels for separate voices.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pan" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Separate Voice Channels" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 		<attribute name="spread" get="1" set="1" type="float" size="1">

@@ -391,6 +391,24 @@
       "ears.model.sine.synthesis~"
     ]
   },
+  "ears.pshow~": {
+    "digest": "Display partials",
+    "module": "ears",
+    "category": [
+      "ears display"
+    ],
+    "keywords": [
+      "buffer",
+      "pshow",
+      "partials",
+      "display",
+      "peak",
+      "partial tracking"
+    ],
+    "seealso": [
+      "waveform~"
+    ]
+  },
   "ears.tempogram~": {
     "digest": "Compute tempograms",
     "module": "ears",

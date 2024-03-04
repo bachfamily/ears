@@ -324,6 +324,7 @@
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="int" size="1" value="1024" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Block Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -411,6 +412,7 @@
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Preserve Formants" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -497,6 +499,7 @@
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="int" size="1" value="2" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Shift Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -559,6 +562,7 @@
 			<attributelist>
 				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Smoothing" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>

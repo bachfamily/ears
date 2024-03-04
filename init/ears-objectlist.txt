@@ -20,6 +20,7 @@ max oblist "ears objects" ears.model.stochastic.synthesis~;
 max oblist "ears objects" ears.window~;
 max oblist "ears objects" ears.phasewrap~;
 max oblist "ears objects" ears.model.sine.analysis~;
+max oblist "ears objects" ears.pshow~;
 max oblist "ears objects" ears.tempogram~;
 max oblist "ears objects" ears.timesquash~;
 max oblist "ears objects" ears.rubberband~;

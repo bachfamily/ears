@@ -273,7 +273,7 @@ bool spectralbuf_metadata_eq(t_ears_spectralbuf_metadata *data1, t_ears_spectral
 
 // This one is the core function that creates new buffers when needed. It's a wrapper of object_new_typed()
 t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable = false); // create a new buffer
-t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll *generated_names); // retain an existing buffer
+t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll *generated_names, bool dynamic_mode); // retain an existing buffer
 t_max_err ears_buffer_release(t_buffer_obj *buffer, t_symbol *buffername); // currently equivalent to ears_buffer_free()
 t_max_err ears_buffer_free(t_buffer_obj *buffer);
 
@@ -421,6 +421,7 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
 
 // Filtering
 t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double cutoff_freq, char highpass); // also works inplace
+t_ears_err ears_buffer_onepole_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *cutoff_freq, char highpass, e_slope_mapping slopemapping);
 t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double a0, double a1, double a2, double b1, double b2); // also works inplace
 t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long factor);
 t_ears_err ears_buffer_dcfilter(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest); // also works inplace
