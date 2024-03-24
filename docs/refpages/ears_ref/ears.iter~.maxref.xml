@@ -81,7 +81,7 @@
 			</digest>
 			<description>
 				A list or llll in the first inlet is supposed to contain buffer names and will
-				trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+				trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
 				A number or an llll in the second inlet is expected to contain a iter parameter (depending on the <m>ampunit</m>) or
 				an envelope (also see <m>envampunit</m>).
 			</description>
@@ -98,12 +98,12 @@
 		<method name="reset">
 			<arglist />
 			<digest>
-				Restart naming cycle
+				Restart naming allocation cycle
 			</digest>
 			<description>
-				If the <m>naming</m> attribute is set to 'Dynamic',
+				If the <m>alloc</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
-				used name. This is especially useful in combination with iterative mechanisms.
+				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
 		<method name="stop">

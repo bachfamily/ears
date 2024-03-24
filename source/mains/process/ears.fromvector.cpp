@@ -21,13 +21,12 @@
  Convert synchronously a signal vector into a list
  
  @description
- The <o>ears.fromvector~</o> object inside a patch loaded by ears.process~
- converts a signal vector into a list.
- It will then be possible to operate upon the list with regular Max object,
- and then convert it back to a signal vector through the <o>ears.tovector~</o> object.
+ Converts a signal vector into a list inside a patch loaded by <o>ears.process~</o>.
  
  @discussion
- 
+ It will then be possible to operate upon the list with regular Max object,
+ and then convert it back to a signal vector through the <o>ears.tovector~</o> object.
+
  @category
  ears process
  

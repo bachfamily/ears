@@ -21,7 +21,7 @@
 	Extract buffer features via the Essentia library
  
 	@description
-	Perform descriptor analysis on the incoming buffer via the Essentia library
+	Performs descriptor analysis on the incoming buffer via the Essentia library.
  
 	@discussion
  
@@ -101,6 +101,11 @@ typedef struct _buf_essentia {
     
     t_symbol           *onsetDetectionMethod;
     
+    char                usePitchFilter;
+    long                pitchFilter_confidenceThreshold;
+    long                pitchFilter_minChunkSize;
+    char                pitchFilter_useAbsolutePitchConfidence;
+
     long               buffer_output_interpolation_mode;
     
 } t_buf_essentia;
@@ -164,7 +169,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
-    // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+    // trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a essentia threshold (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(essentia)
@@ -185,7 +190,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_frequnit_attr(c);
     earsbufobj_class_add_pitchunit_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     
     earsbufobj_class_add_framesize_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
@@ -324,7 +329,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the maximum frequency for the Peaks analyis (in the <m>frequnit</m> attribute).
 
     CLASS_ATTR_LONG(c, "peaksmaxnum", 0, t_buf_essentia, PEAKS_maxPeaks);
-    CLASS_ATTR_STYLE_LABEL(c,"peaksmaxnum",0,"text","Maximum Number Of Peaks");
+    CLASS_ATTR_STYLE_LABEL(c,"peaksmaxnum",0,"text","Maximum Number of Peaks");
     CLASS_ATTR_CATEGORY(c, "peaksmaxnum", 0, "Peaks");
     // @description Sets the maximum number of peaks for the Peaks analyis.
 
@@ -345,6 +350,28 @@ void C74_EXPORT ext_main(void* moduleRef)
     // "melflux" (similar to spectral flux, but using half-rectified energy changes in Mel-frequency bands),
     // "rms" (the difference function, measuring the half-rectified change of the RMS of the magnitude spectrum).
     // Refer to the Essentia documentation for the "OnsetDetection" algorithm to know more.
+
+    CLASS_ATTR_CHAR(c, "pf", 0, t_buf_essentia, usePitchFilter);
+    CLASS_ATTR_STYLE_LABEL(c,"pf",0,"onoff","Use Pitch Filter");
+    CLASS_ATTR_CATEGORY(c, "pf", 0, "Pitch Filter");
+    // @description For extractors outputting pitch information, filter pitch data according to Essentia's pitch filter
+
+    CLASS_ATTR_LONG(c, "pfconfidencethreshold", 0, t_buf_essentia, pitchFilter_confidenceThreshold);
+    CLASS_ATTR_STYLE_LABEL(c,"pfconfidencethreshold",0,"text","Pitch Filter Confidence Threshold");
+    CLASS_ATTR_CATEGORY(c, "pfconfidencethreshold", 0, "Pitch Filter");
+    // @description Sets the ratio between the average confidence of the most confident chunk and the minimum
+    // allowed average confidence of a chunk.
+
+    CLASS_ATTR_LONG(c, "pfminchunksize", 0, t_buf_essentia, pitchFilter_minChunkSize);
+    CLASS_ATTR_STYLE_LABEL(c,"pfminchunksize",0,"text","Pitch Filter Minimum Chunk Size");
+    CLASS_ATTR_CATEGORY(c, "pfminchunksize", 0, "Pitch Filter");
+    // @description Sets the minumum number of frames in non-zero pitch chunks
+
+    CLASS_ATTR_CHAR(c, "pfuseabsolutepitchconfidence", 0, t_buf_essentia, pitchFilter_useAbsolutePitchConfidence);
+    CLASS_ATTR_STYLE_LABEL(c,"pfuseabsolutepitchconfidence",0,"text","Use Absolute Pitch Confidence for Pitch Filter");
+    CLASS_ATTR_CATEGORY(c, "pfuseabsolutepitchconfidence", 0, "Pitch Filter");
+    // @description Toggles the ability to treat negative pitch confidence values as positive
+    // (use with Melodia's extractors with @guessunvoiced 1)
     
 
     
@@ -1427,6 +1454,10 @@ t_buf_essentia *buf_essentia_new(t_symbol *s, short argc, t_atom *argv)
         
         // Onset detection method
         x->onsetDetectionMethod = gensym("complex");
+        
+        x->pitchFilter_confidenceThreshold = 36;
+        x->pitchFilter_minChunkSize = 30;
+        x->pitchFilter_useAbsolutePitchConfidence = false;
 
         // default analysis parameters
         x->a_envattacktime = 10;
@@ -1504,7 +1535,7 @@ t_buf_essentia *buf_essentia_new(t_symbol *s, short argc, t_atom *argv)
             t_ears_essentia_analysis_params params = buf_essentia_get_default_params(x);
             if (x->extractors_lib.num_extractors > 0)
                 ears_essentia_extractors_library_free(&x->extractors_lib);
-            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params, true);
+            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, 44100, x->algorithm_args, &x->extractors_lib, &params, x->usePitchFilter, true);
             x->must_recreate_extractors = true; //still will have to re-create them
         }
         
@@ -1584,6 +1615,10 @@ t_ears_essentia_analysis_params buf_essentia_get_default_params(t_buf_essentia *
     
     params.onsetDetectionMethod = "complex";
     
+    params.pitchFilter_confidenceThreshold = 36;
+    params.pitchFilter_minChunkSize = 30;
+    params.pitchFilter_useAbsolutePitchConfidence = false;
+
     params.HPCP_bandPreset = true;
     params.HPCP_bandSplitFrequency = 500;
     params.HPCP_harmonics = 0;
@@ -1647,6 +1682,10 @@ t_ears_essentia_analysis_params buf_essentia_get_params(t_buf_essentia *x, t_buf
 
     params.onsetDetectionMethod = x->onsetDetectionMethod->s_name; // "complex"; // to do: expose this
 
+    params.pitchFilter_confidenceThreshold = x->pitchFilter_confidenceThreshold;
+    params.pitchFilter_minChunkSize = x->pitchFilter_minChunkSize;
+    params.pitchFilter_useAbsolutePitchConfidence = x->pitchFilter_useAbsolutePitchConfidence;
+    
     // TO DO: Expose HPCP stuff
     params.HPCP_bandPreset = true;
     params.HPCP_bandSplitFrequency = 500;
@@ -1724,7 +1763,7 @@ void buf_essentia_bang(t_buf_essentia *x)
 //        if (x->must_recreate_extractors) { // potentially we may need to do this all the time, as parameters may also depend on the buffers
             if (x->extractors_lib.num_extractors > 0)
                 ears_essentia_extractors_library_free(&x->extractors_lib);
-            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, sr, x->algorithm_args, &x->extractors_lib, &params);
+            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, sr, x->algorithm_args, &x->extractors_lib, &params, x->usePitchFilter);
 //            x->must_recreate_extractors = false;
 //        }
     

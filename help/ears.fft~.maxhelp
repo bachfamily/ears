@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
-			"revision" : 3,
+			"minor" : 6,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -52,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 3,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 784.0, 470.0 ],
+						"rect" : [ 100.0, 126.0, 784.0, 470.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -94,25 +94,26 @@
 									"fontname" : "Arial",
 									"fontsize" : 13.0,
 									"id" : "obj-16",
-									"linecount" : 4,
+									"linecount" : 6,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 487.0, 236.900146484375, 196.0, 69.0 ],
-									"text" : "If toggled, the FFT is normalized so that it coincides with its inverse up to conjugation"
+									"patching_rect" : [ 533.0, 222.400146484375, 229.0, 98.0 ],
+									"text" : "Choose the FFT normalization type (Unitary means that FFT and its inverse coincide up to conjugation;\nTrueMagnitudes means that the magnitudes are sinusoidal amplitudes)"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"attr" : "unitary",
+									"attr" : "fftnorm",
 									"id" : "obj-11",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 333.25, 259.900146484375, 150.0, 23.0 ]
+									"patching_rect" : [ 333.25, 259.900146484375, 201.0, 23.0 ],
+									"text_width" : 66.75
 								}
 
 							}
@@ -157,7 +158,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u257003361",
+									"buffername" : "u843000478",
 									"id" : "obj-13",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -211,7 +212,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u621003375",
+									"buffername" : "u082000497",
 									"id" : "obj-25",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -301,7 +302,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u571003370",
+									"buffername" : "u415000491",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -566,14 +567,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 3,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 784.0, 470.0 ],
+						"rect" : [ 0.0, 26.0, 784.0, 470.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -849,7 +850,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u398003394",
+									"buffername" : "u929000667",
 									"id" : "obj-25",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -885,7 +886,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u663003397",
+									"buffername" : "u371000670",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -1124,8 +1125,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
-							"revision" : 3,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}

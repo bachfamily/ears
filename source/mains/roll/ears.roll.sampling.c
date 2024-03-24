@@ -143,7 +143,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
 
     earsbufobj_class_add_resamplingpolicy_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);

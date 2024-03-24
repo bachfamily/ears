@@ -56,7 +56,7 @@
 			</digest>
 			<description>
 				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
+				of the objects in ears. These names are only accounted for if the <m>alloc</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
 		<objarg name="threshold" optional="1" type="number">
@@ -96,7 +96,7 @@
 			</digest>
 			<description>
 				A list or llll in the first inlet is supposed to contain buffer names and will
-				trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+				trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
 				A number or an llll in the second inlet is expected to contain a clip threshold (depending on the <m>ampunit</m>) or
 				an envelope (also see <m>envampunit</m>).
 			</description>
@@ -113,12 +113,12 @@
 		<method name="reset">
 			<arglist />
 			<digest>
-				Restart naming cycle
+				Restart naming allocation cycle
 			</digest>
 			<description>
-				If the <m>naming</m> attribute is set to 'Dynamic',
+				If the <m>alloc</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
-				used name. This is especially useful in combination with iterative mechanisms.
+				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
 		<method name="stop">
@@ -277,13 +277,13 @@
 	<attributelist>
 		<attribute name="ampunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Amplitude Values Are In
+				Amplitude Values Unit
 			</digest>
 			<description>
 				Sets the unit for amplitudes: Linear (default) or Decibel (0dB corresponding to 1. in the linear scale).
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
@@ -296,7 +296,7 @@
 				Sets the blocking mode, i.e. the thread to be used for computation: <br />
 				0: the object uses its own separate thread; <br />
 				1: the object uses the main thread (default); <br />
-				2: the object uses its the scheduler thread. <br />
+				2: the object uses whatever thread the message comes in (including, notably the scheduler thread). <br />
 				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 			</description>
 			<attributelist>
@@ -308,48 +308,27 @@
 		</attribute>
 		<attribute name="envampunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Envelope Amplitude Values Are In
+				Envelope Amplitude Values Unit
 			</digest>
 			<description>
 				Sets the unit for amplitudes inside envelopes: Linear (default) or Decibel (0dB corresponding to 1. in the linear scale).
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Amplitude Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Amplitude Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="envtimeunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Envelope Time Values Are In
+				Envelope Time Values Unit
 			</digest>
 			<description>
 				Sets the unit for time values inside envelopes: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length).
 				The default is Relative.
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Time Values Are In" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
-			</attributelist>
-		</attribute>
-		<attribute name="naming" get="1" set="1" type="int" size="1">
-			<digest>
-				Output Naming Policy
-			</digest>
-			<description>
-				Chooses the output buffer naming policy: <br />
-				0 (Copy): the buffer name is copied from the input (in-place modification).
-				Notice that some objects do not allow this policy. <br />
-				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
-				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
-				Beware! This may allocate a lot of memory!
-				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
-				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
-				<b>-</b> for static and <b>!</b> for dynamic.
-			</description>
-			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Time Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>

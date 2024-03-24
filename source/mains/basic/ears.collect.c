@@ -128,7 +128,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
 //    earsbufobj_class_add_blocking_attr(c);
 //    earsbufobj_class_add_ampunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
 
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_collect, e_sr);
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");

@@ -95,7 +95,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method symbol/list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
-    // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+    // trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
     // A symbol in the second inlet is considered to be a buffer whose first sample is used to start the reconstruction.
     // A list in the second inlet is considered to be a set of samples (one for each channel) to start the reconstruction
     // (also see <m>float</m>).
@@ -109,7 +109,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_polyout_attr(c);
 
     

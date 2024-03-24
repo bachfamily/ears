@@ -71,12 +71,12 @@
 		<method name="reset">
 			<arglist />
 			<digest>
-				Restart naming cycle
+				Restart naming allocation cycle
 			</digest>
 			<description>
-				If the <m>naming</m> attribute is set to 'Dynamic',
+				If the <m>alloc</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
-				used name. This is especially useful in combination with iterative mechanisms.
+				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
 		<method name="stop">
@@ -244,20 +244,20 @@
 	<attributelist>
 		<attribute name="ampunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Amplitude Values Are In
+				Amplitude Values Unit
 			</digest>
 			<description>
 				Sets the unit for amplitudes: Linear (default) or Decibel (0dB corresponding to 1. in the linear scale).
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="timeunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Time Values Are In
+				Time Values Unit
 			</digest>
 			<description>
 				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
@@ -265,7 +265,7 @@
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>

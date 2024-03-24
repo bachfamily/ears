@@ -3,7 +3,7 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
+			"minor" : 6,
 			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
@@ -52,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 880.0, 631.0 ],
+						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -267,7 +267,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 0.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
@@ -285,7 +284,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 0.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
@@ -305,7 +303,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
@@ -689,14 +686,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 880.0, 631.0 ],
+						"rect" : [ 100.0, 126.0, 880.0, 631.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -774,7 +771,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 216.0, 292.0, 224.0, 69.0 ],
+									"patching_rect" : [ 216.0, 292.0, 225.0, 69.0 ],
 									"text" : "Second outlet outputs two buffers containing respectively the seams and the energy map if the \"extout\" attribute is set to 1"
 								}
 
@@ -817,7 +814,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 0.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
@@ -835,7 +831,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 0.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
@@ -843,7 +838,7 @@
 									"id" : "obj-10",
 									"maxclass" : "ears.specshow~",
 									"maxcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
-									"maxvalue" : 1.768646597862244,
+									"maxvalue" : 6.885147571563721,
 									"mincolor" : [ 1.0, 1.0, 1.0, 0.0 ],
 									"minvalue" : 0.000004951765732,
 									"numinlets" : 3,
@@ -855,7 +850,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
@@ -1341,7 +1335,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -2131,7 +2125,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -2552,7 +2546,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -3238,7 +3232,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1

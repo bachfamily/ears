@@ -21,8 +21,8 @@
  Message output for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.out</o> object inside a patch loaded by ears.process~
- to create an outlet passing data to the parent patch.
+ Creates an outlet inside a patch loaded by <o>ears.process~</o>
+ passing data to the parent patch.
  
  @discussion
  

@@ -18,7 +18,7 @@
 	Daniele Ghisi
  
 	@digest
-	Two-pole two-zero filter for buffers
+	Two-pole two-zero filter for buffers.
  
 	@description
     Implements a two-pole two-zero filter using the following equation:
@@ -97,12 +97,12 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // buffer names (depending on the <m>alloc</m> attribute).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(biquad)
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_polyout_attr(c);
 
     

@@ -154,7 +154,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
 
     earsbufobj_class_add_polyout_attr(c);
 
@@ -176,7 +176,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // attribute the object will rely on Max capability to load all the content
     // and then crop it).
     // Currently this attribute is not active by default because the WAV library
-    // ears rely upon is relatively slow, so that in most cases the native
+    // ears relies upon is relatively slow, so that in most cases the native
     // Max loading would be more convenient. It may become default in the future.
 
     CLASS_ATTR_CHAR(c, "iter",    0,    t_buf_read, iter);

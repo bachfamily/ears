@@ -97,7 +97,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method symbol/list/llll @digest Set operands
     // @description A symbol, list or llll in the first inlet is supposed to contain buffer names and will
-    // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+    // trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
     // A symbol in the second inlet is expected to contain the name of the buffer to be used as a second operand.
     // A number or an llll in the second inlet is expected to contain respectively the numeric operand or the operand
     // in the form of an envelope.
@@ -118,7 +118,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
     earsbufobj_class_add_resamplingpolicy_attr(c);
     earsbufobj_class_add_resamplingmode_attr(c);

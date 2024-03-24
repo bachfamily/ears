@@ -6,6 +6,17 @@ v 0.2
 
 These might break compatibility with older patches
 
+*****VERY IMPORTANT:*****
+
+- the "naming" attribute has been renamed to "alloc". If you have used it explicitly, please change the patch manually. 
+If you have used the ! and = shortcuts, as documented, instead, you will be fine! :-)
+
+- the ears.peaks~ has changed profoundly:
+ 	· now its output has ONE more level of parenthesis because the object is able to automatically iterate over multiple channels
+	· the peak threshold is no longer "@thresh" but "@peakampthresh" 
+	· the temporal peak analysis no longer needs [ears.trans~], but rather [ears.peaks~ @spectral 0]
+  please fix your patches!!!
+
 - ears.specshow~: now autoscale is split into "autoscalemin" (by default off) and "autoscalemax" (by default on)
 
 - ears.split~:	now a relative overlap refers to an evenly subdivided chunk, not to the original one
@@ -17,6 +28,9 @@ These might break compatibility with older patches
 - all objects: fixed bug causing possible quirks and even crashes, especially when using objects with 
 		varying outlet lengths (especially ears.split~) and a ears object in = (copy) mode later on in the chain
 
+- ears.ptrack~, ears.model.ptrack.analysis~, ears.model.ptrack.synthesis~, ears.pshow~: 
+		new objects dealing with partial tracking
+
 - ears.onepole~: now supports envelopes
 
 - ears.roll.synthesis~/sampling~: 	
@@ -25,4 +39,5 @@ These might break compatibility with older patches
 - ears.specshow~: new pixelized mode ("interp" attribute)
 
 - ears.essentia~: Fixed dozens of features that did not work
+	          Added object-wise pitch filtering (@pf attribute and its @pf* parameters) as postprocess pitch detection algorithms
 

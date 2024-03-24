@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 5,
-			"revision" : 4,
+			"minor" : 6,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 228.0, 109.0, 960.0, 609.0 ],
+		"rect" : [ 228.0, 109.0, 922.0, 609.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -52,14 +52,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -565,14 +565,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -997,14 +997,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -1225,6 +1225,7 @@
 											"parameter_longname" : "live.gain~",
 											"parameter_mmax" : 6.0,
 											"parameter_mmin" : -70.0,
+											"parameter_modmode" : 0,
 											"parameter_shortname" : "live.gain~",
 											"parameter_type" : 0,
 											"parameter_unitstyle" : 4
@@ -1667,14 +1668,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2576,14 +2577,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -2886,14 +2887,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3101,8 +3102,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 5,
-											"revision" : 4,
+											"minor" : 6,
+											"revision" : 1,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -3226,6 +3227,7 @@
 , 											{
 												"box" : 												{
 													"addpoints" : [ 0.0, 0.0, 0, 0.237037037037037, 0.261363977272726, 0, 0.474074074074074, 0.602273068181817, 0, 0.718518518518519, 1.0, 0, 1.0, 0.0, 0 ],
+													"classic_curve" : 1,
 													"domain" : 1.0,
 													"id" : "obj-47",
 													"maxclass" : "function",
@@ -3976,14 +3978,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -4743,14 +4745,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -5336,14 +5338,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -5876,14 +5878,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 228.0, 135.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -6002,8 +6004,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 5,
-											"revision" : 4,
+											"minor" : 6,
+											"revision" : 1,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -6038,6 +6040,20 @@
 										"subpatcher_template" : "",
 										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
+												"box" : 												{
+													"fontname" : "Arial",
+													"fontsize" : 13.0,
+													"id" : "obj-44",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 9.0, 1143.0, 670.5, 36.0 ],
+													"text" : "You should very rarely need dynamic allocation, as most ears object automatically iterate over lists of input buffers (see tab \"lists of buffers\")"
+												}
+
+											}
+, 											{
 												"box" : 												{
 													"fontface" : 2,
 													"fontsize" : 13.0,
@@ -6087,7 +6103,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 9.0, 810.0, 199.0, 23.0 ],
-													"text" : "@naming dynamic"
+													"text" : "@alloc dynamic"
 												}
 
 											}
@@ -6220,7 +6236,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 9.0, 386.0, 199.0, 23.0 ],
-													"text" : "@naming static"
+													"text" : "@alloc static"
 												}
 
 											}
@@ -6247,7 +6263,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 9.0, 8.0, 199.0, 23.0 ],
-													"text" : "@naming copy"
+													"text" : "@alloc inplace"
 												}
 
 											}
@@ -6275,7 +6291,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 399.0, 1053.5, 133.5, 38.0 ],
-													"text" : "ears.expr~ sqrt($f1) @naming dynamic"
+													"text" : "ears.expr~ sqrt($f1) @alloc dynamic"
 												}
 
 											}
@@ -6561,8 +6577,8 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 385.0, 178.5, 182.0, 23.0 ],
-													"text" : "ears.gain~ 0.5 @naming copy"
+													"patching_rect" : [ 385.0, 178.5, 180.0, 23.0 ],
+													"text" : "ears.gain~ 0.5 @alloc inplace"
 												}
 
 											}
@@ -6796,7 +6812,7 @@
 									"outlettype" : [ "int", "", "" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 10.0, 166.0, 142.0, 131.0 ],
-									"tabs" : [ "copy (in-place)", "static (default)", "dynamic (beware!)" ]
+									"tabs" : [ "in-place", "static (default)", "dynamic (beware!)" ]
 								}
 
 							}
@@ -6845,8 +6861,8 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 10.0, 117.0, 447.0, 36.0 ],
-									"text" : "The most important concept to master within ears is the concept of naming.\nThree naming mechanisms are allowed:"
+									"patching_rect" : [ 10.0, 117.0, 664.0, 36.0 ],
+									"text" : "The most important concept to master within ears is to understand how new buffers are allocated (\"alloc\" attribute)\nThree allocation mechanisms are allowed:"
 								}
 
 							}
@@ -6859,7 +6875,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 84.0, 292.0, 21.0 ],
-									"text" : "Naming mechanisms"
+									"text" : "Allocation mechanisms (@alloc attribute)"
 								}
 
 							}
@@ -6968,7 +6984,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 26.0, 123.0, 60.0, 22.0 ],
+					"patching_rect" : [ 26.0, 123.0, 69.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -6977,7 +6993,7 @@
 						"tags" : ""
 					}
 ,
-					"text" : "p naming",
+					"text" : "p allocation",
 					"varname" : "basic_tab[2]"
 				}
 
@@ -6994,14 +7010,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -7645,14 +7661,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 228.0, 135.0, 960.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,

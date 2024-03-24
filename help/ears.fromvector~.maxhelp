@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 5,
-			"revision" : 3,
+			"minor" : 6,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -71,8 +71,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 3,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -109,12 +109,24 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-5",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 102.5, 498.0, 50.0 ],
+									"text" : "It will then be possible to operate upon the list with regular Max object,\n and then convert it back to a signal vector through the <o>ears.tovector~</o> object.\n"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-58",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 18.0, 343.0, 276.0, 36.0 ],
+									"patching_rect" : [ 18.0, 353.0, 276.0, 36.0 ],
 									"text" : "N.B.: tempting as it may sound, you can't use ears.fromvector~ outside ears.process~"
 								}
 
@@ -127,7 +139,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 10.0, 253.0, 256.0, 64.0 ]
+									"patching_rect" : [ 10.0, 263.0, 256.0, 64.0 ]
 								}
 
 							}
@@ -138,7 +150,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 213.0, 44.0, 23.0 ],
+									"patching_rect" : [ 10.0, 223.0, 44.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -150,7 +162,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 177.0, 205.0, 23.0 ],
+									"patching_rect" : [ 10.0, 187.0, 205.0, 23.0 ],
 									"text" : "ears.process~ ears.listGain-inside"
 								}
 
@@ -174,7 +186,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 144.5, 110.0, 23.0 ],
+									"patching_rect" : [ 10.0, 155.0, 110.0, 23.0 ],
 									"text" : "earsBufCherokee"
 								}
 
@@ -188,7 +200,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 221.606537000000003, 177.0, 179.0, 25.0 ],
+									"patching_rect" : [ 222.0, 187.0, 179.0, 25.0 ],
 									"text" : "Double-click to look inside!"
 								}
 
@@ -204,8 +216,8 @@
 										"fileversion" : 1,
 										"appversion" : 										{
 											"major" : 8,
-											"minor" : 5,
-											"revision" : 3,
+											"minor" : 6,
+											"revision" : 1,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
@@ -630,7 +642,7 @@
  ]
 									}
 ,
-									"patching_rect" : [ 431.0, 217.0, 312.0, 23.0 ],
+									"patching_rect" : [ 431.0, 227.0, 312.0, 23.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -649,7 +661,7 @@
 									"numinlets" : 3,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "int" ],
-									"patching_rect" : [ 865.571428571428442, 541.0, 113.0, 23.0 ],
+									"patching_rect" : [ 866.0, 541.0, 113.0, 23.0 ],
 									"text" : "bach.ezmidiplay 8"
 								}
 
@@ -669,9 +681,9 @@
 									"numinlets" : 6,
 									"numoutlets" : 8,
 									"numvoices" : 1,
-									"out" : "nnnnnnn",
-									"outlettype" : [ "", "", "", "", "", "", "", "bang" ],
-									"patching_rect" : [ 431.0, 261.0, 526.0, 264.833333333333371 ],
+									"out" : "nnnnnnnn",
+									"outlettype" : [ "", "", "", "", "", "", "", "" ],
+									"patching_rect" : [ 431.0, 271.0, 526.0, 250.0 ],
 									"pitcheditrange" : [ "null" ],
 									"showvelocity" : 1,
 									"stafflines" : [ 5 ],
@@ -693,7 +705,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 752.606537000000003, 178.0, 152.0, 25.0 ],
+									"patching_rect" : [ 753.0, 188.0, 152.0, 25.0 ],
 									"text" : "A more advanced one"
 								}
 
@@ -705,7 +717,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 431.0, 140.5, 110.0, 23.0 ],
+									"patching_rect" : [ 431.0, 151.0, 110.0, 23.0 ],
 									"text" : "earsBufCherokee"
 								}
 
@@ -731,7 +743,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 431.0, 178.0, 312.0, 23.0 ],
+									"patching_rect" : [ 431.0, 188.0, 312.0, 23.0 ],
 									"text" : "ears.process~ ears.naiveAnalysis-insideearsprocess"
 								}
 
@@ -882,8 +894,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 3,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}

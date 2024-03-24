@@ -21,7 +21,7 @@
  Stochastic synthesis model
  
  @description
- Applies the Essentia stochastic synthesis model
+ Applies the Essentia stochastic synthesis model.
  
  @discussion
  
@@ -102,12 +102,12 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // buffer names (depending on the <m>alloc</m> attribute).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(model_stochastic_synthesis)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
 

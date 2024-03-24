@@ -127,7 +127,7 @@ void earsbufobj_buffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where, lo
         return;
 
     if (name && buf) {
-        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+        if (e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_DYNAMIC) {
 #ifdef EARS_ALLOCATIONVERBOSE
                 post("--- ears allocation: Buffer %s will be kept in memory (dynamic mode)", name->s_name);
 #endif
@@ -156,7 +156,7 @@ void earsbufobj_polybuffer_release(t_earsbufobj *e_ob, e_earsbufobj_in_out where
     t_object *obj = ears_polybuffer_getobject(name);
 
     if (name && obj) {
-        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+        if (e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_DYNAMIC) {
 #ifdef EARS_ALLOCATIONVERBOSE
                 post("--- ears allocation: Polybuffer %s will be kept in memory (dynamic mode)", name->s_name);
 #endif
@@ -326,7 +326,7 @@ void earsbufobj_buffer_link(t_earsbufobj *e_ob, e_earsbufobj_in_out where, long 
         t_llll *generated_outnames = earsbufobj_generated_names_llll_getlist(e_ob->l_generated_outnames, store_index, buffer_index);
         
         if (!earsbufobj_buffer_is_part_of_polybuffer(e_ob, buf_name))
-            ears_buffer_retain(*buf, buf_name, generated_outnames, e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC); // we retain the buffer
+            ears_buffer_retain(*buf, buf_name, generated_outnames, e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_DYNAMIC); // we retain the buffer
         
         *name = buf_name;
     }
@@ -586,18 +586,18 @@ t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, cha
                 t_symbol *s = hatom_getsym(&args->l_head->l_hatom);
                 t_atom av;
                 if (s == gensym("=")) {
-                    atom_setsym(&av, gensym("copy"));
-                    earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
+                    atom_setsym(&av, gensym("in-place"));
+                    earsbufobj_setattr_alloc(e_ob, NULL, 1, &av);
                     llll_behead(args);
                 }
                 if (s == gensym("!")) {
                     atom_setsym(&av, gensym("dynamic"));
-                    earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
+                    earsbufobj_setattr_alloc(e_ob, NULL, 1, &av);
                     llll_behead(args);
                 }
                 if (s == gensym("-")) {
                     atom_setsym(&av, gensym("static"));
-                    earsbufobj_setattr_naming(e_ob, NULL, 1, &av);
+                    earsbufobj_setattr_alloc(e_ob, NULL, 1, &av);
                     llll_behead(args);
                 }
             }
@@ -636,7 +636,7 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_pitchunit = EARS_PITCHUNIT_CENTS;
     e_ob->l_frequnit = EARS_FREQUNIT_HERTZ;
     e_ob->l_angleunit = EARS_ANGLEUNIT_RADIANS;
-    e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+    e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
     e_ob->l_blocking = EARSBUFOBJ_BLOCKING_MAINTHREAD;
     
     e_ob->l_resamplingpolicy = EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR;
@@ -648,6 +648,7 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->a_hopsize = 1024;
     e_ob->a_lastframetoendoffile = 0;
     e_ob->a_winstartfromzero = 0;
+    e_ob->a_fftnormalization = EARS_FFT_NORMALIZATION_TRUEMAGNITUDES;
     atom_setsym(&e_ob->a_numframes, _llllobj_sym_auto);
     e_ob->a_overlap = 2.;
     e_ob->a_wintype = gensym("hann");
@@ -830,7 +831,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                         name = hatom_getsym(&elem->l_hatom);
                         e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                     } else {
-                        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+                        if (e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE) {
                             e_ob->l_outstore[j].stored_buf[h].l_status = EARSBUFOBJ_BUFSTATUS_COPIED;
                         } else {
                             name = earsbufobj_output_get_symbol_unique(e_ob, j, h, &e_ob->l_outstore[j].stored_buf[h].l_status);
@@ -859,11 +860,11 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
             }
         }
     }
-    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_DYNAMIC) {
         object_warn((t_object *)e_ob, "Polybuffer output is currently incompatible with dynamic naming.");
         object_warn((t_object *)e_ob, "    Switching to default static buffer output.");
     }
-    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+    if (e_ob->l_output_polybuffers > 0 && e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE) {
         object_warn((t_object *)e_ob, "Polybuffer output is currently incompatible with copying names.");
         object_warn((t_object *)e_ob, "    Switching to default static buffer output.");
     }
@@ -1036,7 +1037,7 @@ void earsbufobj_free(t_earsbufobj *e_ob)
 
     for (i = 0; i < e_ob->l_numbufouts; i++) {
         for (j = 0; j < e_ob->l_outstore[i].num_stored_bufs; j++) {
-            if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_DYNAMIC) {
+            if (e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_DYNAMIC) {
                 earsbufobj_release_generated_outnames(e_ob);
             } else {
                 if (e_ob->l_outstore[i].stored_buf[j].l_name && e_ob->l_outstore[i].stored_buf[j].l_buf)
@@ -1448,7 +1449,7 @@ void earsbufobj_class_add_blocking_attr(t_class *c)
     // @description Sets the blocking mode (EXPERIMENTAL!), i.e. the thread to be used for computation: <br />
     // 0: the object uses its own separate thread; <br />
     // 1: the object uses the main thread (default); <br />
-    // 2: the object uses its the scheduler thread. <br />
+    // 2: the object uses the scheduler thread. <br />
     // The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 }
 
@@ -1501,7 +1502,7 @@ t_max_err earsbufobj_setattr_ampunit(t_earsbufobj *e_ob, void *attr, long argc, 
 void earsbufobj_class_add_ampunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "ampunit", 0, t_earsbufobj, l_ampunit);
-    CLASS_ATTR_STYLE_LABEL(c,"ampunit",0,"enumindex","Amplitude Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"ampunit",0,"enumindex","Amplitude Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"ampunit", 0, "Linear Decibel");
     CLASS_ATTR_ACCESSORS(c, "ampunit", NULL, earsbufobj_setattr_ampunit);
     CLASS_ATTR_BASIC(c, "ampunit", 0);
@@ -1531,7 +1532,7 @@ t_max_err earsbufobj_setattr_envampunit(t_earsbufobj *e_ob, void *attr, long arg
 void earsbufobj_class_add_envampunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "envampunit", 0, t_earsbufobj, l_envampunit);
-    CLASS_ATTR_STYLE_LABEL(c,"envampunit",0,"enumindex","Envelope Amplitude Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"envampunit",0,"enumindex","Envelope Amplitude Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"envampunit", 0, "Linear Decibel");
     CLASS_ATTR_ACCESSORS(c, "envampunit", NULL, earsbufobj_setattr_envampunit);
     CLASS_ATTR_BASIC(c, "envampunit", 0);
@@ -1562,7 +1563,7 @@ t_max_err earsbufobj_setattr_timeunit(t_earsbufobj *e_ob, void *attr, long argc,
 void earsbufobj_class_add_timeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "timeunit", 0, t_earsbufobj, l_timeunit);
-    CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"timeunit",0,"enumindex","Time Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"timeunit", 0, "Milliseconds Samples Duration Ratio Milliseconds Difference Samples Difference");
     CLASS_ATTR_ACCESSORS(c, "timeunit", NULL, earsbufobj_setattr_timeunit);
     CLASS_ATTR_BASIC(c, "timeunit", 0);
@@ -1592,7 +1593,7 @@ t_max_err earsbufobj_setattr_antimeunit(t_earsbufobj *e_ob, void *attr, long arg
 void earsbufobj_class_add_antimeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "antimeunit", 0, t_earsbufobj, l_antimeunit);
-    CLASS_ATTR_STYLE_LABEL(c,"antimeunit",0,"enumindex","Analysis Time Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"antimeunit",0,"enumindex","Analysis Time Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"antimeunit", 0, "Milliseconds Samples Relative");
     CLASS_ATTR_ACCESSORS(c, "antimeunit", NULL, earsbufobj_setattr_antimeunit);
     CLASS_ATTR_BASIC(c, "antimeunit", 0);
@@ -1622,7 +1623,7 @@ t_max_err earsbufobj_setattr_pitchunit(t_earsbufobj *e_ob, void *attr, long argc
 void earsbufobj_class_add_pitchunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "pitchunit", 0, t_earsbufobj, l_pitchunit);
-    CLASS_ATTR_STYLE_LABEL(c,"pitchunit",0,"enumindex","Pitch Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"pitchunit",0,"enumindex","Pitch Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"pitchunit", 0, "Cents MIDI Hertz Frequency Ratio");
     CLASS_ATTR_ACCESSORS(c, "pitchunit", NULL, earsbufobj_setattr_pitchunit);
     CLASS_ATTR_BASIC(c, "pitchunit", 0);
@@ -1651,12 +1652,12 @@ t_max_err earsbufobj_setattr_frequnit(t_earsbufobj *e_ob, void *attr, long argc,
 void earsbufobj_class_add_frequnit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "frequnit", 0, t_earsbufobj, l_frequnit);
-    CLASS_ATTR_STYLE_LABEL(c,"frequnit",0,"enumindex","Frequency Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"frequnit",0,"enumindex","Frequency Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"frequnit", 0, "Hertz BPM Cents MIDI");
     CLASS_ATTR_ACCESSORS(c, "frequnit", NULL, earsbufobj_setattr_frequnit);
     CLASS_ATTR_BASIC(c, "frequnit", 0);
     CLASS_ATTR_CATEGORY(c, "frequnit", 0, "Units");
-    // @description Sets the unit for pitch values: Hertz (default), BPM, Cents, MIDI 
+    // @description Sets the unit for frequency values: Hertz (default), BPM, Cents, MIDI numbers (semitones)
 }
 
 
@@ -1684,7 +1685,7 @@ t_max_err earsbufobj_setattr_angleunit(t_earsbufobj *e_ob, void *attr, long argc
 void earsbufobj_class_add_angleunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "angleunit", 0, t_earsbufobj, l_angleunit);
-    CLASS_ATTR_STYLE_LABEL(c,"angleunit",0,"enumindex","Angle Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"angleunit",0,"enumindex","Angle Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"angleunit", 0, "Radians Degrees Turns");
     CLASS_ATTR_ACCESSORS(c, "angleunit", NULL, earsbufobj_setattr_angleunit);
     CLASS_ATTR_BASIC(c, "angleunit", 0);
@@ -1719,6 +1720,7 @@ t_max_err earsbufobj_setattr_resamplingmode(t_earsbufobj *e_ob, void *attr, long
         if (atom_gettype(argv) == A_SYM) {
             e_ob->l_resamplingmode_sym = atom_getsym(argv);
             e_ob->l_resamplingmode = ears_symbol_to_resamplingmode((t_object *)e_ob, e_ob->l_resamplingmode_sym);
+            object_attr_setdisabled((t_object *)e_ob, gensym("resamplingfiltersize"), e_ob->l_bufouts_alloc != EARS_RESAMPLINGMODE_SINC);
         } else {
             object_error((t_object *)e_ob, "Invalid resampling mode!");
         }
@@ -1768,7 +1770,7 @@ t_max_err earsbufobj_setattr_envtimeunit(t_earsbufobj *e_ob, void *attr, long ar
 void earsbufobj_class_add_envtimeunit_attr(t_class *c)
 {
     CLASS_ATTR_CHAR(c, "envtimeunit", 0, t_earsbufobj, l_envtimeunit);
-    CLASS_ATTR_STYLE_LABEL(c,"envtimeunit",0,"enumindex","Envelope Time Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"envtimeunit",0,"enumindex","Envelope Time Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"envtimeunit", 0, "Milliseconds Samples Relative");
     CLASS_ATTR_ACCESSORS(c, "envtimeunit", NULL, earsbufobj_setattr_envtimeunit);
     CLASS_ATTR_BASIC(c, "envtimeunit", 0);
@@ -1797,55 +1799,62 @@ void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob)
     llll_free(temp);
 }
 
-t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+t_max_err earsbufobj_setattr_alloc(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
-        long old_bufouts_naming = e_ob->l_bufouts_naming;
+        long old_bufouts_naming = e_ob->l_bufouts_alloc;
         
         if (atom_gettype(argv) == A_LONG)
-            e_ob->l_bufouts_naming = atom_getlong(argv);
+            e_ob->l_bufouts_alloc = atom_getlong(argv);
         else if (atom_gettype(argv) == A_SYM) {
             t_symbol *s = atom_getsym(argv);
-            if (s == gensym("copy"))
-                e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_COPY;
-            else if (s == gensym("static"))
-                e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+            if (s == gensym("in-place") || s == gensym("inplace") || s == gensym("in place")) 
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_INPLACE;
+            else if (s == gensym("static") || s == gensym("copy"))
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
             else if (s == gensym("dynamic") || s == gensym("dyn"))
-                e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_DYNAMIC;
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_DYNAMIC;
             else {
                 object_error((t_object *)e_ob, "Unknown naming mode.");
-                e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
             }
         }
 
         // in any case:
         earsbufobj_release_generated_outnames(e_ob);
         
-        if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+        if (e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE) {
             if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES)) {
                 object_warn((t_object *)e_ob, "Object does not support 'Copy' naming mode. Switching to 'Static'.");
-                e_ob->l_bufouts_naming = EARSBUFOBJ_NAMING_STATIC;
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
             }
         }
     
-        object_attr_setdisabled((t_object *)e_ob, gensym("outname"), e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY);
+        object_attr_setdisabled((t_object *)e_ob, gensym("outname"), e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE);
 
-        if (old_bufouts_naming == EARSBUFOBJ_NAMING_COPY && e_ob->l_bufouts_naming != EARSBUFOBJ_NAMING_COPY)
+        if (old_bufouts_naming == EARSBUFOBJ_ALLOC_INPLACE && e_ob->l_bufouts_alloc != EARSBUFOBJ_ALLOC_INPLACE)
             earsbufobj_refresh_outlet_names(e_ob, true);
     }
     return MAX_ERR_NONE;
 }
 
 
-void earsbufobj_class_add_naming_attr(t_class *c)
+void earsbufobj_class_add_alloc_attr(t_class *c)
 {
-    CLASS_ATTR_CHAR(c, "naming", 0, t_earsbufobj, l_bufouts_naming);
-    CLASS_ATTR_STYLE_LABEL(c,"naming",0,"enumindex","Output Naming Policy");
-    CLASS_ATTR_ENUMINDEX(c,"naming", 0, "Copy Static Dynamic");
-    CLASS_ATTR_ACCESSORS(c, "naming", NULL, earsbufobj_setattr_naming);
-    CLASS_ATTR_BASIC(c, "naming", 0);
-    CLASS_ATTR_CATEGORY(c, "naming", 0, "Behavior");
-    // @description Chooses the output buffer naming policy
+    CLASS_ATTR_CHAR(c, "alloc", 0, t_earsbufobj, l_bufouts_alloc);
+    CLASS_ATTR_STYLE_LABEL(c,"alloc",0,"enumindex","Output Buffer Allocation Policy");
+    CLASS_ATTR_ENUMINDEX(c,"alloc", 0, "In-Place Static Dynamic");
+    CLASS_ATTR_ACCESSORS(c, "alloc", NULL, earsbufobj_setattr_alloc);
+    CLASS_ATTR_BASIC(c, "alloc", 0);
+    // @description Chooses the allocation policy for output buffers: <br />
+    // 0 (In-Place): the operation is performed in-place, and the output buffer name coincides with the input.
+    // Notice that this may disrupt the usual logical flow on a Max patch. Furthermore, some objects do not allow this policy. <br />
+    // 1 (Static, default): for every input buffer, a new single buffer (and hence buffer name) is created, and always used as output. <br />
+    // 2 (Dynamic): for every input buffer, and for every triggering of the operation, a new buffer (and hence buffer name) is created.
+    // Beware! This may allocate a lot of memory!
+    // You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
+    // You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for in-place,
+    // <b>-</b> for static (which, being the default, isn't really needed) and <b>!</b> for dynamic.
 }
 
 
@@ -1871,6 +1880,20 @@ void earsbufobj_class_add_framesize_attr(t_class *c)
     CLASS_ATTR_CATEGORY(c, "framesize", 0, "Analysis");
     // @description Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
 }
+
+void earsbufobj_class_add_fftnormalization_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "fftnorm", 0, t_earsbufobj, a_fftnormalization);
+    CLASS_ATTR_STYLE_LABEL(c,"fftnorm",0,"enumindex","FFT Normalization");
+    CLASS_ATTR_ENUMINDEX(c,"fftnorm", 0, "FFTsize FFTsize/2 Unitary TrueMagnitudes");
+    CLASS_ATTR_BASIC(c, "fftnorm", 0);
+    CLASS_ATTR_CATEGORY(c, "fftnorm", 0, "Analysis");
+    // @description Sets the normalization for the (direct) Fourier Transform.
+    // FFTsize/2 is the KissFFT default (the library ears uses to compute),
+    // Unitary means that direct and inverse FFTs are the same,
+    // TrueMagnitudes ensures that the magnitudes correspond to sinusoidal amplitudes
+}
+
 
 
 t_max_err earsbufobj_setattr_hopsize(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
@@ -2141,8 +2164,8 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
 /*    char *buf1 = NULL, *buf2 = NULL;
     llll_to_text_buf(e_ob->l_generated_outnames, &buf1, 0, 6, 0, LLLL_T_NONE, LLLL_TE_SMART, NULL);
   */
-    switch (e_ob->l_bufouts_naming) {
-        case EARSBUFOBJ_NAMING_DYNAMIC:
+    switch (e_ob->l_bufouts_alloc) {
+        case EARSBUFOBJ_ALLOC_DYNAMIC:
         {
             t_llllelem *el = earsbufobj_generated_names_llll_getsymbol(e_ob->l_generated_outnames, outstore_idx, buffer_idx, e_ob->l_generated_outname_count[outstore_idx]);
             if (el && hatom_gettype(&el->l_hatom) == H_SYM) {
@@ -2157,7 +2180,7 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
         }
             break;
             
-        case EARSBUFOBJ_NAMING_STATIC:
+        case EARSBUFOBJ_ALLOC_STATIC:
         {
             if (e_ob->l_outstore[outstore_idx].use_polybuffers) {
                 sym = ears_buffer_name_get_for_polybuffer(e_ob->l_outstore[outstore_idx].polybuffer_name, buffer_idx+1);
@@ -2177,7 +2200,7 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
         }
             break;
             
-        case EARSBUFOBJ_NAMING_COPY:
+        case EARSBUFOBJ_ALLOC_INPLACE:
         default:
             sym = earsbufobj_get_inlet_buffer_name(e_ob, outstore_idx, buffer_idx);
 //            if (!sym)
@@ -2247,7 +2270,7 @@ void earsbufobj_refresh_outlet_names(t_earsbufobj *e_ob, char force_refresh_even
             // Now we change the outlet names
             for (j = 0; j < num_stored_bufs; j++) { // was: j < c
                 if (e_ob->l_outstore[store].stored_buf[j].l_status != EARSBUFOBJ_BUFSTATUS_USERNAMED &&
-                    (force_refresh_even_if_static || !(e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_STATIC && (j < c && s[j]))))
+                    (force_refresh_even_if_static || !(e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_STATIC && (j < c && s[j]))))
                     earsbufobj_buffer_link(e_ob, EARSBUFOBJ_OUT, store, j, earsbufobj_output_get_symbol_unique(e_ob, store, j, &e_ob->l_outstore[store].stored_buf[j].l_status));
             }
             
@@ -2513,7 +2536,7 @@ void earsbufobj_store_buffer(t_earsbufobj *e_ob, e_earsbufobj_in_out type, long 
             case EARSBUFOBJ_OUT:
                 if (store_idx >= 0 && store_idx < e_ob->l_numbufouts && buffer_idx >= 0 && buffer_idx < e_ob->l_outstore[store_idx].num_stored_bufs) {
                     t_earsbufobj_store *store = &e_ob->l_outstore[store_idx];
-                    if (e_ob->l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+                    if (e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE) {
                         store->stored_buf[buffer_idx].l_name = buffername;
                         store->stored_buf[buffer_idx].l_buf = ears_buffer_get_object(buffername);
                     } else {
@@ -3950,7 +3973,7 @@ t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_l
 
 
 
-t_bool earsbufobj_is_sym_naming_mech(t_symbol *s)
+t_bool earsbufobj_is_sym_alloc_mech(t_symbol *s)
 {
     return s == gensym("!") || s == gensym("=") || s == gensym("_");
 }
@@ -4120,7 +4143,7 @@ t_max_err earsbufobj_retrieve_buffer_from_dictionary(t_earsbufobj *e_ob, t_dicti
         earsbufobj_mutex_unlock(e_ob);
         object_error((t_object *)e_ob, "Mismatch in number of samples.");
         return MAX_ERR_GENERIC;
-    } else if (name != ears_buffer_get_name((t_object *)e_ob, buf) && e_ob->l_bufouts_naming != EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED) {
+    } else if (name != ears_buffer_get_name((t_object *)e_ob, buf) && e_ob->l_bufouts_alloc != EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED) {
         earsbufobj_mutex_unlock(e_ob);
         object_error((t_object *)e_ob, "Mismatch in buffer name.");
         return MAX_ERR_GENERIC;

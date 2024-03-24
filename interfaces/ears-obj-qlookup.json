@@ -140,6 +140,28 @@
       "ears.fromdiffs~"
     ]
   },
+  "ears.ptrack~": {
+    "digest": "Partial tracking",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "partial tracking",
+      "partials",
+      "sinusoid",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.peaks~",
+      "ears.pshow~",
+      "ears.stft~",
+      "ears.cqt~",
+      "ears.trans~",
+      "ears.model.ptrack.synthesis~"
+    ]
+  },
   "ears.model.stochastic.analysis~": {
     "digest": "Stochastic analysis model",
     "module": "ears",
@@ -270,7 +292,7 @@
     ]
   },
   "ears.peaks~": {
-    "digest": "Find peaks of a spectrogram",
+    "digest": "Find spectral or temporal peaks",
     "module": "ears",
     "category": [
       "ears spectral"
@@ -283,7 +305,9 @@
     "seealso": [
       "ears.stft~",
       "ears.cqt~",
-      "ears.trans~"
+      "ears.trans~",
+      "ears.ptrack~",
+      "ears.pshow~"
     ]
   },
   "ears.vamp~": {
@@ -322,6 +346,47 @@
       "ears.stft~",
       "ears.griffinlim~",
       "ears.window~"
+    ]
+  },
+  "ears.model.ptrack.analysis~": {
+    "digest": "Partial tracking analysis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "partial tracking",
+      "partials",
+      "sinusoid",
+      "spectrum"
+    ],
+    "seealso": [
+      "ears.model.ptrack.synthesis~",
+      "ears.peaks~",
+      "ears.pshow~",
+      "ears.stft~",
+      "ears.cqt~",
+      "ears.trans~"
+    ]
+  },
+  "ears.model.ptrack.synthesis~": {
+    "digest": "Sinusoidal synthesis model",
+    "module": "ears",
+    "category": [
+      "ears spectral"
+    ],
+    "keywords": [
+      "buffer",
+      "model",
+      "partial tracking",
+      "partials",
+      "sinusoid",
+      "synthesis",
+      "resynthesis"
+    ],
+    "seealso": [
+      "ears.model.ptrack.analysis~"
     ]
   },
   "ears.model.stochastic.synthesis~": {

@@ -23,7 +23,7 @@
 	@description
     Computes approximate phases and from a magnitude spectrum
     using the Griffin-Lim iterative algorithm and outputs the
-    reconstructed signal
+    reconstructed signal.
 
 	@discussion
  
@@ -56,7 +56,6 @@ typedef struct _buf_griffinlim {
 
     long            num_iterations;
     long            fullspectrum;
-    long            unitary;
 
 } t_buf_griffinlim;
 
@@ -105,17 +104,18 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // buffer names (depending on the <m>alloc</m> attribute).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(griffinlim)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
 
     earsbufobj_class_add_wintype_attr_ansyn(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
+    earsbufobj_class_add_fftnormalization_attr(c);
 
     CLASS_ATTR_LONG(c, "numiter", 0, t_buf_griffinlim, num_iterations);
     CLASS_ATTR_STYLE_LABEL(c,"numiter",0,"text","Number of Iterations");
@@ -127,12 +127,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_STYLE_LABEL(c, "fullspectrum", 0, "onoff", "Full Spectrum");
     CLASS_ATTR_BASIC(c, "fullspectrum", 0);
     // @description Output full spectrum; if not set, it will output the first half of the spectrum only.
-
-    CLASS_ATTR_LONG(c, "unitary",    0,    t_buf_griffinlim, unitary);
-    CLASS_ATTR_STYLE_LABEL(c,"unitary",0,"onoff","Unitary");
-    CLASS_ATTR_BASIC(c, "unitary", 0);
-    // @description Toggles the unitary normalization of the Fourier Transform (so that the
-    // if coincides with its inverse up to conjugation).
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -170,7 +164,6 @@ t_buf_griffinlim *buf_griffinlim_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_griffinlim*)object_alloc_debug(s_tag_class);
     if (x) {
         x->fullspectrum = 0;
-        x->unitary = 1;
         x->num_iterations = 10;
         
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
@@ -220,7 +213,7 @@ void buf_griffinlim_bang(t_buf_griffinlim *x)
         ears_buffer_griffinlim((t_object *)x, num_buffers, in_amp, out_ph, NULL, dest, 
                                x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect",
                                x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : "rect",
-                               x->fullspectrum, x->e_ob.a_winstartfromzero, x->unitary, x->num_iterations, true);
+                               x->fullspectrum, x->e_ob.a_winstartfromzero, (e_ears_fft_normalization)x->e_ob.a_fftnormalization, x->num_iterations, true);
         
         bach_freeptr(in_amp);
         bach_freeptr(out_ph);

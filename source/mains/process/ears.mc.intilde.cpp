@@ -21,8 +21,8 @@
  Signal input for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.mc.in~</o> object inside a patch loaded by ears.process~
- to create a multichannel signal inlet receiving data from an input buffer.
+ Creates a multichannel signal inlet inside a patch loaded by <o>ears.process~</o>
+ receiving data from an input buffer.
  
  @discussion
  

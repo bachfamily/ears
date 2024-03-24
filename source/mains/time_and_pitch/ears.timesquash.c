@@ -21,7 +21,7 @@
 	Content-aware time abridgement
  
 	@description
-    Resizes a buffer while preserving original content
+    Resizes a buffer while preserving original content.
  
 	@discussion
     The module uses an implementation of a seam-carving algorithm.
@@ -134,7 +134,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
-    // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+    // trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a parameter (depending on the <m>mode</m>).
     // For "repeat" mode, the parameter is the number of repetitions.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(timesquash)
@@ -144,11 +144,12 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
     earsbufobj_class_add_framesize_attr(c);
+    earsbufobj_class_add_fftnormalization_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_overlap_attr(c);
     earsbufobj_class_add_wintype_attr_ansyn(c);
@@ -488,7 +489,7 @@ void buf_timesquash_bang(t_buf_timesquash *x)
     } else if (mode == 1) { // frequency-domain
         
         long fullspectrum = 0; // must be zero! we're only shifting the lower portion of spectrum
-        long unitary = 1;
+        e_ears_fft_normalization fftnormalization = EARS_FFT_NORMALIZATION_UNITARY;
         long num_griffin_lim_iter = x->e_num_griffin_lim_iter;
         long griffin_lim_invalidate_width = x->e_griffin_lim_bleed_width;
         bool griffin_lim_vertical = x->e_griffin_lim_vertical;
@@ -526,7 +527,7 @@ void buf_timesquash_bang(t_buf_timesquash *x)
                 out_amps[c] = ears_buffer_make(NULL);
                 out_phases[c] = ears_buffer_make(NULL);
 
-                ears_buffer_stft((t_object *)x, inbuf, NULL, c, in_amps[c], in_phases[c], x->e_ob.a_framesize, x->e_ob.a_hopsize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, x->e_ob.a_winstartfromzero, unitary);
+                ears_buffer_stft((t_object *)x, inbuf, NULL, c, in_amps[c], in_phases[c], x->e_ob.a_framesize, x->e_ob.a_hopsize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, x->e_ob.a_winstartfromzero, (e_ears_fft_normalization)x->e_ob.a_fftnormalization);
             }
             
             
@@ -540,10 +541,10 @@ void buf_timesquash_bang(t_buf_timesquash *x)
             t_buffer_obj *energymapcumul = extended ? earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 1, 2) : NULL;
 
             
-            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, energymap, energymapcumul, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_regularization, x->e_forward_energy, x->e_forward_energy_type, x->e_forward_energy_embed, fullspectrum, false, unitary, num_griffin_lim_iter, griffin_lim_invalidate_width, griffin_lim_vertical, griffin_lim_randomize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), x->e_batch_size, x->e_batch_interrupt);
+            ears_buffer_spectral_seam_carve((t_object *)x, num_in_chans, in_amps, in_phases, out_amps, out_phases, energymap, energymapcumul, seam_path, delta_frames, framesize_samps, hopsize_samps, x->e_energy_mode, (updateprogress_fn)earsbufobj_updateprogress, x->e_compensate_phases, x->e_regularization, x->e_forward_energy, x->e_forward_energy_type, x->e_forward_energy_embed, fullspectrum, false, fftnormalization, num_griffin_lim_iter, griffin_lim_invalidate_width, griffin_lim_vertical, griffin_lim_randomize, x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect", x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), x->e_batch_size, x->e_batch_interrupt);
             
             ears_buffer_istft((t_object *)x, num_in_chans, out_amps, out_phases, outbuf, NULL,
-                              x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, unitary);
+                              x->e_ob.a_wintype_ansyn[1] ? x->e_ob.a_wintype_ansyn[1]->s_name : (x->e_ob.a_wintype_ansyn[0] ? x->e_ob.a_wintype_ansyn[0]->s_name : "rect"), true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, x->e_ob.a_winstartfromzero, fftnormalization);
             buffer_setdirty(outbuf);
 
             for (long c = 0; c < num_in_chans; c++) {

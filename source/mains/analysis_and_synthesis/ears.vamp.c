@@ -147,7 +147,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Store buffers
     // @description A list or llll with buffer names will be considered as the names of the buffers to be stored and output
-    // (also according on the <m>naming</m> attribute).
+    // (also according on the <m>alloc</m> attribute).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(vamp) // TO DO: should we NOT defer this?
 
     // @method getlist @digest Get plugin list
@@ -166,7 +166,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
 

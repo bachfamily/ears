@@ -21,8 +21,8 @@
  Message input for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.in</o> object inside a patch loaded by ears.process~
- to create an inlet receiving data from the parent patch.
+ Creates an inlet inside a patch loaded by <o>ears.process~</o>
+ receiving data from the parent patch.
  
  @discussion
  

@@ -266,6 +266,9 @@ typedef struct _ears_essentia_extractors_library
     long num_extractors;
     t_ears_essentia_extractor   *extractors;
     
+    // possible Add-ons
+    bool use_pitch_filter;
+    
     // fundamental processors
     Algorithm *alg_FrameCutter;
     Algorithm *alg_Windower;
@@ -281,6 +284,7 @@ typedef struct _ears_essentia_extractors_library
     Algorithm *alg_HPCP;
     Algorithm *alg_Pitch; // potentially could be chosen, currently it's YinFFT
     Algorithm *alg_OnsetDetection;
+    Algorithm *alg_PitchFilter;
 } t_ears_essentia_extractors_library;
 
 
@@ -312,7 +316,11 @@ typedef struct _ears_essentia_analysis_params
     // Onset detection
     const char *onsetDetectionMethod;
     
-    
+    // Pitch filtering (see Essentia PitchFilter algorithm)
+    long                pitchFilter_confidenceThreshold;
+    long                pitchFilter_minChunkSize;
+    bool                pitchFilter_useAbsolutePitchConfidence;
+
     // Spectral Peaks
     
     Real    PEAKS_magnitudeThreshold;
@@ -380,14 +388,12 @@ t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t
 
 t_ears_err ears_vector_tempogram(t_object *ob, std::vector<Real> samples, double sr, std::vector<Real> &frequencyBands, t_buffer_obj *dest, t_ears_essentia_analysis_params *params);
 
-t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *phases, bool interpolate, int maxPeaks, double minPeakDistance, t_symbol *orderBy, double threshold, e_ears_timeunit timeunit, e_ears_angleunit angleunit, t_ears_err *err);
-
 // Features
 long ears_essentia_feature_to_numouts(e_ears_feature feat);
 e_ears_essentia_framemode ears_essentia_feature_to_framemode(t_object *x, e_ears_feature feat);
 void ears_essentia_feature_to_default_framesizes_and_hopsize(t_object *x, e_ears_feature feat, double *framesize, double *hopsize, e_ears_timeunit *analysis_unit);
 void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *lib);
-t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, bool silent = false);
+t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, bool usepitchfilter, bool silent = false);
 t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer_obj *buf, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, long buffer_output_interpolation_mode);
 
 #endif // _EARS_BUF_RUBBERBAND_COMMONS_H_

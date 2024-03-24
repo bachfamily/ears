@@ -263,14 +263,14 @@ void ext_main(void *r)
     // @description Sets the offset for the frequency display.
     
     CLASS_ATTR_CHAR(c, "frequnit", 0, t_buf_pshow, n_frequnit);
-    CLASS_ATTR_STYLE_LABEL(c,"frequnit",0,"enumindex","Frequency Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"frequnit",0,"enumindex","Frequency Values Unit");
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "frequnit", 0, "0");
     CLASS_ATTR_ENUMINDEX(c,"frequnit", 0, "Hertz BPM Cents MIDI");
     CLASS_ATTR_CATEGORY(c, "frequnit", 0, "Units");
-    // @description Sets the unit for pitch values: Hertz (default), BPM, Cents, MIDI
+    // @description Sets the unit for pitch values: Hertz (default), BPM, Cents, MIDI numbers (semitones)
 
     CLASS_ATTR_CHAR(c, "ampunit", 0, t_buf_pshow, n_ampunit);
-    CLASS_ATTR_STYLE_LABEL(c,"ampunit",0,"enumindex","Amplitude Values Are In");
+    CLASS_ATTR_STYLE_LABEL(c,"ampunit",0,"enumindex","Amplitude Values Unit");
     CLASS_ATTR_ENUMINDEX(c,"ampunit", 0, "Linear Decibel");
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "ampunit", 0, "0");
     CLASS_ATTR_CATEGORY(c, "ampunit", 0, "Units");
@@ -409,7 +409,7 @@ void *buf_pshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_colorcurve = 0.;
         
         x->n_frequnit = EARS_FREQUNIT_HERTZ;
-        x->n_ampunit = EARS_AMPUNIT_LINEAR;
+        x->n_ampunit = EARS_AMPUNIT_DECIBEL;
         x->n_type = gensym("stft");
         
         x->n_partials = llll_get();
@@ -482,7 +482,7 @@ void buf_pshow_anything(t_buf_pshow *x, t_symbol *msg, long ac, t_atom *av)
     }
     if (!parsed) return;
     
-    if (parsed && parsed->l_head) {
+    if (parsed) {
         if (inlet == 0) { // partials
             systhread_mutex_lock(x->n_mutex);
             llll_free(x->n_partials);
@@ -606,10 +606,13 @@ void buf_pshow_paint(t_buf_pshow *x, t_object *patcherview)
                     double xpos = onset_to_xpos(x, &rect, onset);
                     double ypos = freq_to_ypos(x, &rect, freq);
                     
-                    if (prev_onset >= 0) {
-                        paint_line(g, color, prev_xpos, prev_ypos, xpos, ypos, x->n_partials_line_width);
+                    const double PAD = 10;
+                    if (ypos >= 0-PAD && ypos <= rect.height+PAD && xpos >= 0-PAD && xpos <= rect.width+PAD) {
+                        if (prev_onset >= 0) {
+                            paint_line(g, color, prev_xpos, prev_ypos, xpos, ypos, x->n_partials_line_width);
+                        }
+                        paint_circle_filled(g, color, xpos, ypos, x->n_peak_radius);
                     }
-                    paint_circle_filled(g, color, xpos, ypos, x->n_peak_radius);
 
                     prev_xpos = xpos;
                     prev_ypos = ypos;

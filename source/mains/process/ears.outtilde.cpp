@@ -21,8 +21,8 @@
  Signal output for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.out~</o> object inside a patch loaded by ears.process~
- to create a signal outlet writing data to an output buffer.
+ Creates an outlet inside a patch loaded by <o>ears.process~</o>
+ writing data to an output buffer.
  
  @discussion
  

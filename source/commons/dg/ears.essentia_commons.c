@@ -782,116 +782,6 @@ t_ears_err ears_vector_cqt(t_object *ob, std::vector<Real> samples, double sr, t
 }
 
 
-// peaks of a spectrogram-buffer (channels are bins)
-t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *phases, bool interpolate, int maxPeaks, double minPeakDistance, t_symbol *orderBy, double threshold, e_ears_timeunit timeunit, e_ears_angleunit angleunit, t_ears_err *err)
-{
-    t_llll *out = llll_get();
-    essentia::standard::Algorithm *peaks;
-    std::vector<essentia::Real> bins, positions, amplitudes;
-
-    *err = EARS_ERR_NONE;
-    
-    double spectrogram_sr = ears_buffer_get_sr(ob, mags);
-    long spectrogram_numbins = ears_buffer_get_numchannels(ob, mags);
-    t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, mags);
-
-    double minPeakDistance_rel = data ? ((minPeakDistance/data->binsize)/spectrogram_numbins) : minPeakDistance;
-
-    try {
-        peaks = essentia::standard::AlgorithmFactory::create("PeakDetection",
-                                                             "interpolate", interpolate,
-                                                             "maxPeaks", maxPeaks,
-                                                             "minPeakDistance", minPeakDistance_rel,
-                                                             "orderBy", orderBy->s_name,
-                                                             "threshold", (Real)threshold
-                                                             );
-        
-        peaks->input("array").set(bins);
-        peaks->output("positions").set(positions);
-        peaks->output("amplitudes").set(amplitudes);
-    } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  *err = EARS_ERR_ESSENTIA; return out;   }
-    
-    
-    float *mags_sample = ears_buffer_locksamples(mags);
-    float *phases_sample = phases ? ears_buffer_locksamples(phases) : NULL;
-
-    if (!mags_sample) {
-        *err = EARS_ERR_CANT_READ;
-        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
-    } else {
-        try {
-            t_atom_long    channelcount = buffer_getchannelcount(mags);
-            t_atom_long    framecount   = buffer_getframecount(mags);
-            for (long f = 0; f < framecount; f++) {
-                t_llll *framepeaks = llll_get();
-                double t = ears_convert_timeunit(f / spectrogram_sr, mags, EARS_TIMEUNIT_SECONDS, timeunit);
-                llll_appenddouble(framepeaks, t);
-                long f_times_channelcount = f*channelcount;
-                bins.clear();
-                for (long c = 0; c < channelcount; c++)
-                    bins.push_back(mags_sample[f_times_channelcount + c]);
-                
-                peaks->compute();
-                
-                long limit = MIN(positions.size(), amplitudes.size());
-                for (long i = 0; i < limit; i++) {
-                    t_llll *thispeak = llll_get();
-                    double bin = positions[i] * (spectrogram_numbins - 1);
-                    
-                    // position
-                    if (data)
-                        llll_appenddouble(thispeak, data->binoffset + bin * data->binsize);
-                    else
-                        llll_appenddouble(thispeak, bin+1); // 1-based bin
-                    
-                    // amplitude
-                    llll_appenddouble(thispeak, amplitudes[i]);
-                    
-                    // phase
-                    if (phases_sample) {
-                        double ph = 0;
-                        if (bin <= 0)
-                            ph = phases_sample[f*channelcount];
-                        else if (bin >= channelcount - 1)
-                            ph = phases_sample[f*channelcount + channelcount - 1];
-                        else {
-                            // linearly interpolating phases
-                            long fl = floor(bin);
-                            double diff = bin - fl;
-                            double phlow = ears_angle_to_radians(phases_sample[f*channelcount + fl], angleunit);
-                            double phhigh = ears_angle_to_radians(phases_sample[f*channelcount + fl+1], angleunit);
-                            if (phhigh > phlow) {
-                                while (phhigh - phlow > PI) {
-                                    phhigh -= TWOPI;
-                                }
-                            } else if (phlow > phhigh) {
-                                while (phlow - phhigh > PI) {
-                                    phhigh += TWOPI;
-                                }
-                            }
-                            ph = (1 - diff) * phlow + diff * phhigh;
-                        }
-                        llll_appenddouble(thispeak, ph);
-                    }
-                    
-                    llll_appendllll(framepeaks, thispeak);
-                }
-                
-                llll_appendllll(out, framepeaks);
-            }
-        }
-        catch (essentia::EssentiaException e)
-        {
-            object_error(ob, e.what());
-        }
-        ears_buffer_unlocksamples(mags);
-        if (phases)
-            ears_buffer_unlocksamples(phases);
-    }
-    
-    return out;
-}
-
 
 
 
@@ -1288,7 +1178,7 @@ e_ears_analysis_summarizationweight ears_summaryweight_from_symbol(t_symbol *s)
     return EARS_ANALYSIS_SUMMARIZATIONWEIGHT_NONE;
 }
 
-t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, bool silent)
+t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_features, long *features, long *temporalmodes, double sr, t_llll **args, t_ears_essentia_extractors_library *lib, t_ears_essentia_analysis_params *params, bool usepitchfilter, bool silent)
 {
     t_ears_err err = EARS_ERR_NONE;
     long spectrumsize = 1 + (params->framesize_samps/2);
@@ -1376,7 +1266,12 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
         
         lib->alg_OnsetDetection = AlgorithmFactory::create("OnsetDetection", "method", params->onsetDetectionMethod,
                                                            "sampleRate", sr);
-        
+
+        lib->alg_PitchFilter = AlgorithmFactory::create("PitchFilter",
+                                                        "confidenceThreshold", (int)params->pitchFilter_confidenceThreshold,
+                                                        "minChunkSize", (int)params->pitchFilter_minChunkSize,
+                                                        "useAbsolutePitchConfidence", params->pitchFilter_useAbsolutePitchConfidence);
+
         
         lib->extractors = (t_ears_essentia_extractor *)bach_newptrclear(num_features * sizeof(t_ears_essentia_extractor));
         for (long i = 0; i < num_features; i++) {
@@ -1611,6 +1506,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     set_input(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRUM, "array");
                     set_essentia_outputs(lib, i, "f", "energy");
                     set_custom_outputs(lib, i, "f", "energy");
+                    lib->extractors[i].essentia_output_ampunit[0] = EARS_AMPUNIT_LINEAR;
                     break;
                     
                     
@@ -3634,11 +3530,13 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
             }
         }
         lib->num_extractors = num_features;
+        lib->use_pitch_filter = usepitchfilter;
     } catch (essentia::EssentiaException e) {
         if (!silent)
             object_error((t_object *)e_ob, e.what());
         err = EARS_ERR_ESSENTIA;
         lib->num_extractors = 0;
+        lib->use_pitch_filter = 0;
     }
 
     
@@ -3932,6 +3830,7 @@ void ears_essentia_extractors_library_free(t_ears_essentia_extractors_library *l
     delete lib->alg_HPCP;
     delete lib->alg_Pitch;
     delete lib->alg_OnsetDetection;
+    delete lib->alg_PitchFilter;
     for (long i = 0; i < lib->num_extractors; i++) {
         for (long o = 0; o < EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS; o++) {
             if (lib->extractors[i].specdata.bins)
@@ -4123,7 +4022,7 @@ std::vector<std::vector<Real>> vector_of_vector_average(t_object *culprit, std::
     std::vector<std::vector<std::vector<Real>>> v = w; // first clone
     std::vector<Real> rms_weights = rms_weights_;
     std::vector<Real> loudness_weights = loudness_weights_;
-    if (summarizationpositiveonly) {
+    if (summarizationpositiveonly) { 
         for (long f = 0; f < v.size(); ) { // frames ?
             if (vector_has_no_positives(v[f])) {
                 v.erase(v.begin()+f);
@@ -4927,12 +4826,13 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
             lib->alg_HPCP->reset();
             lib->alg_Pitch->reset();
             lib->alg_OnsetDetection->reset();
+            lib->alg_PitchFilter->reset();
             lib->extractors[i].algorithm->reset();
             hpcpdata.clear();
             pitchdata.clear();
 
             if (need_framewise_iteration) {
-                //// FRAMEWISE ITERATION
+                /// FRAMEWISE ITERATION
                 std::vector<std::vector<std::vector<Real>>> frame_features[EARS_ESSENTIA_EXTRACTOR_MAX_OUTPUTS];
                 std::vector<Real> loudness_weights, rms_weights;
                 bool need_loudness = false, need_rms = false;
@@ -5169,13 +5069,34 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                     }
                 }
                 
+                if (lib->use_pitch_filter &&
+                    (lib->extractors[i].feature == EARS_FEATURE_PITCHYIN ||
+                    lib->extractors[i].feature == EARS_FEATURE_PITCHYINFFT ||
+                    lib->extractors[i].feature == EARS_FEATURE_PITCHMELODIA ||
+                     lib->extractors[i].feature == EARS_FEATURE_PREDOMINANTPITCHMELODIA)) {
+//                     lib->extractors[i].feature == EARS_FEATURE_PITCHYINPROBABILISTIC)) {
+                    
+                    // these must be flattened versions of the outlets
+                    std::vector<Real> pf_pitch = vector_of_vector_of_vector_flatten(frame_features[0]);
+                    std::vector<Real> pf_pitchConfidence = vector_of_vector_of_vector_flatten(frame_features[1]);
+                    std::vector<Real> pf_pitchFiltered;
+
+                    lib->alg_PitchFilter->input("pitch").set(pf_pitch);
+                    lib->alg_PitchFilter->input("pitchConfidence").set(pf_pitchConfidence);
+                    lib->alg_PitchFilter->output("pitchFiltered").set(pf_pitchFiltered);
+                    
+                    lib->alg_PitchFilter->compute();
+                    
+                    frame_features[0] = vector_wrapdeepest(vector_wrapdeepest(pf_pitchFiltered));
+                    
+                }
                 must_set_frames_position_samps = false;
                 
-                for (long o = 0; o < lib->extractors[i].essentia_num_outputs; o++) {
+                for (long o = 0; o < lib->extractors[i].essentia_num_outputs; o++) { // cycle on the output
                     switch (temporalmode) {
                         case EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES:
                         case EARS_ANALYSIS_TEMPORALMODE_TIMESERIES:
-                            for (long fr = 0; fr < frame_features[o].size(); fr++) {
+                            for (long fr = 0; fr < frame_features[o].size(); fr++) { // cycle on the frame
                                 if (lib->extractors[i].output_type[o] == 'b' || lib->extractors[i].output_type[o] == 'c') {
                                     llll_appendsym(lib->extractors[i].result[o], symbol_from_ascii_vector_wrapped(frame_features[o][fr]));
                                 } else {

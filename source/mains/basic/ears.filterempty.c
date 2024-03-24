@@ -99,7 +99,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
 //    earsbufobj_class_add_outname_attr(c);
-//    earsbufobj_class_add_naming_attr(c);
+//    earsbufobj_class_add_alloc_attr(c);
 
     
     CLASS_ATTR_DOUBLE(c, "ampthresh", 0, t_buf_filterempty, ampthresh);

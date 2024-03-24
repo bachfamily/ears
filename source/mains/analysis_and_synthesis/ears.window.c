@@ -104,7 +104,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
-    // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+    // trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(window)
 
     // @method symbol/llll @digest Set window type
@@ -114,7 +114,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
 
     
 #ifdef EARS_WINDOW_USE_ESSENTIA

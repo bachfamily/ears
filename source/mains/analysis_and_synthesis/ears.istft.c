@@ -60,7 +60,6 @@ typedef struct _buf_istft {
     long            polar_input;
     long            polar_output;
     long            fullspectrum;
-    long            unitary;
 
     double             sr;
 
@@ -128,15 +127,16 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // buffer names (depending on the <m>alloc</m> attribute).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(istft)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
 
+    earsbufobj_class_add_fftnormalization_attr(c);
 #ifdef EARS_STFT_USE_ESSENTIA
     earsbufobj_class_add_wintype_attr_essentia(c);
 #else
@@ -172,12 +172,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_STYLE_LABEL(c, "fullspectrum", 0, "onoff", "Full Spectrum");
     CLASS_ATTR_BASIC(c, "fullspectrum", 0);
     // @description Output full spectrum; if not set, it will output the first half of the spectrum only.
-
-    CLASS_ATTR_LONG(c, "unitary",    0,    t_buf_istft, unitary);
-    CLASS_ATTR_STYLE_LABEL(c,"unitary",0,"onoff","Unitary");
-    CLASS_ATTR_BASIC(c, "unitary", 0);
-    // @description Toggles the unitary normalization of the Fourier Transform (so that the
-    // if coincides with its inverse up to conjugation).
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -234,7 +228,6 @@ t_buf_istft *buf_istft_new(t_symbol *s, short argc, t_atom *argv)
         x->polar_output = 0;
         x->fullspectrum = 0;
         x->sr = 0;
-        x->unitary = 1;
         
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
@@ -299,7 +292,7 @@ void buf_istft_bang(t_buf_istft *x)
         ears_specbuffer_istft_essentia((t_object *)x, num_buffers, in1, in2, dest, x->polar, x->fullspectrum, &params, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr);
 #else
         
-        ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, dest2, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect", x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, x->unitary);
+        ears_buffer_istft((t_object *)x, num_buffers, in1, in2, dest, dest2, x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect", x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->sr, x->e_ob.a_winstartfromzero, (e_ears_fft_normalization)x->e_ob.a_fftnormalization);
         
 #endif
         bach_freeptr(in1);
