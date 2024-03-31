@@ -1063,7 +1063,7 @@ t_llll *AudioCues_to_llll(t_buf_read *x, AudioFile<float> &audioFile)
         } else {
             buf_read_llll_append_position(x, this_marker_ll, cues[i].sampleStart, audioFile.getSampleRate(), audioFile.getNumSamplesPerChannel());
         }
-        if (i < cues[i].label.size() > 0)
+        if (cues[i].label.size() > 0)
             llll_appendsym(this_marker_ll, gensym(cues[i].label.c_str()));
         llll_appendllll(out, this_marker_ll);
     }

@@ -297,6 +297,9 @@ typedef struct _ears_essentia_analysis_params
     
     const char  *windowType;
     bool        windowNormalized;
+    long        zeroPadding;
+    bool        zeroPhase;
+    bool        splitPadding;
     bool        startFromZero;
     bool        lastFrameToEndOfFile;
 

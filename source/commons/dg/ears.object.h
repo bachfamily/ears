@@ -65,6 +65,7 @@ typedef enum _earsbufobj_flag
     EARSBUFOBJ_FLAG_NONE = 0,
     EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
     EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
+    EARSBUFOBJ_FLAG_WARN_FOR_RECYCLE = 4,           ///< Internal flag used to warn when a "reset" message is received in place of a "recycle" one.
 } e_earsbufobj_flag;
 
 typedef enum _earsbufobj_blocking
@@ -166,6 +167,7 @@ typedef struct _earsbufobj
     char                    a_winnorm; ///< if set, window is normalized to have area of 1 and then scaled by a factor of 2
     long                    a_zeropadding;
     char                    a_zerophase;
+    char                    a_splitpadding;     ///< Currently false and unused (unsupported by the version of essentia we're linking, supported by a newer one)
     char                    a_lastframetoendoffile;
     char                    a_winstartfromzero;
     char                    a_fftnormalization; // one of the #e_ears_fft_normalization types
@@ -430,6 +432,7 @@ void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
 void earsbufobj_class_add_winnormalized_attr(t_class *c);
 void earsbufobj_class_add_zerophase_attr(t_class *c);
 void earsbufobj_class_add_zeropadding_attr(t_class *c);
+void earsbufobj_class_add_splitpadding_attr(t_class *c);
 void earsbufobj_class_add_resamplingpolicy_attr(t_class *c);
 void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c);
 void earsbufobj_class_add_resamplingmode_attr(t_class *c);

@@ -200,7 +200,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_winstartfromzero_attr(c);
     earsbufobj_class_add_winnormalized_attr(c);
 
-//    earsbufobj_class_add_polyout_attr(c);
+    earsbufobj_class_add_zerophase_attr(c);
+    earsbufobj_class_add_zeropadding_attr(c);
+
 
     CLASS_ATTR_DOUBLE(c, "envattack", 0, t_buf_essentia, a_envattacktime);
     CLASS_ATTR_STYLE_LABEL(c,"envattack",0,"text","Envelope Attack Time");
@@ -1598,6 +1600,9 @@ t_ears_essentia_analysis_params buf_essentia_get_default_params(t_buf_essentia *
     params.duration_samps = 44100;
     params.windowType = "hann";
     params.windowNormalized = 1;
+    params.zeroPhase = true;
+    params.zeroPadding = 0;
+    params.splitPadding = false;
     params.startFromZero = 0;
     params.lastFrameToEndOfFile = 0;
 
@@ -1761,9 +1766,12 @@ void buf_essentia_bang(t_buf_essentia *x)
         t_ears_essentia_analysis_params params = buf_essentia_get_params(x, in);
         
 //        if (x->must_recreate_extractors) { // potentially we may need to do this all the time, as parameters may also depend on the buffers
-            if (x->extractors_lib.num_extractors > 0)
-                ears_essentia_extractors_library_free(&x->extractors_lib);
-            ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, sr, x->algorithm_args, &x->extractors_lib, &params, x->usePitchFilter);
+        if (x->extractors_lib.num_extractors > 0)
+            ears_essentia_extractors_library_free(&x->extractors_lib);
+        if (ears_essentia_extractors_library_build((t_earsbufobj *)x, x->num_features, x->features, x->temporalmodes, sr, x->algorithm_args, &x->extractors_lib, &params, x->usePitchFilter) != EARS_ERR_NONE) {
+            // error while creating extractors
+            goto end;
+        }
 //            x->must_recreate_extractors = false;
 //        }
     
@@ -1808,6 +1816,8 @@ void buf_essentia_bang(t_buf_essentia *x)
         }
     }
      
+end:
+    
     for (long i = 0; i < x->num_features; i++)
         llll_free(res[i]);
     bach_freeptr(res);

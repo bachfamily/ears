@@ -657,6 +657,7 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->a_winnorm = 1;
     e_ob->a_zeropadding = 0;
     e_ob->a_zerophase = true;
+    e_ob->a_splitpadding = false;
 
     
     e_ob->l_slopemapping = k_SLOPE_MAPPING_BACH;
@@ -1382,6 +1383,17 @@ void earsbufobj_writegeneral(t_earsbufobj *e_ob, t_symbol *msg, long ac, t_atom 
 
 void earsbufobj_reset(t_earsbufobj *e_ob)
 {
+    if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_WARN_FOR_RECYCLE)) {
+        object_warn((t_object *)e_ob, "Please replace the 'reset' message in your patch with a 'recycle' message.");
+        object_warn((t_object *)e_ob, "   The 'reset' message may no longer be supported in future versions of ears.");
+        e_ob->l_flags |= EARSBUFOBJ_FLAG_WARN_FOR_RECYCLE;
+    }
+    for (long i = 0; i < LLLL_MAX_OUTLETS; i++)
+        e_ob->l_generated_outname_count[i] = 0;
+}
+
+void earsbufobj_recycle(t_earsbufobj *e_ob)
+{
     for (long i = 0; i < LLLL_MAX_OUTLETS; i++)
         e_ob->l_generated_outname_count[i] = 0;
 }
@@ -1400,6 +1412,7 @@ void earsbufobj_add_common_methods(t_class *c, long flags)
     if (!flags)
         class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
     class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
+    class_addmethod(c, (method)earsbufobj_recycle, "recycle", 0);
     class_addmethod(c, (method)earsbufobj_stop, "stop", 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "write", A_GIMME, 0);
     class_addmethod(c, (method)earsbufobj_writegeneral, "writeaiff", A_GIMME, 0);
@@ -2034,6 +2047,14 @@ void earsbufobj_class_add_zerophase_attr(t_class *c)
     CLASS_ATTR_STYLE_LABEL(c,"zerophase",0,"onoff","Zero Phase Windowing");
     CLASS_ATTR_CATEGORY(c, "zerophase", 0, "Analysis");
     // @description Toggles zero-phase windowing.
+}
+
+void earsbufobj_class_add_splitpadding_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "splitpadding", 0, t_earsbufobj, a_splitpadding);
+    CLASS_ATTR_STYLE_LABEL(c,"splitpadding",0,"onoff","Split Padding Windowing");
+    CLASS_ATTR_CATEGORY(c, "splitpadding", 0, "Analysis");
+    // @description Whether to split the window padding to the edges of the signal (_/_) or to add it to the right (/__).
 }
 
 

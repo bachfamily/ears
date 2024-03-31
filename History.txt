@@ -11,6 +11,9 @@ These might break compatibility with older patches
 - the "naming" attribute has been renamed to "alloc". If you have used it explicitly, please change the patch manually. 
 If you have used the ! and = shortcuts, as documented, instead, you will be fine! :-)
 
+- The "reset" message used for dynamic allocation is now called "recycle". 
+We'll keep "reset" still supported for a while, but that may change in future releases.
+
 - the ears.peaks~ has changed profoundly:
  	· now its output has ONE more level of parenthesis because the object is able to automatically iterate over multiple channels
 	· the peak threshold is no longer "@thresh" but "@peakampthresh" 

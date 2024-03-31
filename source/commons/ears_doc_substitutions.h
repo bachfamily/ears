@@ -11,11 +11,11 @@
 // @description Double-clicking on the object will open the display window for the output buffer(s).
 // If more than 10 buffers are to be output, only the first 10 are displayed.
 class_addmethod(c, (method)earsbufobj_dblclick, "dblclick", A_CANT, 0);
-// @method reset @digest Restart naming allocation cycle
+// @method recycle @digest Restart naming allocation cycle
 // @description If the <m>alloc</m> attribute is set to 'Dynamic',
-// the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
+// the <m>recycle</m> message will force the dynamic naming to cycle back and restart from the first
 // used buffer name. This is especially useful in combination with iterative mechanisms.
-class_addmethod(c, (method)earsbufobj_reset, "reset", 0);
+class_addmethod(c, (method)earsbufobj_recycle, "recycle", 0);
 // @method stop @digest Abort computation
 // @description When a <m>stop</m> message is sent to an object with <m>blocking</m> attribute
 // set to 0, the computation is aborted as soon as possible.
@@ -295,10 +295,22 @@ CLASS_ATTR_CATEGORY(c, "zeropadding", 0, "Analysis");
 // @description Sets the number of samples for zero padding.
 
 #define earsbufobj_class_add_zerophase_attr
-CLASS_ATTR_LONG(c, "zerophase", 0, t_earsbufobj, a_zerophase);
+CLASS_ATTR_CHAR(c, "zerophase", 0, t_earsbufobj, a_zerophase);
 CLASS_ATTR_STYLE_LABEL(c,"zerophase",0,"onoff","Zero Phase Windowing");
 CLASS_ATTR_CATEGORY(c, "zerophase", 0, "Analysis");
 // @description Toggles zero-phase windowing.
+
+#define earsbufobj_class_add_zeropadding_attr
+CLASS_ATTR_LONG(c, "zeropadding", 0, t_earsbufobj, a_zeropadding);
+CLASS_ATTR_STYLE_LABEL(c,"zeropadding",0,"onoff","Zero Padding Windowing");
+CLASS_ATTR_CATEGORY(c, "zeropadding", 0, "Analysis");
+// @description Amount of zero-padding for windowing
+
+#define earsbufobj_class_add_splitpadding_attr
+CLASS_ATTR_CHAR(c, "splitpadding", 0, t_earsbufobj, a_splitpadding);
+CLASS_ATTR_STYLE_LABEL(c,"splitpadding",0,"onoff","Split Padding Windowing");
+CLASS_ATTR_CATEGORY(c, "splitpadding", 0, "Analysis");
+// @description Whether to split the padding to the edges of the signal (_/_) or to add it to the right (/__).
 
 
 #define earsbufobj_class_add_winstartfromzero_attr

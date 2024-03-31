@@ -57,6 +57,9 @@ t_ears_essentia_analysis_params earsbufobj_get_essentia_analysis_params(t_earsbu
     }
     params.windowType = e_ob->a_wintype ? e_ob->a_wintype->s_name : "rect";
     params.windowNormalized = e_ob->a_winnorm;
+    params.zeroPadding = e_ob->a_zeropadding;
+    params.zeroPhase = e_ob->a_zerophase;
+    params.splitPadding = e_ob->a_splitpadding;
     params.lastFrameToEndOfFile = e_ob->a_lastframetoendoffile;
     params.startFromZero = e_ob->a_winstartfromzero;
     return params;
@@ -1195,7 +1198,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                         "lastFrameToEndOfFile", params->lastFrameToEndOfFile);
         // windowing algorithm:
         lib->alg_Windower = AlgorithmFactory::create("Windowing",
-                                                     "zeroPadding", 0,
+                                                     "zeroPadding", (int)params->zeroPadding,
+                                                     "zeroPhase", (bool)params->zeroPhase,
                                                      "size", params->framesize_samps,
                                                      "type", params->windowType,
                                                      "normalized", (bool)params->windowNormalized);

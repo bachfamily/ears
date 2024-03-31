@@ -119,12 +119,12 @@ void C74_EXPORT ext_main(void* moduleRef)
     
 #ifdef EARS_WINDOW_USE_ESSENTIA
     earsbufobj_class_add_wintype_attr_essentia(c);
+    earsbufobj_class_add_zerophase_attr(c);
+    earsbufobj_class_add_zeropadding_attr(c);
 #else
     earsbufobj_class_add_wintype_attr(c);
 #endif
     earsbufobj_class_add_winnormalized_attr(c);
-    earsbufobj_class_add_zerophase_attr(c);
-    earsbufobj_class_add_zeropadding_attr(c);
     
     earsbufobj_class_add_polyout_attr(c);
 
@@ -162,6 +162,7 @@ t_buf_window *buf_window_new(t_symbol *s, short argc, t_atom *argv)
         x->e_ob.a_winnorm = 0; // by default windows are NOT normalized
         x->e_ob.a_zeropadding = 0;
         x->e_ob.a_zerophase = false; // no zerophase by default
+        x->e_ob.a_splitpadding = false;
 
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
@@ -203,7 +204,7 @@ void buf_window_bang(t_buf_window *x)
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 //        ears_buffer_apply_window((t_object *)x, in, out, x->window_type);
 #ifdef EARS_WINDOW_USE_ESSENTIA
-        ears_buffer_apply_window_essentia((t_object *)x, in, out, x->e_ob.a_wintype, x->e_ob.a_winnorm, x->e_ob.a_zeropadding, x->e_ob.a_zerophase);
+        ears_buffer_apply_window_essentia((t_object *)x, in, out, x->e_ob.a_wintype, x->e_ob.a_winnorm, x->e_ob.a_zeropadding, x->e_ob.a_zerophase, x->e_ob.a_splitpadding);
 #else
         ears_buffer_apply_window((t_object *)x, in, out, x->e_ob.a_wintype);
 #endif

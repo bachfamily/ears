@@ -5999,7 +5999,7 @@
 									"maxclass" : "bpatcher",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"offset" : [ 0.0, -375.0 ],
+									"offset" : [ 0.0, -800.0 ],
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
@@ -6088,8 +6088,8 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 477.0, 937.0, 162.0, 50.0 ],
-													"text" : "BEWARE! Use with caution and don't forget to send the \"reset\" message",
+													"patching_rect" : [ 477.0, 937.0, 170.0, 50.0 ],
+													"text" : "BEWARE! Use with caution and don't forget to send the \"recycle\" message",
 													"textcolor" : [ 0.792157, 0.0, 0.0, 1.0 ]
 												}
 
@@ -6304,7 +6304,8 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 49.0, 1057.5, 250.0, 23.0 ]
+													"patching_rect" : [ 49.0, 1057.5, 250.0, 23.0 ],
+													"text" : "u544002454 u070002580 u210002582"
 												}
 
 											}
@@ -6315,9 +6316,9 @@
 													"maxclass" : "newobj",
 													"numinlets" : 1,
 													"numoutlets" : 2,
-													"outlettype" : [ "", "reset" ],
-													"patching_rect" : [ 49.0, 947.0, 58.0, 23.0 ],
-													"text" : "t l reset"
+													"outlettype" : [ "", "recycle" ],
+													"patching_rect" : [ 49.0, 947.0, 63.0, 23.0 ],
+													"text" : "t l recycle"
 												}
 
 											}
@@ -6331,7 +6332,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 49.0, 1093.0, 291.0, 50.0 ],
-													"text" : "This mechanism allows iterations, you should remember to reset the naming when you want to start writing over the same buffers"
+													"text" : "This mechanism allows iterations, you should remember to recycle the names when you want to start writing over the same buffers"
 												}
 
 											}
@@ -6387,8 +6388,8 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 9.0, 844.0, 543.0, 50.0 ],
-													"text" : "Each time a new evaluation is requested, a NEW buffer is created, and assigned a name.\nBeware: this may creates a lot of buffers. Before starting a cycle, thus, be sure to recycle the names you no longer need, by sending a \"reset\" message (hence looping the \"name cycle\"). "
+													"patching_rect" : [ 9.0, 844.0, 555.0, 50.0 ],
+													"text" : "Each time a new evaluation is requested, a NEW buffer is created, and assigned a name.\nBeware: this may creates a lot of buffers. Before starting a cycle, thus, be sure to recycle the names you no longer need, by sending a \"reycle\" message (hence looping the \"name cycle\"). "
 												}
 
 											}
