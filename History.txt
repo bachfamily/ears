@@ -28,8 +28,10 @@ We'll keep "reset" still supported for a while, but that may change in future re
 *** VERSION CHANGES ***
 ***********************
 
-- all objects: fixed bug causing possible quirks and even crashes, especially when using objects with 
+- all objects: 
+	• fixed bug causing possible quirks and even crashes, especially when using objects with 
 		varying outlet lengths (especially ears.split~) and a ears object in = (copy) mode later on in the chain
+	• @zeropadding and @zerophase: new analysis attributes for analysis modules 
 
 - ears.ptrack~, ears.model.ptrack.analysis~, ears.model.ptrack.synthesis~, ears.pshow~: 
 		new objects dealing with partial tracking
