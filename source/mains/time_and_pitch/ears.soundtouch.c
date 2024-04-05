@@ -233,7 +233,23 @@ void buf_soundtouch_bang(t_buf_soundtouch *x)
     for (long count = 0; count < num_buffers; count++) {
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
-        ears_buffer_soundtouch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, x->e_stretch_factor, in), earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->e_pitch_shift)/100., x->e_quick, x->e_no_antialias, x->e_speech);
+        
+        // checking values
+        double ts_amount = earsbufobj_time_to_durationratio((t_earsbufobj *)x, x->e_stretch_factor, in);
+        double ps_amount = earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->e_pitch_shift)/100.;
+        
+        if (isinf(ps_amount) || isinf(ts_amount) || ts_amount <= 0.) {
+            if (isinf(ps_amount))
+                object_error((t_object *)x, "Cannot handle infinite pitch shift.");
+            else if (isinf(ts_amount))
+                object_error((t_object *)x, "Cannot handle infinite time stretch.");
+            else
+                object_error((t_object *)x, "Cannot handle negative time stretch factors.");
+            if (in != out)
+                ears_buffer_clone((t_object *)x, in, out);
+        } else {
+            ears_buffer_soundtouch((t_object *)x, in, out, earsbufobj_time_to_durationratio((t_earsbufobj *)x, x->e_stretch_factor, in), earsbufobj_pitch_to_cents((t_earsbufobj *)x, x->e_pitch_shift)/100., x->e_quick, x->e_no_antialias, x->e_speech);
+        }
 
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }

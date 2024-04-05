@@ -112,7 +112,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     // for each one of the incoming buffer (in the current <m>ampunit</m>). <br />
     // A number, list or llll in the third inlet is interpreted to contain the temporal offset
     // for each one of the incoming buffer (in the current <m>timeunit</m>). Non-integer sample offsets are only accounted for
-    // if the <m>interp</m> attribute is on, otherwise they are rounded to the nearest integer sample. <br />
+    // if the <m>interp</m> attribute is on, otherwise they are rounded to the nearest integer sample.
+    // If less numbers than buffers are entered, the difference between the two last offset is iterated over the remaining
+    // buffer (which makes it convenient to only write two offsets and replicate their distance).<br />
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(mix)
 
     // @method number @digest Set Gain or Offset

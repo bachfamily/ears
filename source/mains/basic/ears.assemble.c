@@ -192,7 +192,7 @@ void buf_assemble_assist(t_buf_assemble *x, void *b, long m, long a, char *s)
 
 void buf_assemble_inletinfo(t_buf_assemble *x, void *b, long a, char *t)
 {
-    if (a != 0 && a != 1)
+    if (a != 0) // && a != 1)
         *t = 1;
 }
 

@@ -770,6 +770,19 @@ void buf_write_tags_ID3v2(t_buf_write *x, TagLib::ID3v2::Tag *tags, t_llll *ll)
                                 if (strcmp(s_frameid, "APIC") == 0) {
                                     object_warn((t_object *)x, "APIC frames are unsupported at writing time.");
                                 } else if (strcmp(s_frameid, "CHAP") == 0) {
+                                    // chapters:
+/*                                    TagLib::ID3v2::Header header;
+                                    TagLib::ID3v2::ChapterFrame fr(&header, "CHAP");
+                                    fr.setElementID(TagLib::ByteVector("\x43\x00", 2));
+                                    fr.setStartTime(3);
+                                    fr.setEndTime(5);
+                                    fr.setStartOffset(2);
+                                    fr.setEndOffset(3);
+                                    auto eF = new TagLib::ID3v2::TextIdentificationFrame("TIT2");
+                                    eF->setText("CH1");
+                                    fr.addEmbeddedFrame(eF);
+                                    
+                                    tags->addFrame(fr); */
                                     object_warn((t_object *)x, "CHAP frames are unsupported at writing time.");
                                 } else if (strcmp(s_frameid, "CTOC") == 0) {
                                     object_warn((t_object *)x, "CTOC frames are unsupported at writing time.");
