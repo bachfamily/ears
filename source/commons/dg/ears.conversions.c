@@ -149,6 +149,7 @@ t_symbol *ears_frequnit_to_symbol(e_ears_frequnit u)
         case EARS_FREQUNIT_CENTS: return gensym("cents"); break;
         case EARS_FREQUNIT_MIDI: return gensym("midi"); break;
         case EARS_FREQUNIT_HERTZ: return gensym("hertz"); break;
+        case EARS_FREQUNIT_BPM: return gensym("bpm"); break;
         default: return gensym("unknown"); break;
     }
 }
@@ -161,6 +162,8 @@ e_ears_frequnit ears_frequnit_from_symbol(t_symbol *s)
         return EARS_FREQUNIT_MIDI;
     if (s == gensym("Hz") || s == gensym("Hertz") || s == gensym("hz") || s == gensym("hertz") || s == gensym("freq") || s == gensym("frequency"))
         return EARS_FREQUNIT_HERTZ;
+    if (s == gensym("bpm") || s == gensym("BPM"))
+        return EARS_FREQUNIT_BPM;
     return EARS_FREQUNIT_UNKNOWN;
 }
 

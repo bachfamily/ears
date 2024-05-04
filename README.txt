@@ -21,7 +21,7 @@ For Visual Studio, unless specified otherwise, all is taken care of by the Visua
 
 • bach (https://github.com/bachfamily/bach)
 
-• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). The essentia library is not needed for the whole project, but for a certain number of its modules (including ears.essentia~, ears.cqt~, ears.tempogram~, ears.peaks~ and all the ears.model.*~).
+• the Essentia 2.1_beta5 library (released under Affero GPL, compatible with GPLv3). The essentia library is not needed for the whole project, but for a certain number of its modules (including ears.essentia~, ears.cqt~, ears.tempogram~ and all the ears.model.*~, except for ears.model.ptrack.*).
 If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libessentia.a
 The packaged version of Essentia has been modified to
 1) prevent the collision with functions named "error" (in debugger.h). The naming has been modified to "essentia_error".

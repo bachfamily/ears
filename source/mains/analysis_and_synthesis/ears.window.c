@@ -104,7 +104,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
-    // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+    // trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(window)
 
     // @method symbol/llll @digest Set window type
@@ -114,17 +114,17 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
 
     
 #ifdef EARS_WINDOW_USE_ESSENTIA
     earsbufobj_class_add_wintype_attr_essentia(c);
+    earsbufobj_class_add_zerophase_attr(c);
+    earsbufobj_class_add_zeropadding_attr(c);
 #else
     earsbufobj_class_add_wintype_attr(c);
 #endif
     earsbufobj_class_add_winnormalized_attr(c);
-    earsbufobj_class_add_zerophase_attr(c);
-    earsbufobj_class_add_zeropadding_attr(c);
     
     earsbufobj_class_add_polyout_attr(c);
 
@@ -157,11 +157,12 @@ t_buf_window *buf_window_new(t_symbol *s, short argc, t_atom *argv)
     x = (t_buf_window*)object_alloc_debug(s_tag_class);
     if (x) {
         
-        earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
+        earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         x->e_ob.a_winnorm = 0; // by default windows are NOT normalized
         x->e_ob.a_zeropadding = 0;
         x->e_ob.a_zerophase = false; // no zerophase by default
+        x->e_ob.a_splitpadding = false;
 
         // @arg 0 @name outnames @optional 1 @type symbol
         // @digest Output buffer names
@@ -203,7 +204,7 @@ void buf_window_bang(t_buf_window *x)
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 //        ears_buffer_apply_window((t_object *)x, in, out, x->window_type);
 #ifdef EARS_WINDOW_USE_ESSENTIA
-        ears_buffer_apply_window_essentia((t_object *)x, in, out, x->e_ob.a_wintype, x->e_ob.a_winnorm, x->e_ob.a_zeropadding, x->e_ob.a_zerophase);
+        ears_buffer_apply_window_essentia((t_object *)x, in, out, x->e_ob.a_wintype, x->e_ob.a_winnorm, x->e_ob.a_zeropadding, x->e_ob.a_zerophase, x->e_ob.a_splitpadding);
 #else
         ears_buffer_apply_window((t_object *)x, in, out, x->e_ob.a_wintype);
 #endif

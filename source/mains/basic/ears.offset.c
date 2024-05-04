@@ -100,7 +100,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     // @method list/llll @digest Process buffers or Set Offset
     // @description A list or llll in the first inlet with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute). <br />
+    // buffer names (depending on the <m>alloc</m> attribute). <br />
     // A number, list or llll in the second inlet sets the offset in the
     // defined <m>timeunit</m>. Non-integer sample offsets are accounted for only if the <m>interp</m> attribute is
     // active, otherwise they are rounded to the nearest sample.
@@ -112,7 +112,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
     earsbufobj_class_add_resamplingmode_attr(c);
 

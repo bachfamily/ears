@@ -153,9 +153,51 @@ void test_kiss_fft()
     fftsize += 0;
 }
 
+void ears_fft_kiss(kiss_fft_cfg cfg, int nfft, const kiss_fft_cpx *fin, kiss_fft_cpx *fout, e_ears_fft_normalization normalization, bool inverse)
+{
+    kiss_fft(cfg, fin, fout);
+    
+    // THIS COMES ALREADY NORMALIZED BY nfft/2
+
+    // Possible normalization types:
+    // direct         inverse
+    // nfft            * 1/4             = N/4  : EARS_FFT_NORMALIZATION_FFTSIZE
+    // nfft/2          * 1/2             = N/4  : EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO (kissfft normalization)
+    // sqrt(nfft)/2    * sqrt(nfft)/2    = N/4  : EARS_FFT_NORMALIZATION_UNITARY
+    // 2               * N/8    = N/4           :   EARS_FFT_NORMALIZATION_TRUEMAGNITUDES
+
+    double factor = 1.;
+    switch (normalization) {
+        case EARS_FFT_NORMALIZATION_FFTSIZE:
+            factor = inverse ? 0.5/nfft : 2.;
+            break;
+
+        case EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO:
+            factor = inverse ? 1./nfft : 1.;
+            break;
+
+        case EARS_FFT_NORMALIZATION_UNITARY:
+            factor = 1./sqrt(nfft);
+            break;
+
+        case EARS_FFT_NORMALIZATION_TRUEMAGNITUDES:
+            factor = inverse ? 1./4. : 4./nfft;
+            break;
+
+        default:
+            break;
+    }
+    
+    if (factor != 1) {
+        for (long i = 0; i < nfft; i++) {
+            fout[i].r *= factor;
+            fout[i].i *= factor;
+        }
+    }
+}
 
 
-t_ears_err ears_buffer_fft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar_input, long polar_output, long inverse, long fullspectrum, e_ears_angleunit angleunit, long unitary)
+t_ears_err ears_buffer_fft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, t_buffer_obj *dest1, t_buffer_obj *dest2, long polar_input, long polar_output, long inverse, long fullspectrum, e_ears_angleunit angleunit, e_ears_fft_normalization fftnormalization)
 {
     t_ears_err err = EARS_ERR_NONE;
     float *orig_sample1 = ears_buffer_locksamples(source1);
@@ -233,7 +275,8 @@ t_ears_err ears_buffer_fft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *so
                     }
                 }
 
-                bach_fft_kiss(cfg, fftsize, inverse, fin, fout, unitary);
+                ears_fft_kiss(cfg, fftsize, fin, fout, fftnormalization, inverse);
+//                bach_fft_kiss(cfg, fftsize, inverse, fin, fout, unitary);
                 
                 if (polar_output) {
                     for (long j = 0; j < outframecount; j++) {
@@ -274,9 +317,10 @@ t_ears_err ears_buffer_fft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *so
 }
 
 
+// channel is 0-based
 t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *source2, long channel, t_buffer_obj *dest1, t_buffer_obj *dest2,
                             long framesize_samps, double hopsize_samps, const char *wintype,
-                            long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, long left_aligned_windows, long unitary)
+                            long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, long left_aligned_windows, e_ears_fft_normalization fftnormalization)
 {
     
     t_ears_err err = EARS_ERR_NONE;
@@ -297,7 +341,7 @@ t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *s
     
     double new_sr = audiosr/(hopsize_samps); // sr of the windowed signal
 
-    if (channel > ears_buffer_get_numchannels(ob, source1)) {
+    if (channel >= ears_buffer_get_numchannels(ob, source1)) {
         if (orig_sample1)
             ears_buffer_unlocksamples(source1);
         if (orig_sample2)
@@ -430,7 +474,7 @@ t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *s
                     }
                 }
                 
-                bach_fft_kiss(cfg, fftsize, 0, win, wout, unitary);
+                ears_fft_kiss(cfg, fftsize, win, wout, fftnormalization, 0);
 
                 if (polar_output) {
                     for (long b = 0; b < numbins; b++) {
@@ -476,7 +520,7 @@ t_ears_err ears_buffer_stft(t_object *ob, t_buffer_obj *source1, t_buffer_obj *s
 
 
 
-t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest1, t_buffer_obj *dest2, const char *wintype, long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, double force_sr, long left_aligned_windows, long unitary)
+t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj **source1, t_buffer_obj **source2, t_buffer_obj *dest1, t_buffer_obj *dest2, const char *wintype, long polar_input, long polar_output, long fullspectrum, e_ears_angleunit angleunit, double force_sr, long left_aligned_windows, e_ears_fft_normalization fftnormalization)
 {
     
     t_ears_err err = EARS_ERR_NONE;
@@ -597,7 +641,7 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
                 }
                 
                 // inverse
-                bach_fft_kiss(cfg, fftsize, 1, win, wout, unitary);
+                ears_fft_kiss(cfg, fftsize, win, wout, fftnormalization, 1);
                 
                 // overlap add
                 long start_sample = (long)onset;
@@ -658,7 +702,7 @@ t_ears_err ears_buffer_istft(t_object *ob, long num_input_buffers, t_buffer_obj 
 
 
 
-t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, long unitary, long numGriffinLimIterations)
+t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, e_ears_fft_normalization fftnormalization, long numGriffinLimIterations)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -682,10 +726,10 @@ t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj
     
     for (int n = 0; n < numGriffinLimIterations; n++) {
         // reconstruction spectrogram
-        ears_buffer_stft(ob, dest, NULL, 0, amps, phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, unitary);
+        ears_buffer_stft(ob, dest, NULL, 0, amps, phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, fftnormalization);
         
         // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
-        ears_buffer_istft(ob, 1, &amplitudes, &phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary);
+        ears_buffer_istft(ob, 1, &amplitudes, &phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, fftnormalization);
     }
     
     ears_buffer_free(amps);
@@ -694,7 +738,7 @@ t_ears_err ears_griffin_lim(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj
 }
 
 
-t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, const char *wintype, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, long unitary, long numGriffinLimIterations)
+t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_obj *dest, long fullspectrum, e_ears_angleunit angleunit, const char *wintype, long framesize_samps, double hopsize_samps, double audio_sr, long outframecount, long left_aligned_windows, e_ears_fft_normalization fftnormalization, long numGriffinLimIterations)
 {
     t_ears_err err = EARS_ERR_NONE;
     
@@ -730,10 +774,10 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
     
     for (int n = 0; n < numGriffinLimIterations; n++) {
         // Discard magnitude part of the reconstruction and use the supplied magnitude spectrogram instead
-        ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, wintype, true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary);
+        ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, wintype, true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, fftnormalization);
 
         // reconstruction spectrogram
-        ears_buffer_stft(ob, dest, NULL, 0, estimate_amps, estimate_phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, unitary);
+        ears_buffer_stft(ob, dest, NULL, 0, estimate_amps, estimate_phases, framesize_samps, hopsize_samps, "sqrthann", false, true, fullspectrum, angleunit, left_aligned_windows, fftnormalization);
         
         // apply momentum
         float *estimate_amps_sample = ears_buffer_locksamples(estimate_amps);
@@ -768,7 +812,7 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
         }
     }
 
-    ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, unitary);
+    ears_buffer_istft(ob, 1, &amplitudes, &estimate_phases, dest, NULL, "sqrthann", true, false, fullspectrum, angleunit, audio_sr, left_aligned_windows, fftnormalization);
 
     bach_freeptr(previous_real);
     bach_freeptr(previous_imag);
@@ -783,7 +827,7 @@ t_ears_err ears_griffin_lim_2(t_object *ob, t_buffer_obj *amplitudes, t_buffer_o
 
 
 
-t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj **orig_amps, t_buffer_obj **reconstructed_phases, t_buffer_obj **phases_mask, t_buffer_obj *dest_signal, const char *analysiswintype, const char *synthesiswintype, long fullspectrum, long left_aligned_windows, long unitary, long num_iterations, bool randomize_phases)
+t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj **orig_amps, t_buffer_obj **reconstructed_phases, t_buffer_obj **phases_mask, t_buffer_obj *dest_signal, const char *analysiswintype, const char *synthesiswintype, long fullspectrum, long left_aligned_windows, e_ears_fft_normalization fftnormalization, long num_iterations, bool randomize_phases)
 {
     
     t_ears_err err = EARS_ERR_NONE;
@@ -844,9 +888,9 @@ t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj *
                 ears_buffer_apply_mask(ob, candidate_phases_i, reconstructed_phases[i], phases_mask[i]);
 
             // inverse stft
-            ears_buffer_istft(ob, 1, &orig_amps[i], &candidate_phases_i, temp, NULL, synthesiswintype, true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, left_aligned_windows, unitary);
+            ears_buffer_istft(ob, 1, &orig_amps[i], &candidate_phases_i, temp, NULL, synthesiswintype, true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, left_aligned_windows, fftnormalization);
             
-            ears_buffer_stft(ob, temp, NULL, 0, temp_amps_i, candidate_phases_i, framesize_samps, hopsize_samps, analysiswintype, false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, left_aligned_windows, unitary);
+            ears_buffer_stft(ob, temp, NULL, 0, temp_amps_i, candidate_phases_i, framesize_samps, hopsize_samps, analysiswintype, false, true, fullspectrum, EARS_ANGLEUNIT_RADIANS, left_aligned_windows, fftnormalization);
             
             // remove final frames that may have been added by istft/stft combo.
             ears_buffer_crop_inplace(ob, temp_amps_i, 0, orig_num_frames);
@@ -859,7 +903,7 @@ t_ears_err ears_buffer_griffinlim(t_object *ob, long num_buffers, t_buffer_obj *
         ears_buffer_clone(ob, candidate_phases_i, reconstructed_phases[i]);
         
         if (dest_signal) {
-            ears_buffer_istft(ob, 1, &orig_amps[i], &candidate_phases_i, temp, NULL, synthesiswintype, true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, left_aligned_windows, unitary);
+            ears_buffer_istft(ob, 1, &orig_amps[i], &candidate_phases_i, temp, NULL, synthesiswintype, true, false, fullspectrum, EARS_ANGLEUNIT_RADIANS, audio_sr, left_aligned_windows, fftnormalization);
             
             if (i == 0) {
                 ears_buffer_copy_format(ob, temp, dest_signal);
@@ -1002,14 +1046,16 @@ t_ears_err ears_buffer_paulstretch(t_object *ob, t_buffer_obj *source, t_buffer_
                     
                     if (spectral) {
                         // performing FFT
-                        bach_fft_kiss(cfg, nfft, false, fin, fout, false);
+                        ears_fft_kiss(cfg, nfft, fin, fout, EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO, 0);
+//                        bach_fft_kiss(cfg, nfft, false, fin, fout, false);
                         
                         // randomizing the phase
                         for (long i = 0; i < framesize_samps; i++)
                             fout[i] = polar_to_cpx(get_cpx_ampli(fout[i]), random_double_in_range(0., TWOPI));
                         
                         // performing inverse FFT
-                        bach_fft_kiss(cfginv, nfft, true, fout, fin, false);
+                        ears_fft_kiss(cfg, nfft, fout, fin, EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO, 1);
+//                        bach_fft_kiss(cfginv, nfft, true, fout, fin, false);
                         
                         // applying window again
                         for (long i = 0; i < framesize_samps; i++)
@@ -1148,14 +1194,16 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                     
                     if (spectral) {
                         // performing FFT
-                        bach_fft_kiss(cfg, nfft, false, fin, fout, false);
+                        ears_fft_kiss(cfg, nfft, fin, fout, EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO, 0);
+//                        bach_fft_kiss(cfg, nfft, false, fin, fout, false);
                         
                         // randomizing the phase
                         for (long i = 0; i < framesize_samps; i++)
                             fout[i] = polar_to_cpx(get_cpx_ampli(fout[i]), random_double_in_range(0., TWOPI));
                         
                         // performing inverse FFT
-                        bach_fft_kiss(cfginv, nfft, true, fout, fin, false);
+                        ears_fft_kiss(cfg, nfft, fout, fin, EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO, 1);
+//                        bach_fft_kiss(cfginv, nfft, true, fout, fin, false);
                         
                         // applying window again
                         for (long i = 0; i < framesize_samps; i++)
@@ -1283,14 +1331,16 @@ t_ears_err ears_buffer_paulfreeze(t_object *ob, t_buffer_obj *source, t_buffer_o
                     
                     if (spectral) {
                         // performing FFT
-                        bach_fft_kiss(cfg, nfft, false, fin, fout, false);
+                        ears_fft_kiss(cfg, nfft, fin, fout, EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO, 0);
+//                        bach_fft_kiss(cfg, nfft, false, fin, fout, false);
                         
                         // randomizing the phase
                         for (long i = 0; i < framesize_samps; i++)
                             fout[i] = polar_to_cpx(get_cpx_ampli(fout[i]), random_double_in_range(0., TWOPI));
                         
                         // performing inverse FFT
-                        bach_fft_kiss(cfginv, nfft, true, fout, fin, false);
+                        ears_fft_kiss(cfg, nfft, fout, fin, EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO, 1);
+//                        bach_fft_kiss(cfginv, nfft, true, fout, fin, false);
                         
                         // applying window again
                         for (long i = 0; i < framesize_samps; i++)
@@ -1495,7 +1545,7 @@ void get_forward_energy(double *energymap, long num_bins, long num_frames, long 
 // batch_mode = 0: no batch; 1: just one; 2: fixed amount
 t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_buffer_obj **amplitudes, t_buffer_obj **phases, t_buffer_obj **out_amplitudes, t_buffer_obj **out_phases, t_buffer_obj *energy_map, t_buffer_obj *energy_map_cumul, t_buffer_obj *seam_path, long delta_num_frames, double framesize_samps, double hopsize_samps, long energy_mode, updateprogress_fn update_progress, long phase_handling, double regularization, double forward_energy_contribution, long forward_energy_type, bool forward_energy_embedded_in_matrix,
     // only used for griffin-lim;
-   long fullspectrum, long winleftalign, long unitary, long num_griffin_lim_iter, long griffin_lim_invalidate_width, bool griffin_lim_vertical, bool griffin_lim_randomize, const char *analysiswintype, const char *synthesiswintype,
+   long fullspectrum, long winleftalign, e_ears_fft_normalization fftnormalization, long num_griffin_lim_iter, long griffin_lim_invalidate_width, bool griffin_lim_vertical, bool griffin_lim_randomize, const char *analysiswintype, const char *synthesiswintype,
     long batch_size, bool interrupt_batch_at_crossings)
 {
     bool verbose = false;
@@ -2123,7 +2173,7 @@ t_ears_err ears_buffer_spectral_seam_carve(t_object *ob, long num_channels, t_bu
         
         if (mask_buf) {
             // griffin lim
-            ears_buffer_griffinlim(ob, 1, &(out_amplitudes[c]), &(out_phases[c]), &mask_buf, NULL, analysiswintype, synthesiswintype, fullspectrum, winleftalign, unitary, num_griffin_lim_iter, griffin_lim_randomize);
+            ears_buffer_griffinlim(ob, 1, &(out_amplitudes[c]), &(out_phases[c]), &mask_buf, NULL, analysiswintype, synthesiswintype, fullspectrum, winleftalign, fftnormalization, num_griffin_lim_iter, griffin_lim_randomize);
         }
     }
     
@@ -2161,3 +2211,689 @@ end:
 }
 
 
+
+double peakll_getfreq(t_llll *peak_ll)
+{
+    return hatom_getdouble(&peak_ll->l_head->l_hatom);
+}
+double peakll_getamp(t_llll *peak_ll)
+{
+    return peak_ll->l_size >= 2 ? hatom_getdouble(&peak_ll->l_head->l_next->l_hatom) : 1;
+}
+
+double peakll_getphase(t_llll *peak_ll)
+{
+    return peak_ll->l_size >= 3 ? hatom_getdouble(&peak_ll->l_head->l_next->l_next->l_hatom) : -DBL_MAX; // -DBL_MAX  means: no phase defined
+}
+
+typedef struct _ears_peak {
+    double  freq;
+    double  amp;
+    double  phase;
+    double  onset;
+    long    frameidx;
+    bool    assigned;
+} t_ears_peak;
+
+typedef struct _ears_partial {
+    t_llll*  peaks;
+    double  last_freq;
+    double  last_amp;
+    double  last_onset;
+    double  first_onset;
+    long    partialidx;
+    bool    active;
+} t_ears_partial;
+
+
+class Peak {
+  public:
+    double position;
+    double magnitude;
+
+  Peak() : position(), magnitude() {}
+  Peak(const Peak& p) : position(p.position), magnitude(p.magnitude) {}
+
+  template<typename T, typename U>
+  Peak(const T& pos, const U& mag) : position(pos), magnitude(mag) {}
+
+  template<typename T, typename U>
+  Peak(const std::pair<T,U>& p) : position(p.first), magnitude(p.second) {}
+
+  bool operator ==(const Peak& p) const {
+    return (position == p.position) && (magnitude == p.magnitude);
+  }
+
+  bool operator !=(const Peak& p) const {
+    return (position != p.position) || (magnitude != p.magnitude);
+  }
+
+  bool operator< (const Peak& p) const { return magnitude <  p.magnitude; }
+  bool operator> (const Peak& p) const { return magnitude >  p.magnitude; }
+  bool operator<=(const Peak& p) const { return magnitude <= p.magnitude; }
+  bool operator>=(const Peak& p) const { return magnitude >= p.magnitude; }
+
+  Peak& operator=(const Peak& p) {
+    position = p.position; magnitude = p.magnitude;
+    return *this;
+  }
+
+  template<typename T, typename U>
+  Peak& operator=(const std::pair<T, U>& p) {
+    position = p.first;magnitude = p.second;
+    return *this;
+  }
+};
+
+// peak comparison:
+
+// comparing by position, by default sorts by ascending position and in case
+// the positions are equal it sorts by descending magnitude
+template<typename Comp1=std::less<double>,
+         typename Comp2=std::greater_equal<double> >
+class ComparePeakPosition : public std::binary_function<double, double, bool> {
+  Comp1 _cmp1;
+  Comp2 _cmp2;
+  public:
+    bool operator () (const Peak& p1, const Peak& p2) const {
+      if (_cmp1(p1.position, p2.position)) return true;
+      if (_cmp1(p2.position, p1.position)) return false;
+      return _cmp2(p1.magnitude, p2.magnitude);
+    }
+};
+
+// comparing by magnitude, by default sorts by descending magnitude and in case
+// the magnitudes are equal it sorts by ascending position
+template<typename Comp1=std::greater<double>,
+         typename Comp2=std::less_equal<double> >
+class ComparePeakMagnitude : public std::binary_function<double, double, bool> {
+  Comp1 _cmp1;
+  Comp2 _cmp2;
+  public:
+    bool operator () (const Peak& p1, const Peak& p2) const {
+      if (_cmp1(p1.magnitude, p2.magnitude)) return true;
+      if (_cmp1(p2.magnitude, p1.magnitude)) return false;
+      return _cmp2(p1.position, p2.position);
+    }
+};
+
+// from 2 vector<Real> to vector<Peak>:
+inline std::vector<Peak> realsToPeaks(const std::vector<double>& pos,
+                                      const std::vector<double>& mag) {
+  int size = pos.size();
+  if (size != int(mag.size())) {
+//      throw EssentiaException("realsToPeaks: position vector size != magnitude vector size");
+  }
+  std::vector<Peak> peaks(size);
+  for (int i=0; i<size; i++) {
+    peaks[i] = Peak(pos[i], mag[i]);
+  }
+  return peaks;
+}
+
+// from vector<Peak> to 2 vector<Real>
+inline void peaksToReals(const std::vector<Peak>& peaks,
+                         std::vector<double>& pos, std::vector<double>& mag) {
+  int size = peaks.size();
+  if (size != int(pos.size())) pos.resize(size);
+  if (size != int(mag.size())) mag.resize(size);
+
+  for (int i=0; i<size; i++) {
+    pos[i] = peaks[i].position;
+    mag[i] = peaks[i].magnitude;
+  }
+}
+
+void peakinterpolate(const double leftVal, const double middleVal, const double rightVal, int currentBin, double *resultVal, double *resultBin) {
+  double delta_x = 0.5 * ((leftVal - rightVal) / (leftVal - 2*middleVal + rightVal));
+  *resultBin = currentBin + delta_x;
+  *resultVal = middleVal - 0.25 * (leftVal - rightVal) * delta_x;
+}
+
+
+
+void ears_get_peaks(std::vector<double> array, std::vector<double> &peakPosition, std::vector<double> &peakValue,
+                    bool _interpolate, long _maxPeaks, double _minPeakDistance, const char *_orderBy, double _threshold)
+{
+
+    const int size = (int)array.size();
+
+    if (size < 2) {
+//      throw EssentiaException("PeakDetection: The size of the array must be at least 2, for the peak detection to work");
+    }
+
+    // dividing by array.size()-1 means the last bin is included in the range
+    // dividing by array.size() means it is not (like STL's end interator)
+    // which makes more sense in general?
+    const double scale = 1. / (double)(size - 1);
+
+    std::vector<Peak> peaks;
+    peaks.reserve(size);
+
+    // we want to round up to the next integer instead of simple truncation,
+    // otherwise the peak frequency at i can be lower than _minPos
+    int i = 0; //std::max(0, (int) ceil(_minPos / scale));
+
+    // first check the boundaries:
+    if (i+1 < size && array[i] > array[i+1]) {
+      if (array[i] > _threshold) {
+        peaks.push_back(Peak(i*scale, array[i]));
+      }
+    }
+
+    while(true) {
+      // going down
+      while (i+1 < size-1 && array[i] >= array[i+1]) {
+        i++;
+      }
+
+      // now we're climbing
+      while (i+1 < size-1 && array[i] < array[i+1]) {
+        i++;
+      }
+
+      // not anymore, go through the plateau
+      int j = i;
+      while (j+1 < size-1 && (array[j] == array[j+1])) {
+        j++;
+      }
+
+      // end of plateau, do we go up or down?
+      if (j+1 < size-1 && array[j+1] < array[j] && array[j] > _threshold) { // going down again
+        double resultBin = 0.0;
+        double resultVal = 0.0;
+
+        if (j != i) { // plateau peak between i and j
+          if (_interpolate) {
+            resultBin = (i + j) * 0.5;
+          }
+          else {
+            resultBin = i;
+          }
+          resultVal = array[i];
+        }
+        else { // interpolate peak at i-1, i and i+1
+          if (_interpolate) {
+              peakinterpolate(array[j-1], array[j], array[j+1], j, &resultVal, &resultBin);
+          }
+          else {
+            resultBin = j;
+            resultVal = array[j];
+          }
+        }
+
+        double resultPos = resultBin * scale;
+
+//        if (resultPos > _maxPos)
+//          break;
+
+        peaks.push_back(Peak(resultPos, resultVal));
+      }
+
+      // nothing found, start loop again
+      i = j;
+
+      if (i+1 >= size-1) { // check the one just before the last position
+        if (i == size-2 && array[i-1] < array[i] &&
+            array[i+1] < array[i] &&
+            array[i] > _threshold) {
+          double resultBin = 0.0;
+          double resultVal = 0.0;
+          if (_interpolate) {
+              peakinterpolate(array[i-1], array[i], array[i+1], j, &resultVal, &resultBin);
+          }
+          else {
+            resultBin = i;
+            resultVal = array[i];
+          }
+          peaks.push_back(Peak(resultBin*scale, resultVal));
+        }
+        break;
+      }
+    }
+
+    // check upper boundary here, so peaks are already sorted by position
+    double pos = 1./scale; // _maxPos/scale;
+    if (size-2 <pos && pos <= size-1 && array[size-1] > array[size-2]) {
+      if (array[size-1] > _threshold) {
+        peaks.push_back(Peak((size-1)*scale, array[size-1]));
+      }
+    }
+
+    // remove peaks that are closer than 'minPeakDistance'
+    if (_minPeakDistance > 0 && peaks.size() > 1) {
+      
+      std::vector<int> deletedPeaks;
+      deletedPeaks.reserve(peaks.size());
+      double minPos;
+        double maxPos;
+      
+      // iterate following an amplitude hierarchy
+      std::sort(peaks.begin(), peaks.end(),
+            ComparePeakMagnitude<std::greater<double>, std::less<double> >());
+
+      size_t k = 0;
+      while (k < peaks.size() - 1) {
+        minPos = peaks[k].position - _minPeakDistance;
+        maxPos = peaks[k].position + _minPeakDistance;
+
+        for (size_t l = k+1; l < peaks.size(); l++) {
+          if (peaks[l].position > minPos && peaks[l].position < maxPos)
+            deletedPeaks.push_back(l);
+        }
+
+        // delete peaks starting from the end so the indexes are not altered
+        std::sort(deletedPeaks.begin(), deletedPeaks.end(), std::greater<int>());
+        
+        for (size_t l = 0; l < deletedPeaks.size(); l++)
+          peaks.erase(peaks.begin() + deletedPeaks[l]);
+          
+        deletedPeaks.clear();
+        deletedPeaks.reserve(peaks.size());
+        k++;
+      }
+
+      if (_orderBy == "position") {
+        // if required,sort peaks by
+        // position again
+        std::sort(peaks.begin(), peaks.end(),
+                  ComparePeakPosition<std::less<double>, std::greater<double> >());
+      }
+      else if (_orderBy == "amplitude") {
+        // already sorted by amplitude
+      }
+      else {
+//        throw EssentiaException("PeakDetection: Unsupported ordering type: '" + _orderBy + "'");
+      }
+
+    } else {
+      // if haven't passed through the minPeakDistance part
+      // apply the inverse logic for sorting
+      if (_orderBy == "amplitude") {
+        // sort peaks by amplitude, in case of equality,
+        // return the one having smaller position
+        std::sort(peaks.begin(), peaks.end(),
+                  ComparePeakMagnitude<std::greater<double>, std::less<double> >());
+      }
+      else if (_orderBy == "position") {
+        // already sorted by position
+      }
+      else {
+//        throw EssentiaException("PeakDetection: Unsupported ordering type: '" + _orderBy + "'");
+      }
+    }
+
+
+    // we only want this many peaks
+    size_t nWantedPeaks = std::min((size_t)_maxPeaks, peaks.size());
+
+    peakPosition.resize(nWantedPeaks);
+    peakValue.resize(nWantedPeaks);
+
+    for (size_t k=0; k<nWantedPeaks; k++) {
+      peakPosition[k] = peaks[k].position;
+      peakValue[k] = peaks[k].magnitude;
+    }
+    
+}
+
+
+
+// peaks of a spectrogram-buffer (channels are bins)
+t_llll *ears_specbuffer_peaks(t_object *ob, t_buffer_obj *mags, t_buffer_obj *phases, bool interpolate, int maxPeaks, double minPeakDistance, t_symbol *orderBy, double threshold, e_ears_timeunit timeunit, e_ears_ampunit ampunit, e_ears_angleunit angleunit, e_ears_ampunit threshampunit, t_ears_err *err)
+{
+    t_llll *out = llll_get();
+    std::vector<double> bins, positions, amplitudes;
+
+    *err = EARS_ERR_NONE;
+    
+    double spectrogram_sr = ears_buffer_get_sr(ob, mags);
+    long spectrogram_numbins = ears_buffer_get_numchannels(ob, mags);
+    t_ears_spectralbuf_metadata *data = ears_spectralbuf_metadata_get(ob, mags);
+
+    double minPeakDistance_rel = data ? ((minPeakDistance/data->binsize)/spectrogram_numbins) : minPeakDistance;
+
+    /*
+    try {
+        peaks = essentia::standard::AlgorithmFactory::create("PeakDetection",
+                                                             "interpolate", interpolate,
+                                                             "maxPeaks", maxPeaks,
+                                                             "minPeakDistance", minPeakDistance_rel,
+                                                             "orderBy", orderBy->s_name,
+                                                             "threshold", (Real)threshold
+                                                             );
+        
+        peaks->input("array").set(bins);
+        peaks->output("positions").set(positions);
+        peaks->output("amplitudes").set(amplitudes);
+    } catch (essentia::EssentiaException e) {  object_error(ob, e.what());  *err = EARS_ERR_ESSENTIA; return out;   }
+    */
+    
+    float *mags_sample = ears_buffer_locksamples(mags);
+    float *phases_sample = phases ? ears_buffer_locksamples(phases) : NULL;
+
+    if (!mags_sample) {
+        *err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(mags);
+        t_atom_long    framecount   = buffer_getframecount(mags);
+        for (long f = 0; f < framecount; f++) {
+            t_llll *framepeaks = llll_get();
+            double t = ears_convert_timeunit(f / spectrogram_sr, mags, EARS_TIMEUNIT_SECONDS, timeunit);
+            llll_appenddouble(framepeaks, t);
+            long f_times_channelcount = f*channelcount;
+            bins.clear();
+            for (long c = 0; c < channelcount; c++)
+                bins.push_back(mags_sample[f_times_channelcount + c]);
+            
+            double threshold_ok = ears_convert_ampunit(threshold, threshampunit, ampunit);
+            ears_get_peaks(bins, positions, amplitudes, interpolate, maxPeaks, minPeakDistance_rel, orderBy->s_name, threshold_ok);
+            //                peaks->compute();
+            
+            long limit = MIN(positions.size(), amplitudes.size());
+            for (long i = 0; i < limit; i++) {
+                t_llll *thispeak = llll_get();
+                double bin = positions[i] * (spectrogram_numbins - 1);
+                
+                // position
+                if (data)
+                    llll_appenddouble(thispeak, data->binoffset + bin * data->binsize);
+                else
+                    llll_appenddouble(thispeak, bin+1); // 1-based bin
+                
+                // amplitude
+                llll_appenddouble(thispeak, ears_convert_ampunit(amplitudes[i], EARS_AMPUNIT_LINEAR, ampunit));
+                
+                // phase
+                if (phases_sample) {
+                    double ph = 0;
+                    if (bin <= 0)
+                        ph = phases_sample[f*channelcount];
+                    else if (bin >= channelcount - 1)
+                        ph = phases_sample[f*channelcount + channelcount - 1];
+                    else {
+                        // linearly interpolating phases
+                        long fl = floor(bin);
+                        double diff = bin - fl;
+                        double phlow = ears_angle_to_radians(phases_sample[f*channelcount + fl], angleunit);
+                        double phhigh = ears_angle_to_radians(phases_sample[f*channelcount + fl+1], angleunit);
+                        if (phhigh > phlow) {
+                            while (phhigh - phlow > PI) {
+                                phhigh -= TWOPI;
+                            }
+                        } else if (phlow > phhigh) {
+                            while (phlow - phhigh > PI) {
+                                phhigh += TWOPI;
+                            }
+                        }
+                        ph = (1 - diff) * phlow + diff * phhigh;
+                    }
+                    llll_appenddouble(thispeak, ph);
+                }
+                
+                llll_appendllll(framepeaks, thispeak);
+            }
+            
+            llll_appendllll(out, framepeaks);
+        }
+        ears_buffer_unlocksamples(mags);
+        if (phases)
+            ears_buffer_unlocksamples(phases);
+    }
+    
+    return out;
+}
+
+
+
+
+
+
+
+// onsets are assumed to be in ms
+t_llll *ears_ptrack(t_object *ob, t_llll *allpeaks,
+                    double freq_speed_threshold, // how much the frequency (in the unit below) can change *per second*
+                    double graceperiod_before_dying, // grace period in ms for which a partial can be silent (in the threshold_timeunit)
+                    double min_partial_length, // grace period in ms for which a partial can be silent (in the threshold_timeunit)
+                    double min_partial_avg_amp,
+                    e_ears_timeunit in_timeunit, // units for time
+                    e_ears_frequnit in_frequnit, // units for frequencies
+                    e_ears_ampunit in_ampunit, // units for amplitudes
+                    e_ears_timeunit threshold_timeunit, // time unit for threshold
+                    e_ears_frequnit threshold_frequnit, // frequency unit for threshold
+                    e_ears_ampunit threshold_ampunit, // amplitude unit for threshold
+                    t_buffer_obj *inbuf // only used for unit conversion
+                    )
+{
+    long numchannels = allpeaks->l_size;
+    t_llll *out = llll_get();
+    for (t_llllelem *peaks_el = allpeaks->l_head; peaks_el; peaks_el = peaks_el->l_next) {
+        t_llll *peaks = hatom_getllll(&peaks_el->l_hatom);
+        if (peaks) {
+            // building native peak structure
+            long numframes = peaks->l_size;
+            t_ears_peak **pks = (t_ears_peak **)bach_newptr(numframes * sizeof(t_ears_peak *));
+            long *numpks = (long *)sysmem_newptr(numframes * sizeof(long));
+            double *frameonsets = (double *)sysmem_newptr(numframes * sizeof(double));
+            double graceperiod_before_dying_ms = ears_convert_timeunit(graceperiod_before_dying, inbuf, threshold_timeunit, EARS_TIMEUNIT_MS);
+            double min_partial_length_ms = ears_convert_timeunit(min_partial_length, inbuf, threshold_timeunit, EARS_TIMEUNIT_MS);
+            long frame = 0;
+            for (t_llllelem *f = peaks->l_head; f; f = f->l_next, frame++) { // cycle on the frames
+                t_llll *frame_ll = hatom_getllll(&f->l_hatom);
+                pks[frame] = NULL;
+                if (!frame_ll || !frame_ll->l_head) {
+                    pks[frame] = (t_ears_peak *)bach_newptr(1 * sizeof(t_ears_peak));
+                    numpks[frame] = 0;
+                    continue;
+                }
+                double onset = ears_convert_timeunit(hatom_getdouble(&frame_ll->l_head->l_hatom), inbuf, in_timeunit, EARS_TIMEUNIT_MS);
+                frameonsets[frame] = onset;
+                long numpeaks = frame_ll->l_size - 1;
+                if (numpeaks > 0) {
+                    pks[frame] = (t_ears_peak *)bach_newptr(numpeaks * sizeof(t_ears_peak));
+                    long pcount = 0;
+                    for (t_llllelem *p = frame_ll->l_head->l_next; p; p = p->l_next) { // cycle on the peaks
+                        t_llll *peak_ll = hatom_getllll(&p->l_hatom);
+                        if (!peak_ll || !peak_ll->l_head)
+                            continue;
+                        pks[frame][pcount].freq = peakll_getfreq(peak_ll);
+                        pks[frame][pcount].amp = peakll_getamp(peak_ll);
+                        pks[frame][pcount].phase = peakll_getphase(peak_ll);
+                        pks[frame][pcount].onset = onset;
+                        pks[frame][pcount].frameidx = frame;
+                        pks[frame][pcount].assigned = false;
+                        pcount++;
+                    }
+                    numpeaks = pcount;
+                } else {
+                    pks[frame] = (t_ears_peak *)bach_newptr(1 * sizeof(t_ears_peak));
+                }
+                numpks[frame] = numpeaks;
+            }
+            
+            // computing partial tracking
+            t_llll *dead_partials = llll_get();
+            t_llll *active_partials = llll_get();
+            long partialidx = 0;
+            
+            for (long f = 0; f < numframes; f++) {
+                // can we continue any active partials?
+                t_llllelem *p_el_next = NULL;
+                for (t_llllelem *p_el = active_partials->l_head; p_el; p_el = p_el_next) {
+                    p_el_next = p_el->l_next;
+                    t_ears_partial *partial = (t_ears_partial *)hatom_getobj(&p_el->l_hatom);
+                    
+                    // looking for candidates to continue:
+                    double best_freq_dist = DBL_MAX;
+                    long best_p = -1;
+                    for (long p = 0; p < numpks[f]; p++) {
+                        if (!pks[f][p].assigned) {
+                            double freq_dist = fabs(ears_convert_frequnit(pks[f][p].freq, in_frequnit, threshold_frequnit) -
+                                                    ears_convert_frequnit(partial->last_freq, in_frequnit, threshold_frequnit));
+                            if (freq_dist < best_freq_dist) {
+                                best_freq_dist = freq_dist;
+                                best_p = p;
+                            }
+                        }
+                    }
+                    if (best_p >= 0 && best_freq_dist < freq_speed_threshold * (pks[f][best_p].onset - partial->last_onset) / 1000.) {
+                        // continuing partial p
+                        partial->last_freq = pks[f][best_p].freq;
+                        partial->last_amp = pks[f][best_p].amp;
+                        partial->last_onset = pks[f][best_p].onset;
+                        llll_appendobj(partial->peaks, &pks[f][best_p]);
+                        pks[f][best_p].assigned = true;
+                    } else {
+                        // did this partial die?
+                        if (frameonsets[f] - partial->last_onset > graceperiod_before_dying_ms) {
+                            // yes, it died!
+                            partial->active = false;
+                            llll_appendobj(dead_partials, partial);
+                            llll_destroyelem(p_el);
+                        }
+                    }
+                }
+                
+                
+                // then, every unassigned peak must start a new partial!
+                for (long p = 0; p < numpks[f]; p++) {
+                    if (!pks[f][p].assigned) {
+                        // must start a new partial, I guess!
+                        t_ears_partial *partial = (t_ears_partial *)bach_newptr(sizeof(t_ears_partial));
+                        partial->last_amp = pks[f][p].amp;
+                        partial->last_freq = pks[f][p].freq;
+                        partial->last_onset = partial->first_onset = pks[f][p].onset;
+                        partial->peaks = llll_get();
+                        llll_appendobj(partial->peaks, &pks[f][p]);
+                        partial->active = true;
+                        partial->partialidx = partialidx++;
+                        llll_appendobj(active_partials, partial);
+                    }
+                }
+            }
+            
+            // we're done! moving all active partials to dead list
+            for (t_llllelem *p_el = active_partials->l_head; p_el; p_el = p_el->l_next) {
+                t_ears_partial *partial = (t_ears_partial *)hatom_getobj(&p_el->l_hatom);
+                partial->active = false;
+                llll_appendobj(dead_partials, partial);
+            }
+            llll_clear(active_partials);
+            
+            // building output llll of partials:
+            t_llll *outch = llll_get();
+            for (t_llllelem *p_el = dead_partials->l_head; p_el; p_el = p_el->l_next) {
+                t_ears_partial *partial = (t_ears_partial *)hatom_getobj(&p_el->l_hatom);
+                if (partial->last_onset-partial->first_onset >= min_partial_length_ms) {
+                    // computing average amplitude
+                    double avgamp = 0;
+                    long numpeaks = partial->peaks->l_size;
+                    for (t_llllelem *el = partial->peaks->l_head; el; el = el->l_next) {
+                        t_ears_peak *peak = (t_ears_peak *)hatom_getobj(&el->l_hatom);
+                        avgamp = avgamp * (numpeaks - 1)/numpeaks + peak->amp / numpeaks;
+                    }
+                    avgamp = ears_convert_ampunit(avgamp, in_ampunit, threshold_ampunit);
+                    if (avgamp > min_partial_avg_amp) {
+                        // OK, now we can actually output this partial.
+                        t_llll *partial_ll = llll_get();
+                        for (t_llllelem *el = partial->peaks->l_head; el; el = el->l_next) {
+                            t_ears_peak *peak = (t_ears_peak *)hatom_getobj(&el->l_hatom);
+                            t_llll *peak_ll = llll_get();
+                            //onset, frequency, amplitude, phase
+                            llll_appenddouble(peak_ll, peak->onset);
+                            llll_appenddouble(peak_ll, peak->freq);
+                            llll_appenddouble(peak_ll, peak->amp);
+                            if (peak->phase > -DBL_MAX)
+                                llll_appenddouble(peak_ll, peak->phase);
+                            llll_appendllll(partial_ll, peak_ll);
+                        }
+                        llll_appendllll(outch, partial_ll);
+                    }
+                }
+            }
+            
+            llll_appendllll(out, outch);
+
+            // freeing memory
+            for (t_llllelem *p_el = dead_partials->l_head; p_el; p_el = p_el->l_next) {
+                t_ears_partial *partial = (t_ears_partial *)hatom_getobj(&p_el->l_hatom);
+                llll_free(partial->peaks);
+                bach_freeptr(partial);
+            }
+            llll_free(dead_partials);
+            llll_free(active_partials);
+            for (long f = 0; f < numframes; f++) {
+                bach_freeptr(pks[f]);
+            }
+            bach_freeptr(pks);
+            bach_freeptr(numpks);
+            bach_freeptr(frameonsets);
+        }
+    }
+
+    return out;
+}
+
+// convert partials in llll form (one level for each channel) to a bach.roll syntax, useful for resynthesis
+t_llll *ears_ptrack_to_roll(t_object *ob, t_llll *ptrack,
+                            e_ears_timeunit in_timeunit, e_ears_frequnit in_frequnit, e_ears_ampunit in_ampunit)
+{
+    t_llll *roll = llll_get();
+    for (t_llllelem *channel = ptrack->l_head; channel; channel = channel->l_next) {
+        if (hatom_gettype(&channel->l_hatom) == H_LLLL) {
+            t_llll *channel_ll = hatom_getllll(&channel->l_hatom);
+            t_llll *voice = llll_get();
+            for (t_llllelem *partial = channel_ll->l_head; partial; partial = partial->l_next) {
+                if (hatom_gettype(&partial->l_hatom) == H_LLLL) {
+                    t_llll *partial_ll = hatom_getllll(&partial->l_hatom);
+                    if (partial_ll && partial_ll->l_head) {
+                        t_llll *firstpeak = hatom_getllll(&partial_ll->l_head->l_hatom);
+                        t_llll *lastpeak = hatom_getllll(&partial_ll->l_tail->l_hatom);
+                        if (firstpeak && firstpeak->l_size >= 2 && lastpeak && lastpeak->l_size >= 2 ) {
+                            double onset = hatom_getdouble(&firstpeak->l_head->l_hatom);
+                            double tail = hatom_getdouble(&lastpeak->l_head->l_hatom);
+                            double freq = hatom_getdouble(&firstpeak->l_head->l_next->l_hatom);
+                            double amp = firstpeak->l_size >= 3 ? hatom_getdouble(&firstpeak->l_head->l_next->l_next->l_hatom) : 1.;
+                            
+                            double duration_ms = ears_convert_timeunit(tail, NULL, in_timeunit, EARS_TIMEUNIT_MS) - ears_convert_timeunit(onset, NULL, in_timeunit, EARS_TIMEUNIT_MS);
+                            double pitch_cents = ears_convert_frequnit(freq, in_frequnit, EARS_FREQUNIT_CENTS);
+                            
+                            t_llll *chord = llll_get();
+                            t_llll *note = llll_get();
+                            t_llll *breakpoints = llll_get();
+                            llll_appenddouble(chord, ears_convert_timeunit(onset, NULL, in_timeunit, EARS_TIMEUNIT_MS));
+                            llll_appenddouble(note, pitch_cents); // pitch
+                            llll_appenddouble(note, duration_ms); // duration
+                            llll_appenddouble(note, rescale(ears_convert_ampunit(amp, in_ampunit, EARS_AMPUNIT_LINEAR), 0., 1., 0., 127.)); // EARS_VELOCITY_TO_AMPLITUDE
+                            
+                            // breakpoints
+                            llll_appendsym(breakpoints, _llllobj_sym_breakpoints);
+                            for (t_llllelem *peak = partial_ll->l_head; peak; peak = peak->l_next) {
+                                t_llll *peak_ll = hatom_getllll(&peak->l_hatom);
+                                if (peak_ll) {
+                                    t_llll *this_breakpoint = llll_get();
+                                    double bpt_onset = hatom_getdouble(&peak_ll->l_head->l_hatom);
+                                    double bpt_freq = hatom_getdouble(&peak_ll->l_head->l_next->l_hatom);
+                                    double bpt_amp = peak_ll->l_size >= 3 ? hatom_getdouble(&peak_ll->l_head->l_next->l_next->l_hatom) : 1.;
+                                    
+                                    llll_appenddouble(this_breakpoint, ears_convert_timeunit(bpt_onset - onset, NULL, in_timeunit, EARS_TIMEUNIT_MS)/duration_ms);
+                                    llll_appenddouble(this_breakpoint, ears_convert_frequnit(bpt_freq, in_frequnit, EARS_FREQUNIT_CENTS)-pitch_cents);
+                                    llll_appenddouble(this_breakpoint, 0.);
+                                    llll_appenddouble(this_breakpoint, rescale(ears_convert_ampunit(bpt_amp, in_ampunit, EARS_AMPUNIT_LINEAR), 0., 1., 0., 127.));
+                                    llll_appendllll(breakpoints, this_breakpoint);
+                                }
+                            }
+                            
+                            llll_appendllll(note, breakpoints);
+                            llll_appendllll(chord, note);
+                            llll_appendllll(voice, chord);
+                        }
+                    }
+                }
+            }
+            llll_appendllll(roll, voice);
+        }
+    }
+    return roll;
+}

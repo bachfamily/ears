@@ -98,7 +98,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the first inlet is supposed to contain buffer names and will
-    // trigger the buffer processing and output the processed buffer names (depending on the <m>naming</m> attribute). <br />
+    // trigger the buffer processing and output the processed buffer names (depending on the <m>alloc</m> attribute). <br />
     // A number or an llll in the second inlet is expected to contain a iter parameter (depending on the <m>ampunit</m>) or
     // an envelope (also see <m>envampunit</m>).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(iter)
@@ -108,7 +108,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
  //   earsbufobj_class_add_blocking_attr(c);
 //    earsbufobj_class_add_ampunit_attr(c);
-//    earsbufobj_class_add_naming_attr(c);
+//    earsbufobj_class_add_alloc_attr(c);
 
     CLASS_ATTR_LONG(c, "iterationmode",    0,    t_buf_iter, e_iterationmode);
     CLASS_ATTR_STYLE_LABEL(c, "iterationmode", 0, "enumindex", "Iteration Mode");

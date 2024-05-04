@@ -51,13 +51,13 @@ typedef struct earsbufobj_store
 
 
 
-typedef enum _earsbufobj_namings
+typedef enum _earsbufobj_allocs
 {
-    EARSBUFOBJ_NAMING_COPY = 0,   ///< Output buffers are NOT cloned, and copied whenever possible from the input buffers
-    EARSBUFOBJ_NAMING_STATIC = 1,   ///< Output buffers are "static": we always use the same ones
-    EARSBUFOBJ_NAMING_DYNAMIC = 2,  ///< Output buffers are "dynamic": new buffers are created at each output
+    EARSBUFOBJ_ALLOC_INPLACE = 0,   ///< Output buffers are NOT cloned, and acted upon inplace
+    EARSBUFOBJ_ALLOC_STATIC = 1,   ///< Output buffers are allocated "statically": we always use the same ones
+    EARSBUFOBJ_ALLOC_DYNAMIC = 2,  ///< Output buffers are allocated "dynamically": new buffers are created at each output
                                     /// (but can be cycled via the "cycle" message)
-} e_earsbufobj_namings;
+} e_earsbufobj_allocs;
 
 
 typedef enum _earsbufobj_flag
@@ -65,6 +65,7 @@ typedef enum _earsbufobj_flag
     EARSBUFOBJ_FLAG_NONE = 0,
     EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
     EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
+    EARSBUFOBJ_FLAG_WARN_FOR_RECYCLE = 4,           ///< Internal flag used to warn when a "reset" message is received in place of a "recycle" one.
 } e_earsbufobj_flag;
 
 typedef enum _earsbufobj_blocking
@@ -93,6 +94,14 @@ typedef enum _earsbufobj_win_role
 } e_earsbufobj_win_role;
 
 
+typedef enum _ears_fft_normalization
+{
+    EARS_FFT_NORMALIZATION_FFTSIZE = 0,
+    EARS_FFT_NORMALIZATION_FFTSIZEOVERTWO = 1,
+    EARS_FFT_NORMALIZATION_UNITARY = 2, // unitary FFT, coincides with inverse up to conjugation
+    EARS_FFT_NORMALIZATION_TRUEMAGNITUDES = 3, // magnitudes correspond to sinusoidal amplitudes
+} e_ears_fft_normalization;
+
 
 
 typedef struct _earsbufobj
@@ -115,7 +124,7 @@ typedef struct _earsbufobj
     t_int32                 l_numbufouts;    ///< how many buffer outlets
     t_earsbufobj_store      *l_outstore;    ///< the out stores
     t_llll                  *l_outnames;    ///< Output names, could be a level2 list if outlets have multiple buffers
-    char                    l_bufouts_naming;   ///< One of the e_earsbufobj_namings.
+    char                    l_bufouts_alloc;   ///< One of the e_earsbufobj_allocs.
                                                 /// Names for buffer outlets are static, i.e. "destructive” operation mode.
 // stuff for cycling over a finite list of generated output names
     t_llll                  *l_generated_outnames;    ///< Updated list of automatically generated output buffer names
@@ -158,8 +167,10 @@ typedef struct _earsbufobj
     char                    a_winnorm; ///< if set, window is normalized to have area of 1 and then scaled by a factor of 2
     long                    a_zeropadding;
     char                    a_zerophase;
+    char                    a_splitpadding;     ///< Currently false and unused (unsupported by the version of essentia we're linking, supported by a newer one)
     char                    a_lastframetoendoffile;
     char                    a_winstartfromzero;
+    char                    a_fftnormalization; // one of the #e_ears_fft_normalization types
     
     char                    l_slopemapping; ///< Slope mapping (one of the #e_slope_mapping)
     char                    l_output_polybuffers; ///< Use polybuffers at output? 0 = no (default), 1 = yes, and only output a single name, 2 = yes, but output each buffer with its separate name
@@ -407,9 +418,10 @@ void earsbufobj_class_add_envampunit_attr(t_class *c);
 void earsbufobj_class_add_pitchunit_attr(t_class *c);
 void earsbufobj_class_add_frequnit_attr(t_class *c);
 void earsbufobj_class_add_angleunit_attr(t_class *c);
-void earsbufobj_class_add_naming_attr(t_class *c);
+void earsbufobj_class_add_alloc_attr(t_class *c);
 void earsbufobj_class_add_slopemapping_attr(t_class *c);
 void earsbufobj_class_add_framesize_attr(t_class *c);
+void earsbufobj_class_add_fftnormalization_attr(t_class *c);
 void earsbufobj_class_add_hopsize_attr(t_class *c);
 void earsbufobj_class_add_numframes_attr(t_class *c);
 void earsbufobj_class_add_overlap_attr(t_class *c);
@@ -420,6 +432,7 @@ void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
 void earsbufobj_class_add_winnormalized_attr(t_class *c);
 void earsbufobj_class_add_zerophase_attr(t_class *c);
 void earsbufobj_class_add_zeropadding_attr(t_class *c);
+void earsbufobj_class_add_splitpadding_attr(t_class *c);
 void earsbufobj_class_add_resamplingpolicy_attr(t_class *c);
 void earsbufobj_class_add_resamplingfiltersize_attr(t_class *c);
 void earsbufobj_class_add_resamplingmode_attr(t_class *c);
@@ -437,7 +450,7 @@ long llll_get_num_symbols_root(t_llll *ll);
 long earsbufobj_store_buffer_list(t_earsbufobj *e_ob, t_llll *buffers, long store_idx);
 t_llll *earsbufobj_parse_gimme(t_earsbufobj *e_ob, e_llllobj_obj_types type, t_symbol *msg, long ac, t_atom *av);
 
-t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv);
+t_max_err earsbufobj_setattr_alloc(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv);
 void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob);
 
 t_llll *earsbufobj_extract_names_from_args(t_earsbufobj *e_ob, t_llll *args, char assign_naming_policy = true);
@@ -530,6 +543,8 @@ t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
+t_llll *earsbufobj_pitch_llll_to_cents_and_samples(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf);
+t_llll *earsbufobj_pitch_llllelem_to_hertz_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 
 
 
@@ -541,9 +556,10 @@ double earsbufobj_linear_to_output(t_earsbufobj *e_ob, double value);
 
 t_llll *earsbufobj_llllelem_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, e_ears_timeunit dest_envtimeunit, double orig_from, double orig_to, char convert_from_decibels);
 t_llll *earsbufobj_llll_convert_envtimeunit_and_normalize_range(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf, e_ears_timeunit dest_envtimeunit, double orig_from, double orig_to, char convert_from_decibels);
+t_llll *earsbufobj_llll_convert_envtimeunit(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf, e_ears_timeunit dest_envtimeunit);
 
 // returns true if the s is _ = or !
-t_bool earsbufobj_is_sym_naming_mech(t_symbol *s);
+t_bool earsbufobj_is_sym_alloc_mech(t_symbol *s);
 
 
 // progress bar

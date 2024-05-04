@@ -114,12 +114,12 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // buffer names (depending on the <m>alloc</m> attribute).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(expr)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
     earsbufobj_class_add_envtimeunit_attr(c);
@@ -206,20 +206,20 @@ t_buf_expr *buf_expr_new(t_symbol *s, short argc, t_atom *argv)
             t_symbol *s = atom_getsym(true_av);
             t_atom av;
             if (s == gensym("=")) {
-                atom_setsym(&av, gensym("copy"));
-                earsbufobj_setattr_naming((t_earsbufobj *)x, NULL, 1, &av);
+                atom_setsym(&av, gensym("in-place"));
+                earsbufobj_setattr_alloc((t_earsbufobj *)x, NULL, 1, &av);
                 true_av++;
                 true_ac--;
             }
             if (s == gensym("!")) {
                 atom_setsym(&av, gensym("dynamic"));
-                earsbufobj_setattr_naming((t_earsbufobj *)x, NULL, 1, &av);
+                earsbufobj_setattr_alloc((t_earsbufobj *)x, NULL, 1, &av);
                 true_av++;
                 true_ac--;
             }
             if (s == gensym("-")) {
                 atom_setsym(&av, gensym("static"));
-                earsbufobj_setattr_naming((t_earsbufobj *)x, NULL, 1, &av);
+                earsbufobj_setattr_alloc((t_earsbufobj *)x, NULL, 1, &av);
                 true_av++;
                 true_ac--;
             }
@@ -414,7 +414,7 @@ void buf_expr_bang(t_buf_expr *x)
     }
 
     
-    if (x->e_ob.l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) // this is only needed for COPY naming situations, otherwise we handle buffers manually
+    if (x->e_ob.l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE) // this is only needed for COPY naming situations, otherwise we handle buffers manually
         earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, num_buffers, true);
     
     earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, num_buffers, true);
@@ -448,7 +448,7 @@ void buf_expr_bang(t_buf_expr *x)
                 t_buffer_obj *obj = ears_buffer_get_object(name);
                 if (obj) {
                     hatom_setobj(x->arguments + i, obj);
-                    if (i == 0 && x->e_ob.l_bufouts_naming == EARSBUFOBJ_NAMING_COPY) {
+                    if (i == 0 && x->e_ob.l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE) {
                         earsbufobj_store_buffer((t_earsbufobj *)x, EARSBUFOBJ_IN, 0, count, name);
                         inplace = true;
                     }

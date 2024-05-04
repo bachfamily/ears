@@ -85,12 +85,12 @@
 		<method name="reset">
 			<arglist />
 			<digest>
-				Restart naming cycle
+				Restart naming allocation cycle
 			</digest>
 			<description>
-				If the <m>naming</m> attribute is set to 'Dynamic',
+				If the <m>alloc</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
-				used name. This is especially useful in combination with iterative mechanisms.
+				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
 		<method name="stop">
@@ -268,7 +268,7 @@
 				Sets the blocking mode, i.e. the thread to be used for computation: <br />
 				0: the object uses its own separate thread; <br />
 				1: the object uses the main thread (default); <br />
-				2: the object uses its the scheduler thread. <br />
+				2: the object uses whatever thread the message comes in (including, notably the scheduler thread). <br />
 				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 			</description>
 			<attributelist>
@@ -554,7 +554,7 @@
 		</attribute>
 		<attribute name="timeunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Time Values Are In
+				Time Values Unit
 			</digest>
 			<description>
 				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
@@ -562,7 +562,7 @@
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Unit" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>

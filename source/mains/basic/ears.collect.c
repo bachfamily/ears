@@ -123,12 +123,12 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     // @method reset @digest Reset sample counting
     // @description The <m>reset</m> message only resets the sample counting (restarting from 0), not clearing the existing buffers
-    class_addmethod(c, (method) buf_collect_reset, "reset", 0);
+    class_addmethod(c, (method) buf_collect_reset, "resetcount", 0);
 
     
 //    earsbufobj_class_add_blocking_attr(c);
 //    earsbufobj_class_add_ampunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
 
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_collect, e_sr);
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");

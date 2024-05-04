@@ -151,7 +151,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 352.0, 329.398053407669067, 216.0, 69.0 ],
-					"text" : "Do whatever you want here. For example, are producing a sort of low-quality denosing by enhancing the louder partials"
+					"text" : "Do whatever you want here. For example, here we are producing a sort of low-quality denosing by enhancing the louder partials"
 				}
 
 			}
@@ -165,7 +165,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 406.0, 180.91175670588234, 187.0, 83.0 ],
+					"patching_rect" : [ 406.0, 180.91175670588234, 190.0, 83.0 ],
 					"text" : "Complex Cepstrum: FFT of a complex value whose real part is the log(magnitude) and imaginary part is the original phase"
 				}
 

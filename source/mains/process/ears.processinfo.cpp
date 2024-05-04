@@ -22,7 +22,7 @@
  in ears.process~
  
  @description
- Report information about the current state of the process running in ears.process~
+ Reports information about the current state of the process running in <o>ears.process~</o>.
  
  @discussion
  

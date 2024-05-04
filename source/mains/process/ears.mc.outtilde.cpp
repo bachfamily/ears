@@ -21,8 +21,8 @@
  Signal output for a patch loaded by ears.process~
  
  @description
- Use the <o>ears.mc.out~</o> object inside a patch loaded by ears.process~
- to create a multichannel signal outlet writing data to an output buffer.
+ Creates a multichannel signal outlet inside a patch loaded by <o>ears.process~</o>
+ writing data to an output buffer.
  
  @discussion
  

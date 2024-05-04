@@ -580,13 +580,13 @@ t_ears_err ears_buffer_waveset_interp(t_object *ob, t_buffer_obj *source, t_buff
                         t_buffer_obj *from = (t_buffer_obj *)hatom_getobj(&ll->l_head->l_hatom);
                         t_buffer_obj *to = (t_buffer_obj *)hatom_getobj(&ll->l_tail->l_hatom);
                         
-                        ears_buffer_assemble_once(ob, channels_temp[c], from, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                        ears_buffer_assemble_once(ob, channels_temp[c], from, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps, 0);
                         ears_buffer_interp(ob, from, to, numinterp, tempbufs, resamplingfiltersize, resamplingmode, equalpowerinterp);
                         for (long i = 0; i < numinterp; i++)
-                            ears_buffer_assemble_once(ob, channels_temp[c], tempbufs[i], gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                            ears_buffer_assemble_once(ob, channels_temp[c], tempbufs[i], gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps, 0);
 
                         if (!el->l_next)
-                            ears_buffer_assemble_once(ob, channels_temp[c], to, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                            ears_buffer_assemble_once(ob, channels_temp[c], to, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps, 0);
                     }
                 }
             }
@@ -682,7 +682,7 @@ t_ears_err ears_buffer_waveset_average(t_object *ob, t_buffer_obj *source, t_buf
             
             for (long i = 0; i < num; i++) {
                 ears_buffer_average(ob, groupsize, wsts + i + groupsize - groupsize / 2, tempavg, NULL, resamplingfiltersize, resamplingmode, keep_waveset_length, groupsize / 2);
-                ears_buffer_assemble_once(ob, channels_temp[c], tempavg, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps);
+                ears_buffer_assemble_once(ob, channels_temp[c], tempavg, gains, channel_cur_length_samps, k_SLOPE_MAPPING_BACH, EARS_RESAMPLINGPOLICY_DONT, resamplingfiltersize, resamplingmode, &channel_cur_length_samps, &channel_cur_alloc_samps, 0);
             }
             
             if (ears_buffer_assemble_close(ob, channels_temp[c], EARS_NORMALIZE_DONT, channel_cur_length_samps) != EARS_ERR_NONE) {
