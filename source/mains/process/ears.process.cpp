@@ -933,7 +933,7 @@ void earsprocess_int(t_earsprocess *x, t_atom_long i)
     t_atom a[1];
     atom_setlong(a, i);
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx) {
+    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
         earsprocess_anything(x, _sym_int, 1, a);
     } else {
         object_error((t_object *) x, "Doesn't understand int in inlet %ld", inlet + 1);

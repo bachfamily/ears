@@ -31,6 +31,7 @@ The packaged version of Essentia has been modified to
 To build the library, you should use the lightweight configuration, without dependencies.
 If you're on a Mac Intel (but NOT on a Silicon machine: for this see below!), enter the library folder (source/lib/essentia-2.1_beta5-modif) and then:
 
+    chmod 755 waf
     ./waf configure --build-static --fft='KISS' --lightweight=""
     ./waf
     ./waf install
@@ -53,10 +54,10 @@ I don't see how at this stage the leading MACOSX_DEPLOYMENT_TARGET=10.11 makes a
     cd /usr/local/lib
     lipo libessentia.a libessentia_arm64.a -create -output libessentia.a
 
-Notice we are using the KissFFT library because it is already a dependency of bach (see below).
+Notice that we are using the KissFFT library because it is already a dependency of bach (see below).
 
 
-• For the [ears.write~] and [ears.read~] module: the TagLib (https://taglib.org/, released under LGPL)
+• For the [ears.write~] and [ears.read~] modules: the TagLib library (https://taglib.org/, released under LGPL)
 A version of the library is included in the repository. On a Mac, simply enter the folder source/lib/taglib-1.12/
 then
 
@@ -64,7 +65,7 @@ then
     make
     make install
 
-• For the [ears.write~] and [ears.read~] module: the LibAIFF library (http://aifftools.sourceforge.net/libaiff/, released under MIT License, compatible with GPLv3)
+• For the [ears.write~] and [ears.read~] modules: the LibAIFF library (http://aifftools.sourceforge.net/libaiff/, released under MIT License, compatible with GPLv3)
 A modified version of the library is included in the repository.
 The modifications are the following:
 – Comment line 180 "Unprepare(p)" in libaiff.c
@@ -82,10 +83,10 @@ The modifications extend the functionalities of the library in order to support 
 You do not need to compile or install the library separately: sources are directly compiled within the project.
 
 • the mpg123 library 1.23.4 (released under LGPLv2.1).
-We have tested with versio 1.29.3 (and, previously with version 1.23.4). It may work with following versions also. The source code is, for convenience, also in the source/lib/ folder (if you want to try a later version you can download it from https://www.mpg123.de), but importantly there is an issue in the "make" portion of the procedure if your path has spaces. So first of all make sure you copy the folder in a path position with no spaces, then enter the folder and run
-MACOSX_DEPLOYMENT_TARGET=10.11 ./configure --enable-static=yes
-MACOSX_DEPLOYMENT_TARGET=10.11 make
-MACOSX_DEPLOYMENT_TARGET=10.11 make install
+We have tested with version 1.29.3 (and previously with version 1.23.4). It may work with later versions also. The source code is, for convenience, also in the source/lib/ folder (if you want to try a later version you can download it from https://www.mpg123.de), but importantly there is an issue in the "make" portion of the procedure if your path has spaces. So first of all make sure you copy the folder in a path position with no spaces, then enter the folder and run
+    ./configure --enable-static=yes
+    make
+    make install
 If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmpg123.a
 If you need to build it for Apple Silicon, you need to
 1. Run the commands above
@@ -101,9 +102,9 @@ If you need to build it for Apple Silicon, you need to
 
 • The mp3 LAME library 3.1.00, licensed under the LGPL (If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmp3lame.a)
 We have tested with version 3.100. A slightly modified version is included in the repository, containing the only modification needed to compile the library, namely: remove the line containing 'lame_init_old' from the file 'include/libmp3lame.sym'. If you take the version of the library in source/lib/, this is already taken care of, otherwise take care of it, make sure to copy the folder in a path with no spaces in it, then enter the folder and run:
-MACOSX_DEPLOYMENT_TARGET=10.11 ./configure
-MACOSX_DEPLOYMENT_TARGET=10.11 make
-MACOSX_DEPLOYMENT_TARGET=10.11 make install
+    ./configure
+    make
+    make install
 If you need to compile the Xcode project, the static library must be located at /usr/local/lib/libmp3lame.a
 If you need to build it for Apple Silicon, you need to
 1. Run the commands above

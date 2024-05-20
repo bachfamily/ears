@@ -178,7 +178,7 @@ void buf_rev_bang(t_buf_rev *x)
             ears_buffer_clone((t_object *)x, in, out);
 
         ears_buffer_rev_inplace((t_object *)x, out);
-
+        
         if (earsbufobj_iter_progress((t_earsbufobj *)x, count, num_buffers)) break;
     }
     

@@ -127,6 +127,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		00C19D8F2B0BC51A00B3E10E /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
+		00C19D932B0BC51A00B3E10E /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
+		00C19D942B0BC51A00B3E10E /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
 		1E05F44E1FFD3293000750B1 /* ears.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */; };
 		1E05F4521FFD3293000750B1 /* lib_ears.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ED9C9B1190D1224001973B8 /* lib_ears.a */; };
 		1E05F4531FFD3293000750B1 /* MaxAudioAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E4B958519F2F6B700584112 /* MaxAudioAPI.framework */; };
@@ -1149,6 +1152,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		00C19D8C2B0BC51A00B3E10E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1ED9C9B0190D1224001973B8;
+			remoteInfo = lib_dada;
+		};
 		1E05F44B1FFD3293000750B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
@@ -2664,6 +2674,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00C19D992B0BC51A00B3E10E /* ears.marco~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.marco~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
+		00C19D9A2B0BC51A00B3E10E /* ears.rev~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.rev~ copy-Info.plist"; path = "/Users/aa/Documents/Max 8/Packages/ears/source/xcode/ears.rev~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		1E05F4581FFD3293000750B1 /* ears.onepole~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.onepole~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E06EE911D366EE60064F23B /* ears.crop~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.crop~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E0739CC26257C8F00A66190 /* ears.spectralannotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.spectralannotations.h; path = ../commons/dg/ears.spectralannotations.h; sourceTree = "<group>"; };
@@ -3118,6 +3130,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		00C19D922B0BC51A00B3E10E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00C19D932B0BC51A00B3E10E /* lib_ears.a in Frameworks */,
+				00C19D942B0BC51A00B3E10E /* MaxAudioAPI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1E05F4511FFD3293000750B1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4127,6 +4148,7 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
+				00C19D9A2B0BC51A00B3E10E /* ears.rev~ copy-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
@@ -4904,6 +4926,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		00C19D8D2B0BC51A00B3E10E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1E05F44C1FFD3293000750B1 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -6038,6 +6067,26 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		00C19D8A2B0BC51A00B3E10E /* ears.marco~ */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00C19D962B0BC51A00B3E10E /* Build configuration list for PBXNativeTarget "ears.marco~" */;
+			buildPhases = (
+				00C19D8D2B0BC51A00B3E10E /* Headers */,
+				00C19D8E2B0BC51A00B3E10E /* Resources */,
+				00C19D902B0BC51A00B3E10E /* Sources */,
+				00C19D922B0BC51A00B3E10E /* Frameworks */,
+				00C19D952B0BC51A00B3E10E /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00C19D8B2B0BC51A00B3E10E /* PBXTargetDependency */,
+			);
+			name = "ears.marco~";
+			productName = iterator;
+			productReference = 00C19D992B0BC51A00B3E10E /* ears.marco~.mxo */;
+			productType = "com.apple.product-type.bundle";
+		};
 		1E05F4491FFD3293000750B1 /* ears.onepole~ */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1E05F4551FFD3293000750B1 /* Build configuration list for PBXNativeTarget "ears.onepole~" */;
@@ -8365,11 +8414,20 @@
 				1E64970F28495E9C006BDC63 /* ears.waveset.subs~ */,
 				1E174228261CB71C00E6D9E8 /* ears.window~ */,
 				1EDB3A0A217D337F007347EF /* ears.write~ */,
+				00C19D8A2B0BC51A00B3E10E /* ears.marco~ */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		00C19D8E2B0BC51A00B3E10E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00C19D8F2B0BC51A00B3E10E /* ears.xcconfig in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1E05F44D1FFD3293000750B1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -9248,6 +9306,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXRezBuildPhase section */
+		00C19D952B0BC51A00B3E10E /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1E05F4541FFD3293000750B1 /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
@@ -10014,6 +10079,13 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		00C19D902B0BC51A00B3E10E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1E05F44F1FFD3293000750B1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -11107,6 +11179,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		00C19D8B2B0BC51A00B3E10E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
+			targetProxy = 00C19D8C2B0BC51A00B3E10E /* PBXContainerItemProxy */;
+		};
 		1E05F44A1FFD3293000750B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1ED9C9B0190D1224001973B8 /* lib_ears */;
@@ -12190,6 +12267,83 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		00C19D972B0BC51A00B3E10E /* Development */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+				);
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
+					/usr/local/include/,
+				);
+				INFOPLIST_FILE = "ears.rev~ copy-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				OTHER_CFLAGS = (
+					"-DU_HAVE_GCC_ATOMICS=0",
+					"-fvisibility=hidden",
+				);
+				OTHER_LDFLAGS = (
+					/usr/local/lib/libmpg123.a,
+					/usr/local/lib/libmp3lame.a,
+					"$(C74_SYM_LINKER_FLAGS)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REZ_SEARCH_PATHS = "";
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+			};
+			name = Development;
+		};
+		00C19D982B0BC51A00B3E10E /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+				);
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				HEADER_SEARCH_PATHS = (
+					"\"$(C74SUPPORT)/max-includes\"",
+					"\"$(C74SUPPORT)/msp-includes\"",
+					"\"$(C74SUPPORT)/jit-includes\"",
+					"\"$(SRCROOT)/../../../bach/source/commons\"/**",
+					/usr/local/include/,
+				);
+				INFOPLIST_FILE = "ears.rev~ copy-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				OTHER_CFLAGS = (
+					"-DU_HAVE_GCC_ATOMICS=0",
+					"-fvisibility=hidden",
+				);
+				OTHER_LDFLAGS = (
+					/usr/local/lib/libmpg123.a,
+					/usr/local/lib/libmp3lame.a,
+					"$(C74_SYM_LINKER_FLAGS)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REZ_SEARCH_PATHS = "";
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+			};
+			name = Deployment;
+		};
 		1E05F4561FFD3293000750B1 /* Development */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1ECA8C241A45B2FB001B9251 /* ears.xcconfig */;
@@ -20772,6 +20926,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		00C19D962B0BC51A00B3E10E /* Build configuration list for PBXNativeTarget "ears.marco~" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00C19D972B0BC51A00B3E10E /* Development */,
+				00C19D982B0BC51A00B3E10E /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
 		1E05F4551FFD3293000750B1 /* Build configuration list for PBXNativeTarget "ears.onepole~" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
