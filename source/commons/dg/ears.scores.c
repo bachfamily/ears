@@ -335,8 +335,8 @@ t_ears_err ears_roll_to_buffer_get_buffer(t_earsbufobj *e_ob,
         newinfo.start_ms = start_ms;
         newinfo.end_ms = end_ms;
         newinfo.breakpoints = breakpoints;
-        newinfo.gain_env = gain_env;
-        newinfo.pan_env = pan_env;
+        newinfo.gain_env = llll_clone(gain_env);
+        newinfo.pan_env = llll_clone(pan_env);
         newinfo.voice_pan = voice_pan;
         newinfo.fadein_amount = fadein_amount;
         newinfo.fadeout_amount = fadeout_amount;
@@ -686,6 +686,14 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
         ears_buffer_set_sr((t_object *)e_ob, dest, sr);
     }
     
+    // freeing lllls
+    if (optimize_for_identical_samples) {
+        for (long i = 0; i < noteinfo.size(); i++) {
+            llll_free(noteinfo[i].pan_env);
+            llll_free(noteinfo[i].gain_env);
+        }
+    }
+
     // freeing buffers
     if (!use_assembly_line) {
         if (optimize_for_identical_samples) {
