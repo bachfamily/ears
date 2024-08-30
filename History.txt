@@ -24,6 +24,8 @@ We'll keep "reset" still supported for a while, but that may change in future re
 
 - ears.split~:	now a relative overlap refers to an evenly subdivided chunk, not to the original one
 
+- ears.vamp~: now if frame labels are present, they are output as last element of the lists.
+
 ***********************
 *** VERSION CHANGES ***
 ***********************
@@ -46,3 +48,4 @@ We'll keep "reset" still supported for a while, but that may change in future re
 - ears.essentia~: Fixed dozens of features that did not work
 	          Added object-wise pitch filtering (@pf attribute and its @pf* parameters) as postprocess pitch detection algorithms
 
+- ears.alloc~: Fixed bug causing wrong output with empty buffers

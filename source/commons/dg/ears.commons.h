@@ -211,10 +211,10 @@ typedef enum {
 
 
 typedef enum {
-    EARS_ANALYSIS_TEMPORALMODE_WHOLE = 0,
-    EARS_ANALYSIS_TEMPORALMODE_TIMESERIES,
-    EARS_ANALYSIS_TEMPORALMODE_BUFFER,
-    EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES,
+    EARS_ANALYSIS_TEMPORALMODE_WHOLE = 0,   ///< value for the whole
+    EARS_ANALYSIS_TEMPORALMODE_TIMESERIES,  ///< time series
+    EARS_ANALYSIS_TEMPORALMODE_BUFFER,      ///< time series put into a buffer~ structure
+    EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES,  ///< labelled time series
 } e_ears_analysis_temporalmode;
 
 
