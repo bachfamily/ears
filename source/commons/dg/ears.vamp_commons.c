@@ -1004,12 +1004,21 @@ void ears_vamp_append_features_to_llll(int frame, int sr,
                     t_llll *inner = llll_get();
                     llll_appendllll(inner, double_couple_to_llll(timestamp, durationstamp));
                     llll_appenddouble(inner, f.values[0]);
+                    if (f.label != "")
+                        llll_appendsym(inner, gensym(f.label.c_str()));
                     llll_appendllll(features_ll, inner);
                 } else {
-                    llll_appendllll(features_ll, double_couple_to_llll(timestamp, f.values[0]));
+                    t_llll *inner = llll_get();
+                    llll_appenddouble(inner, timestamp);
+                    llll_appenddouble(inner, f.values[0]);
+                    if (f.label != "")
+                        llll_appendsym(inner, gensym(f.label.c_str()));
+                    llll_appendllll(features_ll, inner);
                 }
             } else {
                 llll_appenddouble(features_ll, f.values[0]);
+                if (f.label != "")
+                    llll_appendsym(features_ll, gensym(f.label.c_str()));
             }
         } else {
             t_llll *this_frame_ll = llll_get();
@@ -1024,6 +1033,8 @@ void ears_vamp_append_features_to_llll(int frame, int sr,
             for (unsigned int j = 0; j < f.values.size(); ++j) {
                 llll_appenddouble(this_frame_ll, f.values[j]);
             }
+            if (f.label != "")
+                llll_appendsym(this_frame_ll, gensym(f.label.c_str()));
             llll_appendllll(features_ll, this_frame_ll);
         }
     }

@@ -24,6 +24,8 @@ We'll keep "reset" still supported for a while, but that may change in future re
 
 - ears.split~:	now a relative overlap refers to an evenly subdivided chunk, not to the original one
 
+- ears.vamp~: now if frame labels are present, they are output as last element of the lists.
+
 ***********************
 *** VERSION CHANGES ***
 ***********************
@@ -48,3 +50,4 @@ We'll keep "reset" still supported for a while, but that may change in future re
 
 - ears.process~: now iterates over all the buffers independently of the size of lllls sent to ears.in objects with @direct 1
 
+- ears.alloc~: Fixed bug causing wrong output with empty buffers

@@ -750,6 +750,7 @@ t_llll *buf_get_tags_ID3v2(t_buf_read *x, TagLib::ID3v2::Tag *tags)
                         count++;
                     }
                 }
+//            } else if (strcmp(fr->frameID().data(), "CHAP") == 0) { // chapter frames, unsupported for now
             } else {
                 llll_appendsym(this_tags_ll, gensym(fr->toString().toCString()));
             }

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -2674,8 +2674,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00C19D992B0BC51A00B3E10E /* ears.marco~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.marco~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
-		00C19D9A2B0BC51A00B3E10E /* ears.rev~ copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ears.rev~ copy-Info.plist"; path = "/Users/aa/Documents/Max 8/Packages/ears/source/xcode/ears.rev~ copy-Info.plist"; sourceTree = "<absolute>"; };
 		1E05F4581FFD3293000750B1 /* ears.onepole~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.onepole~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E06EE911D366EE60064F23B /* ears.crop~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.crop~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E0739CC26257C8F00A66190 /* ears.spectralannotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ears.spectralannotations.h; path = ../commons/dg/ears.spectralannotations.h; sourceTree = "<group>"; };
@@ -2693,6 +2691,7 @@
 		1E0E13782BAC5D6E00CABAE1 /* ears.ptrack~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.ptrack~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E0E137A2BAC5DA200CABAE1 /* ears.ptrack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ears.ptrack.c; sourceTree = "<group>"; };
 		1E0E73252525E5300026FD5C /* ears.hoa.rotate~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.hoa.rotate~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E0F26582C823DEE00356487 /* ears.marco~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.marco~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E10D57522F18A90004BBFAC /* ears.rubberband~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.rubberband~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E1132BE2836E31D00667741 /* ears.timesquash~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.timesquash~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E1249C521777AE40040B2EA /* ears.rot~.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ears.rot~.mxo"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4148,7 +4147,6 @@
 				1E9339F8190BF9D500062899 /* Source */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				1E794F8922F1A2EE009FA0CC /* Frameworks */,
-				00C19D9A2B0BC51A00B3E10E /* ears.rev~ copy-Info.plist */,
 			);
 			name = iterator;
 			sourceTree = "<group>";
@@ -4266,6 +4264,7 @@
 				1E0E134F2BA850E400CABAE1 /* ears.model.ptrack.analysis~.mxo */,
 				1E0E13782BAC5D6E00CABAE1 /* ears.ptrack~.mxo */,
 				1EEDE0CE2BAC72D4006B545D /* ears.model.ptrack.synthesis~.mxo */,
+				1E0F26582C823DEE00356487 /* ears.marco~.mxo */,
 			);
 			name = Products;
 			sourceTree = SOURCE_ROOT;
@@ -6084,7 +6083,7 @@
 			);
 			name = "ears.marco~";
 			productName = iterator;
-			productReference = 00C19D992B0BC51A00B3E10E /* ears.marco~.mxo */;
+			productReference = 1E0F26582C823DEE00356487 /* ears.marco~.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
 		1E05F4491FFD3293000750B1 /* ears.onepole~ */ = {

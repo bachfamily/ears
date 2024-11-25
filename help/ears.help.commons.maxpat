@@ -4752,7 +4752,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
+						"rect" : [ 228.0, 135.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -4782,6 +4782,21 @@
 						"showontab" : 1,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-26",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 185.0, 507.0, 243.0, 50.0 ],
+									"presentation_linecount" : 3,
+									"text" : "This will also show a very nice progress bar over it, that will follow the completion of the task on each one of the buffers"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontface" : 1,
 									"fontsize" : 13.0,
@@ -4860,7 +4875,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "u439000629",
+									"buffername" : "u085004198",
 									"id" : "obj-22",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -5885,7 +5900,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 228.0, 135.0, 922.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -5999,7 +6014,7 @@
 									"maxclass" : "bpatcher",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"offset" : [ 0.0, -800.0 ],
+									"offset" : [ 0.0, -375.0 ],
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
@@ -6088,7 +6103,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 477.0, 937.0, 170.0, 50.0 ],
+													"patching_rect" : [ 477.0, 937.0, 171.0, 50.0 ],
 													"text" : "BEWARE! Use with caution and don't forget to send the \"recycle\" message",
 													"textcolor" : [ 0.792157, 0.0, 0.0, 1.0 ]
 												}
@@ -6304,8 +6319,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 49.0, 1057.5, 250.0, 23.0 ],
-													"text" : "u544002454 u070002580 u210002582"
+													"patching_rect" : [ 49.0, 1057.5, 250.0, 23.0 ]
 												}
 
 											}

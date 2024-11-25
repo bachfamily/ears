@@ -4971,6 +4971,10 @@ t_ears_err ears_buffer_trim(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         
         if (start_samp > 0 || end_samp_included < framecount - 1)
             ears_buffer_crop(ob, source, dest, start_samp, end_samp_included + 1); // crop wants as end sample the FIRST sample not to be taken
+        else { // zero-output length!
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, 0);
+            ears_buffer_clear(ob, dest);
+        }
     }
     
 
