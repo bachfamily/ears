@@ -1021,14 +1021,25 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             nIterations = MIN(nIterations, this_num_buf);
         }
     }
-    for (i = 0; i < x->theInsByIndex->maxIdx; i++) {
-        t_llll *ll = llllobj_get_store_contents((t_object *) x, LLLL_OBJ_VANILLA, i, 0);
-        long this_size = ll->l_size;
-        llll_release(ll);
-        if (x->scalarmode && this_size == 1) {
-            // nothing to do
-        } else {
-            nIterations = MIN(nIterations, this_size);
+    for (i = 1; i <= x->theInsByIndex->maxIdx; i++) {
+        
+        // first, check if all the inlets with this index are direct
+        long allDirect = 1;
+        for (t_object* in : *(x->theInsByIndex->theMap[i])) {
+            allDirect &= object_attr_getlong(in, gensym("direct"));
+            if (!allDirect)
+                break;
+        }
+        
+        if (!allDirect) {
+            t_llll *ll = llllobj_get_store_contents((t_object *) x, LLLL_OBJ_VANILLA, i - 1, 0);
+            long this_size = ll->l_size;
+            llll_release(ll);
+            if (x->scalarmode && this_size == 1) {
+                // nothing to do
+            } else {
+                nIterations = MIN(nIterations, this_size);
+            }
         }
     }
     if (nIterations == LONG_MAX ||
