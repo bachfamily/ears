@@ -1812,6 +1812,47 @@ void earsbufobj_release_generated_outnames(t_earsbufobj *e_ob)
     llll_free(temp);
 }
 
+
+// only kept for bw compatibility
+t_max_err earsbufobj_setattr_naming(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        long old_bufouts_naming = e_ob->l_bufouts_alloc;
+        
+        if (atom_gettype(argv) == A_LONG)
+            e_ob->l_bufouts_alloc = atom_getlong(argv);
+        else if (atom_gettype(argv) == A_SYM) {
+            t_symbol *s = atom_getsym(argv);
+            if (s == gensym("copy"))
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_INPLACE;
+            else if (s == gensym("static"))
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
+            else if (s == gensym("dynamic") || s == gensym("dyn"))
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_DYNAMIC;
+            else {
+                object_error((t_object *)e_ob, "Unknown naming mode.");
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
+            }
+        }
+
+        // in any case:
+        earsbufobj_release_generated_outnames(e_ob);
+        
+        if (e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE) {
+            if (!(e_ob->l_flags & EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES)) {
+                object_warn((t_object *)e_ob, "Object does not support 'Copy' naming mode. Switching to 'Static'.");
+                e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
+            }
+        }
+    
+        object_attr_setdisabled((t_object *)e_ob, gensym("outname"), e_ob->l_bufouts_alloc == EARSBUFOBJ_ALLOC_INPLACE);
+
+        if (old_bufouts_naming == EARSBUFOBJ_ALLOC_INPLACE && e_ob->l_bufouts_alloc != EARSBUFOBJ_ALLOC_STATIC)
+            earsbufobj_refresh_outlet_names(e_ob, true);
+    }
+    return MAX_ERR_NONE;
+}
+
 t_max_err earsbufobj_setattr_alloc(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
@@ -1854,6 +1895,13 @@ t_max_err earsbufobj_setattr_alloc(t_earsbufobj *e_ob, void *attr, long argc, t_
 
 void earsbufobj_class_add_alloc_attr(t_class *c)
 {
+    CLASS_ATTR_CHAR(c, "naming", 0, t_earsbufobj, l_bufouts_alloc);
+    CLASS_ATTR_STYLE_LABEL(c,"naming",0,"enumindex","Output Naming Policy");
+//    CLASS_ATTR_ENUMINDEX(c,"naming", 0, "Copy Static Dynamic");
+    CLASS_ATTR_ACCESSORS(c, "naming", NULL, earsbufobj_setattr_naming);
+    CLASS_ATTR_INVISIBLE(c, "naming", 0);
+    // @description Chooses the output buffer naming policy
+    
     CLASS_ATTR_CHAR(c, "alloc", 0, t_earsbufobj, l_bufouts_alloc);
     CLASS_ATTR_STYLE_LABEL(c,"alloc",0,"enumindex","Output Buffer Allocation Policy");
     CLASS_ATTR_ENUMINDEX(c,"alloc", 0, "In-Place Static Dynamic");
