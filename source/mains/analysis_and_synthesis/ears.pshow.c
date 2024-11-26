@@ -436,7 +436,6 @@ void *buf_pshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_obj.b_firstin = (t_object *)x;
         x->n_proxy2 = proxy_new(x, 2, &x->n_proxy_inletnum);
         x->n_proxy1 = proxy_new(x, 1, &x->n_proxy_inletnum);
-        jbox_set_fontsize((t_object *)x, 10);
         attr_dictionary_process(x,d);
         jbox_ready((t_jbox *)x);
     }

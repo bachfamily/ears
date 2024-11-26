@@ -4752,7 +4752,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 228.0, 135.0, 922.0, 583.0 ],
+						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -4790,8 +4790,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 185.0, 507.0, 243.0, 50.0 ],
-									"presentation_linecount" : 3,
+									"patching_rect" : [ 185.0, 507.0, 245.0, 50.0 ],
 									"text" : "This will also show a very nice progress bar over it, that will follow the completion of the task on each one of the buffers"
 								}
 
@@ -7683,7 +7682,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 922.0, 583.0 ],
+						"rect" : [ 228.0, 135.0, 922.0, 583.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -7724,7 +7723,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 724.5, 156.0, 133.0, 55.0 ],
-									"text" : "In-place operation (see \"naming\" tab)"
+									"text" : "In-place operation (see \"allocation\" tab)"
 								}
 
 							}

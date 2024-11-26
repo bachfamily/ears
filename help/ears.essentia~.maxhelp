@@ -839,7 +839,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 992.0, 592.0 ],
+						"rect" : [ 0.0, 26.0, 992.0, 592.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3703,7 +3703,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 992.0, 592.0 ],
+						"rect" : [ 100.0, 126.0, 992.0, 592.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -3878,12 +3878,12 @@
 								"box" : 								{
 									"fontsize" : 12.0,
 									"id" : "obj-16",
-									"linecount" : 9,
+									"linecount" : 6,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 680.0, 156.5, 110.0, 127.0 ],
-									"text" : "duration\neffectiveduration\nsilencerate\ndynamiccomplexity\nlarm\nleq\nloudness\nloudnessvickers\nreplaygain"
+									"patching_rect" : [ 680.0, 156.5, 110.0, 87.0 ],
+									"text" : "dynamiccomplexity\nlarm\nleq\nloudness\nloudnessvickers\nreplaygain"
 								}
 
 							}
