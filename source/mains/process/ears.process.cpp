@@ -22,7 +22,7 @@
  
  @description
  Loads a DSP patch and runs it in non-realtime
- reading from and writing to buffers
+ reading from and writing to buffers.
 
  @discussion
  
@@ -367,7 +367,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_add_common_methods(earsprocess_class, 1);
 
     earsbufobj_class_add_outname_attr(earsprocess_class);
-    earsbufobj_class_add_naming_attr(earsprocess_class);
+    earsbufobj_class_add_alloc_attr(earsprocess_class);
     
     llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);
 
@@ -634,7 +634,7 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
             switch (hatom_gettype(h)) {
                 case H_SYM: {
                     t_symbol *s = hatom_getsym(h);
-                    if (!earsbufobj_is_sym_naming_mech(s)) {
+                    if (!earsbufobj_is_sym_alloc_mech(s)) {
                         // patcher name
                         patchname = s;
                         llll_clear(args);
@@ -654,7 +654,7 @@ void *earsprocess_new(t_symbol *objname, long argc, t_atom *argv)
             t_hatom *h = &el->l_hatom;
             if (hatom_gettype(h) == H_SYM) {
                 t_symbol *s = hatom_getsym(h);
-                if (earsbufobj_is_sym_naming_mech(s)) {
+                if (earsbufobj_is_sym_alloc_mech(s)) {
                     el = el->l_next;
                     h = &el->l_hatom;
                     switch(hatom_gettype(h)) {
@@ -933,7 +933,7 @@ void earsprocess_int(t_earsprocess *x, t_atom_long i)
     t_atom a[1];
     atom_setlong(a, i);
     long inlet = proxy_getinlet((t_object *) x);
-    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx) {
+    if (inlet >= x->nBufInlets && inlet < x->theInsByIndex->maxIdx + x->nBufInlets) {
         earsprocess_anything(x, _sym_int, 1, a);
     } else {
         object_error((t_object *) x, "Doesn't understand int in inlet %ld", inlet + 1);
@@ -1021,14 +1021,25 @@ void earsprocess_bang_do(t_earsprocess *x, t_symbol *s, t_atom_long ac, t_atom *
             nIterations = MIN(nIterations, this_num_buf);
         }
     }
-    for (i = 0; i < x->theInsByIndex->maxIdx; i++) {
-        t_llll *ll = llllobj_get_store_contents((t_object *) x, LLLL_OBJ_VANILLA, i, 0);
-        long this_size = ll->l_size;
-        llll_release(ll);
-        if (x->scalarmode && this_size == 1) {
-            // nothing to do
-        } else {
-            nIterations = MIN(nIterations, this_size);
+    for (i = 1; i <= x->theInsByIndex->maxIdx; i++) {
+        
+        // first, check if all the inlets with this index are direct
+        long allDirect = 1;
+        for (t_object* in : *(x->theInsByIndex->theMap[i])) {
+            allDirect &= object_attr_getlong(in, gensym("direct"));
+            if (!allDirect)
+                break;
+        }
+        
+        if (!allDirect) {
+            t_llll *ll = llllobj_get_store_contents((t_object *) x, LLLL_OBJ_VANILLA, i - 1, 0);
+            long this_size = ll->l_size;
+            llll_release(ll);
+            if (x->scalarmode && this_size == 1) {
+                // nothing to do
+            } else {
+                nIterations = MIN(nIterations, this_size);
+            }
         }
     }
     if (nIterations == LONG_MAX ||

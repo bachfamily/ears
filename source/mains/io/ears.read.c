@@ -154,7 +154,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
 
     earsbufobj_class_add_polyout_attr(c);
 
@@ -176,7 +176,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // attribute the object will rely on Max capability to load all the content
     // and then crop it).
     // Currently this attribute is not active by default because the WAV library
-    // ears rely upon is relatively slow, so that in most cases the native
+    // ears relies upon is relatively slow, so that in most cases the native
     // Max loading would be more convenient. It may become default in the future.
 
     CLASS_ATTR_CHAR(c, "iter",    0,    t_buf_read, iter);
@@ -750,6 +750,7 @@ t_llll *buf_get_tags_ID3v2(t_buf_read *x, TagLib::ID3v2::Tag *tags)
                         count++;
                     }
                 }
+//            } else if (strcmp(fr->frameID().data(), "CHAP") == 0) { // chapter frames, unsupported for now
             } else {
                 llll_appendsym(this_tags_ll, gensym(fr->toString().toCString()));
             }
@@ -1063,7 +1064,7 @@ t_llll *AudioCues_to_llll(t_buf_read *x, AudioFile<float> &audioFile)
         } else {
             buf_read_llll_append_position(x, this_marker_ll, cues[i].sampleStart, audioFile.getSampleRate(), audioFile.getNumSamplesPerChannel());
         }
-        if (i < cues[i].label.size() > 0)
+        if (cues[i].label.size() > 0)
             llll_appendsym(this_marker_ll, gensym(cues[i].label.c_str()));
         llll_appendllll(out, this_marker_ll);
     }

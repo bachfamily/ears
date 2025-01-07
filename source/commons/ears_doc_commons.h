@@ -8,7 +8,7 @@
 	
 #define EARS_DOC_OUTNAME_ATTR
 // The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-// of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
+// of the objects in ears. These names are only accounted for if the <m>alloc</m> mode is 'Static'. <br />
 
 #define EARS_DOC_COORDINATE_CONVENTION
 // Azimuth is considered 0 at the front, and increases clockwise.

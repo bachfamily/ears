@@ -3,7 +3,7 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
+			"minor" : 6,
 			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
@@ -52,7 +52,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -90,7 +90,6 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"colorcurve" : -0.5,
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -155,7 +154,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"colorcurve" : -0.5,
 									"fontface" : 0,
 									"fontname" : "Arial",
@@ -419,14 +417,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 836.0, 581.0 ],
+						"rect" : [ 100.0, 126.0, 836.0, 581.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -514,7 +512,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 440.0, 149.0, 150.0, 25.0 ],
+									"patching_rect" : [ 390.0, 148.0, 150.0, 25.0 ],
 									"text" : "some complex noise"
 								}
 
@@ -545,12 +543,13 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
 									"id" : "obj-2",
 									"maxclass" : "ears.specshow~",
+									"maxvalue" : 11.16838550567627,
+									"minvalue" : 0.000661951780785,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 280.0, 544.0, 245.0 ]
@@ -673,7 +672,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -724,13 +723,11 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
 									"id" : "obj-2",
 									"maxclass" : "ears.specshow~",
-									"maxvalue" : 0.01,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 10.0, 214.0, 810.0, 320.0 ]
@@ -756,8 +753,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 149.0, 109.0, 23.0 ],
-									"text" : "ears.expr~ $f1**2"
+									"patching_rect" : [ 10.0, 149.0, 135.0, 23.0 ],
+									"text" : "ears.expr~ pow($f1\\,2)"
 								}
 
 							}
@@ -771,7 +768,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 121.0, 140.5, 107.0, 40.0 ],
+									"patching_rect" : [ 149.0, 140.5, 107.0, 40.0 ],
 									"text" : "Square the magnitude"
 								}
 
@@ -903,14 +900,14 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 836.0, 581.0 ],
+						"rect" : [ 0.0, 26.0, 836.0, 581.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -941,28 +938,42 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"bubble" : 1,
-									"fontname" : "Arial",
-									"fontsize" : 13.0,
-									"id" : "obj-20",
+									"id" : "obj-43",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 200.0, 201.5, 189.0, 25.0 ],
-									"text" : "Unitary normalization of FFT"
+									"patching_rect" : [ 339.25, 204.0, 417.0, 36.0 ],
+									"text" : "(Unitary means that FFT and its inverse coincide up to conjugation;\nTrueMagnitudes means that the magnitudes are sinusoidal amplitudes)"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"attr" : "unitary",
+									"bubble" : 1,
+									"fontname" : "Arial",
+									"fontsize" : 13.0,
+									"id" : "obj-20",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 228.0, 202.0, 107.0, 40.0 ],
+									"text" : "Normalization type for FFT"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "fftnorm",
 									"id" : "obj-23",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 48.0, 201.5, 150.0, 23.0 ]
+									"patching_rect" : [ 48.0, 210.5, 178.0, 23.0 ],
+									"text_width" : 75.0
 								}
 
 							}
@@ -1084,14 +1095,13 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
 									"id" : "obj-1",
 									"maxclass" : "ears.specshow~",
 									"maxcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ],
-									"maxvalue" : 6.28,
+									"maxvalue" : 3.141544818878174,
 									"mincolor" : [ 0.0, 0.043137254901961, 0.996078431372549, 1.0 ],
 									"numinlets" : 3,
 									"numoutlets" : 0,
@@ -1101,13 +1111,12 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
 									"id" : "obj-7",
 									"maxclass" : "ears.specshow~",
-									"maxvalue" : 0.2,
+									"maxvalue" : 258.560211181640625,
 									"numinlets" : 3,
 									"numoutlets" : 0,
 									"patching_rect" : [ 15.0, 376.0, 229.02793296089385, 130.75 ]
@@ -1235,7 +1244,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 602.0, 231.0, 96.0, 40.0 ],
+									"patching_rect" : [ 602.0, 251.0, 96.0, 40.0 ],
 									"text" : "Analysis parameters"
 								}
 
@@ -1291,7 +1300,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 401.0, 264.0, 199.0, 23.0 ]
+									"patching_rect" : [ 401.0, 284.0, 199.0, 23.0 ]
 								}
 
 							}
@@ -1304,7 +1313,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 401.0, 221.5, 199.0, 23.0 ]
+									"patching_rect" : [ 401.0, 242.0, 199.0, 23.0 ]
 								}
 
 							}
@@ -1317,7 +1326,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 401.0, 244.5, 199.0, 23.0 ]
+									"patching_rect" : [ 401.0, 265.0, 199.0, 23.0 ]
 								}
 
 							}
@@ -1657,7 +1666,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1

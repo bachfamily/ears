@@ -21,7 +21,7 @@
 	Put clicks at time points
  
 	@description
-    Creates a buffer containing a set of clicks at specific onsets
+    Creates a buffer containing a set of clicks at specific onsets.
  
 	@discussion
  

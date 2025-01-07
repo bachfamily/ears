@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 5,
-			"revision" : 3,
+			"minor" : 6,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -71,8 +71,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 3,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -109,12 +109,24 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-9",
+									"linecount" : 5,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 10.0, 103.0, 507.0, 79.0 ],
+									"text" : "All the values for a single signal vector must be received\n within a single event triggered synchronously to the non-realtime audio vector\n as managed by <o>ears.process~</o>.\n This can be achieved by responding to messages produced by <o>ears.tovector~</o>\n or by the position message outlet of <o>ears.processinfo~</o>."
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-8",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 900.0, 426.0, 34.0, 23.0 ],
+									"patching_rect" : [ 900.0, 436.0, 34.0, 23.0 ],
 									"text" : "start"
 								}
 
@@ -128,7 +140,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 786.606537000000003, 217.0, 195.0, 25.0 ],
+									"patching_rect" : [ 787.0, 227.0, 195.0, 25.0 ],
 									"text" : "Synthesis with ears.tovector~"
 								}
 
@@ -140,7 +152,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "signal" ],
-									"patching_rect" : [ 841.0, 397.0, 57.0, 23.0 ],
+									"patching_rect" : [ 841.0, 407.0, 57.0, 23.0 ],
 									"text" : "*~ 0.125"
 								}
 
@@ -152,7 +164,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "signal" ],
-									"patching_rect" : [ 777.0, 397.0, 50.0, 23.0 ],
+									"patching_rect" : [ 777.0, 407.0, 50.0, 23.0 ],
 									"text" : "*~ 0.25"
 								}
 
@@ -164,7 +176,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "signal" ],
-									"patching_rect" : [ 718.0, 397.0, 50.0, 23.0 ],
+									"patching_rect" : [ 718.0, 407.0, 50.0, 23.0 ],
 									"text" : "*~ 0.25"
 								}
 
@@ -176,7 +188,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 718.0, 314.0, 34.0, 23.0 ],
+									"patching_rect" : [ 718.0, 324.0, 34.0, 23.0 ],
 									"text" : "start"
 								}
 
@@ -187,7 +199,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 0,
-									"patching_rect" : [ 718.0, 468.0, 142.0, 23.0 ],
+									"patching_rect" : [ 718.0, 478.0, 142.0, 23.0 ],
 									"text" : "dac~"
 								}
 
@@ -199,7 +211,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 4,
 									"outlettype" : [ "signal", "signal", "signal", "bang" ],
-									"patching_rect" : [ 781.0, 351.0, 97.0, 23.0 ],
+									"patching_rect" : [ 781.0, 361.0, 97.0, 23.0 ],
 									"text" : "play~ dummy 3"
 								}
 
@@ -211,7 +223,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 781.0, 314.0, 44.0, 23.0 ],
+									"patching_rect" : [ 781.0, 324.0, 44.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -224,7 +236,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 446.0, 426.0, 256.0, 64.0 ]
+									"patching_rect" : [ 446.0, 436.0, 256.0, 64.0 ]
 								}
 
 							}
@@ -236,7 +248,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 446.0, 356.0, 256.0, 64.0 ]
+									"patching_rect" : [ 446.0, 366.0, 256.0, 64.0 ]
 								}
 
 							}
@@ -248,7 +260,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 446.0, 287.0, 256.0, 64.0 ]
+									"patching_rect" : [ 446.0, 297.0, 256.0, 64.0 ]
 								}
 
 							}
@@ -259,7 +271,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 706.0, 252.0, 122.0, 23.0 ],
+									"patching_rect" : [ 706.0, 262.0, 122.0, 23.0 ],
 									"text" : "set $1, chanoffset 3"
 								}
 
@@ -271,7 +283,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 575.0, 252.0, 122.0, 23.0 ],
+									"patching_rect" : [ 575.0, 262.0, 122.0, 23.0 ],
 									"text" : "set $1, chanoffset 2"
 								}
 
@@ -283,7 +295,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 446.0, 252.0, 122.0, 23.0 ],
+									"patching_rect" : [ 446.0, 262.0, 122.0, 23.0 ],
 									"text" : "set $1, chanoffset 1"
 								}
 
@@ -295,7 +307,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 446.0, 217.0, 337.0, 23.0 ],
+									"patching_rect" : [ 446.0, 227.0, 337.0, 23.0 ],
 									"text" : "ears.process~ ears.chua-inside @duration 2 @tail 10000"
 								}
 
@@ -308,7 +320,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 446.0, 178.5, 24.0, 24.0 ]
+									"patching_rect" : [ 446.0, 189.0, 24.0, 24.0 ]
 								}
 
 							}
@@ -319,7 +331,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 18.0, 382.0, 276.0, 36.0 ],
+									"patching_rect" : [ 18.0, 392.0, 276.0, 36.0 ],
 									"text" : "N.B.: tempting as it may sound, you can't use ears.fromvector~ outside ears.process~"
 								}
 
@@ -332,7 +344,7 @@
 									"numinlets" : 5,
 									"numoutlets" : 6,
 									"outlettype" : [ "float", "float", "float", "float", "list", "" ],
-									"patching_rect" : [ 10.0, 292.0, 256.0, 64.0 ]
+									"patching_rect" : [ 10.0, 302.0, 256.0, 64.0 ]
 								}
 
 							}
@@ -343,7 +355,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 252.0, 44.0, 23.0 ],
+									"patching_rect" : [ 10.0, 262.0, 44.0, 23.0 ],
 									"text" : "set $1"
 								}
 
@@ -355,7 +367,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 216.0, 205.0, 23.0 ],
+									"patching_rect" : [ 10.0, 226.0, 205.0, 23.0 ],
 									"text" : "ears.process~ ears.listGain-inside"
 								}
 
@@ -379,7 +391,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 10.0, 183.5, 110.0, 23.0 ],
+									"patching_rect" : [ 10.0, 194.0, 110.0, 23.0 ],
 									"text" : "earsBufCherokee"
 								}
 
@@ -393,7 +405,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 223.606537000000003, 216.0, 179.0, 25.0 ],
+									"patching_rect" : [ 224.0, 226.0, 179.0, 25.0 ],
 									"text" : "Double-click to look inside!"
 								}
 
@@ -625,8 +637,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 3,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}

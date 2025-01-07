@@ -1,0 +1,29 @@
+{
+	"name" : "ears",
+	"displayname" : "",
+	"version" : "0.1.0",
+	"author" : "Daniele Ghisi",
+	"authors" : [  ],
+	"description" : "ears: a library for off-line algorithmic audio manipulation. IMPORTANT: requires you have installed the packages bach v0.8.3 or higher. The library is developed by Daniele Ghisi with the important exception of the ears.process~ ecosystem developed by Andrea Agostini.",
+	"tags" : [ "computer-assisted composition", "algorithmic composition", "audio", "buffer", "off-line" ],
+	"website" : "https://www.bachproject.net/ears/",
+	"extends" : "",
+	"extensible" : 0,
+	"max_version_min" : "8.2.0",
+	"max_version_max" : "none",
+	"os" : 	{
+		"macintosh" : 		
+			"min_version" : "10.9.x",
+			"platform" : [ "x64", "aarch64" ]
+		}
+,
+		"windows" : 		{
+			"min_version" : "none",
+			"platform" : [ "x64" ]
+		}
+
+	}
+,
+	"c74install" : 1,
+	"installdate" : 3757773613
+}

@@ -6,11 +6,11 @@
 <c74object name="ears.peaks~" module="ears">
 
 	<digest>
-		Find peaks of a spectrogram
+		Find spectral or temporal peaks
 	</digest>
 
 	<description>
-		Find the peaks of an incoming buffer in spectrogram matrix form (as the ones obtained via <o>ears.stft</o> or <o>ears.cqt</o>).
+		Find the spectral of temporal peaks of an incoming buffer
 	</description>
 
 	<!--METADATA-->
@@ -23,10 +23,11 @@
 	<inletlist>
 		<inlet id="0" type="INLET_TYPE">
 			<digest>
-				Buffer containing spectrogram magnitudes
+				Source temporal buffer or spectrogram magnitudes
 			</digest>
 			<description>
-				Source spectrogram magnitudes
+				If you want to compute the peaks of a temporal buffer, send it in the first inlet; if you
+				want to compute the peaks of a spectral representation, send the magnitudes here (and optional phases in the second inlet)
 			</description>
 		</inlet>
 		<inlet id="1" type="INLET_TYPE">
@@ -46,10 +47,10 @@
 				Detected peaks
 			</digest>
 			<description>
-				Outputs peaks organized as follows: one llll per frame
-				with the onset as first element, then one llll per peak;
-				each peak being in the form: <b><m>position</m> <m>amplitude</m> <m>optional:phase</m></b>,
-				where <m>phase</m> is only present if a phase spectrogram has been provided.
+				Outputs peaks organized as follows: one llll per channel,
+				then one llll per frame with the onset as first element, then one llll per peak,
+				each peak being in the form: <b>[<m>position</m> <m>amplitude</m> <m>phase</m>]</b>,
+				where <m>phase</m> is only present if a temporal buffer or a phase spectrogram has been provided.
 			</description>
 		</outlet>
 	</outletlist>
@@ -62,7 +63,7 @@
 			</digest>
 			<description>
 				The <o>outname</o> attribute sets a name (or a wrapped list of names) for each of the buffer outles
-				of the objects in ears. These names are only accounted for if the <m>naming</m> mode is 'Static'. <br />
+				of the objects in ears. These names are only accounted for if the <m>alloc</m> mode is 'Static'. <br />
 			</description>
 		</objarg>
 	</objarglist>
@@ -86,18 +87,21 @@
 			</digest>
 			<description>
 				A list or llll with buffer names will trigger the buffer processing and output the processed
-				buffer names (depending on the <m>naming</m> attribute).
+				buffer names (depending on the <m>alloc</m> attribute).
+				If the input buffer is a spectral buffer, then magnitudes and phases are expected to be input from the
+				two inlets. Otherwise, only the temporal buffer is expected to be input from the left inlet, and
+				a Short-Time Fourier Transform will be performed.
 			</description>
 		</method>
 		<method name="reset">
 			<arglist />
 			<digest>
-				Restart naming cycle
+				Restart naming allocation cycle
 			</digest>
 			<description>
-				If the <m>naming</m> attribute is set to 'Dynamic',
+				If the <m>alloc</m> attribute is set to 'Dynamic',
 				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
-				used name. This is especially useful in combination with iterative mechanisms.
+				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
 		<method name="stop">
@@ -256,26 +260,26 @@
 	<attributelist>
 		<attribute name="ampunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Amplitude Values Are In
+				Amplitude Values Unit
 			</digest>
 			<description>
 				Sets the unit for amplitudes: Linear (default) or Decibel (0dB corresponding to 1. in the linear scale).
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Amplitude Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="angleunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Angle Values Are In
+				Angle Values Unit
 			</digest>
 			<description>
 				Sets the unit for angles: Radians (default), Degrees, or Turns.
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Angle Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Angle Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
@@ -288,7 +292,7 @@
 				Sets the blocking mode, i.e. the thread to be used for computation: <br />
 				0: the object uses its own separate thread; <br />
 				1: the object uses the main thread (default); <br />
-				2: the object uses its the scheduler thread. <br />
+				2: the object uses whatever thread the message comes in (including, notably the scheduler thread). <br />
 				The <m>blocking</m> attribute is static: it can only be set in the object box at instantiation.
 			</description>
 			<attributelist>
@@ -296,6 +300,49 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Blocking Mode" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="downmix" get="1" set="1" type="int" size="1">
+			<digest>
+				Downmix to Mono
+			</digest>
+			<description>
+				Toggles the ability to downmix all the channels into one. If this flag is not set, then
+				one buffer per channel is output.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Downmix to Mono" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="framesize" get="1" set="1" type="float" size="1">
+			<digest>
+				Frame Size
+			</digest>
+			<description>
+				Sets the analysis frame size or window size (the unit depends on the <m>antimeunit</m> attribute)
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Frame Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="hopsize" get="1" set="1" type="float" size="1">
+			<digest>
+				Hop Size
+			</digest>
+			<description>
+				Sets the analysis hop size (the unit depends on the <m>antimeunit</m> attribute)
+				Floating point values are allowed.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Hop Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="interpolate" get="1" set="1" type="int" size="1">
@@ -306,6 +353,7 @@
 				Toggles the ability to perform cubic interpolation to find 'true' peaks.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peak Detection" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Interpolate" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
@@ -319,6 +367,7 @@
 				Sets the maximum number of peaks, 0 means: all.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peak Detection" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Number of Peaks" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
@@ -332,30 +381,26 @@
 				Sets the minimum distance between the peaks
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peak Detection" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Minimum Distance Between Peaks" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="naming" get="1" set="1" type="int" size="1">
+		<attribute name="numframes" get="1" set="1" type="atom" size="1">
 			<digest>
-				Output Naming Policy
+				Number of Analysis Frames
 			</digest>
 			<description>
-				Chooses the output buffer naming policy: <br />
-				0 (Copy): the buffer name is copied from the input (in-place modification).
-				Notice that some objects do not allow this policy. <br />
-				1 (Static): a single buffer (and hence buffer name) is created, and always used as output. <br />
-				2 (Dynamic): a new buffer (and buffer name) is created for each new command.
-				Beware! This may allocate a lot of memory!
-				You can always cycle on a fixed set of names via the <m>reset</m> message. <br />
-				You can use a shortcut to define the naming policy via a first symbolic argument: use <b>=</b> for copy,
-				<b>-</b> for static and <b>!</b> for dynamic.
+				Sets the number of analysis frames. Defaults to "auto", as this number is a consequence of the
+				<m>framesize</m> and <m>hopsize</m> attributes. If this number is set to a positive integer value, the <m>hopsize</m>
+				is ignored and inferred from <m>numframes</m>.
 			</description>
 			<attributelist>
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Naming Policy" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Number of Analysis Frames" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="orderby" get="1" set="1" type="symbol" size="1">
@@ -366,8 +411,8 @@
 				Sets the ordering type (either "position" or "amplitude").
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peak Detection" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Order By" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -416,7 +461,21 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
-		<attribute name="thresh" get="1" set="1" type="float" size="1">
+		<attribute name="overlap" get="1" set="1" type="float" size="1">
+			<digest>
+				Overlap
+			</digest>
+			<description>
+				Sets the overlap factor between the analysis window size and the hop size.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Overlap" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="peakampthresh" get="1" set="1" type="float" size="1">
 			<digest>
 				Peak Threshold
 			</digest>
@@ -424,14 +483,42 @@
 				Sets a threshold, so that peaks with amplitude below this threshold are discarded.
 			</description>
 			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peak Detection" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Peak Threshold" />
-				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="spectral" get="1" set="1" type="int" size="1">
+			<digest>
+				Run Spectral Analysis If Needed
+			</digest>
+			<description>
+				Toggles the ability to run spectral analysis on non-spectral buffers.
+				By default it is on, but if you want to analyze peaks of an ordinary temporal buffer, turn this off.
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Run Spectral Analysis If Needed" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="threshampunit" get="1" set="1" type="int" size="1">
+			<digest>
+				Threshold Amplitude Values Unit
+			</digest>
+			<description>
+				Sets the unit for amplitudes: Linear (default) or Decibel.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Threshold Amplitude Values Unit" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
 		<attribute name="timeunit" get="1" set="1" type="int" size="1">
 			<digest>
-				Time Values Are In
+				Time Values Unit
 			</digest>
 			<description>
 				Sets the unit for time values: Milliseconds, Samples, Relative (0. to 1. as a percentage of the buffer length),
@@ -439,16 +526,51 @@
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Units" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Are In" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Time Values Unit" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="winstartfromzero" get="1" set="1" type="int" size="1">
+			<digest>
+				First Window Starts At Zero
+			</digest>
+			<description>
+				If on, the first window is centered at framesize/2; if off (default), the first window is centered at zero.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="First Window Starts At Zero" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="wintype" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Window Type
+			</digest>
+			<description>
+				Sets the window type.
+				Available windows are:
+				"rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
+				For objects that may require different windows for analysis and synthesis, two symbols can be defined (the first one being the
+				analysis window, the second one being the synthesis window).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Window Type" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
 	</attributelist>
 
 	<!--DISCUSSION-->
 	<discussion>
-		The incoming buffer must have as many channels as bins.
+		If an ordinary (temporal) buffer is input, by default a Short-Time Fourier Transform is computed
+		and its peaks are found. If one wants temporal peaks instead, one should set the <m>spectral</m> attribute to zero.
+		If a spectral buffer is input (with as many channels as bins), then the peaks
+		are directly computed from the spectral representation.
 	</discussion>
 
 	<!--SEEALSO-->
@@ -456,13 +578,16 @@
 		<seealso name="ears.stft~" />
 		<seealso name="ears.cqt~" />
 		<seealso name="ears.trans~" />
+		<seealso name="ears.ptrack~" />
+		<seealso name="ears.pshow~" />
 	</seealsolist>
 
 	<misc name = "Input">
 		<entry name ="Inlet 1 (symbol)">
 			<description>
-				Buffer containing spectrogram magnitudes.
-				Source spectrogram magnitudes
+				Source temporal buffer or spectrogram magnitudes.
+				If you want to compute the peaks of a temporal buffer, send it in the first inlet; if you
+				want to compute the peaks of a spectral representation, send the magnitudes here (and optional phases in the second inlet)
 			</description>
 		</entry>
 		<entry name ="Inlet 2 (symbol)">
@@ -477,10 +602,10 @@
 		<entry name ="Outlet 1 (llll)">
 			<description>
 				Detected peaks.
-				Outputs peaks organized as follows: one llll per frame
-				with the onset as first element, then one llll per peak;
-				each peak being in the form: <b><m>position</m> <m>amplitude</m> <m>optional:phase</m></b>,
-				where <m>phase</m> is only present if a phase spectrogram has been provided.
+				Outputs peaks organized as follows: one llll per channel,
+				then one llll per frame with the onset as first element, then one llll per peak,
+				each peak being in the form: <b>[<m>position</m> <m>amplitude</m> <m>phase</m>]</b>,
+				where <m>phase</m> is only present if a temporal buffer or a phase spectrogram has been provided.
 			</description>
 		</entry>
 	</misc>
@@ -488,7 +613,10 @@
 	<misc name = "Discussion">
 		<entry name ="More details">
 			<description>
-		The incoming buffer must have as many channels as bins.
+		If an ordinary (temporal) buffer is input, by default a Short-Time Fourier Transform is computed
+		and its peaks are found. If one wants temporal peaks instead, one should set the <m>spectral</m> attribute to zero.
+		If a spectral buffer is input (with as many channels as bins), then the peaks
+		are directly computed from the spectral representation.
 			</description>
 		</entry>
 		<entry name ="Keywords">

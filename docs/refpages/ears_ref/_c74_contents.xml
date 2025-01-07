@@ -8,6 +8,7 @@
 <refpage name='ears.specshow~.maxref.xml'/>
 <refpage name='ears.model.sine.synthesis~.maxref.xml'/>
 <refpage name='ears.phaseunwrap~.maxref.xml'/>
+<refpage name='ears.ptrack~.maxref.xml'/>
 <refpage name='ears.model.stochastic.analysis~.maxref.xml'/>
 <refpage name='ears.essentia~.maxref.xml'/>
 <refpage name='ears.model.sps.analysis~.maxref.xml'/>
@@ -18,10 +19,13 @@
 <refpage name='ears.peaks~.maxref.xml'/>
 <refpage name='ears.vamp~.maxref.xml'/>
 <refpage name='ears.istft~.maxref.xml'/>
+<refpage name='ears.model.ptrack.analysis~.maxref.xml'/>
+<refpage name='ears.model.ptrack.synthesis~.maxref.xml'/>
 <refpage name='ears.model.stochastic.synthesis~.maxref.xml'/>
 <refpage name='ears.window~.maxref.xml'/>
 <refpage name='ears.phasewrap~.maxref.xml'/>
 <refpage name='ears.model.sine.analysis~.maxref.xml'/>
+<refpage name='ears.pshow~.maxref.xml'/>
 <refpage name='ears.tempogram~.maxref.xml'/>
 <refpage name='ears.timesquash~.maxref.xml'/>
 <refpage name='ears.rubberband~.maxref.xml'/>

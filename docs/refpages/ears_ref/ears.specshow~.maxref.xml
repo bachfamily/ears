@@ -23,9 +23,26 @@
 	<inletlist>
 		<inlet id="0" type="INLET_TYPE">
 			<digest>
-				Buffer containing spectrogram
+				Onsets
 			</digest>
 			<description>
+				List of onsets (unit depends on the <m>timeunit</m> attribute)
+			</description>
+		</inlet>
+		<inlet id="1" type="INLET_TYPE">
+			<digest>
+				Display Start (ms)
+			</digest>
+			<description>
+				Position of display start (in milliseconds)
+			</description>
+		</inlet>
+		<inlet id="2" type="INLET_TYPE">
+			<digest>
+				Display Start (ms)
+			</digest>
+			<description>
+				Position of display end (in milliseconds)
 			</description>
 		</inlet>
 	</inletlist>
@@ -50,18 +67,35 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="autoscale" get="1" set="1" type="int" size="1">
+		<attribute name="autoscalemax" get="1" set="1" type="int" size="1">
 			<digest>
-				Automatically Rescale Range
+				Automatically Rescale Maximum
 			</digest>
 			<description>
-				Toggles the ability to obtain <m>minvalue</m> and <m>maxvalue</m> automatically
+				Toggles the ability to obtain <m>maxvalue</m> automatically
 				from the minimum and maximum values in the input buffer.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Settings" />
 				<attribute name="default" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatically Rescale Range" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatically Rescale Maximum" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="autoscalemin" get="1" set="1" type="int" size="1">
+			<digest>
+				Automatically Rescale Minimum
+			</digest>
+			<description>
+				Toggles the ability to obtain <m>minvalue</m> automatically
+				from the minimum and maximum values in the input buffer.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Settings" />
+				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Automatically Rescale Minimum" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
@@ -149,6 +183,22 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />
 			</attributelist>
 		</attribute>
+		<attribute name="interp" get="1" set="1" type="int" size="1">
+			<digest>
+				Interpolate Image
+			</digest>
+			<description>
+				Toggle the interpolation capability.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
+				<attribute name="default" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Interpolate Image" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="maxcolor" get="1" set="1" type="rgba" size="1">
 			<digest>
 				Highest Color
@@ -163,6 +213,22 @@
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="rgba" />
+			</attributelist>
+		</attribute>
+		<attribute name="maxfreq" get="1" set="1" type="float" size="1">
+			<digest>
+				Maximum Frequency
+			</digest>
+			<description>
+				Sets the maximum represented frequency (leave 0 for all).
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
+				<attribute name="default" get="1" set="1" type="float" size="1" value="0" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="maxnumbins" get="1" set="1" type="int" size="1">
@@ -240,6 +306,22 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="sec" get="1" set="1" type="int" size="1">
+			<digest>
+				Display In Seconds
+			</digest>
+			<description>
+				Toggle the time display in seconds instead of milliseconds.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Appearance" />
+				<attribute name="default" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Display In Seconds" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="timegrid" get="1" set="1" type="float" size="1">
 			<digest>
 				Time Grid Step
@@ -296,9 +378,22 @@
 	</seealsolist>
 
 	<misc name = "Input">
-		<entry name ="Inlet 1 (symbol/llll)">
+		<entry name ="Inlet 1 (llll)">
 			<description>
-				Buffer containing spectrogram.
+				Onsets.
+				List of onsets (unit depends on the <m>timeunit</m> attribute)
+			</description>
+		</entry>
+		<entry name ="Inlet 2 (llll)">
+			<description>
+				Display Start (ms).
+				Position of display start (in milliseconds)
+			</description>
+		</entry>
+		<entry name ="Inlet 3 (llll)">
+			<description>
+				Display Start (ms).
+				Position of display end (in milliseconds)
 			</description>
 		</entry>
 	</misc>

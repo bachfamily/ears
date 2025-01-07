@@ -107,12 +107,14 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Function depends on inlet
     // @description A list or llll in the furst inlet with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute). <br />
+    // buffer names (depending on the <m>alloc</m> attribute). <br />
     // A number, list or llll in the second inlet is interpreted to contain the gain
     // for each one of the incoming buffer (in the current <m>ampunit</m>). <br />
     // A number, list or llll in the third inlet is interpreted to contain the temporal offset
     // for each one of the incoming buffer (in the current <m>timeunit</m>). Non-integer sample offsets are only accounted for
-    // if the <m>interp</m> attribute is on, otherwise they are rounded to the nearest integer sample. <br />
+    // if the <m>interp</m> attribute is on, otherwise they are rounded to the nearest integer sample.
+    // If less numbers than buffers are entered, the difference between the two last offset is iterated over the remaining
+    // buffer (which makes it convenient to only write two offsets and replicate their distance).<br />
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(mix)
 
     // @method number @digest Set Gain or Offset
@@ -125,7 +127,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_envampunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
 
     earsbufobj_class_add_resamplingpolicy_attr(c);

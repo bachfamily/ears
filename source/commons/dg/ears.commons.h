@@ -211,10 +211,10 @@ typedef enum {
 
 
 typedef enum {
-    EARS_ANALYSIS_TEMPORALMODE_WHOLE = 0,
-    EARS_ANALYSIS_TEMPORALMODE_TIMESERIES,
-    EARS_ANALYSIS_TEMPORALMODE_BUFFER,
-    EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES,
+    EARS_ANALYSIS_TEMPORALMODE_WHOLE = 0,   ///< value for the whole
+    EARS_ANALYSIS_TEMPORALMODE_TIMESERIES,  ///< time series
+    EARS_ANALYSIS_TEMPORALMODE_BUFFER,      ///< time series put into a buffer~ structure
+    EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES,  ///< labelled time series
 } e_ears_analysis_temporalmode;
 
 
@@ -273,7 +273,7 @@ bool spectralbuf_metadata_eq(t_ears_spectralbuf_metadata *data1, t_ears_spectral
 
 // This one is the core function that creates new buffers when needed. It's a wrapper of object_new_typed()
 t_buffer_obj *ears_buffer_make(t_symbol *buffername, bool add_to_ears_hashtable = false); // create a new buffer
-t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll *generated_names); // retain an existing buffer
+t_max_err ears_buffer_retain(t_buffer_obj *buffer, t_symbol *buffername, t_llll *generated_names, bool dynamic_mode); // retain an existing buffer
 t_max_err ears_buffer_release(t_buffer_obj *buffer, t_symbol *buffername); // currently equivalent to ears_buffer_free()
 t_max_err ears_buffer_free(t_buffer_obj *buffer);
 
@@ -332,7 +332,7 @@ t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, lo
 t_ears_err ears_buffer_mix_from_llll(t_object *ob, t_llll *sources_ll, t_buffer_obj *dest, t_llll *gains, t_llll *offset_samps_ll, e_ears_normalization_modes normalization_mode, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
 
 // this is a sort of mix-inplace function: adds a newbuffer onto a basebuffer
-t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, long *basebuffer_numframes, long *basebuffer_allocatedframes);
+t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_buffer_obj *newbuffer, t_llll *gains, long offset_samps, e_slope_mapping slopemapping, e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode, long *basebuffer_numframes, long *basebuffer_allocatedframes, long channel_offset);
 t_ears_err ears_buffer_assemble_close(t_object *ob, t_buffer_obj *basebuffer, e_ears_normalization_modes normalization_mode, long length_samps);
 
 
@@ -421,6 +421,7 @@ std::vector<float> ears_buffer_get_sample_vector_mono(t_object *ob, t_buffer_obj
 
 // Filtering
 t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double cutoff_freq, char highpass); // also works inplace
+t_ears_err ears_buffer_onepole_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *cutoff_freq, char highpass, e_slope_mapping slopemapping);
 t_ears_err ears_buffer_biquad(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double a0, double a1, double a2, double b1, double b2); // also works inplace
 t_ears_err ears_buffer_decimate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, long factor);
 t_ears_err ears_buffer_dcfilter(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest); // also works inplace

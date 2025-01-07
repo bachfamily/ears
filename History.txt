@@ -1,0 +1,53 @@
+v 0.2
+
+*************************
+*** IMPORTANT CHANGES ***
+*************************
+
+These might break compatibility with older patches
+
+*****VERY IMPORTANT:*****
+
+- the "naming" attribute has been renamed to "alloc". If you have used it explicitly, please change the patch manually. 
+If you have used the ! and = shortcuts, as documented, instead, you will be fine! :-)
+
+- The "reset" message used for dynamic allocation is now called "recycle". 
+We'll keep "reset" still supported for a while, but that may change in future releases.
+
+- the ears.peaks~ has changed profoundly:
+ 	· now its output has ONE more level of parenthesis because the object is able to automatically iterate over multiple channels
+	· the peak threshold is no longer "@thresh" but "@peakampthresh" 
+	· the temporal peak analysis no longer needs [ears.trans~], but rather [ears.peaks~ @spectral 0]
+  please fix your patches!!!
+
+- ears.specshow~: now autoscale is split into "autoscalemin" (by default off) and "autoscalemax" (by default on)
+
+- ears.split~:	now a relative overlap refers to an evenly subdivided chunk, not to the original one
+
+- ears.vamp~: now if frame labels are present, they are output as last element of the lists.
+
+***********************
+*** VERSION CHANGES ***
+***********************
+
+- all objects: 
+	• fixed bug causing possible quirks and even crashes, especially when using objects with 
+		varying outlet lengths (especially ears.split~) and a ears object in = (copy) mode later on in the chain
+	• @zeropadding and @zerophase: new analysis attributes for analysis modules 
+
+- ears.ptrack~, ears.model.ptrack.analysis~, ears.model.ptrack.synthesis~, ears.pshow~: 
+		new objects dealing with partial tracking
+
+- ears.onepole~: now supports envelopes
+
+- ears.roll.synthesis~/sampling~: 	
+		now if needed different voices can be bounced into different channels
+
+- ears.specshow~: new pixelized mode ("interp" attribute)
+
+- ears.essentia~: Fixed dozens of features that did not work
+	          Added object-wise pitch filtering (@pf attribute and its @pf* parameters) as postprocess pitch detection algorithms
+
+- ears.process~: now iterates over all the buffers independently of the size of lllls sent to ears.in objects with @direct 1
+
+- ears.alloc~: Fixed bug causing wrong output with empty buffers

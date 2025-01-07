@@ -219,6 +219,7 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
     }
 
     const int MP3_SIZE = LAME_MAXMP3BUFFER;
+//    const int PCM_SIZE = MIN(lame_get_maximum_number_of_samples(lame, MP3_SIZE), 1024);
     const int PCM_SIZE = lame_get_maximum_number_of_samples(lame, MP3_SIZE);
     float *pcm_buffer_l = (float *)bach_newptr(PCM_SIZE * sizeof(float));
     float *pcm_buffer_r = (float *)bach_newptr(PCM_SIZE * sizeof(float));
@@ -243,7 +244,9 @@ void ears_writemp3(t_object *buf, t_symbol *filename, t_ears_encoding_settings *
             
             i += nsamples;
         }
+//        write = lame_encode_flush_nogap(lame, mp3_buffer, MP3_SIZE);
         write = lame_encode_flush(lame, mp3_buffer, MP3_SIZE);
+        fwrite(mp3_buffer, write, 1, mp3);
         ears_buffer_unlocksamples(buf);
     }
     

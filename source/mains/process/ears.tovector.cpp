@@ -21,15 +21,15 @@
  Convert synchronously a list of numbers into a signal vector
  
  @description
- The <o>ears.tovector~</o> object inside a patch loaded by <o>ears.process~</o>
- collects values into a signal vector. All the values for a single signal vector must be received
+ Collects values into a signal vector inside a patch loaded by <o>ears.process~</o>.
+ 
+ @discussion
+ All the values for a single signal vector must be received
  within a single event triggered synchronously to the non-realtime audio vector
  as managed by <o>ears.process~</o>.
  This can be achieved by responding to messages produced by <o>ears.tovector~</o>
  or by the position message outlet of <o>ears.processinfo~</o>.
- 
- @discussion
- 
+
  @category
  ears process
  

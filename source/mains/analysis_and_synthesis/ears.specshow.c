@@ -61,7 +61,8 @@ typedef struct _buf_specshow {
     double       n_framespersecond;
     double       n_length_ms;
     
-    long        n_autoscale;
+    long        n_autoscale_min;
+    long        n_autoscale_max;
     double        n_colorcurve;
     
     t_jrgba     n_mincolor;
@@ -69,10 +70,16 @@ typedef struct _buf_specshow {
     double      n_minvalue;
     double      n_maxvalue;
     long        n_maxnumbins;
+    double      n_maxfreq;
+    
+    char        n_displayinseconds;
+    
+    char        n_interpolate;
     
     // attributes
     double      n_display_start_ms;
     double      n_display_end_ms;
+    double      n_last_patcherzoom;
     
     // actual values
     double      n_actual_display_start_ms;
@@ -120,7 +127,7 @@ t_max_err buf_specshow_notify(t_buf_specshow *x, t_symbol *s, t_symbol *msg, voi
 void buf_specshow_set(t_buf_specshow *x, t_symbol *s);
 t_max_err buf_specshow_setattr_buffername(t_buf_specshow *x, void *attr, long argc, t_atom *argv);
 
-void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf);
+void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf, t_rect *rect);
 
 // Globals and Statics
 static t_class	*s_buf_specshow_class = NULL;
@@ -129,18 +136,27 @@ static t_class	*s_buf_specshow_class = NULL;
 /**********************************************************************/
 // Class Definition and Life Cycle
 
-t_max_err buf_specshow_setattr_autoscale(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
+t_max_err buf_specshow_setattr_autoscalemin(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {
         if (is_atom_number(argv)) {
-            x->n_autoscale = atom_getlong(argv);
-            object_attr_setdisabled((t_object *)x, gensym("maxvalue"), x->n_autoscale == 1);
-            object_attr_setdisabled((t_object *)x, gensym("minvalue"), x->n_autoscale == 1);
+            x->n_autoscale_min = atom_getlong(argv);
+            object_attr_setdisabled((t_object *)x, gensym("minvalue"), x->n_autoscale_min == 1);
         }
     }
     return MAX_ERR_NONE;
 }
 
+t_max_err buf_specshow_setattr_autoscalemax(t_buf_specshow *x, void *attr, long argc, t_atom *argv)
+{
+    if (argc && argv) {
+        if (is_atom_number(argv)) {
+            x->n_autoscale_max = atom_getlong(argv);
+            object_attr_setdisabled((t_object *)x, gensym("maxvalue"), x->n_autoscale_max == 1);
+        }
+    }
+    return MAX_ERR_NONE;
+}
 void ext_main(void *r)
 {
     t_class *c;
@@ -156,7 +172,7 @@ void ext_main(void *r)
     c = class_new("ears.specshow~", (method)buf_specshow_new, (method)buf_specshow_free, sizeof(t_buf_specshow), 0L, A_GIMME, 0);
     
     c->c_flags |= CLASS_FLAG_NEWDICTIONARY;
-    jbox_initclass(c, JBOX_FIXWIDTH | JBOX_COLOR | JBOX_FONTATTR);
+    jbox_initclass(c, JBOX_FIXWIDTH | JBOX_FONTATTR);
     
     // @method symbol/llll @digest Display spectrogram
     // @description A symbol is considered as a buffer containing a spectrogram, i.e.
@@ -180,7 +196,14 @@ void ext_main(void *r)
     CLASS_ATTR_CATEGORY(c, "buffername", 0, "Behavior");
     // @description Sets the name of the buffer to which the object is attached.
 
-    
+
+    CLASS_ATTR_CHAR(c, "interp", 0, t_buf_specshow, n_interpolate);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "interp", 0, "1");
+    CLASS_ATTR_STYLE_LABEL(c, "interp", 0, "onoff", "Interpolate Image");
+    CLASS_ATTR_BASIC(c, "interp", 0);
+    CLASS_ATTR_CATEGORY(c, "interp", 0, "Appearance");
+    // @description Toggle the interpolation capability.
+
     CLASS_ATTR_RGBA(c, "mincolor", 0, t_buf_specshow, n_mincolor);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "mincolor", 0, "1. 1. 1. 1.0");
     CLASS_ATTR_STYLE_LABEL(c, "mincolor", 0, "rgba", "Lowest Color");
@@ -215,15 +238,38 @@ void ext_main(void *r)
     CLASS_ATTR_CATEGORY(c, "maxnumbins", 0, "Appearance");
     // @description Sets the maximum number of bins displayed (leave 0 for all).
 
-    CLASS_ATTR_LONG(c, "autoscale", 0, t_buf_specshow, n_autoscale);
-    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscale", 0, "1");
-    CLASS_ATTR_STYLE_LABEL(c, "autoscale", 0, "onoff", "Automatically Rescale Range");
-    CLASS_ATTR_ACCESSORS(c, "autoscale", NULL, buf_specshow_setattr_autoscale);
-    CLASS_ATTR_BASIC(c, "autoscale", 0);
-    CLASS_ATTR_CATEGORY(c, "autoscale", 0, "Settings");
-    // @description Toggles the ability to obtain <m>minvalue</m> and <m>maxvalue</m> automatically
+    CLASS_ATTR_DOUBLE(c, "maxfreq", 0, t_buf_specshow, n_maxfreq);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "maxfreq", 0, "0");
+    CLASS_ATTR_STYLE_LABEL(c, "maxfreq", 0, "text", "Maximum Frequency");
+    CLASS_ATTR_CATEGORY(c, "maxfreq", 0, "Appearance");
+    // @description Sets the maximum represented frequency (leave 0 for all).
+
+    CLASS_ATTR_CHAR(c, "sec", 0, t_buf_specshow, n_displayinseconds);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "sec", 0, "0");
+    CLASS_ATTR_STYLE_LABEL(c, "sec", 0, "onoff", "Display In Seconds");
+    CLASS_ATTR_CATEGORY(c, "sec", 0, "Appearance");
+    // @description Toggle the time display in seconds instead of milliseconds.
+
+    
+    CLASS_ATTR_LONG(c, "autoscalemin", 0, t_buf_specshow, n_autoscale_min);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscalemin", 0, "0");
+    CLASS_ATTR_STYLE_LABEL(c, "autoscalemin", 0, "onoff", "Automatically Rescale Minimum");
+    CLASS_ATTR_ACCESSORS(c, "autoscalemin", NULL, buf_specshow_setattr_autoscalemin);
+    CLASS_ATTR_BASIC(c, "autoscalemin", 0);
+    CLASS_ATTR_CATEGORY(c, "autoscalemin", 0, "Settings");
+    // @description Toggles the ability to obtain <m>minvalue</m> automatically
     // from the minimum and maximum values in the input buffer.
 
+    CLASS_ATTR_LONG(c, "autoscalemax", 0, t_buf_specshow, n_autoscale_max);
+    CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "autoscalemax", 0, "1");
+    CLASS_ATTR_STYLE_LABEL(c, "autoscalemax", 0, "onoff", "Automatically Rescale Maximum");
+    CLASS_ATTR_ACCESSORS(c, "autoscalemax", NULL, buf_specshow_setattr_autoscalemax);
+    CLASS_ATTR_BASIC(c, "autoscalemax", 0);
+    CLASS_ATTR_CATEGORY(c, "autoscalemax", 0, "Settings");
+    // @description Toggles the ability to obtain <m>maxvalue</m> automatically
+    // from the minimum and maximum values in the input buffer.
+
+    
     CLASS_ATTR_DOUBLE(c, "colorcurve", 0, t_buf_specshow, n_colorcurve);
     CLASS_ATTR_DEFAULT_SAVE_PAINT(c, "colorcurve", 0, "0");
     CLASS_ATTR_STYLE_LABEL(c, "colorcurve", 0, "text", "Color Range Curve");
@@ -282,8 +328,15 @@ void ext_main(void *r)
 void buf_specshow_assist(t_buf_specshow *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        sprintf(s, "symbol/llll: Buffer Containing spectrogram");
-        // @in 0 @type symbol/llll @digest Buffer containing spectrogram
+        if (a == 0)
+            sprintf(s, "symbol/llll: Buffer Containing spectrogram"); // @in 0 @type llll @digest Onsets
+            // @description List of onsets (unit depends on the <m>timeunit</m> attribute)
+        else if (a == 1)
+            sprintf(s, "float: Display Start (ms)"); // @in 1 @type llll @digest Display Start (ms)
+            // @description Position of display start (in milliseconds)
+        else
+            sprintf(s, "float: Display End (ms)"); // @in 2 @type llll @digest Display Start (ms)
+            // @description Position of display end (in milliseconds)
     }
 }
 
@@ -326,7 +379,7 @@ void buf_specshow_set(t_buf_specshow *x, t_symbol *s)
             ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
         x->n_last_buffer = ears_buffer_get_object(s);
         x->n_buffername = s;
-        ears_buffer_retain(x->n_last_buffer, x->n_buffername, NULL);
+        ears_buffer_retain(x->n_last_buffer, x->n_buffername, NULL, false);
         
         if (!x->n_buffer_reference)
             x->n_buffer_reference = buffer_ref_new((t_object *)x, s);
@@ -377,7 +430,8 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_last_buffer = NULL;
         x->n_display_start_ms = 0;
         x->n_display_end_ms = -1;
-        x->n_autoscale = 1;
+        x->n_autoscale_max = 1;
+        x->n_autoscale_min = 0;
         x->n_buffername = _llllobj_sym_empty_symbol;
 
         x->n_mincolor = get_grey(1.);
@@ -410,7 +464,6 @@ void *buf_specshow_new(t_symbol *s, long argc, t_atom *argv)
         x->n_obj.b_firstin = (t_object *)x;
         x->n_proxy2 = proxy_new(x, 2, &x->n_proxy_inletnum);
         x->n_proxy1 = proxy_new(x, 1, &x->n_proxy_inletnum);
-        jbox_set_fontsize((t_object *)x, 10);
         attr_dictionary_process(x,d);
         jbox_ready((t_jbox *)x);
     }
@@ -468,7 +521,7 @@ void buf_specshow_anything(t_buf_specshow *x, t_symbol *msg, long ac, t_atom *av
                             ears_buffer_release(x->n_last_buffer, ears_buffer_get_name((t_object *)x, x->n_last_buffer));
                         t_buffer_obj *obj = ears_buffer_get_object(s);
                         x->n_last_buffer = obj;
-                        ears_buffer_retain(x->n_last_buffer, s, NULL);
+                        ears_buffer_retain(x->n_last_buffer, s, NULL, false);
                         x->n_must_recreate_surface = true;
                         jbox_redraw((t_jbox *)x);
                     }
@@ -500,7 +553,8 @@ t_jrgba buf_specshow_value_to_color(t_buf_specshow *x, double value)
     
 }
 
-void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
+// rect is only used for pixelised view
+void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf, t_rect *rect)
 {
     if (!buf)
         return;
@@ -529,39 +583,62 @@ void buf_specshow_create_surface(t_buf_specshow *x, t_buffer_obj *buf)
     
     
     
-    if (x->n_autoscale) {
+    if (x->n_autoscale_min || x->n_autoscale_max) {
         double amin, amax;
         if (ears_buffer_get_minmax((t_object *)x, buf, &amin, &amax) == EARS_ERR_NONE) {
-            x->n_minvalue = amin;
-            x->n_maxvalue = (amin == amax ? amin + 1 : amax);
+            if (x->n_autoscale_min)
+                x->n_minvalue = amin;
+            if (x->n_autoscale_max)
+                x->n_maxvalue = (amin == amax ? amin + 1 : amax);
         }
     }
-    
+
     long numframes = ears_buffer_get_size_samps((t_object *)x, buf);
     long numchannels = ears_buffer_get_numchannels((t_object *)x, buf);
     long numbins = numchannels;
     if (x->n_maxnumbins > 0) {
         numbins = MIN(numbins, x->n_maxnumbins);
     }
+    if (x->n_maxfreq > 0) {
+        numbins = MIN(numbins, (long)(x->n_maxfreq/x->n_bin_step));
+    }
     x->n_num_bins = numbins;
+    
     if (x->n_surface)
         jgraphics_surface_destroy(x->n_surface);
-    x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, numframes, numbins);
-    
+
     float *sample = ears_buffer_locksamples(buf);
-    
-    if (!sample) {
-        object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
+
+    if (x->n_interpolate) {
+        x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, numframes, numbins);
+        
+        if (!sample) {
+            object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            for (long f = 0; f < numframes; f++) {
+                for (long c = 0; c < numbins; c++) {
+                    jgraphics_image_surface_set_pixel(x->n_surface, f, numbins - c - 1, buf_specshow_value_to_color(x, sample[f*numchannels + c]));
+                }
+            }
+        }
     } else {
-        for (long f = 0; f < numframes; f++) {
-            for (long c = 0; c < numbins; c++) {
-                jgraphics_image_surface_set_pixel(x->n_surface, f, numbins - c - 1, buf_specshow_value_to_color(x, sample[f*numchannels + c]));
+        
+        x->n_surface = jgraphics_image_surface_create(JGRAPHICS_FORMAT_ARGB32, rect->width, rect->height);
+        
+        if (!sample) {
+            object_error((t_object *)x, EARS_ERROR_BUF_CANT_READ);
+        } else {
+            for (long i = 0; i < rect->width; i++) {
+                for (long j = 0; j < rect->height; j++) {
+                    long ifloor = (long)(((double)i)*numframes/(long)rect->width);
+                    long jfloor = (long)(((double)j)*numbins/(long)rect->height);
+                    jgraphics_image_surface_set_pixel(x->n_surface, i, rect->height - j - 1, buf_specshow_value_to_color(x, sample[ifloor*numchannels + jfloor]));
+                }
             }
         }
     }
-    
-    ears_buffer_unlocksamples(buf);
-    
+    ears_buffer_unlocksamples(x->n_last_buffer);
+
     systhread_mutex_unlock(x->n_mutex);
 }
 
@@ -602,10 +679,15 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     t_jgraphics *g = (t_jgraphics *) patcherview_get_jgraphics(patcherview);        // obtain graphics context
     jbox_get_rect_for_view((t_object *)x, patcherview, &rect);
     
+    double patcherzoom = patcherview_get_zoomfactor(patcherview);
     t_rect fullrect = build_rect(0, 0, rect.width, rect.height);
     
-    if (x->n_must_recreate_surface && x->n_last_buffer) {
-        buf_specshow_create_surface(x, x->n_last_buffer);
+    if ((x->n_must_recreate_surface && x->n_last_buffer) ||
+        (!x->n_interpolate && patcherzoom != x->n_last_patcherzoom)) {
+        t_rect temp_rect;
+        temp_rect.width = rect.width * patcherview_get_zoomfactor(patcherview);
+        temp_rect.height = rect.height * patcherview_get_zoomfactor(patcherview);
+        buf_specshow_create_surface(x, x->n_last_buffer, &temp_rect);
         x->n_must_recreate_surface = false;
     }
     
@@ -622,18 +704,21 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     x->n_actual_display_start_ms = dstart;
     x->n_actual_display_end_ms = dend;
     
-    src.y = 0;
-    src.height = jgraphics_image_surface_get_height(x->n_surface);
-    if (x->n_display_start_ms <= 0 && x->n_display_end_ms <= 0) {
-        src.x = 0;
-        src.width = jgraphics_image_surface_get_width(x->n_surface);
+    if (x->n_interpolate) {
+        src.y = 0;
+        src.height = jgraphics_image_surface_get_height(x->n_surface);
+        if (x->n_display_start_ms <= 0 && x->n_display_end_ms <= 0) {
+            src.x = 0;
+            src.width = jgraphics_image_surface_get_width(x->n_surface);
+        } else {
+            src.x = x->n_framespersecond * dstart * 0.001;
+            src.width = x->n_framespersecond * (dend - dstart) * 0.001;
+        }
+        
+        jgraphics_image_surface_draw(g, x->n_surface, src, fullrect);
     } else {
-        src.x = x->n_framespersecond * dstart * 0.001;
-        src.width = x->n_framespersecond * (dend - dstart) * 0.001;
+        jgraphics_image_surface_draw_fast(g, x->n_surface);
     }
-    
-    jgraphics_image_surface_draw(g, x->n_surface, src, fullrect);
-    
     
     // paint grids
     double length = x->n_length_ms;
@@ -669,7 +754,13 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
                 double h = onset_to_xpos(x, &rect, o);
                 paint_line(g, x->n_grid_time_color, h, 0, h, rect.height, 1);
                 if (h > text_ends) {
-                    sprintf(text, " %dms", (int)o);
+                    if (x->n_displayinseconds) {
+                        if (((int)o) % 1000 == 0)
+                            snprintf_zero(text, 1024, " %d s", (int)o/1000);
+                        else
+                            snprintf_zero(text, 1024, " %.3 s", o/1000.);
+                    } else
+                        snprintf_zero(text, 1024, " %d ms", (int)o);
                     jfont_text_measure(jf_text, text, &tw, &th);
                     text_ends = h + tw;
                     write_text_standard(g, jf_text, x->n_label_time_color, text, h, 0, rect.width, rect.height);
@@ -687,7 +778,7 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
                 double v = freq_to_ypos(x, &rect, b);
                 paint_line(g, x->n_grid_freq_color, 0, v, rect.width, v, 1);
                 if (v > 2 * jbox_get_fontsize((t_object *)x)) {
-                    sprintf(text, " %d%s", (int)b, unit);
+                    sprintf(text, " %d %s", (int)b, unit);
                     jfont_text_measure(jf_text, text, &tw, &th);
                     write_text_standard(g, jf_text, x->n_label_freq_color, text, 0, v - th, rect.width, rect.height);
                 }
@@ -699,5 +790,6 @@ void buf_specshow_paint(t_buf_specshow *x, t_object *patcherview)
     
     systhread_mutex_unlock(x->n_mutex);
     
+    x->n_last_patcherzoom = patcherzoom;
 }
 

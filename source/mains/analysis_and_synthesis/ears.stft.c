@@ -61,7 +61,6 @@ typedef struct _buf_stft {
     long polar_output;
     long fullspectrum;
     long downmix;
-    long unitary;
 } t_buf_stft;
 
 
@@ -123,18 +122,19 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     // @method list/llll @digest Process buffers
     // @description A list or llll with buffer names will trigger the buffer processing and output the processed
-    // buffer names (depending on the <m>naming</m> attribute).
+    // buffer names (depending on the <m>alloc</m> attribute).
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(stft)
     
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_blocking_attr(c);
-    earsbufobj_class_add_naming_attr(c);
+    earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
     earsbufobj_class_add_angleunit_attr(c);
     earsbufobj_class_add_winstartfromzero_attr(c);
 
     earsbufobj_class_add_framesize_attr(c);
+    earsbufobj_class_add_fftnormalization_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
     earsbufobj_class_add_numframes_attr(c);
     earsbufobj_class_add_overlap_attr(c);
@@ -175,12 +175,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "downmix", 0);
     // @description Toggles the ability to downmix all the channels into one. If this flag is not set, then
     // one buffer per channel is output.
-
-    CLASS_ATTR_LONG(c, "unitary",    0,    t_buf_stft, unitary);
-    CLASS_ATTR_STYLE_LABEL(c,"unitary",0,"onoff","Unitary");
-    CLASS_ATTR_BASIC(c, "unitary", 0);
-    // @description Toggles the unitary normalization of the Fourier Transform (so that the
-    // if coincides with its inverse up to conjugation).
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -239,7 +233,6 @@ t_buf_stft *buf_stft_new(t_symbol *s, short argc, t_atom *argv)
         x->polar_output = 1;
         x->fullspectrum = 0;
         x->downmix = 0;
-        x->unitary = 1;
         
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
@@ -320,7 +313,7 @@ void buf_stft_bang(t_buf_stft *x)
                          earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                          earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                          x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect",
-                         x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
+                         x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, (e_ears_fft_normalization)x->e_ob.a_fftnormalization);
 #endif
         
     } else if (num_channels > 0){
@@ -343,7 +336,7 @@ void buf_stft_bang(t_buf_stft *x)
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_framesize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                              earsbufobj_time_to_samps((t_earsbufobj *)x, x->e_ob.a_hopsize, in, EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS),
                              x->e_ob.a_wintype ? x->e_ob.a_wintype->s_name : "rect",
-                             x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, x->unitary);
+                             x->polar_input, x->polar_output, x->fullspectrum, (e_ears_angleunit)x->e_ob.l_angleunit, x->e_ob.a_winstartfromzero, (e_ears_fft_normalization)x->e_ob.a_fftnormalization);
 #endif
         }
     } else {
