@@ -59,7 +59,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 836.0, 663.0 ],
+						"rect" : [ 100.0, 126.0, 836.0, 663.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -228,7 +228,7 @@
 									"mincolor" : [ 0.141176470588235, 0.0, 1.0, 1.0 ],
 									"numinlets" : 3,
 									"numoutlets" : 0,
-									"patching_rect" : [ 73.0, 251.0, 479.0, 367.0 ],
+									"patching_rect" : [ 73.0, 251.0, 724.0, 371.0 ],
 									"timegrid" : 250.0
 								}
 
@@ -347,7 +347,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 100.0, 126.0, 836.0, 663.0 ],
+						"rect" : [ 0.0, 26.0, 836.0, 663.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 13.0,
@@ -386,7 +386,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 312.0, 177.0, 194.0, 25.0 ],
-									"presentation_linecount" : 2,
 									"text" : "Change color mapping curve"
 								}
 
@@ -414,7 +413,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 336.0, 149.0, 211.0, 25.0 ],
-									"presentation_linecount" : 3,
 									"text" : "Maximum displayed frequency"
 								}
 

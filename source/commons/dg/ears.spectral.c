@@ -2288,35 +2288,25 @@ class Peak {
 
 // peak comparison:
 
-// comparing by position, by default sorts by ascending position and in case
-// the positions are equal it sorts by descending magnitude
-template<typename Comp1=std::less<double>,
-         typename Comp2=std::greater_equal<double> >
-class ComparePeakPosition : public std::binary_function<double, double, bool> {
-  Comp1 _cmp1;
-  Comp2 _cmp2;
-  public:
-    bool operator () (const Peak& p1, const Peak& p2) const {
-      if (_cmp1(p1.position, p2.position)) return true;
-      if (_cmp1(p2.position, p1.position)) return false;
-      return _cmp2(p1.magnitude, p2.magnitude);
+struct
+{
+    bool operator()(Peak& p1, Peak& p2) const {
+        if (p1.position < p2.position) return true;
+        if (p2.position < p1.position) return false;
+        return p1.magnitude >= p2.magnitude;
     }
-};
+}
+ComparePeakPosition;
 
-// comparing by magnitude, by default sorts by descending magnitude and in case
-// the magnitudes are equal it sorts by ascending position
-template<typename Comp1=std::greater<double>,
-         typename Comp2=std::less_equal<double> >
-class ComparePeakMagnitude : public std::binary_function<double, double, bool> {
-  Comp1 _cmp1;
-  Comp2 _cmp2;
-  public:
-    bool operator () (const Peak& p1, const Peak& p2) const {
-      if (_cmp1(p1.magnitude, p2.magnitude)) return true;
-      if (_cmp1(p2.magnitude, p1.magnitude)) return false;
-      return _cmp2(p1.position, p2.position);
+struct
+{
+    bool operator()(Peak& p1, Peak& p2) const {
+        if (p1.magnitude > p2.magnitude) return true;
+        if (p2.magnitude > p1.magnitude) return false;
+        return p1.position <= p2.position;
     }
-};
+}
+ComparePeakMagnitude;
 
 // from 2 vector<Real> to vector<Peak>:
 inline std::vector<Peak> realsToPeaks(const std::vector<double>& pos,
@@ -2470,8 +2460,7 @@ void ears_get_peaks(std::vector<double> array, std::vector<double> &peakPosition
         double maxPos;
       
       // iterate following an amplitude hierarchy
-      std::sort(peaks.begin(), peaks.end(),
-            ComparePeakMagnitude<std::greater<double>, std::less<double> >());
+      std::sort(peaks.begin(), peaks.end(), ComparePeakMagnitude);
 
       size_t k = 0;
       while (k < peaks.size() - 1) {
@@ -2494,13 +2483,12 @@ void ears_get_peaks(std::vector<double> array, std::vector<double> &peakPosition
         k++;
       }
 
-      if (_orderBy == "position") {
+      if (strcmp(_orderBy, "position") == 0) {
         // if required,sort peaks by
         // position again
-        std::sort(peaks.begin(), peaks.end(),
-                  ComparePeakPosition<std::less<double>, std::greater<double> >());
+        std::sort(peaks.begin(), peaks.end(), ComparePeakPosition);
       }
-      else if (_orderBy == "amplitude") {
+      else if (strcmp(_orderBy, "amplitude") == 0) {
         // already sorted by amplitude
       }
       else {
@@ -2510,13 +2498,12 @@ void ears_get_peaks(std::vector<double> array, std::vector<double> &peakPosition
     } else {
       // if haven't passed through the minPeakDistance part
       // apply the inverse logic for sorting
-      if (_orderBy == "amplitude") {
+      if (strcmp(_orderBy, "amplitude") == 0) {
         // sort peaks by amplitude, in case of equality,
         // return the one having smaller position
-        std::sort(peaks.begin(), peaks.end(),
-                  ComparePeakMagnitude<std::greater<double>, std::less<double> >());
+        std::sort(peaks.begin(), peaks.end(), ComparePeakMagnitude);
       }
-      else if (_orderBy == "position") {
+      else if (strcmp(_orderBy, "position") == 0) {
         // already sorted by position
       }
       else {
@@ -2526,7 +2513,7 @@ void ears_get_peaks(std::vector<double> array, std::vector<double> &peakPosition
 
 
     // we only want this many peaks
-    size_t nWantedPeaks = std::min((size_t)_maxPeaks, peaks.size());
+    size_t nWantedPeaks = MIN((size_t)_maxPeaks, peaks.size());
 
     peakPosition.resize(nWantedPeaks);
     peakValue.resize(nWantedPeaks);
