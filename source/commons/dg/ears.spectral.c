@@ -1,6 +1,7 @@
 #include "ears.spectral.h"
 #include <numeric>
 #include <algorithm>
+#include <functional>
 
 const double PAULSTRETCH_MIN_STRETCH_FACTOR = 0.00001;
 
