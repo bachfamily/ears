@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 5,
-			"revision" : 4,
+			"minor" : 6,
+			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -77,7 +77,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 244.0, 11.0, 120.0, 19.0 ],
-					"text" : "v0.1 alpha",
+					"text" : "v0.2 alpha",
 					"textcolor" : [ 0.109804, 0.109804, 0.109804, 1.0 ],
 					"varname" : "autohelp_top_digest[3]"
 				}
@@ -255,8 +255,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 5,
-							"revision" : 4,
+							"minor" : 6,
+							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
