@@ -358,6 +358,16 @@ int buf_vamp_add_plugin(t_buf_vamp *x, t_symbol *pluginname)
         return 1;
     }
 
+    // check if summarizable
+    if (outputs[x->n_plugins[pluginindex].n_outputIndex].sampleType == Plugin::OutputDescriptor::VariableSampleRate) { // not really summarizable...
+        if (tm == EARS_ANALYSIS_TEMPORALMODE_TIMESERIES) {
+            object_warn((t_object *)x, "Plugin '%s' from library '%s' has variable sample rate: its time series may not be uniformly sampled. Consider switching temporal mode to time-tagged time-series (:::).", x->n_plugins[pluginindex].n_identifier ? x->n_plugins[pluginindex].n_identifier->s_name : "", x->n_plugins[pluginindex].n_soname ? x->n_plugins[pluginindex].n_soname->s_name : "");
+        } else if (tm == EARS_ANALYSIS_TEMPORALMODE_WHOLE) {
+            object_warn((t_object *)x, "Plugin '%s' from library '%s' has variable sample rate: its summarization may be inconsistent. Consider switching temporal mode to time-tagged time-series (:::).", x->n_plugins[pluginindex].n_identifier ? x->n_plugins[pluginindex].n_identifier->s_name : "", x->n_plugins[pluginindex].n_soname ? x->n_plugins[pluginindex].n_soname->s_name : "");
+        }
+    }
+
+    
     
     x->n_numplugins ++;
     delete plugin;

@@ -553,9 +553,12 @@ t_ears_err ears_vamp_run_plugin(t_earsbufobj *e_ob, t_buffer_obj *buf, string so
     //    cerr << "Output is: \"" << od.identifier << "\"" << endl;
     
     // check if output is summarizable, otherwise change temporal mode
-    if (od.sampleType == Plugin::OutputDescriptor::VariableSampleRate) { // this is not summarizable!
+    // THIS WAS OLD CODE: now we only throw a warning at load time.
+    // It can be useful to summarize VariableSampleRate too.
+/*    if (od.sampleType == Plugin::OutputDescriptor::VariableSampleRate) { // this is not summarizable!
+        object_warn((t_object *)x, "Plugin '%s' from library '%s' has variable sample rate and is not summarizable. Defaulting to Labelled Time Series mode.", identifier.c_str(), soname.c_str());
         temporalmode = EARS_ANALYSIS_TEMPORALMODE_LABELLEDTIMESERIES;
-    }
+    } */
             
 
     // parameters
