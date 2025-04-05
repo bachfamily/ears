@@ -2914,6 +2914,50 @@ double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf
 }
 
 // TO DO: handle negative values
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, double reference_size_samps, double reference_sr, long flags)
+{
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
+    double res = 0;
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
+            res = value;
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            res = reference_size_samps * value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            res = reference_size_samps + ears_ms_to_fsamps(value, reference_sr);
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            res = reference_size_samps + value;
+            break;
+
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            res = reference_size_samps * (1./value);
+            break;
+
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            res = reference_size_samps * (1./(value-1));
+            break;
+
+        case EARS_TIMEUNIT_SECONDS:
+            res = ears_ms_to_fsamps(value*1000., reference_sr);
+            break;
+
+        case EARS_TIMEUNIT_MS:
+        default:
+            res = ears_ms_to_fsamps(value, reference_sr);
+            break;
+    }
+    return res;
+}
+
+
+// TO DO: handle negative values
 double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
     bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;

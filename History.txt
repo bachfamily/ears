@@ -1,3 +1,21 @@
+v 0.9
+
+
+*************************
+*** IMPORTANT CHANGES ***
+*************************
+
+These might break compatibility with older patches
+
+***********************
+*** VERSION CHANGES ***
+***********************
+
+- ears.split: 
+	· new @maxnumsegments attribute to define maximum number of segments
+	· now accepts overlap = segment size if @maxnumsegments is defined (> 0)
+
+
 v 0.2
 
 *************************

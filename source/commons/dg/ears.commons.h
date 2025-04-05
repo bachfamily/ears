@@ -409,7 +409,7 @@ t_ears_err ears_buffer_eq(t_object *ob, t_buffer_obj *buf1, t_buffer_obj *buf2, 
 // passing messages through
 t_ears_err ears_buffer_send_message(t_object *ob, t_buffer_obj *buf, t_symbol *s, long ac, t_atom *av);
 
-t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj *buf, double thresh_linear, double min_silence_samps, t_llll **samp_start, t_llll **samp_end, char keep_silence);
+t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj *buf, double thresh_linear, double min_silence_samps, t_llll **samp_start, t_llll **samp_end, char keep_silence, long maxnumsegments);
 
 t_ears_err ears_buffer_get_split_points_samps_onset(t_object *ob, t_buffer_obj *buf, double attack_thresh_linear, double release_thresh_linear, double min_silence_samps, long lookahead_samps, long smoothingwin_samps, t_llll **samp_start, t_llll **samp_end, char keep_first);
 
@@ -545,6 +545,12 @@ t_ears_err ears_buffer_fromdiffs(t_object *ob, t_buffer_obj *source, t_buffer_ob
 t_ears_err ears_buffer_todiffs(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest);
 t_ears_err ears_buffer_phasewrap(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, e_ears_angleunit angleunit);
 t_ears_err ears_buffer_phaseunwrap(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, e_ears_angleunit angleunit);
+
+
+long ears_get_window(float *win, const char *type, long numframes);
+
+t_ears_err ears_buffer_psola_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *pitch_env, long duration_samples, double grain_duration_factor, double stride_factor, e_slope_mapping slopemapping,
+                                      bool pitch_compensation_for_stride, double highpass_cutoff, long input_offset_samps);
 
 
 // convenience

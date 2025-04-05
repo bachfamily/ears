@@ -5786,7 +5786,7 @@ void ears_envelope_get_max_x(t_llllelem *el, t_atom *a_max)
 
 
 
-t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj *buf, double thresh_linear, double min_silence_samps, t_llll **samp_start, t_llll **samp_end, char keep_silence)
+t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj *buf, double thresh_linear, double min_silence_samps, t_llll **samp_start, t_llll **samp_end, char keep_silence, long maxnumsegments)
 {
     if (!buf) {
         *samp_start = llll_get();
@@ -5812,6 +5812,8 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
         t_atom_long    channelcount = buffer_getchannelcount(buf);
         t_atom_long    framecount   = buffer_getframecount(buf);
         
+        char broken = false;
+        
         if (reverse) {
             char testing_silence = false;
             in_silence = false;
@@ -5828,6 +5830,10 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
                     if (max_amp >= thresh_linear) {
                         if (!testing_silence)
                             llll_appendlong(*samp_end, f);
+                        if (maxnumsegments > 0 && (*samp_end)->l_size >= maxnumsegments) {
+                            broken = true;
+                            break;
+                        }
                         in_silence = false;
                         curr_num_silence_samps = 0;
                     } else {
@@ -5855,6 +5861,10 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
                     if (curr_num_silence_samps >= min_silence_samps) {
                         llll_appendlong(*samp_end, f - curr_num_silence_samps + 1);
                         in_silence = true;
+                        if (maxnumsegments > 0 && (*samp_end)->l_size >= maxnumsegments) {
+                            broken = true;
+                            break;
+                        }
                     }
                 } else if (in_silence) {
                     if (max_amp >= thresh_linear) {
@@ -5874,10 +5884,12 @@ t_ears_err ears_buffer_get_split_points_samps_silence(t_object *ob, t_buffer_obj
         if (keep_silence == 1) {
             t_llllelem *s, *e;
             for (s = (*samp_start)->l_head->l_next, e = (*samp_end)->l_head; e; s = s ? s->l_next : NULL, e=e->l_next) {
-                if (!s)
-                    hatom_setlong(&e->l_hatom, framecount);
-                else
+                if (!s) {
+                    if (!broken)
+                        hatom_setlong(&e->l_hatom, framecount);
+                } else {
                     hatom_setlong(&e->l_hatom, hatom_getlong(&s->l_hatom));
+                }
             }
         }
 
@@ -7234,5 +7246,185 @@ t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *e
         ears_buffer_unlocksamples(dest);
     ears_buffer_unlocksamples(source);
 
+    return err;
+}
+
+
+
+
+long ears_get_window(float *win, const char *type, long numframes)
+{
+    double H = (numframes-1.)/2.;
+    double halfF = PI / (numframes-1.);
+    double F = 2 * PI / (numframes-1.);
+    double twoF = 2 * F;
+    double threeF = 3 * F;
+    long err = 0;
+
+    if (strcmp(type, "rect") == 0 || strcmp(type, "rectangle") == 0 || strcmp(type, "rectangular") == 0 || strcmp(type, "square") == 0) {
+        for (long i = 0; i < numframes; i++)
+            win[i] = 1.;
+    } else if (strcmp(type, "tri") == 0 || strcmp(type, "triangle") == 0 || strcmp(type, "triangular") == 0) {
+        for (long i = 0; i < numframes; i++)
+            win[i] = 1 - fabs((i - H)/H); // denominator could be +1 or +2
+    } else if (strcmp(type, "sine") == 0 || strcmp(type, "sin") == 0 || strcmp(type, "cos") == 0 || strcmp(type, "cosine") == 0) {
+        for (long i = 0; i < numframes; i++)
+            win[i] = sin(halfF * i);
+    } else if (strcmp(type, "hann") == 0) {
+        double a0 = 0.5;
+        double a1 = 1. - a0;
+        for (long i = 0; i < numframes; i++)
+            win[i] = a0  - a1 * cos(F*i);
+    } else if (strcmp(type, "sqrthann") == 0) {
+        double a0 = 0.5;
+        double a1 = 1. - a0;
+        for (long i = 0; i < numframes; i++)
+            win[i] = sqrt(a0  - a1 * cos(F*i));
+    } else if (strcmp(type, "sqrthamming") == 0) {
+        double a0 = 25./46.;
+        double a1 = 1. - a0;
+        for (long i = 0; i < numframes; i++)
+            win[i] = sqrt(a0  - a1 * cos(F*i));
+    } else if (strcmp(type, "hamming") == 0) {
+        double a0 = 25./46.;
+        double a1 = 1. - a0;
+        for (long i = 0; i < numframes; i++)
+            win[i] = a0  - a1 * cos(F*i);
+    } else if (strcmp(type, "blackman") == 0) {
+        double a0 = 0.42, a1 = 0.5, a2 = 0.08;
+        for (long i = 0; i < numframes; i++) {
+            win[i] = a0 - a1 * cos(F*i) + a2 * cos(twoF * i);
+        }
+    } else if (strcmp(type, "nuttall") == 0) {
+        double a0 = 0.355768, a1 = 0.487396, a2 = 0.144232, a3 = 0.012604;
+        for (long i = 0; i < numframes; i++) {
+            win[i] = a0 - a1 * cos(F*i) + a2 * cos(twoF * i) - a3 * cos(threeF * i);
+        }
+    } else if (strcmp(type, "blackmannuttall") == 0) {
+        double a0 = 0.3635819, a1 = 0.4891775, a2 = 0.1365995, a3 = 0.0106411;
+        for (long i = 0; i < numframes; i++) {
+            win[i] = a0 - a1 * cos(F*i) + a2 * cos(twoF * i) - a3 * cos(threeF * i);
+        }
+    } else if (strcmp(type, "blackmanharris") == 0) {
+        double a0 = 0.35875, a1 = 0.48829, a2 = 0.14128, a3 = 0.01168;
+        for (long i = 0; i < numframes; i++) {
+            win[i] = a0 - a1 * cos(F*i) + a2 * cos(twoF * i) - a3 * cos(threeF * i);
+        }
+    } else if (strcmp(type, "gaussian") == 0) {
+        const double sigma = 0.4;
+        double temp;
+        double sigmaH = sigma * H;
+        for (long i = 0; i < numframes; i++) {
+            temp = (i - H)/sigmaH;
+            win[i] = exp(-0.5 * temp * temp);
+        }
+    } else {
+        for (long i = 0; i < numframes; i++)
+            win[i] = 1.;
+        err = 1;
+    }
+    return err;
+}
+
+
+t_ears_err ears_buffer_psola_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *pitch_env, long duration_samples, double grain_duration_factor, double stride_factor, e_slope_mapping slopemapping,
+                                      bool pitch_compensation_for_stride, double highpass_cutoff, long input_offset_samps)
+{
+    t_ears_err err = EARS_ERR_NONE;
+    t_ears_envelope_iterator eei = ears_envelope_iterator_create(pitch_env, 6000., false, slopemapping);
+    
+    double sr = ears_buffer_get_sr(ob, source);
+    double num_out_samps = duration_samples;
+   
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    float *orig_sample = ears_buffer_locksamples(source);
+    float *orig_sample_wk = NULL;
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    num_in_samps   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * num_in_samps * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * num_in_samps * sizeof(float));
+            ears_buffer_unlocksamples(source);
+            ears_buffer_set_size_samps(ob, dest, num_out_samps);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, num_out_samps);
+        }
+        
+        float *dest_sample = ears_buffer_locksamples(dest);
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            // zero out output buffer
+            for (long i = 0; i < duration_samples; i++) {
+                for (long c = 0; c < channelcount; c++) {
+                    long idx_out = i * channelcount + c;
+                    dest_sample[idx_out] = 0.;
+                }
+            }
+            
+            ears_envelope_iterator_reset(&eei);
+            
+            long f_in = input_offset_samps, f_out = 0; // these are our frame cursors, for input and output buffers
+            
+            while (f_out < duration_samples) {
+                double fzero = mc2f(ears_envelope_iterator_walk_interp(&eei, f_out, num_out_samps));
+                long stride_samps = (long)round((sr/fzero)*stride_factor);
+                
+                if (pitch_compensation_for_stride)
+                    fzero = fzero / (1 + fzero * stride_samps/sr);
+                
+                double period_samps_float = sr/fzero;
+                long period_samps = (long)round(period_samps_float);
+                long winsize_samps = (long)round(period_samps_float * grain_duration_factor);
+                
+                if (f_out + winsize_samps > duration_samples)
+                    break; // we won't put an incomplete window, otherwise there are clicks
+                
+                //            if (resampling_factor != 1) {
+                //                winsize_samps = (long)round(period_samps * grain_duration_factor * resampling_factor);
+                
+                float *win = (float *)bach_newptr(winsize_samps * sizeof(float));
+                
+                ears_get_window(win, "hann", winsize_samps);
+                
+                for (long i = 0; i < winsize_samps && f_in + i < num_in_samps && f_out + i < num_out_samps; i++) {
+                    for (long c = 0; c < channelcount; c++) {
+                        dest_sample[(f_out + i) * channelcount + c] += orig_sample_wk[(f_in + i) * channelcount + c] * win[i];
+                    }
+                }
+                bach_freeptr(win);
+                
+                f_in += stride_samps;
+                f_out += period_samps;
+            }
+            
+            buffer_setdirty(dest);
+            ears_buffer_unlocksamples(dest);
+            
+            ears_buffer_dcfilter(ob, dest, dest);
+            if (highpass_cutoff > 0) {
+                ears_buffer_onepole(ob, dest, dest, highpass_cutoff, true);
+            }
+        }
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            ears_buffer_unlocksamples(source);
+    }
+    
+    
     return err;
 }

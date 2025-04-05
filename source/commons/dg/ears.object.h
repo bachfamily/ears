@@ -503,6 +503,7 @@ t_symbol *earsbufobj_output_get_symbol_unique(t_earsbufobj *e_ob, long outstore_
 
 
 //// UNIT CONVERSIONS
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, double reference_size_samps, double reference_sr, long flags);
 double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //bool is_envelope = false, bool is_analysis = false);
 long earsbufobj_time_to_samps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope = false, bool is_analysis = false);
 double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags = EARSBUFOBJ_CONVERSION_FLAG_NONE); //, bool is_envelope = false, bool is_analysis = false);
