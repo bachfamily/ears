@@ -224,8 +224,54 @@ t_buf_psola *buf_psola_new(t_symbol *s, short argc, t_atom *argv)
         t_llll *args = llll_parse(true_ac, argv);
         t_llll *names = earsbufobj_extract_names_from_args((t_earsbufobj *)x, args);
         
-        if (args && args->l_head) {
+        t_llllelem *arg_el = (args && args->l_head) ? args->l_head : NULL;
+        if (arg_el) {
+            
+            // @arg 1 @name pitch @optional 1 @type number/llll
+            // @digest Pitch or pitch envelope
+            // @description Sets the pitch or pitch envelope (depending on the <m>pitchunit</m> and <m>envtimeunit</m>).
+            
+            llll_free(x->pitch);
+            x->pitch = llll_get();
+            if (hatom_gettype(&args->l_head->l_hatom) == H_LLLL)
+                x->pitch = llll_clone(hatom_getllll(&args->l_head->l_hatom));
+            else {
+                x->pitch = llll_get();
+                llll_appendhatom_clone(x->pitch, &args->l_head->l_hatom);
+            }
+            arg_el = arg_el->l_next;
+            
+            if (arg_el) {
+                
+                // @arg 2 @name duration @optional 1 @type number
+                // @digest Duration
+                // @description Sets the duration (depending on the <m>timeunit</m>).
+                
+                x->duration = hatom_getdouble(&arg_el->l_hatom);
+                arg_el = arg_el->l_next;
+                
+                if (arg_el) {
+                    
+                    // @arg 3 @name relgrainduration @optional 1 @type number
+                    // @digest Relative grain duration
+                    // @description Sets the relative grain duration (as a ratio w.r.t. the fundamental period).
+                    
+                    x->grain_duration_factor = hatom_getdouble(&arg_el->l_hatom);
+                    arg_el = arg_el->l_next;
+                    
+                    if (arg_el) {
+                        
+                        // @arg 4 @name relstrideamount @optional 1 @type number
+                        // @digest Relative stride amount
+                        // @description Sets the relative stride amount (as a ratio w.r.t. the fundamental period).
+
+                        x->stride_duration_factor = hatom_getdouble(&arg_el->l_hatom);
+                        arg_el = arg_el->l_next;
+                    }
+                }
+            }
         }
+            
         
         attr_args_process(x, argc, argv);
         

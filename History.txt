@@ -7,6 +7,13 @@ v 0.9
 
 These might break compatibility with older patches
 
+- ears.essentia:
+	· now vector-based descriptors (e.g. MFCC) when timestamped have 
+		ONE more level of parenthesis containing the whole list, e.g.
+		[tA [A1 A2 A3...]] [tB [B1 B2 B3...]]
+	 	This didn't really work before so it's unlikely anyone has ever used it,
+		In any case please check your patches.
+
 ***********************
 *** VERSION CHANGES ***
 ***********************
@@ -14,6 +21,11 @@ These might break compatibility with older patches
 - ears.split: 
 	· new @maxnumsegments attribute to define maximum number of segments
 	· now accepts overlap = segment size if @maxnumsegments is defined (> 0)
+
+- ears.essentia: 
+	· fixed many algorithms that didn't work properly
+
+– ears.psola: new object
 
 
 v 0.2

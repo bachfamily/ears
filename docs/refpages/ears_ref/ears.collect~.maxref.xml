@@ -129,6 +129,17 @@
 				in place by default, but may be useful in situations where the sample collection is not linear
 			</description>
 		</method>
+		<method name="recycle">
+			<arglist />
+			<digest>
+				Restart naming allocation cycle
+			</digest>
+			<description>
+				If the <m>alloc</m> attribute is set to 'Dynamic',
+				the <m>recycle</m> message will force the dynamic naming to cycle back and restart from the first
+				used buffer name. This is especially useful in combination with iterative mechanisms.
+			</description>
+		</method>
 		<method name="reset">
 			<arglist />
 			<digest>
@@ -136,17 +147,6 @@
 			</digest>
 			<description>
 				The <m>reset</m> message only resets the sample counting (restarting from 0), not clearing the existing buffers
-			</description>
-		</method>
-		<method name="reset">
-			<arglist />
-			<digest>
-				Restart naming allocation cycle
-			</digest>
-			<description>
-				If the <m>alloc</m> attribute is set to 'Dynamic',
-				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
-				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
 		<method name="stop">

@@ -3,7 +3,7 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 3,
+			"minor" : 6,
 			"revision" : 1,
 			"architecture" : "x64",
 			"modernui" : 1
@@ -71,7 +71,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1
@@ -183,7 +183,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 290.0, 167.0, 202.22149658203125, 61.0 ]
+									"patching_rect" : [ 290.0, 167.0, 195.22149658203125, 54.0 ]
 								}
 
 							}
@@ -204,7 +204,7 @@
 							}
 , 							{
 								"box" : 								{
-									"buffername" : "earsBufDrumLoop",
+									"buffername" : "earsBufOcto",
 									"id" : "obj-23",
 									"maxclass" : "waveform~",
 									"numinlets" : 5,
@@ -410,7 +410,7 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 3,
+							"minor" : 6,
 							"revision" : 1,
 							"architecture" : "x64",
 							"modernui" : 1

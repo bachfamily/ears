@@ -11,7 +11,7 @@
 
 	<description>
 		Loads a DSP patch and runs it in non-realtime
-		reading from and writing to buffers
+		reading from and writing to buffers.
 	</description>
 
 	<!--METADATA-->

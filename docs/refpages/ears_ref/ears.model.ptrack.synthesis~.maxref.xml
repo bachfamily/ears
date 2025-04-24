@@ -6,11 +6,11 @@
 <c74object name="ears.model.ptrack.synthesis~" module="ears">
 
 	<digest>
-		Sinusoidal synthesis model
+		Partial tracking synthesis model
 	</digest>
 
 	<description>
-		Applies the Essentia sinusoidal synthesis model
+		Applies a partial tracking synthesis model.
 	</description>
 
 	<!--METADATA-->
@@ -77,14 +77,14 @@
 				buffer names (depending on the <m>alloc</m> attribute).
 			</description>
 		</method>
-		<method name="reset">
+		<method name="recycle">
 			<arglist />
 			<digest>
 				Restart naming allocation cycle
 			</digest>
 			<description>
 				If the <m>alloc</m> attribute is set to 'Dynamic',
-				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
+				the <m>recycle</m> message will force the dynamic naming to cycle back and restart from the first
 				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>

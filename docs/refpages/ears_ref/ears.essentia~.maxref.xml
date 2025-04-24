@@ -10,7 +10,7 @@
 	</digest>
 
 	<description>
-		Perform descriptor analysis on the incoming buffer via the Essentia library
+		Performs descriptor analysis on the incoming buffer via the Essentia library.
 	</description>
 
 	<!--METADATA-->
@@ -94,14 +94,14 @@
 				A number in the second inlet sets the essentia parameter (depending on the <m>ampunit</m>).
 			</description>
 		</method>
-		<method name="reset">
+		<method name="recycle">
 			<arglist />
 			<digest>
 				Restart naming allocation cycle
 			</digest>
 			<description>
 				If the <m>alloc</m> attribute is set to 'Dynamic',
-				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
+				the <m>recycle</m> message will force the dynamic naming to cycle back and restart from the first
 				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
@@ -316,6 +316,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Frame Interpolation Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -604,14 +605,14 @@
 		</attribute>
 		<attribute name="peaksmaxnum" get="1" set="1" type="int" size="1">
 			<digest>
-				Maximum Number Of Peaks
+				Maximum Number of Peaks
 			</digest>
 			<description>
 				Sets the maximum number of peaks for the Peaks analyis.
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
-				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Number Of Peaks" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Number of Peaks" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -639,6 +640,60 @@
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Order Peaks By" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
+			</attributelist>
+		</attribute>
+		<attribute name="pf" get="1" set="1" type="int" size="1">
+			<digest>
+				Use Pitch Filter
+			</digest>
+			<description>
+				For extractors outputting pitch information, filter pitch data according to Essentia's pitch filter
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Use Pitch Filter" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="pfconfidencethreshold" get="1" set="1" type="int" size="1">
+			<digest>
+				Pitch Filter Confidence Threshold
+			</digest>
+			<description>
+				Sets the ratio between the average confidence of the most confident chunk and the minimum
+				allowed average confidence of a chunk.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Filter Confidence Threshold" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="pfminchunksize" get="1" set="1" type="int" size="1">
+			<digest>
+				Pitch Filter Minimum Chunk Size
+			</digest>
+			<description>
+				Sets the minumum number of frames in non-zero pitch chunks
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Filter Minimum Chunk Size" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="pfuseabsolutepitchconfidence" get="1" set="1" type="int" size="1">
+			<digest>
+				Use Absolute Pitch Confidence for Pitch Filter
+			</digest>
+			<description>
+				Toggles the ability to treat negative pitch confidence values as positive
+				(use with Melodia's extractors with @guessunvoiced 1)
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Use Absolute Pitch Confidence for Pitch Filter" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="pitchunit" get="1" set="1" type="int" size="1">
@@ -671,6 +726,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -687,6 +743,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarize Positive Values Only" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -700,6 +757,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Weight" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -801,6 +859,34 @@
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="YIN" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="YIN Tolerance" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="zeropadding" get="1" set="1" type="int" size="1">
+			<digest>
+				Zero Padding Amount
+			</digest>
+			<description>
+				Sets the number of samples for zero padding.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Zero Padding Amount" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="zerophase" get="1" set="1" type="int" size="1">
+			<digest>
+				Zero Phase Windowing
+			</digest>
+			<description>
+				Toggles zero-phase windowing.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Analysis" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Zero Phase Windowing" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
 	</attributelist>

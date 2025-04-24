@@ -17,6 +17,23 @@
       "ears.assemble~"
     ]
   },
+  "ears.psola~": {
+    "digest": "Pitch-synchronous overlap add",
+    "module": "ears",
+    "category": [
+      "ears distorsion"
+    ],
+    "keywords": [
+      "buffer",
+      "psola",
+      "pitch",
+      "overlap",
+      "add"
+    ],
+    "seealso": [
+      "ears.roll.synthesis~"
+    ]
+  },
   "ears.roll.sampling~": {
     "digest": "Convert a <o>bach.roll</o> into a montage of audio samples",
     "module": "ears",
@@ -371,7 +388,7 @@
     ]
   },
   "ears.model.ptrack.synthesis~": {
-    "digest": "Sinusoidal synthesis model",
+    "digest": "Partial tracking synthesis model",
     "module": "ears",
     "category": [
       "ears spectral"
@@ -415,7 +432,7 @@
       "buffer",
       "window",
       "apply",
-      "hanning",
+      "hann",
       "hamming",
       "triangular",
       "tri"
@@ -1747,7 +1764,7 @@
     ]
   },
   "ears.biquad~": {
-    "digest": "Two-pole two-zero filter for buffers",
+    "digest": "Two-pole two-zero filter for buffers.",
     "module": "ears",
     "category": [
       "ears filter"
