@@ -361,7 +361,7 @@ earsbufobj_add_common_methods(c); \
 #define EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH (11)   ///< Default resampling window size. Should we increase this?
 #define EARS_DEFAULT_WRITE_FORMAT (_sym_int16)      ///< Default output write format for saving files.
                                                     ///  This is coherent with Max's default
-
+#define EARS_DEFAULT_DERIVATIVE_SAMPLING_RATE (10)  ///< Default rate for derivative computation
 
 
 
@@ -543,7 +543,7 @@ t_llll *earsbufobj_llllelem_to_linear(t_earsbufobj *e_ob, t_llllelem *elem);
 t_llll *earsbufobj_llllelem_to_linear_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_llllelem_to_env_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
-t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
+t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, double derivative_sr);
 t_llll *earsbufobj_pitch_llll_to_cents_and_samples(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf);
 t_llll *earsbufobj_pitch_llllelem_to_hertz_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 

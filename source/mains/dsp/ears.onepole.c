@@ -206,7 +206,6 @@ void buf_onepole_bang(t_buf_onepole *x)
         if (el) {
             if (hatom_gettype(&el->l_hatom) == H_LLLL) { // cutoff is envelope
                 t_llll *env = earsbufobj_pitch_llllelem_to_hertz_and_samples((t_earsbufobj *)x, el, in);
-                llll_print(env);
                 ears_buffer_onepole_envelope((t_object *)x, in, out, env, highpass, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
                 llll_free(env);
             } else {
