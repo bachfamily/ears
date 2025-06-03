@@ -27,6 +27,12 @@ These might break compatibility with older patches
 
 – ears.psola: new object
 
+- ears.resample, ears.rubberband:
+	· now absolute timing works in envelopes as well
+
+- ears.hoa.decode:
+	· fixed bug causing wrong number of output channels 
+		if number of decoded channels > number of harmonics
 
 v 0.2
 
