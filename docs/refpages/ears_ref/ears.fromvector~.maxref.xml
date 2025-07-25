@@ -10,10 +10,7 @@
 	</digest>
 
 	<description>
-		The <o>ears.fromvector~</o> object inside a patch loaded by ears.process~
-		converts a signal vector into a list.
-		It will then be possible to operate upon the list with regular Max object,
-		and then convert it back to a signal vector through the <o>ears.tovector~</o> object.
+		Converts a signal vector into a list inside a patch loaded by <o>ears.process~</o>.
 	</description>
 
 	<!--METADATA-->
@@ -45,6 +42,12 @@
 	<attributelist>
 	</attributelist>
 
+	<!--DISCUSSION-->
+	<discussion>
+		It will then be possible to operate upon the list with regular Max object,
+		and then convert it back to a signal vector through the <o>ears.tovector~</o> object.
+	</discussion>
+
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ears.process~" />
@@ -55,6 +58,20 @@
 		<entry name ="Outlet 1 (list)">
 			<description>
 				Input signal.
+			</description>
+		</entry>
+	</misc>
+
+	<misc name = "Discussion">
+		<entry name ="More details">
+			<description>
+		It will then be possible to operate upon the list with regular Max object,
+		and then convert it back to a signal vector through the <o>ears.tovector~</o> object.
+			</description>
+		</entry>
+		<entry name ="Keywords">
+			<description>
+buffer, offline, patch, patcher, non-realtime.
 			</description>
 		</entry>
 	</misc>

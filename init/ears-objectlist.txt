@@ -1,4 +1,5 @@
 max oblist "ears objects" ears.clicks~;
+max oblist "ears objects" ears.psola~;
 max oblist "ears objects" ears.roll.sampling~;
 max oblist "ears objects" ears.roll.toreaper~;
 max oblist "ears objects" ears.roll.synthesis~;

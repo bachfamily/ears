@@ -29,7 +29,7 @@
 	ears basic
  
 	@keywords
-	buffer, window, apply, hanning, hamming, triangular, tri
+	buffer, window, apply, hann, hamming, triangular, tri
  
 	@seealso
 	ears.envelope~

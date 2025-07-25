@@ -82,6 +82,7 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
         rb.setMaxProcessSize(blocksize);
         
         // STUDYING...
+        double curr_time_ratio = -1, curr_pitch_scale = -1;
         for (long i = 0; i < numblocks; i++) {
             if (!all_static) {
                 double new_time_ratio = ears_envelope_iterator_walk_interp(&ts_eei, i*blocksize, framecount);
@@ -89,8 +90,15 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
                 // gotta ensure that new_time_ratio and new_pitch_scale are within reasonable limits, otherwise
                 new_time_ratio = CLAMP(new_time_ratio, 0., RUBBERBAND_MAX_RATIO);
                 new_pitch_scale = CLAMP(new_pitch_scale, 0., RUBBERBAND_MAX_RATIO);
-                rb.setTimeRatio(new_time_ratio);
-                rb.setPitchScale(new_pitch_scale);
+
+                if (new_time_ratio != curr_time_ratio) {
+                    rb.setTimeRatio(new_time_ratio);
+                }
+                if (new_pitch_scale != curr_pitch_scale)
+                    rb.setPitchScale(new_pitch_scale);
+                
+                curr_time_ratio = new_time_ratio;
+                curr_pitch_scale = new_pitch_scale;
             }
             
             long count = ((i+1)*blocksize > framecount ? framecount - i*blocksize : blocksize);
@@ -109,6 +117,10 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
         double old_pitch_scale = -1;
         long output_sample_wk_allocated_frames = framecount;
         float *output_sample_wk = (float *)bach_newptr(channelcount * output_sample_wk_allocated_frames * sizeof(float));
+        curr_time_ratio = -1;
+        curr_pitch_scale = -1;
+        int avail = 0;
+        bool must_flush = false;
         for (long i = 0; i < numblocks; i++) {
             char pitch_transit_across_1 = false;
             long count = ((i+1)*blocksize > framecount ? framecount - i*blocksize : blocksize);
@@ -126,19 +138,25 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
                 
                 // This handles one particular case in which rubberband fails, ie. when the pitch goes from below to above 0
                 // the standard pitch modes have issues and create clicks; we force the consistency
-                if (old_pitch_scale > 0. && ((old_pitch_scale < 1 && new_pitch_scale >= 1.) || (old_pitch_scale >= 1. && new_pitch_scale < 1.))){                     pitch_transit_across_1 = true;
+                if (old_pitch_scale > 0. && ((old_pitch_scale < 1 && new_pitch_scale >= 1.) || (old_pitch_scale >= 1. && new_pitch_scale < 1.))){                     
+                    pitch_transit_across_1 = true;
                 }
                 old_pitch_scale = new_pitch_scale;
                 
-                rb.setTimeRatio(new_time_ratio);
-                rb.setPitchScale(new_pitch_scale);
+                if (new_time_ratio != curr_time_ratio) {
+                    rb.setTimeRatio(new_time_ratio);
+                }
+                if (new_pitch_scale != curr_pitch_scale) {
+                    rb.setPitchScale(new_pitch_scale);
+                }
                 
+                curr_time_ratio = new_time_ratio;
+                curr_pitch_scale = new_pitch_scale;
             }
-            
+
             rb.process(ibuf, count, i==(numblocks-1));
-            
-            int avail = rb.available();
-            if (avail > 0) { // we've got something as output
+
+            while ((avail = rb.available()) > 0) { // we've got something as output
                 float **obf = new float *[channelcount];
                 long pivot = outframecount;
                 for (long c = 0; c < channelcount; c++) {

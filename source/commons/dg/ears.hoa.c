@@ -385,6 +385,7 @@ t_ears_err ears_buffer_hoa_decode(t_object *ob, t_buffer_obj *source, t_buffer_o
         } else {
             orig_sample_wk = orig_sample;
             ears_buffer_copy_format_and_set_size_samps(ob, source, dest, framecount);
+            ears_buffer_set_numchannels(ob, dest, num_out_channels);
         }
         
 

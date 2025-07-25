@@ -2635,7 +2635,7 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                     t_atom_long HPCP_harmonics = 0;
                     t_atom_long HPCP_bandPreset = true;
                     double HPCP_minFrequency = eCFI(40, EARS_FREQUNIT_HERTZ);
-                    double HPCP_maxFrequency = eCFI(500, EARS_FREQUNIT_HERTZ);
+                    double HPCP_maxFrequency = eCFI(5000, EARS_FREQUNIT_HERTZ);
                     t_atom_long HPCP_maxShifted = false;
                     t_symbol *HPCP_normalized = gensym("unitMax");
                     double HPCP_bandSplitFrequency = eCFI(500, EARS_FREQUNIT_HERTZ);
@@ -2669,18 +2669,21 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "bandPreset", (bool)HPCP_bandPreset,
                                                                             "minFrequency", HPCP_minFrequency,
                                                                             "maxFrequency", HPCP_maxFrequency,
-                                                                            "maxShifted", (int)HPCP_maxShifted,
-                                                                            "normalized", HPCP_normalized,
+                                                                            "maxShifted", (bool)HPCP_maxShifted,
+                                                                            "normalized", HPCP_normalized->s_name,
                                                                             "bandSplitFrequency", HPCP_bandSplitFrequency,
-                                                                            "weightType", HPCP_weightType,
-                                                                            "nonLinear", (int)HPCP_nonLinear,
+                                                                            "weightType", HPCP_weightType->s_name,
+                                                                            "nonLinear", (bool)HPCP_nonLinear,
                                                                             "windowSize", (int)round(HPCP_windowSize));
                     set_input2(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKS, "frequencies", "magnitudes");
                     set_essentia_outputs(lib, i, "v", "hpcp");
                     set_custom_outputs(lib, i, "v", "hpcp");
-                    warn_if((t_object *)e_ob, params->HPCP_size <= 0 || params->HPCP_size % 12 != 0, "The 'size' parameter should be a positive multiple of 12.");
-                    t_llll *bins = ears_ezarithmser(0, 1200./params->HPCP_size, params->HPCP_size);
-                    set_spec_metadata(lib, i, 1200./params->HPCP_size, 0, gensym("hpcp"), EARS_FREQUNIT_CENTS, bins, true);
+                    warn_if((t_object *)e_ob, HPCP_size <= 0 || HPCP_size % 12 != 0, "The 'size' parameter should be a positive multiple of 12.");
+                    t_llll *bins = ears_ezarithmser(0, 1200./HPCP_size, HPCP_size);
+                    set_spec_metadata(lib, i, 1200./HPCP_size, 0, gensym("hpcp"), EARS_FREQUNIT_CENTS, bins, true);
+//                    warn_if((t_object *)e_ob, params->HPCP_size <= 0 || params->HPCP_size % 12 != 0, "The 'size' parameter should be a positive multiple of 12.");
+//                    t_llll *bins = ears_ezarithmser(0, 1200./params->HPCP_size, params->HPCP_size);
+//                    set_spec_metadata(lib, i, 1200./params->HPCP_size, 0, gensym("hpcp"), EARS_FREQUNIT_CENTS, bins, true);
                     llll_free(bins);
                 }
                     break;
@@ -2697,8 +2700,8 @@ t_ears_err ears_essentia_extractors_library_build(t_earsbufobj *e_ob, long num_f
                                                                             "maxHarmonics", (int)maxHarmonics,
                                                                             "tolerance", tolerance);
                     set_input3(lib, i, EARS_ESSENTIA_EXTRACTOR_INPUT_SPECTRALPEAKSANDFZERO, "frequencies", "magnitudes", "pitch");
-                    set_essentia_outputs(lib, i, "v", "harmonicFrequencies", "harmonicMagnitudes");
-                    set_custom_outputs(lib, i, "v", "harmonic frequencies", "harmonicMagnitudes");
+                    set_essentia_outputs(lib, i, "vv", "harmonicFrequencies", "harmonicMagnitudes");
+                    set_custom_outputs(lib, i, "vv", "harmonic frequencies", "harmonicMagnitudes");
                     lib->extractors[i].essentia_output_frequnit[0] = EARS_FREQUNIT_HERTZ;
                     lib->extractors[i].essentia_output_ampunit[1] = EARS_AMPUNIT_LINEAR;
                 }
@@ -4950,6 +4953,11 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[0]).set(peaksdatafreqs);
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[1]).set(peaksdatamags);
                             lib->extractors[i].algorithm->input(lib->extractors[i].essentia_input_label[2]).set(fzerodata);
+                            // remove 0Hz peak if any
+                            if (peaksdatafreqs.size() > 0 && peaksdatafreqs[0] == 0) {
+                                peaksdatafreqs.erase(peaksdatafreqs.begin());
+                                peaksdatamags.erase(peaksdatamags.begin());
+                            }
                             break;
 
                         case EARS_ESSENTIA_EXTRACTOR_INPUT_PITCHCLASSPROFILE:
@@ -5304,7 +5312,13 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
                     th.index = 0;
                     th.buffer = buf;
                     th.local_timeunit = lib->extractors[i].local_timeunit;
-                    llll_funall(lib->extractors[i].result[o], (fun_fn) add_timestamp_fn, &th, 1, 3 - flattened2 - flattened1, FUNALL_PROCESS_SUBLISTS_ONLY_AT_MAXDEPTH);
+                    int maxdepth = 3 - flattened2 - flattened1;
+                    if (lib->extractors[i].essentia_output_type[o] == 'v')
+                        maxdepth -= 1;
+                    else if (lib->extractors[i].essentia_output_type[o] == 'v')
+                        maxdepth -= 2;
+                    llll_funall(lib->extractors[i].result[o], (fun_fn) add_timestamp_fn, &th, 1, maxdepth, FUNALL_PROCESS_SUBLISTS_ONLY_AT_MAXDEPTH);
+                    //  -  lib->extractors[i].essentia_output_type[o] ==
                     //                            llll_funall(, <#fun_fn fn#>, <#void *data#>, <#t_int32 mindepth#>, <#t_int32 maxdepth#>)
                     //                            llll_appenddouble(lib->extractors[i].result[0], ears_convert_timeunit(frames_position_samps[f], buf, EARS_TIMEUNIT_SAMPS, lib->extractors[i].local_timeunit));
                     //                        }
@@ -5335,6 +5349,18 @@ t_ears_err ears_essentia_extractors_library_compute(t_earsbufobj *e_ob, t_buffer
 long add_timestamp_fn(void *data, t_hatom *a, const t_llll *address){
     t_tagger_helper *th = (t_tagger_helper *) data;
     
+    // NEW WAY: consistent across types - it always adds one level of parenthesis
+    if (hatom_gettype(a) == H_LLLL || is_hatom_number(a)) {
+        t_llll *ll = llll_get();
+        double timestamp = ears_convert_timeunit((*th->frames_position_samps)[th->index], th->buffer, EARS_TIMEUNIT_SAMPS, th->local_timeunit);
+        llll_appendhatom_clone(ll, a);
+        llll_prependdouble(ll, timestamp);
+        hatom_change_to_llll_and_free(a, ll);
+        th->index++;
+    }
+    
+    // old way: wouldn't add wrap to lllls
+    /*
     if (hatom_gettype(a) == H_LLLL) {
         t_llll *ll = hatom_getllll(a);
         llll_prependdouble(ll, ears_convert_timeunit((*th->frames_position_samps)[th->index], th->buffer, EARS_TIMEUNIT_SAMPS, th->local_timeunit));
@@ -5347,6 +5373,7 @@ long add_timestamp_fn(void *data, t_hatom *a, const t_llll *address){
         hatom_change_to_llll_and_free(a, ll);
         th->index++;
     }
+     */
 
     return 0;
 }

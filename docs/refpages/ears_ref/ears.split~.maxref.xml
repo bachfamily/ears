@@ -114,14 +114,14 @@
 				A number in the second inlet sets the split parameter (see <m>list/llll</m>).
 			</description>
 		</method>
-		<method name="reset">
+		<method name="recycle">
 			<arglist />
 			<digest>
 				Restart naming allocation cycle
 			</digest>
 			<description>
 				If the <m>alloc</m> attribute is set to 'Dynamic',
-				the <m>reset</m> message will force the dynamic naming to cycle and restart from the first
+				the <m>recycle</m> message will force the dynamic naming to cycle back and restart from the first
 				used buffer name. This is especially useful in combination with iterative mechanisms.
 			</description>
 		</method>
@@ -322,6 +322,19 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Keep Silence" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
+		<attribute name="maxnumsegments" get="1" set="1" type="int" size="1">
+			<digest>
+				Maximum Number of Segments
+			</digest>
+			<description>
+				Sets the maximum number of segments to be output (leave at 0 for: all).
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Number of Segments" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
 		<attribute name="mode" get="1" set="1" type="int" size="1">

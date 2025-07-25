@@ -2914,6 +2914,50 @@ double earsbufobj_time_to_ms(t_earsbufobj *e_ob, double value, t_buffer_obj *buf
 }
 
 // TO DO: handle negative values
+double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, double reference_size_samps, double reference_sr, long flags)
+{
+    bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
+    bool is_analysis = flags & EARSBUFOBJ_CONVERSION_FLAG_ISANALYSIS;
+    double res = 0;
+    switch (is_envelope ? e_ob->l_envtimeunit : (is_analysis ? e_ob->l_antimeunit : e_ob->l_timeunit)) {
+        case EARS_TIMEUNIT_SAMPS:
+            res = value;
+            break;
+            
+        case EARS_TIMEUNIT_DURATION_RATIO:
+            res = reference_size_samps * value;
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+            res = reference_size_samps + ears_ms_to_fsamps(value, reference_sr);
+            break;
+
+        case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+            res = reference_size_samps + value;
+            break;
+
+        case EARS_TIMEUNIT_NUM_INTERVALS:
+            res = reference_size_samps * (1./value);
+            break;
+
+        case EARS_TIMEUNIT_NUM_ONSETS:
+            res = reference_size_samps * (1./(value-1));
+            break;
+
+        case EARS_TIMEUNIT_SECONDS:
+            res = ears_ms_to_fsamps(value*1000., reference_sr);
+            break;
+
+        case EARS_TIMEUNIT_MS:
+        default:
+            res = ears_ms_to_fsamps(value, reference_sr);
+            break;
+    }
+    return res;
+}
+
+
+// TO DO: handle negative values
 double earsbufobj_time_to_fsamps(t_earsbufobj *e_ob, double value, t_buffer_obj *buf, long flags)
 {
     bool is_envelope = flags & EARSBUFOBJ_CONVERSION_FLAG_ISENVELOPE;
@@ -3948,7 +3992,7 @@ t_llll *earsbufobj_pitch_llll_to_cents_and_samples(t_earsbufobj *e_ob, t_llll *l
 
 
 // llllelem can be either a number or a t_pts
-t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
+t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, double derivative_sr)
 {
     t_llll *out = llll_get();
     llll_appendhatom_clone(out, &elem->l_hatom);
@@ -3957,65 +4001,55 @@ t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_l
     double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
     double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
     
+    // first of all, let's change the first values to samples
+    bool some_lllls = false, some_non_lllls = false, some_llll_size_is_lt_2 = false;
     for (t_llllelem *el = out->l_head; el; el = el->l_next) {
         if (hatom_gettype(&el->l_hatom) == H_LLLL) {
-            switch (e_ob->l_timeunit) {
-                case EARS_TIMEUNIT_DURATION_RATIO:
-                    break;
-                default:
-                {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
-                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
-                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, earsbufobj_time_to_durationratio(e_ob, hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), buf));
-                }
-                    break;
-            }
+            t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+            some_lllls = true;
+            
+            if (sub_ll->l_size < 2)
+                some_llll_size_is_lt_2 = true;
+            
             switch (e_ob->l_envtimeunit) {
                 case EARS_TIMEUNIT_MS:
                 {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
                 case EARS_TIMEUNIT_SECONDS:
                 {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
                 }
                     break;
                 case EARS_TIMEUNIT_DURATION_RATIO:
                 {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
                 }
                     break;
                 case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
                 {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
                 }
                     break;
                 case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
                 {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
                 }
                     break;
                 case EARS_TIMEUNIT_NUM_INTERVALS:
                 {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
                 }
                     break;
                 case EARS_TIMEUNIT_NUM_ONSETS:
                 {
-                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
                     if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
                         hatom_setdouble(&sub_ll->l_head->l_hatom, (1. + (1./hatom_getdouble(&sub_ll->l_head->l_hatom))) * (dur_samps - 1));
                 }
@@ -4024,7 +4058,9 @@ t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_l
                     break;
             }
         } else {
-
+            some_non_lllls = true;
+            
+            // and if it's static there's nothing to interpolate, and the value is easily compute
             switch (e_ob->l_timeunit) {
                 case EARS_TIMEUNIT_DURATION_RATIO:
                     break;
@@ -4035,8 +4071,86 @@ t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_l
         }
     }
     
+    if ((some_lllls && some_non_lllls) || some_llll_size_is_lt_2) {
+        object_error((t_object *)e_ob, "Wrong syntax!");
+    }
+
+    // then handle the Y axis. This is tricky because of what we expect, which is: an interpolation between
+    // time ratios (a.k.a. derivatives of the time position)
+    // If the timeunit is already ratio, nothing to do. Otherwise, we need to compute derivatives, I guess...
+    if (some_lllls && !some_non_lllls && !some_llll_size_is_lt_2) {
+        if (e_ob->l_timeunit != EARS_TIMEUNIT_DURATION_RATIO) {
+            if (out->l_size <= 0) {
+                object_error((t_object *)e_ob, "Wrong syntax!");
+            } else if (out->l_size == 1) {
+                object_warn((t_object *)e_ob, "Frozen-time envelope requested: are you sure?");
+                t_llll *sub_ll = hatom_getllll(&out->l_head->l_hatom);
+                hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, 0.);
+            } else {
+                t_llll *new_out = llll_get();
+                // substitute second element with samples
+                for (t_llllelem *el = out->l_head; el; el = el->l_next) {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom)) {
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, earsbufobj_time_to_samps(e_ob, hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), buf));
+                    }
+                }
+                
+                double num_samps_for_derivative = ceil((ears_buffer_get_size_ms((t_object *)e_ob, buf)/1000)*derivative_sr) + 1;
+                long sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+                long domain_samples = (long)round(ears_ms_to_samps((num_samps_for_derivative-1)*(1000/derivative_sr), sr));
+                new_out = derive_bpf(out, 0, domain_samples, num_samps_for_derivative, false, true, false, 0, earsbufobj_get_slope_mapping(e_ob));
+
+                /*
+                post("---");
+                llll_print(out);
+                llll_print(new_out);
+                post("---");
+
+                                
+                for (t_llllelem *el = out->l_head; el && el->l_next; el = el->l_next) {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    t_llll *sub_ll_next = hatom_getllll(&el->l_next->l_hatom);
+                    if (sub_ll->l_size < 2 || sub_ll_next->l_size < 2) {
+                        object_warn((t_object *)e_ob, "Wrong syntax for envelope item! Ignoring envelope.");
+                        llll_clear(out);
+                        llll_appenddouble(out, 1.);
+                        llll_free(new_out);
+                        return out;
+                    }
+                    double this_samps = hatom_getdouble(&sub_ll->l_head->l_hatom);
+                    double next_samps = hatom_getdouble(&sub_ll_next->l_head->l_hatom);
+                    double this_timeval_samps = earsbufobj_time_to_samps(e_ob, hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), buf);
+                    double next_timeval_samps = earsbufobj_time_to_samps(e_ob, hatom_getdouble(&sub_ll_next->l_head->l_next->l_hatom), buf);
+                    double curve = sub_ll_next->l_size >= 3 ? hatom_getdouble(&sub_ll->l_head->l_next->l_next->l_hatom) : 0.;
+                    if (curve == 0) {
+                        // "easy" case
+                        double ratio = (next_samps - this_samps)/(next_timeval_samps - this_timeval_samps);
+                        t_llll *pt_ll = llll_get();
+                        llll_appenddouble(pt_ll, this_samps);
+                        llll_appenddouble(pt_ll, ratio);
+                        llll_appendllll(new_out, pt_ll);
+
+                        pt_ll = llll_get();
+                        llll_appenddouble(pt_ll, next_samps);
+                        llll_appenddouble(pt_ll, ratio);
+                        llll_appendllll(new_out, pt_ll);
+                    } else {
+                        // and here comes trouble: there must be some approximation, but this means ...
+                        // TODO
+//                        derive_bpf
+                    }
+                }
+                 */
+                llll_free(out);
+                return new_out;
+            }
+        }
+    }
+    
     return out;
 }
+
 
 
 

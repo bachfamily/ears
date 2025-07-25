@@ -52,6 +52,8 @@ typedef struct _buf_resample {
     
     t_llll              *resamplefactor;
     
+    double              e_derivative_sampling_rate; // sampling rate in case a derivative needs to be computed
+
     char                change_sr;
 } t_buf_resample;
 
@@ -126,6 +128,13 @@ void C74_EXPORT ext_main(void* moduleRef)
     // according to the resampling factor. If this is turned off, then
     // the attribute will retain the original sampling rate.
 
+    
+    CLASS_ATTR_DOUBLE(c, "derivativesr", 0, t_buf_resample, e_derivative_sampling_rate);
+    CLASS_ATTR_STYLE_LABEL(c, "derivativesr",0,"text","Derivative Sampling Rate");
+    // @description Sets a sampling rate for the computation of derivatives.
+    // Only useful when envelopes with absolute time points are input
+
+    
 
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -161,7 +170,8 @@ t_buf_resample *buf_resample_new(t_symbol *s, short argc, t_atom *argv)
         x->resamplefactor = llll_get();
         x->change_sr = 1;
         llll_appenddouble(x->resamplefactor, 1.);
-        
+        x->e_derivative_sampling_rate = EARS_DEFAULT_DERIVATIVE_SAMPLING_RATE;
+
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
         x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
@@ -248,7 +258,7 @@ void buf_resample_bang(t_buf_resample *x)
             // ORDINARY CASES
             } else {
                 
-                t_llll *env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, el, in);
+                t_llll *env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, el, in, x->e_derivative_sampling_rate);
                 
                 // check if envelope crosses zero or is constantly negative (and hence needs reverse)
                 t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false, earsbufobj_get_slope_mapping((t_earsbufobj *)x));

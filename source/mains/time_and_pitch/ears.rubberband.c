@@ -62,6 +62,8 @@ typedef struct _buf_rubberband {
     long               e_pitchmode;
     long               e_blocksize;
     
+    double             e_derivative_sampling_rate; // sampling rate in case a derivative needs to be computed
+    
     t_llll             *e_pitchshift_env;
     t_llll             *e_timestretch_env;
 } t_buf_rubberband;
@@ -282,6 +284,11 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the block size for granular processes such as envelopes.
     // The unit depends on the <m>antimeunit</m> attribute.
 
+    CLASS_ATTR_DOUBLE(c, "derivativesr", 0, t_buf_rubberband, e_derivative_sampling_rate);
+    CLASS_ATTR_STYLE_LABEL(c, "derivativesr",0,"text","Derivative Sampling Rate");
+    // @description Sets a sampling rate for the computation of derivatives.
+    // Only useful when timestretch envelopes with absolute time points are input
+
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -337,6 +344,7 @@ t_buf_rubberband *buf_rubberband_new(t_symbol *s, short argc, t_atom *argv)
         x->e_formant = 0;
         x->e_pitchmode = 2;
         x->e_blocksize = 1024;
+        x->e_derivative_sampling_rate = EARS_DEFAULT_DERIVATIVE_SAMPLING_RATE;
         
         earsbufobj_init((t_earsbufobj *)x,  EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -354,7 +362,7 @@ t_buf_rubberband *buf_rubberband_new(t_symbol *s, short argc, t_atom *argv)
         // containing an envelope in the form <b>[[<m>x</m> <m>shift</m> <m>slope</m>] [<m>x</m> <m>shift</m> <m>slope</m>]...]</b>,
         // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
         
-        x->e_pitchshift_env = llll_from_text_buf("1.");
+        x->e_pitchshift_env = llll_from_text_buf("0."); // in cents by default
 
         x->e_ob.l_timeunit = EARS_TIMEUNIT_DURATION_RATIO;
 
@@ -502,7 +510,7 @@ void buf_rubberband_bang(t_buf_rubberband *x)
         t_buffer_obj *in = earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, count);
         t_buffer_obj *out = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, count);
 
-        t_llll *ts_env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, ts_el, in);
+        t_llll *ts_env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, ts_el, in, x->e_derivative_sampling_rate);
         t_llll *ps_env = earsbufobj_pitch_llllelem_to_cents_and_samples((t_earsbufobj *)x, ps_el, in);
 
         if (ts_env->l_size == 0) {

@@ -38,7 +38,6 @@ void test_kiss_fft();
 // also lets you choose the fft normalization type, and works coherently with inverses
 void ears_fft_kiss(kiss_fft_cfg cfg, int nfft, const kiss_fft_cpx *fin, kiss_fft_cpx *fout, e_ears_fft_normalization normalization, bool inverse);
 
-long ears_get_window(float *win, const char *type, long numframes);
 t_ears_err ears_buffer_apply_window(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_symbol *window_type);
 
 /// These functions compute FFTs directly based on kiss fft.
