@@ -7,6 +7,7 @@ externals/*
 *.mxe64
 *.a
 *.o
+*.obj
 libwavpack.lib
 tag.lib
 source/lib/vamp-plugin-sdk-master/host/vamp-simple-host
@@ -19,7 +20,7 @@ source/vs/x64/**
 source/vs/vs_stuff/**
 source/vs/.vs/*
 **/macosxbuild/*
-
+source/lib/taglib-1.12-win/build/taglib/tag.dir/*
 
 # OS generated files #
 ######################
