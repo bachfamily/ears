@@ -9,6 +9,7 @@ max oblist "ears objects" ears.model.sine.synthesis~;
 max oblist "ears objects" ears.phaseunwrap~;
 max oblist "ears objects" ears.ptrack~;
 max oblist "ears objects" ears.model.stochastic.analysis~;
+max oblist "ears objects" ears.ebur128~;
 max oblist "ears objects" ears.essentia~;
 max oblist "ears objects" ears.model.sps.analysis~;
 max oblist "ears objects" ears.cqt~;
