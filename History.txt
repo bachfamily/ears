@@ -18,6 +18,8 @@ These might break compatibility with older patches
 *** VERSION CHANGES ***
 ***********************
 
+- ears.ebur128~: new object
+
 - ears.split: 
 	· new @maxnumsegments attribute to define maximum number of segments
 	· now accepts overlap = segment size if @maxnumsegments is defined (> 0)

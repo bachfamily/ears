@@ -195,6 +195,25 @@
       "ears.model.stochastic.synthesis~"
     ]
   },
+  "ears.ebur128~": {
+    "digest": "EBU R 128 statistics",
+    "module": "ears",
+    "category": [
+      "ears basic"
+    ],
+    "keywords": [
+      "gain",
+      "ebur128",
+      "loudness",
+      "lufs",
+      "lu"
+    ],
+    "seealso": [
+      "ears.gain~",
+      "ears.dynamic~",
+      "ears.*~"
+    ]
+  },
   "ears.essentia~": {
     "digest": "Extract buffer features via the Essentia library",
     "module": "ears",

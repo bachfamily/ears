@@ -63,7 +63,7 @@ typedef enum _earsbufobj_allocs
 typedef enum _earsbufobj_flag
 {
     EARSBUFOBJ_FLAG_NONE = 0,
-    EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
+    EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are cloned inside the input stores
     EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
     EARSBUFOBJ_FLAG_WARN_FOR_RECYCLE = 4,           ///< Internal flag used to warn when a "reset" message is received in place of a "recycle" one.
 } e_earsbufobj_flag;
