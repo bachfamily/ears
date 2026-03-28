@@ -110,6 +110,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // See <m>list</m> method, for second inlet.
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_alloc_attr(c);

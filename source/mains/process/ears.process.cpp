@@ -367,6 +367,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_add_common_methods(earsprocess_class, 1);
 
     earsbufobj_class_add_outname_attr(earsprocess_class);
+    earsbufobj_class_add_nativeout_attr(earsprocess_class);
     earsbufobj_class_add_alloc_attr(earsprocess_class);
     
     llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);

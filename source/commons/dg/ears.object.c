@@ -639,6 +639,8 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_bufouts_alloc = EARSBUFOBJ_ALLOC_STATIC;
     e_ob->l_blocking = EARSBUFOBJ_BLOCKING_MAINTHREAD;
     
+    e_ob->l_nativeout = 0;
+    
     e_ob->l_resamplingpolicy = EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR;
     e_ob->l_resamplingfilterwidth = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH;
     e_ob->l_resamplingmode_sym = gensym("sinc");
@@ -738,8 +740,9 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
     char out_types_wk[LLLL_MAX_OUTLETS];
     strncpy_zero(out_types_wk, out_types, MAX(strlen(out_types) + 1, LLLL_MAX_OUTLETS));
     for (i = 0; i < strlen(out_types_wk) && i < LLLL_MAX_OUTLETS; i++)
-        if (out_types_wk[i] == 'e' || out_types_wk[i] == 'E')
-            out_types_wk[i] = 'z';
+        if (out_types_wk[i] == 'e' || out_types_wk[i] == 'E') {
+            out_types_wk[i] = e_ob->l_nativeout ? '4' : 'z';
+        }
     
     long count_a = 0;
     for (int i = 0; i < strlen(out_types_wk); i++)
@@ -775,7 +778,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                 break;
         }
     } */
-
+    
     for (i = 0; i < MIN(LLLL_MAX_OUTLETS, max_out_len); i++) {
         e_ob->l_outlet_types[i] = out_types[MIN(LLLL_MAX_OUTLETS, max_out_len) - i - 1];
     }
@@ -871,6 +874,7 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
     }
     object_attr_setdisabled((t_object *)e_ob, gensym("blocking"), 1);
     object_attr_setdisabled((t_object *)e_ob, gensym("polyout"), 1);
+    object_attr_setdisabled((t_object *)e_ob, gensym("nativeout"), 1);
     e_ob->l_is_creating = 0;
 }
 
@@ -1436,6 +1440,16 @@ void earsbufobj_class_add_outname_attr(t_class *c)
     CLASS_ATTR_STYLE_LABEL(c,"outname",0,"text","Output Buffer Names");
     CLASS_ATTR_BASIC(c, "outname", 0);
     CLASS_ATTR_CATEGORY(c, "outname", 0, "Behavior");
+    // @description Sets the name for each one of the buffer outlets. Leave blank to auto-assign
+    // unique names.
+}
+
+void earsbufobj_class_add_nativeout_attr(t_class *c)
+{
+    CLASS_ATTR_CHAR(c, "nativeout", 0, t_earsbufobj, l_nativeout);
+    CLASS_ATTR_STYLE_LABEL(c,"nativeout",0,"onoff","Output Buffers As Native lllls");
+    CLASS_ATTR_BASIC(c, "nativeout", 0);
+    CLASS_ATTR_CATEGORY(c, "nativeout", 0, "Behavior");
     // @description Sets the name for each one of the buffer outlets. Leave blank to auto-assign
     // unique names.
 }
@@ -2502,21 +2516,47 @@ void earsbufobj_outlet_buffer_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_ato
                 t_symbol *name = e_ob->l_outstore[store].polybuffer_name;
                 llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, name, 0, NULL);
             } else {
-                t_atom *a = (t_atom *)bach_newptr(e_ob->l_outstore[store].num_stored_bufs * sizeof(t_atom));
-                long j, c = 0;
-                for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
-                    t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
-                    if (name) {
-                        atom_setsym(a+c, name);
-                        c++;
+                if (e_ob->l_nativeout) {
+                    t_llll *outnames = llll_get();
+                    long j, c = 0;
+                    for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
+                        t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
+                        if (name) {
+                            llll_appendsym(outnames, name);
+                            c++;
+                        }
+                    }
+
+                    if (c > 0) {
+                        llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, outnames);
+                    }
+                    llll_free(outnames);
+                
+                } else { // usual Max-list output
+                    
+                    if (e_ob->l_outstore[store].num_stored_bufs > 32767) { // max list limit for Max
+                        // can't output
+                        object_error((t_object *)e_ob, "The number of output buffers is greater than Max list length limit (32767).");
+                        object_error((t_object *)e_ob, "   Cannot output as plain Max list: please set the 'nativeout' attribute to 1.");
+                    } else {
+                        
+                        t_atom *a = (t_atom *)bach_newptr(e_ob->l_outstore[store].num_stored_bufs * sizeof(t_atom));
+                        long j, c = 0;
+                        for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
+                            t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
+                            if (name) {
+                                atom_setsym(a+c, name);
+                                c++;
+                            }
+                        }
+                        
+                        if (c > 0) {
+                            llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), c - 1, a + 1);
+                        }
+                        
+                        bach_freeptr(a);
                     }
                 }
-                
-                if (c > 0) {
-                    llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, atom_getsym(a), c - 1, a + 1);
-                }
-                
-                bach_freeptr(a);
             }
         }
     }
