@@ -507,8 +507,14 @@ void buf_write_anything(t_buf_write *x, t_symbol *msg, long ac, t_atom *av)
             earsbufobj_mutex_lock((t_earsbufobj *)x);
             llll_free(x->markers);
             x->markers = llll_clone(parsed);
-            if (x->markers->l_depth == 2)
-                llll_wrap_once(&x->markers);
+            if (x->markers->l_depth == 2) {
+                t_llll *flattened = llll_clone(x->markers);
+                llll_flat(flattened);
+                if (flattened->l_size > 0) {
+                    llll_wrap_once(&x->markers);
+                }
+                llll_free(flattened);
+            }
             earsbufobj_mutex_unlock((t_earsbufobj *)x);
 
         }

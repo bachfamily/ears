@@ -36,6 +36,9 @@ These might break compatibility with older patches
 	· fixed bug causing wrong number of output channels 
 		if number of decoded channels > number of harmonics
 
+- ears.split:
+	· new @makeequal attribute that handles sample-accurate padding/trimming
+
 v 0.2
 
 *************************
