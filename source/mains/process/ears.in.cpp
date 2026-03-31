@@ -116,7 +116,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // parentheses (if present) is removed from the llll output at each iteration.
     // If the <m>direct</m> attribute is set to 1, the <m>unwrap</m> attribute has no effect.
     
-    llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
+    // llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
 
     class_register(CLASS_BOX, ears_in_class);
 }

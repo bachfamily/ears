@@ -275,7 +275,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets a minimum partial average amplitude, in <m>threshampunit</m>.
     
     
-    class_register(CLASS_BOX, c);
+    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+ class_register(CLASS_BOX, c);
     s_ptrack_class = c;
 }
 

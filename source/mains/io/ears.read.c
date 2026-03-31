@@ -189,7 +189,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_STYLE_LABEL(c, "hr", 0, "onoff", "Human-Readable IDs");
     // @description Toggles the ability to output human-readable Frames and Tag IDs instead of four-letter codes
     
-    class_register(CLASS_BOX, c);
+    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+ class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }

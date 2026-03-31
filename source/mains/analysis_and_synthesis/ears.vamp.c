@@ -200,7 +200,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // <b>Median</b>: median through frames (for use with single-valued essentia); <br />
     // <b>Mode</b>: mode through frames (for use with discrete essentia). <br />
     
-    class_register(CLASS_BOX, c);
+    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+ class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }

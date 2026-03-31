@@ -640,6 +640,9 @@ void earsbufobj_init(t_earsbufobj *e_ob, long flags)
     e_ob->l_blocking = EARSBUFOBJ_BLOCKING_MAINTHREAD;
     
     e_ob->l_nativeout = 0;
+    t_atom av;
+    atom_setsym(&av, _llllobj_sym_n);
+    llllobj_obj_setout(&e_ob->l_ob, NULL, 1, &av);
     
     e_ob->l_resamplingpolicy = EARS_RESAMPLINGPOLICY_TOMOSTCOMMONSR;
     e_ob->l_resamplingfilterwidth = EARS_DEFAULT_RESAMPLING_WINDOW_WIDTH;
@@ -2517,23 +2520,29 @@ void earsbufobj_outlet_buffer_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_ato
                 llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, name, 0, NULL);
             } else {
                 if (e_ob->l_nativeout) {
+                    object_post((t_object *)e_ob, "Native output requested!");
                     t_llll *outnames = llll_get();
                     long j, c = 0;
+                    object_post((t_object *)e_ob, "The number of stored buffers is: %ld", e_ob->l_outstore[store].num_stored_bufs);
                     for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
                         t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
                         if (name) {
                             llll_appendsym(outnames, name);
                             c++;
+                        } else {
+                            object_post((t_object *)e_ob, "The %ld-th store has no defined name!", j);
                         }
                     }
 
+                    object_post((t_object *)e_ob, "The length of the native output is: %ld", outnames->l_size);
+
                     if (c > 0) {
                         llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, outnames);
+                        // the problem is here: for Piero this llll is output as textual – and I don't know why...
                     }
                     llll_free(outnames);
                 
                 } else { // usual Max-list output
-                    
                     if (e_ob->l_outstore[store].num_stored_bufs > 32767) { // max list limit for Max
                         // can't output
                         object_error((t_object *)e_ob, "The number of output buffers is greater than Max list length limit (32767).");

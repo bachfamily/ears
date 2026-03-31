@@ -126,7 +126,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "end", 0);
     // @description Toggles trimming for the end of the buffer (defaults to 1).
 
-    class_register(CLASS_BOX, c);
+    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+ class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }

@@ -204,7 +204,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // a positive number provides a fixed length of the audio tail; 0 means: no tail; a negative number (default is -1) means that
     // the tail will be automatically computed.
 
-    class_register(CLASS_BOX, c);
+    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+ class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }

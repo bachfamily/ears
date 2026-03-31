@@ -119,7 +119,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the number of negative-to-positive zero crossing regions that form a waveset (defaults to 1: a single
     // negative-to-positive zero-crossing to negative-to-positive zero-crossing region).
 
-    class_register(CLASS_BOX, c);
+    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+ class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }

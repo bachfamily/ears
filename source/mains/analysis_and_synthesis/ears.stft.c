@@ -177,7 +177,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Toggles the ability to downmix all the channels into one. If this flag is not set, then
     // one buffer per channel is output.
 
-    class_register(CLASS_BOX, c);
+    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+ class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }
