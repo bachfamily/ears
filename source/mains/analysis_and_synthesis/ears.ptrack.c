@@ -177,8 +177,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     // a Short-Time Fourier Transform will be performed.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(ptrack)
     
-    llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
-
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);

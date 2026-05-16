@@ -1463,8 +1463,18 @@ void earsbufobj_fileusage(t_object *x, void *w)
     t_atomarray *aa = atomarray_new(0, NULL);
     atom_setsym(&a, gensym("extensions")); // add any package folders you need explicitly
     atomarray_appendatom(aa, &a);
-
+    
     fileusage_addpackage(w, "bach", aa);
+    
+    
+    t_atom b;
+    t_atomarray *bb = atomarray_new(0, NULL);
+    atom_setsym(&a, gensym("init"));
+    atomarray_appendatom(aa, &a);
+    atom_setsym(&a, gensym("interfaces"));
+    atomarray_appendatom(aa, &a);
+    
+    fileusage_addpackage(w, "ears", bb);
 }
 
 void earsbufobj_class_add_fileusage_method(t_class *c)

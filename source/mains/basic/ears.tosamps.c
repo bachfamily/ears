@@ -98,7 +98,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(tosamps)
     
     earsbufobj_class_add_blocking_attr(c);
-    llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
     
     earsbufobj_class_add_fileusage_method(c);
     earsbufobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
