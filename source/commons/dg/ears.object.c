@@ -1457,6 +1457,27 @@ void earsbufobj_class_add_nativeout_attr(t_class *c)
     // unique names.
 }
 
+void earsbufobj_fileusage(t_object *x, void *w)
+{
+    t_atom a;
+    t_atomarray *aa = atomarray_new(0, NULL);
+    atom_setsym(&a, gensym("extensions")); // add any package folders you need explicitly
+    atomarray_appendatom(aa, &a);
+
+    fileusage_addpackage(w, "bach", aa);
+}
+
+void earsbufobj_class_add_fileusage_method(t_class *c)
+{
+   class_addmethod(c, (method)earsbufobj_fileusage, "fileusage", A_CANT, 0);
+}
+
+void earsbufobj_class_add_out_attr(t_class *c, e_llllobj_obj_types type)
+{
+    llllobj_class_add_out_attr(c, type);
+}
+
+
 t_max_err earsbufobj_setattr_blocking(t_earsbufobj *e_ob, void *attr, long argc, t_atom *argv)
 {
     if (argc && argv) {

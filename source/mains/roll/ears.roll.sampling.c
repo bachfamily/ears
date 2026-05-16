@@ -340,8 +340,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // In addition, harmonization of buffer properties across all the buffers is not carried out, and in particular the
     // first sample rate is used.
 
+    earsbufobj_class_add_fileusage_method(c);
 
-    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
  class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");

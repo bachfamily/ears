@@ -147,6 +147,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     class_dspinit(ears_tovector_class);
     
+    earsbufobj_class_add_fileusage_method(ears_tovector_class);
+    
     class_register(CLASS_BOX, ears_tovector_class);
 }
 

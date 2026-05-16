@@ -410,6 +410,8 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
 void earsbufobj_add_common_methods(t_class *c, long flags = 0);
 void earsbufobj_class_add_outname_attr(t_class *c);
 void earsbufobj_class_add_nativeout_attr(t_class *c);
+void earsbufobj_class_add_out_attr(t_class *c, e_llllobj_obj_types type);
+void earsbufobj_class_add_fileusage_method(t_class *c);
 void earsbufobj_class_add_blocking_attr(t_class *c);
 void earsbufobj_class_add_polyout_attr(t_class *c);
 void earsbufobj_class_add_timeunit_attr(t_class *c);

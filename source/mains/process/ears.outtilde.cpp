@@ -110,6 +110,8 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     class_dspinit(ears_outtilde_class);
     
+    earsbufobj_class_add_fileusage_method(ears_outtilde_class);
+
     class_register(CLASS_BOX, ears_outtilde_class);
 }
 

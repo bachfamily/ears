@@ -125,8 +125,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_STYLE_LABEL(c,"sr",0,"text","Output Sample Rate");
     // @description Sets the output sample rate; leave 0 to pick the current one from Max.
 
-    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
- class_register(CLASS_BOX, c);
+    earsbufobj_class_add_fileusage_method(c);
+
+    class_register(CLASS_BOX, c);
     s_model_sine_synthesis_class = c;
     ps_event = gensym("event");
 }
