@@ -1944,11 +1944,12 @@ t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **
         } else {
             t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
             t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
-            
+
             for (long i = 0; i < num_regions; i++) {
                 t_buffer_obj *this_dest = dest[i];
                 long this_start = start_samples[i];
                 long this_end = end_samples[i];
+                long this_length = this_end - this_start;
                 if (this_start < 0) this_start += framecount;
                 if (this_start < 0) this_start = 0;
                 CLIP_ASSIGN(this_start, 0, framecount-1);
@@ -1960,10 +1961,19 @@ t_ears_err ears_buffer_split(t_object *ob, t_buffer_obj *source, t_buffer_obj **
                 }
 
                 if (this_end == this_start) {
-                    ears_buffer_set_size_samps(ob, this_dest, 0);
+                    if (this_length != this_end - this_start) { // padding needed
+                        ears_buffer_set_size_samps(ob, this_dest, this_length);
+                        ears_buffer_clear(ob, this_dest);
+                    } else {
+                        ears_buffer_set_size_samps(ob, this_dest, 0);
+                    }
                     
                 } else {
-                    ears_buffer_copy_format_and_set_size_samps(ob, source, this_dest, this_end - this_start);
+                    ears_buffer_copy_format_and_set_size_samps(ob, source, this_dest, this_length);
+                    if (this_length != this_end - this_start) { // zero-padding needed
+                        ears_buffer_clear(ob, this_dest);
+                    }
+                    
                     t_atom_long dest_channelcount = buffer_getchannelcount(this_dest);
                     t_atom_long dest_framecount = buffer_getframecount(this_dest);
                     

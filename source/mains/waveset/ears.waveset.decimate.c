@@ -110,6 +110,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description A number N in the second inlet means that only one out of N wavesets will be retained
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
 
@@ -132,6 +133,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "offset", 0);
     // @description Sets an integer offset for the decimation count. One integer per buffer can also be used.
 
+    
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;

@@ -108,6 +108,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description A number in the second inlet sets the number of wavesets the average is run upon (1 = no averaging)
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
 
@@ -131,6 +132,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "keeplength", 0);
     // @description Toggles the ability to keep the original wavesets' length.
 
+    
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;

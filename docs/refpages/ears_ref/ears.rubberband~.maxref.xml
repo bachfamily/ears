@@ -328,6 +328,20 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="derivativesr" get="1" set="1" type="float" size="1">
+			<digest>
+				Derivative Sampling Rate
+			</digest>
+			<description>
+				Sets a sampling rate for the computation of derivatives.
+				Only useful when timestretch envelopes with absolute time points are input
+			</description>
+			<attributelist>
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Derivative Sampling Rate" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
 		<attribute name="detector" get="1" set="1" type="int" size="1">
 			<digest>
 				Transient Detection Algorithm

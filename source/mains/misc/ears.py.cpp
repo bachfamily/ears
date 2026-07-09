@@ -202,6 +202,7 @@ int C74_EXPORT main()
     class_addmethod(earspy_class, (method)earspy_inletinfo, "inletinfo", A_CANT, 0);
     
     earsbufobj_class_add_outname_attr(earspy_class);
+    earsbufobj_class_add_nativeout_attr(earspy_class);
     earsbufobj_class_add_alloc_attr(earspy_class);
 
     CLASS_ATTR_SYM(c, "envpath", 0, t_earspy, envPath);

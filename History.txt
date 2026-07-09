@@ -7,6 +7,11 @@ v 0.9
 
 These might break compatibility with older patches
 
+– ALL OBJECTS:
+  · no more crashing with lists of > 32767 buffer: an error is throws.
+	Lists with > 32767 buffers however can be output by setting the 
+	new @nativeout attribute to 1.
+
 - ears.essentia:
 	· now vector-based descriptors (e.g. MFCC) when timestamped have 
 		ONE more level of parenthesis containing the whole list, e.g.
@@ -17,6 +22,8 @@ These might break compatibility with older patches
 ***********************
 *** VERSION CHANGES ***
 ***********************
+
+- ears.ebur128~: new object
 
 - ears.split: 
 	· new @maxnumsegments attribute to define maximum number of segments
@@ -33,6 +40,9 @@ These might break compatibility with older patches
 - ears.hoa.decode:
 	· fixed bug causing wrong number of output channels 
 		if number of decoded channels > number of harmonics
+
+- ears.split:
+	· new @makeequal attribute that handles sample-accurate padding/trimming
 
 v 0.2
 

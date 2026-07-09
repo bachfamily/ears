@@ -53,6 +53,7 @@ typedef struct _buf_split {
     long                e_mode; //< one of the e_ears_split_modes
     char                e_partial_segments; // output partial segments (for duration split)
     char                e_keep_silence; // keep silence (For silence and onset split)
+    char                e_make_equal; // Pad all segments so that they have equal length
 
     long                e_maxnum; // Maximum number of slices to be output (defaults to 0=all)
     double              e_overlap; // < Overlap amount (depending on the time unit)
@@ -144,6 +145,8 @@ void C74_EXPORT ext_main(void* moduleRef)
 
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
@@ -174,6 +177,15 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "partials", 0);
     // @description Toggles the ability to output partial segments in <b>Duration</b> <m>mode</m>.
 
+    CLASS_ATTR_CHAR(c, "makeequal", 0, t_buf_split, e_make_equal);
+    CLASS_ATTR_STYLE_LABEL(c,"makeequal",0,"enumindex","Force Equal Length of Segments");
+    CLASS_ATTR_ENUMINDEX(c,"makeequal", 0, "Don't Pad Trim");
+    CLASS_ATTR_BASIC(c, "makeequal", 0);
+    // @description Toggles the ability to make all segments have equal length.
+    // This may be useful even in the case of uniform splitting due to samples approximations
+    // which may cause differences of 1 sample between segments. Modes are:
+    // Don't (0, default), Pad (1), Trim (2).
+
     CLASS_ATTR_CHAR(c, "keepsilence", 0, t_buf_split, e_keep_silence);
     CLASS_ATTR_STYLE_LABEL(c,"keepsilence",0,"onoff","Keep Silence");
     CLASS_ATTR_BASIC(c, "keepsilence", 0);
@@ -186,6 +198,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the overlap time (for <b>Duration</b>, <b>Number</b> modes only),
     // in the unit specified by the <m>timeunit</m> attribute.
 
+    
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;
@@ -464,6 +478,33 @@ void buf_split_get_splitpoints(t_buf_split *x, t_object *buf, t_llll **start, t_
             *start = llll_get();
             *end = llll_get();
             break;
+    }
+    
+    // adapt for ceil/pad
+    if (x->e_make_equal != 0) {
+        t_llllelem *start_el, *end_el;
+
+        // finding minimum and maximum length for padding
+        long minlength_samps = LONG_MAX, maxlength_samps = 0;
+        for (start_el = (*start)->l_head, end_el = (*end)->l_head; start_el && end_el; start_el = start_el->l_next, end_el = end_el->l_next) {
+            long this_size_samps = hatom_getlong(&end_el->l_hatom) - hatom_getlong(&start_el->l_hatom);
+            minlength_samps = MIN(minlength_samps, this_size_samps);
+            maxlength_samps = MAX(maxlength_samps, this_size_samps);
+        }
+
+        for (start_el = (*start)->l_head, end_el = (*end)->l_head; start_el && end_el; start_el = start_el->l_next, end_el = end_el->l_next) {
+            long this_size_samps = hatom_getlong(&end_el->l_hatom) - hatom_getlong(&start_el->l_hatom);
+            if (x->e_make_equal == 1) {
+                if (this_size_samps < maxlength_samps) { // gotta pad
+                    hatom_setlong(&end_el->l_hatom, hatom_getlong(&start_el->l_hatom) + maxlength_samps);
+                }
+            }
+            if (x->e_make_equal == 2) {
+                if (this_size_samps > minlength_samps) { // gotta trim
+                    hatom_setlong(&end_el->l_hatom, hatom_getlong(&start_el->l_hatom) + minlength_samps);
+                }
+            }
+        }
     }
 }
 

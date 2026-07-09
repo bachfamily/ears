@@ -118,6 +118,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(expr)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_slopemapping_attr(c);
@@ -143,6 +144,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "scalarmode", 0);
     // @description If set, a single number or buffer is iterated against all the others
 
+    earsbufobj_class_add_fileusage_method(c);
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");

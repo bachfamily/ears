@@ -20,7 +20,7 @@ ears has the following dependencies
 • for the [ears.soundtouch~] module: the SoundTouch library, released under LGPLv2.1
 • for the [ears.ambi*~] modules: the HoaLibrary released under GPLv3, and the Eigen library, released under GPLv3
 • for the [ears.vamp~] module: the Vamp Plugin and Host SDK, released under the permissive license below
-
+• for the [ears.ebur128~] module: the libebur128 library, released under MIT license 
 In turns, bach depends from
 - A modified version of Simon Tatham's listsort (https://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.c), released under the terms of the MIT License.
 - A modified version of The Mini-XML library version 2.7 (https://www.msweet.org/mxml/index.html), released under the terms of the GNU Lesser General Public License version 2 (LGPL-v2.0)
@@ -7072,7 +7072,9 @@ VAMP
     use or other dealings in this Software without prior written
     authorization.
 
+=======================
 The KissFFT code in src/vamp-sdk/ext is distributed under the following licence:
+=======================
 
     Copyright (c) 2003-2010 Mark Borgerding
 
@@ -7107,3 +7109,31 @@ The KissFFT code in src/vamp-sdk/ext is distributed under the following licence:
     TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
     THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
     SUCH DAMAGE.
+
+
+=======================
+The libebur128 is distributed under the following licence:
+=======================
+
+Copyright (c) 2011 Jan Kokemüller
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+

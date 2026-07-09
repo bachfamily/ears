@@ -115,6 +115,8 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     class_dspinit(ears_intilde_class);
 
+    earsbufobj_class_add_fileusage_method(ears_intilde_class);
+
     class_register(CLASS_BOX, ears_intilde_class);
 }
 

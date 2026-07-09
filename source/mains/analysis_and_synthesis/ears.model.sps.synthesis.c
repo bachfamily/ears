@@ -109,6 +109,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(model_sps_synthesis)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_antimeunit_attr(c);
@@ -132,6 +133,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_CATEGORY(c, "stocf", 0, "Synthesis");
     // @description Sets the decimation factor of the stochastic approximation.
 
+    
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_model_sps_synthesis_class = c;

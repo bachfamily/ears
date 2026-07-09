@@ -106,6 +106,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // absolute duration of the buffer, either in milliseconds or in samples, depending in turns on the <m>timeunit</m> attribute.
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
@@ -114,6 +115,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_polyout_attr(c);
 
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;

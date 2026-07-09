@@ -120,6 +120,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description A number in the second, third or fourth inlet respectively sets the shift amount in the X, Y or Z coordinate
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
@@ -134,6 +135,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "dimension", 0);
     // @description Sets the dimension (order will then be inferred from the number of input channels).
     
+    
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;

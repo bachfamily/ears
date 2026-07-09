@@ -63,7 +63,7 @@ typedef enum _earsbufobj_allocs
 typedef enum _earsbufobj_flag
 {
     EARSBUFOBJ_FLAG_NONE = 0,
-    EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are not cloned inside the input stores
+    EARSBUFOBJ_FLAG_DUPLICATE_INPUT_BUFFERS = 1,   ///< Input buffers are cloned inside the input stores
     EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES = 2,       ///< Supports naming copy, i.e. "inplace" modification
     EARSBUFOBJ_FLAG_WARN_FOR_RECYCLE = 4,           ///< Internal flag used to warn when a "reset" message is received in place of a "recycle" one.
 } e_earsbufobj_flag;
@@ -122,6 +122,7 @@ typedef struct _earsbufobj
 //    void                    **l_outlet;     ///< the outlets
     char                    l_outlet_types[LLLL_MAX_OUTLETS];  ///< Current indices of the used generated outname
     t_int32                 l_numbufouts;    ///< how many buffer outlets
+    char                    l_nativeout; ///< Output buffers as native lllls. This is useful for very long lists of buffers (>32767)
     t_earsbufobj_store      *l_outstore;    ///< the out stores
     t_llll                  *l_outnames;    ///< Output names, could be a level2 list if outlets have multiple buffers
     char                    l_bufouts_alloc;   ///< One of the e_earsbufobj_allocs.
@@ -408,6 +409,9 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
 /// Methods and attributes
 void earsbufobj_add_common_methods(t_class *c, long flags = 0);
 void earsbufobj_class_add_outname_attr(t_class *c);
+void earsbufobj_class_add_nativeout_attr(t_class *c);
+void earsbufobj_class_add_out_attr(t_class *c, e_llllobj_obj_types type);
+void earsbufobj_class_add_fileusage_method(t_class *c);
 void earsbufobj_class_add_blocking_attr(t_class *c);
 void earsbufobj_class_add_polyout_attr(t_class *c);
 void earsbufobj_class_add_timeunit_attr(t_class *c);

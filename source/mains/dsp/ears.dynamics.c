@@ -115,6 +115,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(dynamics)
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
@@ -153,6 +154,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the make-up gain (in the unit set by the <m>ampunit</m> attribute).
 
 
+    earsbufobj_class_add_fileusage_method(c);
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
@@ -273,11 +276,13 @@ void buf_dynamics_anything(t_buf_dynamics *x, t_symbol *msg, long ac, t_atom *av
             buf_dynamics_bang(x);
          
         } else if (inlet == 1) {
-            long num_bufs = llll_get_num_symbols_root(parsed);
-            
-            earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 1, num_bufs, true);
-            
-            earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 1);
+            if (parsed->l_head && hatom_gettype(&parsed->l_head->l_hatom) == H_SYM && hatom_getsym(&parsed->l_head->l_hatom) == _sym_clear) {
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 1, 0, true);
+            } else {
+                long num_bufs = llll_get_num_symbols_root(parsed);
+                earsbufobj_resize_store((t_earsbufobj *)x, EARSBUFOBJ_IN, 1, num_bufs, true);
+                earsbufobj_store_buffer_list((t_earsbufobj *)x, parsed, 1);
+            }
         }
         
     }

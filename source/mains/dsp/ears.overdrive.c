@@ -105,6 +105,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description A number in the second inlet sets the overdrive parameter (depending on the <m>ampunit</m>).
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_envtimeunit_attr(c);
     earsbufobj_class_add_alloc_attr(c);
@@ -112,6 +113,8 @@ void C74_EXPORT ext_main(void* moduleRef)
 
     earsbufobj_class_add_polyout_attr(c);
 
+    earsbufobj_class_add_fileusage_method(c);
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");

@@ -130,6 +130,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     //class_addmethod(this_class, (method)ears_processinfo_bang, "bang", 0);
     
+    earsbufobj_class_add_fileusage_method(this_class);
+
     class_register(CLASS_BOX, this_class);
 }
 

@@ -387,9 +387,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     CLASS_STICKY_ATTR_CLEAR(c, "category");
 
+    earsbufobj_class_add_fileusage_method(c);
 
-    
-    class_register(CLASS_BOX, c);
+ class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }

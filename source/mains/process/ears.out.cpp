@@ -129,6 +129,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // as per the default behavior, with <m>outwrap</m> set to 0.<br/>
     // If the <m>direct</m> attribute is set to 1, the <m>outwrap</m> attribute has no effect.
     
+    earsbufobj_class_add_fileusage_method(ears_out_class);
+
     class_register(CLASS_BOX, ears_out_class);
 }
 

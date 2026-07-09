@@ -164,6 +164,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(roll_synthesis)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_alloc_attr(c);
@@ -329,6 +330,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // In addition, harmonization of buffer properties across all the buffers is not carried out, and in particular the
     // first sample rate is used.
     
+    
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_tag_class = c;

@@ -320,6 +320,8 @@ void ext_main(void *r)
     
     CLASS_ATTR_DEFAULT(c,"patching_rect",0, "0. 0. 256. 128.");
     
+    earsbufobj_class_add_fileusage_method(c);
+
     class_register(CLASS_BOX, c);
     s_buf_specshow_class = c;
 }

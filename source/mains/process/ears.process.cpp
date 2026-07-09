@@ -367,9 +367,10 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_add_common_methods(earsprocess_class, 1);
 
     earsbufobj_class_add_outname_attr(earsprocess_class);
+    earsbufobj_class_add_nativeout_attr(earsprocess_class);
     earsbufobj_class_add_alloc_attr(earsprocess_class);
     
-    llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);
+    // llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);
 
     // TODO FIXME @Andrea : controlla questa riga qui sotto, dà negative subscript. Ho per il momento messo la riga sotto ancora (il calcoffset dovrebbe essere zero, spero)
 //    CLASS_ATTR_OBJ(earsprocess_class, "ownsdspchain", ATTR_SET_OPAQUE | ATTR_SET_OPAQUE_USER, t_earsprocess, e_ob);
@@ -483,6 +484,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // There is currently no way to use such objects with correct timing inside <o>ears.process~</o>.
     
     emptyLl = llll_get();
+    
+    earsbufobj_class_add_fileusage_method(earsprocess_class);
     
     class_register(CLASS_BOX, earsprocess_class);
 }

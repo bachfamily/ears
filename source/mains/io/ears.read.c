@@ -150,9 +150,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     class_addmethod(c, (method)buf_read_acceptsdrag, "acceptsdrag_locked", A_CANT, 0);
     class_addmethod(c, (method)buf_read_acceptsdrag, "acceptsdrag_unlocked", A_CANT, 0);
     
-    llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
-
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
     earsbufobj_class_add_alloc_attr(c);
 
@@ -188,6 +187,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_STYLE_LABEL(c, "hr", 0, "onoff", "Human-Readable IDs");
     // @description Toggles the ability to output human-readable Frames and Tag IDs instead of four-letter codes
     
+    earsbufobj_class_add_fileusage_method(c);
+    earsbufobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
+
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");

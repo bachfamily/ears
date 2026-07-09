@@ -104,6 +104,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(trim)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_alloc_attr(c);
@@ -125,6 +126,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "end", 0);
     // @description Toggles trimming for the end of the buffer (defaults to 1).
 
+    earsbufobj_class_add_fileusage_method(c);
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");

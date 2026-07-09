@@ -122,6 +122,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_ampunit_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
 
+    earsbufobj_class_add_fileusage_method(c);
     
     class_register(CLASS_BOX, c);
     s_info_class = c;

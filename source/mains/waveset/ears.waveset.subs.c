@@ -104,6 +104,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description A number in the second inlet sets the number of repeetitions.
 
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_resamplingfiltersize_attr(c);
@@ -118,6 +119,8 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the number of negative-to-positive zero crossing regions that form a waveset (defaults to 1: a single
     // negative-to-positive zero-crossing to negative-to-positive zero-crossing region).
 
+    earsbufobj_class_add_fileusage_method(c);
+    
     class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");

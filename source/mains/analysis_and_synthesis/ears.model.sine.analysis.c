@@ -113,6 +113,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(model_sine_analysis)
     
     earsbufobj_class_add_outname_attr(c);
+    earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
     earsbufobj_class_add_alloc_attr(c);
     earsbufobj_class_add_timeunit_attr(c);
@@ -178,6 +179,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "downmix", 0);
     // @description Toggles the ability to downmix all the channels into one. If this flag is not set, then
     // one buffer per channel is output. By default downmix is 0.
+
+    earsbufobj_class_add_fileusage_method(c);
+    earsbufobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
 
     class_register(CLASS_BOX, c);
     s_model_sine_analysis_class = c;
