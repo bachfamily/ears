@@ -552,7 +552,16 @@ long ears_get_window(float *win, const char *type, long numframes);
 t_ears_err ears_buffer_psola_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *pitch_env, long duration_samples, double grain_duration_factor, double stride_factor, e_slope_mapping slopemapping,
                                       bool pitch_compensation_for_stride, double highpass_cutoff, long input_offset_samps);
 
-
+t_ears_err ears_buffer_granulate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest,
+                                          long duration_samples,
+                                          t_llll *grain_size,
+                                          t_llll *grain_interval,
+                                          t_llll *grain_interval_jitter,
+                                          t_llll *grain_onset,
+                                          t_llll *grain_onset_jitter,
+                                          t_symbol *wintype,
+                                          e_slope_mapping slopemapping
+                                 );
 // convenience
 void ears_spectralbuf_metadata_fill(t_ears_spectralbuf_metadata *data, double original_audio_signal_sr, double binsize, double binoffset, e_ears_frequnit binunit, t_symbol *type, t_llll* bins, bool also_free_bins = false);
 

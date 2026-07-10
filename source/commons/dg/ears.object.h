@@ -410,6 +410,8 @@ t_max_err earsbufobj_notify(t_earsbufobj *e_ob, t_symbol *s, t_symbol *msg, void
 void earsbufobj_add_common_methods(t_class *c, long flags = 0);
 void earsbufobj_class_add_outname_attr(t_class *c);
 void earsbufobj_class_add_nativeout_attr(t_class *c);
+void earsbufobj_class_add_out_attr(t_class *c, e_llllobj_obj_types type);
+void earsbufobj_class_add_fileusage_method(t_class *c);
 void earsbufobj_class_add_blocking_attr(t_class *c);
 void earsbufobj_class_add_polyout_attr(t_class *c);
 void earsbufobj_class_add_timeunit_attr(t_class *c);
@@ -427,7 +429,7 @@ void earsbufobj_class_add_fftnormalization_attr(t_class *c);
 void earsbufobj_class_add_hopsize_attr(t_class *c);
 void earsbufobj_class_add_numframes_attr(t_class *c);
 void earsbufobj_class_add_overlap_attr(t_class *c);
-void earsbufobj_class_add_wintype_attr(t_class *c);
+void earsbufobj_class_add_wintype_attr(t_class *c, const char *category="Analysis");
 void earsbufobj_class_add_wintype_attr_essentia(t_class *c);
 void earsbufobj_class_add_wintype_attr_ansyn(t_class *c);
 void earsbufobj_class_add_winstartfromzero_attr(t_class *c);
@@ -548,6 +550,7 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
 t_llll *earsbufobj_time_llllelem_to_relative_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf, double derivative_sr);
 t_llll *earsbufobj_pitch_llll_to_cents_and_samples(t_earsbufobj *e_ob, t_llll *ll, t_buffer_obj *buf);
 t_llll *earsbufobj_pitch_llllelem_to_hertz_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
+t_llll *earsbufobj_time_llllelem_to_samples_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf);
 
 
 

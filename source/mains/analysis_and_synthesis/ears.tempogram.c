@@ -159,8 +159,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_CATEGORY(c, "bigoverlap", 0, "Analysis");
     // @description Sets the overlap for the big tempo analysis frames.
 
-    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
- class_register(CLASS_BOX, c);
+    earsbufobj_class_add_fileusage_method(c);
+    
+    class_register(CLASS_BOX, c);
     s_tag_class = c;
     ps_event = gensym("event");
 }

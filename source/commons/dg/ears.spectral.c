@@ -2752,9 +2752,11 @@ t_llll *ears_ptrack(t_object *ob, t_llll *allpeaks,
 
 // convert partials in llll form (one level for each channel) to a bach.roll syntax, useful for resynthesis
 t_llll *ears_ptrack_to_roll(t_object *ob, t_llll *ptrack,
-                            e_ears_timeunit in_timeunit, e_ears_frequnit in_frequnit, e_ears_ampunit in_ampunit)
+                            e_ears_timeunit in_timeunit, e_ears_frequnit in_frequnit, e_ears_ampunit in_ampunit,
+                            e_ears_veltoamp_modes amptovel_mode, double amp_vel_min, double amp_vel_max)
 {
     t_llll *roll = llll_get();
+    llll_appendsym(roll, _llllobj_sym_roll);
     for (t_llllelem *channel = ptrack->l_head; channel; channel = channel->l_next) {
         if (hatom_gettype(&channel->l_hatom) == H_LLLL) {
             t_llll *channel_ll = hatom_getllll(&channel->l_hatom);
@@ -2774,13 +2776,25 @@ t_llll *ears_ptrack_to_roll(t_object *ob, t_llll *ptrack,
                             double duration_ms = ears_convert_timeunit(tail, NULL, in_timeunit, EARS_TIMEUNIT_MS) - ears_convert_timeunit(onset, NULL, in_timeunit, EARS_TIMEUNIT_MS);
                             double pitch_cents = ears_convert_frequnit(freq, in_frequnit, EARS_FREQUNIT_CENTS);
                             
+                            double vel = 100;
+                            switch (amptovel_mode) {
+                                case EARS_VELOCITY_TO_AMPLITUDE:
+                                    vel = rescale(amp, amp_vel_min, amp_vel_max, 1., 127.);
+                                    break;
+                                case EARS_VELOCITY_TO_DECIBEL:
+                                    vel = rescale(ears_linear_to_db(amp), amp_vel_min, amp_vel_max, 1., 127.);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            
                             t_llll *chord = llll_get();
                             t_llll *note = llll_get();
                             t_llll *breakpoints = llll_get();
                             llll_appenddouble(chord, ears_convert_timeunit(onset, NULL, in_timeunit, EARS_TIMEUNIT_MS));
                             llll_appenddouble(note, pitch_cents); // pitch
                             llll_appenddouble(note, duration_ms); // duration
-                            llll_appenddouble(note, rescale(ears_convert_ampunit(amp, in_ampunit, EARS_AMPUNIT_LINEAR), 0., 1., 0., 127.)); // EARS_VELOCITY_TO_AMPLITUDE
+                            llll_appenddouble(note, vel); // velocity rescale(ears_convert_ampunit(amp, in_ampunit, EARS_AMPUNIT_LINEAR), 0., 1., 0., 127.)); // EARS_VELOCITY_TO_AMPLITUDE
                             
                             // breakpoints
                             llll_appendsym(breakpoints, _llllobj_sym_breakpoints);
@@ -2791,11 +2805,23 @@ t_llll *ears_ptrack_to_roll(t_object *ob, t_llll *ptrack,
                                     double bpt_onset = hatom_getdouble(&peak_ll->l_head->l_hatom);
                                     double bpt_freq = hatom_getdouble(&peak_ll->l_head->l_next->l_hatom);
                                     double bpt_amp = peak_ll->l_size >= 3 ? hatom_getdouble(&peak_ll->l_head->l_next->l_next->l_hatom) : 1.;
+                                    double bpt_vel = 100;
+                                    
+                                    switch (amptovel_mode) {
+                                        case EARS_VELOCITY_TO_AMPLITUDE:
+                                            bpt_vel = rescale(bpt_amp, amp_vel_min, amp_vel_max, 1., 127.);
+                                            break;
+                                        case EARS_VELOCITY_TO_DECIBEL:
+                                            bpt_vel = rescale(ears_linear_to_db(bpt_amp), amp_vel_min, amp_vel_max, 1., 127.);
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                     
                                     llll_appenddouble(this_breakpoint, ears_convert_timeunit(bpt_onset - onset, NULL, in_timeunit, EARS_TIMEUNIT_MS)/duration_ms);
                                     llll_appenddouble(this_breakpoint, ears_convert_frequnit(bpt_freq, in_frequnit, EARS_FREQUNIT_CENTS)-pitch_cents);
                                     llll_appenddouble(this_breakpoint, 0.);
-                                    llll_appenddouble(this_breakpoint, rescale(ears_convert_ampunit(bpt_amp, in_ampunit, EARS_AMPUNIT_LINEAR), 0., 1., 0., 127.));
+                                    llll_appenddouble(this_breakpoint, bpt_vel); // rescale(ears_convert_ampunit(bpt_amp, in_ampunit, EARS_AMPUNIT_LINEAR), 0., 1., 0., 127.));
                                     llll_appendllll(breakpoints, this_breakpoint);
                                 }
                             }

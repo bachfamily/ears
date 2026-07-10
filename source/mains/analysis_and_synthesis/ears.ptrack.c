@@ -74,6 +74,11 @@ typedef struct _buf_ptrack {
     char     e_thresh_timeunit;
     char     e_thresh_frequnit;
     char      e_thresh_ampunit;
+    
+    // gain to velocity
+    e_ears_veltoamp_modes amptovel_mode;
+    double velrange[2];
+
 } t_buf_ptrack;
 
 
@@ -177,8 +182,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     // a Short-Time Fourier Transform will be performed.
     EARSBUFOBJ_DECLARE_COMMON_METHODS_HANDLETHREAD(ptrack)
     
-    llllobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
-
     earsbufobj_class_add_outname_attr(c);
     earsbufobj_class_add_nativeout_attr(c);
     earsbufobj_class_add_blocking_attr(c);
@@ -274,9 +277,26 @@ void C74_EXPORT ext_main(void* moduleRef)
     CLASS_ATTR_BASIC(c, "minpartialavgamp", 0);
     // @description Sets a minimum partial average amplitude, in <m>threshampunit</m>.
     
+    CLASS_STICKY_ATTR(c,"category",0,"Velocity");
     
-    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
- class_register(CLASS_BOX, c);
+    CLASS_ATTR_LONG(c, "velmode", 0, t_buf_ptrack, amptovel_mode);
+    CLASS_ATTR_STYLE_LABEL(c,"velmode",0,"text","Velocity Mode");
+    CLASS_ATTR_ENUMINDEX(c,"velmode", 0, "Ignore Map To Amplitude Map To Decibels");
+    CLASS_ATTR_BASIC(c, "velmode", 0);
+    // @description Sets the velocity mode: 0 = ignore; 1 = map velocity to amplitude range (default); 2 = map velocity to decibels range.
+    // ranges are defined in <m>velrange</m>
+    
+    
+    CLASS_ATTR_DOUBLE_ARRAY(c, "velrange", 0, t_buf_ptrack, velrange, 2);
+    CLASS_ATTR_STYLE_LABEL(c,"velrange",0,"text","Velocity Mapping Range");
+    // @description Sets the mapping range for the velocity. This can be either an amplitude range or a decibels range, depending on <m>velmode</m>.
+    
+    CLASS_STICKY_ATTR_CLEAR(c, "category");
+    
+    earsbufobj_class_add_fileusage_method(c);
+    earsbufobj_class_add_out_attr(c, LLLL_OBJ_VANILLA);
+
+    class_register(CLASS_BOX, c);
     s_ptrack_class = c;
 }
 
@@ -336,6 +356,10 @@ t_buf_ptrack *buf_ptrack_new(t_symbol *s, short argc, t_atom *argv)
         x->e_graceperiod_before_dying = 25; // ms
         x->e_min_partial_length = 100; // ms
         x->e_min_partial_avg_amp = -90; // dB
+
+        x->amptovel_mode = EARS_VELOCITY_TO_AMPLITUDE;
+        x->velrange[0] = 0.;
+        x->velrange[1] = 1.;
 
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
         
@@ -419,7 +443,7 @@ void buf_ptrack_bang(t_buf_ptrack *x)
                                      (e_ears_timeunit)x->e_thresh_timeunit, (e_ears_frequnit)x->e_thresh_frequnit, (e_ears_ampunit)x->e_thresh_ampunit, // threshold units
                                      earsbufobj_get_inlet_buffer_obj((t_earsbufobj *)x, 0, 0));
         
-        t_llll *roll_gs = ears_ptrack_to_roll((t_object *)x, ptrack, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_frequnit)x->e_ob.l_frequnit, (e_ears_ampunit)x->e_ob.l_ampunit);
+        t_llll *roll_gs = ears_ptrack_to_roll((t_object *)x, ptrack, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_frequnit)x->e_ob.l_frequnit, (e_ears_ampunit)x->e_ob.l_ampunit, x->amptovel_mode, x->velrange[0], x->velrange[1]);
 
         earsbufobj_outlet_llll((t_earsbufobj *)x, 1, roll_gs);
         earsbufobj_outlet_llll((t_earsbufobj *)x, 0, ptrack);

@@ -115,7 +115,6 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_framesize_attr(c);
     earsbufobj_class_add_hopsize_attr(c);
 
-
     
     CLASS_ATTR_DOUBLE(c, "sr", 0, t_buf_model_stochastic_synthesis, e_sampleRate);
     CLASS_ATTR_BASIC(c, "sr", 0);
@@ -129,8 +128,9 @@ void C74_EXPORT ext_main(void* moduleRef)
     // @description Sets the decimation factor of the stochastic approximation.
 
     
-    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
- class_register(CLASS_BOX, c);
+    earsbufobj_class_add_fileusage_method(c);
+    
+    class_register(CLASS_BOX, c);
     s_model_stochastic_synthesis_class = c;
     ps_event = gensym("event");
 }

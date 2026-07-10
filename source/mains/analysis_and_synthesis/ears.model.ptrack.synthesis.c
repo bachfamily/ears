@@ -55,6 +55,11 @@ typedef struct _buf_model_ptrack_synthesis {
     char    normalize;
     
     double  e_sampleRate;
+    
+    // gain to velocity
+    e_ears_veltoamp_modes amptovel_mode;
+    double velrange[2];
+
 } t_buf_model_ptrack_synthesis;
 
 
@@ -127,7 +132,24 @@ void C74_EXPORT ext_main(void* moduleRef)
     // normalizes to 1. if some samples exceed in modulo 1.
 
     
-    // llllobj_class_add_default_bach_attrs_and_methods(c, LLLL_OBJ_VANILLA);
+    CLASS_STICKY_ATTR(c,"category",0,"Velocity");
+    
+    CLASS_ATTR_LONG(c, "velmode", 0, t_buf_model_ptrack_synthesis, amptovel_mode);
+    CLASS_ATTR_STYLE_LABEL(c,"velmode",0,"text","Velocity Mode");
+    CLASS_ATTR_ENUMINDEX(c,"velmode", 0, "Ignore Map To Amplitude Map To Decibels");
+    CLASS_ATTR_BASIC(c, "velmode", 0);
+    // @description Sets the velocity mode: 0 = ignore; 1 = map velocity to amplitude range (default); 2 = map velocity to decibels range.
+    // ranges are defined in <m>velrange</m>
+    
+    
+    CLASS_ATTR_DOUBLE_ARRAY(c, "velrange", 0, t_buf_model_ptrack_synthesis, velrange, 2);
+    CLASS_ATTR_STYLE_LABEL(c,"velrange",0,"text","Velocity Mapping Range");
+    // @description Sets the mapping range for the velocity. This can be either an amplitude range or a decibels range, depending on <m>velmode</m>.
+    
+    CLASS_STICKY_ATTR_CLEAR(c, "category");
+    
+    earsbufobj_class_add_fileusage_method(c);
+
  class_register(CLASS_BOX, c);
     s_model_ptrack_synthesis_class = c;
     ps_event = gensym("event");
@@ -163,6 +185,10 @@ t_buf_model_ptrack_synthesis *buf_model_ptrack_synthesis_new(t_symbol *s, short 
     if (x) {
         x->e_sampleRate = 0;
         x->partials = llll_get();
+        
+        x->amptovel_mode = EARS_VELOCITY_TO_AMPLITUDE;
+        x->velrange[0] = 0.;
+        x->velrange[1] = 1.;
 
         earsbufobj_init((t_earsbufobj *)x, EARSBUFOBJ_FLAG_NONE); // EARSBUFOBJ_FLAG_SUPPORTS_COPY_NAMES);
 
@@ -206,7 +232,7 @@ void buf_model_ptrack_synthesis_bang(t_buf_model_ptrack_synthesis *x)
         ears_buffer_set_sr((t_object *)x, outbuf, sr);
         ears_buffer_set_numchannels((t_object *)x, outbuf, numchannels);
         
-        t_llll *roll_gs = ears_ptrack_to_roll((t_object *)x, x->partials, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_frequnit)x->e_ob.l_frequnit, (e_ears_ampunit)x->e_ob.l_ampunit);
+        t_llll *roll_gs = ears_ptrack_to_roll((t_object *)x, x->partials, (e_ears_timeunit)x->e_ob.l_timeunit, (e_ears_frequnit)x->e_ob.l_frequnit, (e_ears_ampunit)x->e_ob.l_ampunit, x->amptovel_mode, x->velrange[0], x->velrange[1]);
 
         char use_assembly_line = true;
         

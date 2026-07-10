@@ -485,7 +485,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     
     emptyLl = llll_get();
     
-    // llllobj_class_add_default_bach_attrs_and_methods(earsprocess_class, LLLL_OBJ_VANILLA);
+    earsbufobj_class_add_fileusage_method(earsprocess_class);
     
     class_register(CLASS_BOX, earsprocess_class);
 }
