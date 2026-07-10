@@ -623,11 +623,11 @@ t_ears_err ears_roll_to_buffer(t_earsbufobj *e_ob, e_ears_scoretobuf_mode mode, 
                 if (mode == EARS_SCORETOBUF_MODE_SAMPLING) { // otherwise it's already encoded by ears_buffer_synth_from_duration_line()
                     switch (veltoamp_mode) {
                         case EARS_VELOCITY_TO_AMPLITUDE:
-                            note_gain = rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max);
+                            note_gain = rescale(note_velocity, 1., 127., amp_vel_min, amp_vel_max);
                             break;
                             
                         case EARS_VELOCITY_TO_DECIBEL:
-                            note_gain = ears_db_to_linear(rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max));
+                            note_gain = ears_db_to_linear(rescale(note_velocity, 1., 127., amp_vel_min, amp_vel_max));
                             break;
                             
                         default:
@@ -1005,10 +1005,10 @@ t_ears_err ears_roll_to_reaper(t_earsbufobj *e_ob, t_symbol *filename_sym, t_sym
                 double note_gain = 1.;
                 switch (veltoamp_mode) {
                     case EARS_VELOCITY_TO_AMPLITUDE:
-                        note_gain = rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max);
+                        note_gain = rescale(note_velocity, 1., 127., amp_vel_min, amp_vel_max);
                         break;
                     case EARS_VELOCITY_TO_DECIBEL:
-                        note_gain = ears_db_to_linear(rescale(note_velocity, 0., 127., amp_vel_min, amp_vel_max));
+                        note_gain = ears_db_to_linear(rescale(note_velocity, 1., 127., amp_vel_min, amp_vel_max));
                         break;
                     default:
                         break;

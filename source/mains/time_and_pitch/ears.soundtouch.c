@@ -142,16 +142,21 @@ void C74_EXPORT ext_main(void* moduleRef)
 void buf_soundtouch_assist(t_buf_soundtouch *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        if (a == 0)
+        if (a == 0) {
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
-        else if (a == 1)
-            // @in 1 @type float @digest Stretch factor or envelope
-            // @description Sets the stretch factor.
-            sprintf(s, "float: Stretch Factor");
-        else if (a == 2)
+        } else if (a == 1) {
+            // @in 1 @type float @digest Stretch factor or target duration
+            // @description Sets the stretch factor or target duration, depending on the <m>timeunit</m>.
+            if (x->e_ob.l_timeunit == EARS_TIMEUNIT_DURATION_RATIO) {
+                sprintf(s, "float/list: Stretch Factor");
+            } else {
+                sprintf(s, "float/list: Target Duration %s", ears_timeunit_to_abbrev((e_ears_timeunit)x->e_ob.l_timeunit));
+            }
+        } else if (a == 2) {
             // @in 2 @type float @digest Pitch shift amount
             // @description Sets the pitch shift amount (unit defined via the <m>pitchunit</m> attribute).
             sprintf(s, "float: Pitch Shift Amount");
+        }
     } else {
         sprintf(s, "symbol/list: Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names
     }

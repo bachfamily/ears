@@ -98,6 +98,41 @@ class_addmethod(c, (method)earsbufobj_writegeneral, "writemp3", A_GIMME, 0);
 // @mattr format @type symbol @optional 1 @default int16 @digest Sample Format
 class_addmethod(c, (method)earsbufobj_writegeneral, "writewv", A_GIMME, 0);
 
+#define earsbufobj_class_add_out_attr
+CLASS_ATTR_SYM(c, "out", 0, t_llllobj_object, l_outtypes);
+CLASS_ATTR_ACCESSORS(c, "out", NULL, llllobj_obj_setout);
+CLASS_ATTR_STYLE(c, "out", 0, "text");
+CLASS_ATTR_LABEL(c, "out", 0, "Outlet Types");
+CLASS_ATTR_CATEGORY(c, "out", 0, "Behavior");
+CLASS_ATTR_BASIC(c, "out", 0);
+//  @description  The <m>out</m> attribute is the standard <m>out</m> attribute used throughout bach.
+//  It is a sequence of characters identifying the outlet types (one character for each llll outlet). Characters can be one of the following: <br />
+//    <m>n</m> (default): 'native' output: faster and more precise between bach objects, but unreadable by standard Max objects (an "bach.llll" message appears instead). <br />
+//    <m>t</m>: 'text' output: slower and limited in size, but readable by standard Max objects. A plain llll in text format is a generic Max message.
+//  To keep the representation invertible (i.e., to allow a bach object receiving a text-format llll to interpret it exactly as if it was native format,
+//  except for the size limitation), some specific kinds of symbols are preceded by a backtick: namely, symbols containing parens, or containing textual
+//  representations of numbers or pitches, or beginning with a backtick, plus the symbols "null" and "nil" (distinct from the reserved words
+//  "null" and "nil" representing the empty list and the empty sublist) are preceded by a backtick. Moreover, the symbols "int", "float" or "list"
+//  are preceded by a backtick only if they are the first element of an llll, to distinguish them from the corresponding reserved messages of Max. <br />
+//    <m>m</m>: 'max' output: mostly equivalent to the "t" specifier, but no symbol is backticket except "int", "float" and "list" at the beginning of an llll.
+//  It is important to notice that, differently from text-format lllls proper, Max-format lllls might not be invertible even if they do not reach the size
+//  limit for Max message. This means that a bach object receiving a Max-format llll output from another bach object might interpret it differently
+//  from the original, or in some cases might even reject it. <br />
+//    <m>x</m>: disabled output (nothing is output) <br />
+//    <m>p</m>: 'portal' output: only used by bach.portal to intercept the @out attribute specified while creating the abstraction (see bach.portal). <br />
+//    The native output is recommended, unless communication with standard Max messages is needed.
+//  Disabling unused outputs can be useful if extreme optimization of the patch is needed.
+//  <br /> <br />
+
+#define earsbufobj_class_add_nativeout_attr
+CLASS_ATTR_CHAR(c, "nativeout", 0, t_earsbufobj, l_nativeout);
+CLASS_ATTR_STYLE_LABEL(c,"nativeout",0,"onoff","Output Buffers As Native lllls");
+CLASS_ATTR_BASIC(c, "nativeout", 0);
+CLASS_ATTR_CATEGORY(c, "nativeout", 0, "Behavior");
+// @description Toggles the ability to output buffers as a native bach llll.
+// This can be useful in case the objects handle more than 32k buffers.
+// This attribute is static: it can be only set in the object box and never changed.
+
 #define earsbufobj_class_add_outname_attr
 CLASS_ATTR_LLLL(c, "outname", 0, t_earsbufobj, l_outnames, earsbufobj_getattr_outname, earsbufobj_setattr_outname);
 CLASS_ATTR_STYLE_LABEL(c,"outname",0,"text","Output Buffer Names");

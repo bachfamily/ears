@@ -382,6 +382,7 @@ t_buf_roll_sampling *buf_roll_sampling_new(t_symbol *s, short argc, t_atom *argv
         x->filename_slot = 8;
         x->gain_slot = 0;
         x->pan_slot = 0;
+        atom_setlong(&x->ps_slot, 0);
         
         x->optimize_for_identical_samples = 1;
 

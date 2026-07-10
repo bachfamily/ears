@@ -26,7 +26,7 @@
 	@discussion
  
 	@category
-	ears distorsion
+	ears synthesis
  
 	@keywords
 	buffer, psola, pitch, overlap, add

@@ -4697,10 +4697,10 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
             
             switch (veltoamp_mode) {
                 case EARS_VELOCITY_TO_AMPLITUDE:
-                    amp = rescale(vel, 0., 127., amp_vel_min, amp_vel_max);
+                    amp = rescale(vel, 1., 127., amp_vel_min, amp_vel_max);
                     break;
                 case EARS_VELOCITY_TO_DECIBEL:
-                    amp = ears_db_to_linear(rescale(vel, 0., 127., amp_vel_min, amp_vel_max));
+                    amp = ears_db_to_linear(rescale(vel, 1., 127., amp_vel_min, amp_vel_max));
                     break;
                 default:
                     break;
@@ -7427,6 +7427,124 @@ t_ears_err ears_buffer_psola_envelope(t_object *ob, t_buffer_obj *source, t_buff
             if (highpass_cutoff > 0) {
                 ears_buffer_onepole(ob, dest, dest, highpass_cutoff, true);
             }
+        }
+        
+        if (source == dest) // inplace operation!
+            bach_freeptr(orig_sample_wk);
+        else
+            ears_buffer_unlocksamples(source);
+    }
+    
+    
+    return err;
+}
+
+
+
+
+t_ears_err ears_buffer_granulate(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest,
+                                          long duration_samples,
+                                          t_llll *grain_size,
+                                          t_llll *grain_interval,
+                                          t_llll *grain_interval_jitter,
+                                          t_llll *grain_onset,
+                                          t_llll *grain_onset_jitter,
+                                          t_symbol *wintype,
+                                          e_slope_mapping slopemapping
+                                          )
+{
+    t_ears_err err = EARS_ERR_NONE;
+    t_ears_envelope_iterator grain_size_eei = ears_envelope_iterator_create(grain_size, 100., false, slopemapping);
+    t_ears_envelope_iterator grain_interval_eei = ears_envelope_iterator_create(grain_interval, 400., false, slopemapping);
+    t_ears_envelope_iterator grain_interval_jitter_eei = ears_envelope_iterator_create(grain_interval_jitter, 0., false, slopemapping);
+    t_ears_envelope_iterator grain_onset_eei = ears_envelope_iterator_create(grain_onset, 0, false, slopemapping);
+    t_ears_envelope_iterator grain_onset_jitter_eei = ears_envelope_iterator_create(grain_onset_jitter, 0, false, slopemapping);
+
+    double sr = ears_buffer_get_sr(ob, source);
+    double num_out_samps = duration_samples;
+   
+    if (!source || !dest)
+        return EARS_ERR_NO_BUFFER;
+    
+    float *orig_sample = ears_buffer_locksamples(source);
+    float *orig_sample_wk = NULL;
+    
+    if (!orig_sample) {
+        err = EARS_ERR_CANT_READ;
+        object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
+    } else {
+        t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
+        t_atom_long    num_in_samps   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
+        
+        if (source == dest) { // inplace operation!
+            orig_sample_wk = (float *)bach_newptr(channelcount * num_in_samps * sizeof(float));
+            sysmem_copyptr(orig_sample, orig_sample_wk, channelcount * num_in_samps * sizeof(float));
+            ears_buffer_unlocksamples(source);
+            ears_buffer_set_size_samps(ob, dest, num_out_samps);
+        } else {
+            orig_sample_wk = orig_sample;
+            ears_buffer_copy_format_and_set_size_samps(ob, source, dest, num_out_samps);
+        }
+        
+        float *dest_sample = ears_buffer_locksamples(dest);
+        
+        if (!dest_sample) {
+            err = EARS_ERR_CANT_WRITE;
+            object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
+        } else {
+            
+            // zero out output buffer
+            for (long i = 0; i < duration_samples; i++) {
+                for (long c = 0; c < channelcount; c++) {
+                    long idx_out = i * channelcount + c;
+                    dest_sample[idx_out] = 0.;
+                }
+            }
+            
+            ears_envelope_iterator_reset(&grain_size_eei);
+            ears_envelope_iterator_reset(&grain_interval_eei);
+            ears_envelope_iterator_reset(&grain_interval_jitter_eei);
+            ears_envelope_iterator_reset(&grain_onset_eei);
+            ears_envelope_iterator_reset(&grain_onset_jitter_eei);
+
+            long f_in = 0, f_out = 0; // these are our frame cursors, for input and output buffers
+
+            while (true) {
+                double winsize_samps = ears_envelope_iterator_walk_interp(&grain_size_eei, f_out, num_out_samps);
+                double stride_samps = ears_envelope_iterator_walk_interp(&grain_interval_eei, f_out, num_out_samps);
+                double stride_jitter_samps = ears_envelope_iterator_walk_interp(&grain_interval_jitter_eei, f_out, num_out_samps);
+                double onset_samps = ears_envelope_iterator_walk_interp(&grain_onset_eei, f_out, num_out_samps);
+                double onset_jitter_samps = ears_envelope_iterator_walk_interp(&grain_onset_jitter_eei, f_out, num_out_samps);
+
+                long winsize_samps_l = (long)round(winsize_samps);
+                long stride_samps_l = (long)round(random_double_in_range(stride_samps-stride_jitter_samps, stride_samps+stride_jitter_samps));
+                long onset_samps_l = (long)round(random_double_in_range(onset_samps-onset_jitter_samps, onset_samps+onset_jitter_samps));
+
+                if (f_out + winsize_samps_l >= duration_samples) {
+                    break; //we're done! we won't put an incomplete window, otherwise there are clicks
+                }
+                
+                float *win = (float *)bach_newptr(winsize_samps_l * sizeof(float));
+                
+                ears_get_window(win, wintype->s_name, winsize_samps_l);
+                
+                long f_in = onset_samps_l;
+                for (long i = 0; i < winsize_samps && f_in + i < num_in_samps && f_out + i < num_out_samps; i++) {
+                    if (f_in + i >= 0) {
+                        for (long c = 0; c < channelcount; c++) {
+                            dest_sample[(f_out + i) * channelcount + c] += orig_sample_wk[(f_in + i) * channelcount + c] * win[i];
+                        }
+                    }
+                }
+                bach_freeptr(win);
+                
+                f_out += stride_samps_l;
+            }
+            
+            buffer_setdirty(dest);
+            ears_buffer_unlocksamples(dest);
+
+            
         }
         
         if (source == dest) // inplace operation!
