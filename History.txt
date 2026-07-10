@@ -24,6 +24,7 @@ These might break compatibility with older patches
 ***********************
 
 - ears.ebur128~: new object
+– ears.psola~: new object
 
 - ears.split: 
 	· new @maxnumsegments attribute to define maximum number of segments
@@ -32,7 +33,6 @@ These might break compatibility with older patches
 - ears.essentia: 
 	· fixed many algorithms that didn't work properly
 
-– ears.psola: new object
 
 - ears.resample, ears.rubberband:
 	· now absolute timing works in envelopes as well
