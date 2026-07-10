@@ -282,6 +282,22 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="nativeout" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Buffers As Native lllls
+			</digest>
+			<description>
+				Toggles the ability to output buffers as a native bach llll.
+				This can be useful in case the objects handle more than 32k buffers.
+				This attribute is static: it can be only set in the object box and never changed.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffers As Native lllls" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="normalize" get="1" set="1" type="int" size="1">
 			<digest>
 				Normalize Output

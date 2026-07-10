@@ -316,6 +316,7 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffer Frame Interpolation Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -329,6 +330,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Bins Per Octave" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -342,6 +344,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Minimum Kernel Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -355,6 +358,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Minimum Pitch" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -368,6 +372,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Total Number of Bins" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -381,6 +386,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Filters Scale" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -394,6 +400,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Constant-Q Transform" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="CQT Threshold" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -408,6 +415,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Envelopes" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Attack Time" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -422,6 +430,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Envelopes" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Envelope Release Time" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -481,6 +490,22 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
+		<attribute name="nativeout" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Buffers As Native lllls
+			</digest>
+			<description>
+				Toggles the ability to output buffers as a native bach llll.
+				This can be useful in case the objects handle more than 32k buffers.
+				This attribute is static: it can be only set in the object box and never changed.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffers As Native lllls" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="numframes" get="1" set="1" type="atom" size="1">
 			<digest>
 				Number of Analysis Frames
@@ -512,6 +537,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Onset Detection" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Onset Detection Method" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -520,7 +546,8 @@
 				Outlet Types
 			</digest>
 			<description>
-				The <m>out</m> attribute is a sequence of characters identifying the outlet types (one character for each llll outlet). Characters can be one of the following: <br />
+				The <m>out</m> attribute is the standard <m>out</m> attribute used throughout bach.
+				It is a sequence of characters identifying the outlet types (one character for each llll outlet). Characters can be one of the following: <br />
 				<m>n</m> (default): 'native' output: faster and more precise between bach objects, but unreadable by standard Max objects (an "bach.llll" message appears instead). <br />
 				<m>t</m>: 'text' output: slower and limited in size, but readable by standard Max objects. A plain llll in text format is a generic Max message.
 				To keep the representation invertible (i.e., to allow a bach object receiving a text-format llll to interpret it exactly as if it was native format,
@@ -533,16 +560,11 @@
 				limit for Max message. This means that a bach object receiving a Max-format llll output from another bach object might interpret it differently
 				from the original, or in some cases might even reject it. <br />
 				<m>x</m>: disabled output (nothing is output) <br />
-				<m>p</m>: 'portal' output: only used by bach.portal to intercept the @out attribute specified while creating the abstraction (see bach.portal). <br />
-				The native output is recommended, unless communication with standard Max messages is needed.
-				Disabling unused outputs can be useful if extreme optimization of the patch is needed.
-				<br /> <br />
 			</description>
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Outlet Types" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
-				<attribute name="save" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -584,6 +606,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Peaks Magnitude Threshold" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -597,6 +620,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Peaks Maximum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -610,6 +634,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Maximum Number of Peaks" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -623,6 +648,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Peaks Minimum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -636,6 +662,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Peaks" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Order Peaks By" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enum" />
 			</attributelist>
 		</attribute>
@@ -649,6 +676,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Use Pitch Filter" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -663,6 +691,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Filter Confidence Threshold" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -676,6 +705,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Pitch Filter Minimum Chunk Size" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -690,6 +720,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Pitch Filter" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Use Absolute Pitch Confidence for Pitch Filter" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -723,6 +754,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -739,6 +771,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarize Positive Values Only" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
 			</attributelist>
 		</attribute>
@@ -752,6 +785,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Summarization" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Summarization Weight" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
@@ -826,6 +860,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="YIN" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="YIN Maximum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -839,6 +874,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="YIN" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="YIN Minimum Frequency" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>
@@ -852,6 +888,7 @@
 			<attributelist>
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="YIN" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="YIN Tolerance" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>
 		</attribute>

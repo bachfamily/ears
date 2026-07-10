@@ -21,7 +21,7 @@
     "digest": "Pitch-synchronous overlap add",
     "module": "ears",
     "category": [
-      "ears distorsion"
+      "ears synthesis"
     ],
     "keywords": [
       "buffer",
@@ -32,6 +32,22 @@
     ],
     "seealso": [
       "ears.roll.synthesis~"
+    ]
+  },
+  "ears.granulate~": {
+    "digest": "Off-line buffer granulation",
+    "module": "ears",
+    "category": [
+      "ears granulation"
+    ],
+    "keywords": [
+      "buffer",
+      "granulate",
+      "granular synthesis",
+      "grain"
+    ],
+    "seealso": [
+      "ears.psola~"
     ]
   },
   "ears.roll.sampling~": {
