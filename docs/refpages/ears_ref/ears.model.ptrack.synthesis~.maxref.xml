@@ -260,6 +260,22 @@
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
 			</attributelist>
 		</attribute>
+		<attribute name="nativeout" get="1" set="1" type="int" size="1">
+			<digest>
+				Output Buffers As Native lllls
+			</digest>
+			<description>
+				Toggles the ability to output buffers as a native bach llll.
+				This can be useful in case the objects handle more than 32k buffers.
+				This attribute is static: it can be only set in the object box and never changed.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Behavior" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Buffers As Native lllls" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="onoff" />
+			</attributelist>
+		</attribute>
 		<attribute name="normalize" get="1" set="1" type="int" size="1">
 			<digest>
 				Normalize Output
@@ -298,6 +314,35 @@
 			</description>
 			<attributelist>
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Output Sample Rate" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
+			</attributelist>
+		</attribute>
+		<attribute name="velmode" get="1" set="1" type="int" size="1">
+			<digest>
+				Velocity Mode
+			</digest>
+			<description>
+				Sets the velocity mode: 0 = ignore; 1 = map velocity to amplitude range (default); 2 = map velocity to decibels range.
+				ranges are defined in <m>velrange</m>
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Velocity" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Velocity Mode" />
+				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
+				<attribute name="style" get="1" set="1" type="symbol" size="1" value="enumindex" />
+			</attributelist>
+		</attribute>
+		<attribute name="velrange" get="1" set="1" type="float_array" size="0">
+			<digest>
+				Velocity Mapping Range
+			</digest>
+			<description>
+				Sets the mapping range for the velocity. This can be either an amplitude range or a decibels range, depending on <m>velmode</m>.
+			</description>
+			<attributelist>
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="Velocity" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Velocity Mapping Range" />
 				<attribute name="paint" get="1" set="1" type="int" size="1" value="1" />
 				<attribute name="style" get="1" set="1" type="symbol" size="1" value="text" />
 			</attributelist>

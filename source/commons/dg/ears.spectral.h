@@ -84,6 +84,7 @@ t_llll *ears_ptrack(t_object *ob, t_llll *peaks,
 );
 
 t_llll *ears_ptrack_to_roll(t_object *ob, t_llll *ptrack,
-                            e_ears_timeunit in_timeunit, e_ears_frequnit in_frequnit, e_ears_ampunit in_ampunit);
+                            e_ears_timeunit in_timeunit, e_ears_frequnit in_frequnit, e_ears_ampunit in_ampunit,
+                            e_ears_veltoamp_modes amptovel_mode, double amp_vel_min, double amp_vel_max);
 
 #endif // _EARS_BUF_SPECTRAL_H_

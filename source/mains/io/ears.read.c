@@ -340,19 +340,21 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         
         buf_read_addpathsym(x, filepath, idx);
         
+        t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx);
+        
 #ifdef EARS_MP3_READ_SUPPORT
         if (x->native_mp3_handling && ears_symbol_ends_with(filepath, ".mp3", true)) {
             sampleformat = gensym("compressed");
-            long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start,                                                                           earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
-            long endsamp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx)) : -1;
-            ears_buffer_read_handle_mp3((t_object *)x, filepath->s_name, startsamp, endsamp, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), EARS_TIMEUNIT_SAMPS);
+            long startsamp = start >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, start, buf) : -1;
+            long endsamp = end >= 0 ? earsbufobj_time_to_samps((t_earsbufobj *)x, end, buf) : -1;
+            ears_buffer_read_handle_mp3((t_object *)x, filepath->s_name, startsamp, endsamp, buf, EARS_TIMEUNIT_SAMPS);
             // (e_ears_timeunit)x->e_ob.l_timeunit);
         } else {
 #endif
 
 #ifdef EARS_WAVPACK_SUPPORT
             if (ears_symbol_ends_with(filepath, ".wv", true)) { // WavPack files
-                ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, start, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx), &sampleformat, (e_ears_timeunit)x->e_ob.l_timeunit);
+                ears_buffer_read_handle_wavpack((t_object *)x, filepath->s_name, start, end, buf, &sampleformat, (e_ears_timeunit)x->e_ob.l_timeunit);
             } else {
 #endif
                 // THIS IS NOT A SMART MOVE, THOUGH. FOR SIMPLE FILES, THAT REQUIRES TOO MUCH TIME
@@ -363,14 +365,14 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
 
                 if (x->native_aiff_handling &&
                     (ears_symbol_ends_with(filepath, ".aif", true) || ears_symbol_ends_with(filepath, ".aiff", true))) {
-                    if (buf_read_AIFF_native(x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), filepath->s_name, start, end) == MAX_ERR_NONE) {
+                    if (buf_read_AIFF_native(x, buf, filepath->s_name, start, end) == MAX_ERR_NONE) {
                         handled_natively = true;
                     }
                 }
 
                 if (x->native_wav_handling && ears_symbol_ends_with(filepath, ".wav", true)) {
                     t_llll *these_markers = NULL;
-                    if (buf_read_WAV_native(x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), filepath->s_name, start, end, &these_markers, &sampleformat) == MAX_ERR_NONE) {
+                    if (buf_read_WAV_native(x, buf, filepath->s_name, start, end, &these_markers, &sampleformat) == MAX_ERR_NONE) {
                         if (these_markers)
                             llll_appendllll(markers, these_markers);
                         handled_natively = true;
@@ -386,9 +388,9 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
                     earsbufobj_importreplace_buffer((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx, filepath);
                     
                     if (start > 0 || end > 0) {
-                        double start_samps = start < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, start, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
-                        double end_samps = end < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, end, earsbufobj_get_stored_buffer_obj((t_earsbufobj *)x, EARSBUFOBJ_OUT, 0, idx));
-                        ears_buffer_crop_inplace((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx), start_samps, end_samps);
+                        double start_samps = start < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, start, buf);
+                        double end_samps = end < 0 ? -1 : earsbufobj_time_to_samps((t_earsbufobj *)x, end, buf);
+                        ears_buffer_crop_inplace((t_object *)x, buf, start_samps, end_samps);
                     }
                 }
 #ifdef EARS_WAVPACK_SUPPORT
@@ -399,7 +401,7 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
         }
 #endif
         // cleaning spectral data
-        ears_spectralbuf_metadata_remove((t_object *)x, earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx));
+        ears_spectralbuf_metadata_remove((t_object *)x, buf);
         
         // READING TAGS
         llll_appendllll(tags, buf_read_tags(x, filepath));
@@ -413,7 +415,6 @@ void buf_read_load_llllelem(t_buf_read *x, t_llllelem *elem, long idx, t_llll *t
             llll_appendllll(markers, l);
         
         if (has_data){
-            t_buffer_obj *buf = earsbufobj_get_outlet_buffer_obj((t_earsbufobj *)x, 0, idx);
             ears_spectralbuf_metadata_set((t_object *)x, buf, &data);
             if (sr != DBL_MIN)
                 ears_buffer_set_sr((t_object *)x, buf, sr);

@@ -123,7 +123,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     earsbufobj_class_add_zerophase_attr(c);
     earsbufobj_class_add_zeropadding_attr(c);
 #else
-    earsbufobj_class_add_wintype_attr(c);
+    earsbufobj_class_add_wintype_attr(c, "Settings");
 #endif
     earsbufobj_class_add_winnormalized_attr(c);
     

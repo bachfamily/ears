@@ -300,20 +300,26 @@ void C74_EXPORT ext_main(void* moduleRef)
 void buf_rubberband_assist(t_buf_rubberband *x, void *b, long m, long a, char *s)
 {
     if (m == ASSIST_INLET) {
-        if (a == 0)
+        if (a == 0) {
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
-        else if (a == 1)
+        } else if (a == 1) {
             // @in 1 @type float/list/llll @digest Stretch factor or envelope
             // @description Sets the stretch factor, either as a single number or as an llll
             // containing an envelope in the form <b>[[<m>x</m> <m>factor</m> <m>slope</m>] [<m>x</m> <m>factor</m> <m>slope</m>]...]</b>.
             // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
-            sprintf(s, "float/llll: Stretch Factor or Envelope");
-        else if (a == 2)
+            // Depending on the <m>timeunit</m> attribute this can also represent the target duration for the output buffer.
+            if (x->e_ob.l_timeunit == EARS_TIMEUNIT_DURATION_RATIO) {
+                sprintf(s, "float/list/llll: Stretch Factor or Envelope");
+            } else {
+                sprintf(s, "float/list/: Target Duration %s", ears_timeunit_to_abbrev((e_ears_timeunit)x->e_ob.l_timeunit));
+            }
+        } else if (a == 2) {
             // @in 2 @type float/list/llll @digest Pitch shift amount or envelope
             // @description Sets the pitch shift (unit defined via the <m>pitchunit</m> attribute), either as a single number or as an llll
             // containing an envelope in the form <b>[[<m>x</m> <m>shift</m> <m>slope</m>] [<m>x</m> <m>shift</m> <m>slope</m>]...]</b>,
             // where <m>x</m> values' range depends on the <m>envtimeunit</m> attribute.
-            sprintf(s, "float/llll: Pitch Shift Amount or Envelope");
+            sprintf(s, "float/list/llll: Pitch Shift Amount or Envelope");
+        }
     } else {
         sprintf(s, "symbol/list: Output Buffer Names"); // @out 0 @type symbol/list @digest Output buffer names
     }

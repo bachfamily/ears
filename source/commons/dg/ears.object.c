@@ -812,14 +812,17 @@ void earsbufobj_setup(t_earsbufobj *e_ob, const char *in_types, const char *out_
                             e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_USERNAMED;
                             if (!ears_polybuffer_symbol_is_polybuffer(s)) {
                                 ears_polybuffer_make(s, true);
+//                                outstoresize = 0;
                             } else {
                                 ears_polybuffer_retain(ears_polybuffer_getobject(s), s);
+//                                outstoresize = polybuffer_getnumbuffers??;
                             }
                         } else {
                             t_symbol *s = symbol_unique();
                             e_ob->l_outstore[j].polybuffer_status = EARSBUFOBJ_BUFSTATUS_AUTOASSIGNED;
                             e_ob->l_outstore[j].polybuffer_name = s;
                             ears_polybuffer_make(s, true);
+//                            outstoresize = 0;
                         }
                     }
                 }
@@ -1453,8 +1456,9 @@ void earsbufobj_class_add_nativeout_attr(t_class *c)
     CLASS_ATTR_STYLE_LABEL(c,"nativeout",0,"onoff","Output Buffers As Native lllls");
     CLASS_ATTR_BASIC(c, "nativeout", 0);
     CLASS_ATTR_CATEGORY(c, "nativeout", 0, "Behavior");
-    // @description Sets the name for each one of the buffer outlets. Leave blank to auto-assign
-    // unique names.
+    // @description Toggles the ability to output buffers as a native bach llll.
+    // This can be useful in case the objects handle more than 32k buffers.
+    // This attribute is static: it can be only set in the object box and never changed.
 }
 
 void earsbufobj_fileusage(t_object *x, void *w)
@@ -2092,13 +2096,13 @@ void earsbufobj_class_add_wintype_attr_essentia(t_class *c)
 }
 
 
-void earsbufobj_class_add_wintype_attr(t_class *c)
+void earsbufobj_class_add_wintype_attr(t_class *c, const char *category)
 {
     CLASS_ATTR_SYM(c, "wintype", 0, t_earsbufobj, a_wintype);
     CLASS_ATTR_STYLE_LABEL(c,"wintype",0,"enum","Window Type");
     CLASS_ATTR_ENUM(c,"wintype", 0, "rectangular triangular sine hann hamming blackman nuttall blackmannuttall blackmanharris gaussian sqrthann sqrthamming");
     CLASS_ATTR_BASIC(c, "wintype", 0);
-    CLASS_ATTR_CATEGORY(c, "wintype", 0, "Analysis");
+    CLASS_ATTR_CATEGORY(c, "wintype", 0, category);
     // @description Sets the window type.
     // Available windows are:
     // "rectangular", "triangular", "sine", "hann", "hamming", "blackman", "nuttall", "blackmannuttall", "blackmanharris", "gaussian", "sqrthann", "sqrthamming". <br />
@@ -2551,21 +2555,21 @@ void earsbufobj_outlet_buffer_do(t_earsbufobj *e_ob, t_symbol *s, long ac, t_ato
                 llllobj_outlet_anything((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, name, 0, NULL);
             } else {
                 if (e_ob->l_nativeout) {
-                    object_post((t_object *)e_ob, "Native output requested!");
+//                    object_post((t_object *)e_ob, "Native output requested!");
                     t_llll *outnames = llll_get();
                     long j, c = 0;
-                    object_post((t_object *)e_ob, "The number of stored buffers is: %ld", e_ob->l_outstore[store].num_stored_bufs);
+//                    object_post((t_object *)e_ob, "The number of stored buffers is: %ld", e_ob->l_outstore[store].num_stored_bufs);
                     for (j = 0; j < e_ob->l_outstore[store].num_stored_bufs; j++) {
                         t_symbol *name = earsbufobj_get_outlet_buffer_name(e_ob, store, j);
                         if (name) {
                             llll_appendsym(outnames, name);
                             c++;
                         } else {
-                            object_post((t_object *)e_ob, "The %ld-th store has no defined name!", j);
+//                            object_post((t_object *)e_ob, "The %ld-th store has no defined name!", j);
                         }
                     }
 
-                    object_post((t_object *)e_ob, "The length of the native output is: %ld", outnames->l_size);
+//                    object_post((t_object *)e_ob, "The length of the native output is: %ld", outnames->l_size);
 
                     if (c > 0) {
                         llllobj_outlet_llll((t_object *)e_ob, LLLL_OBJ_VANILLA, outnum, outnames);
@@ -3835,6 +3839,118 @@ double earsbufobj_freq_to_midi(t_earsbufobj *e_ob, double value)
             break;
     }
 }
+
+
+// llllelem can be either a number or a t_pts
+t_llll *earsbufobj_time_llllelem_to_samples_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
+{
+    t_llll *out = llll_get();
+    llll_appendhatom_clone(out, &elem->l_hatom);
+    llll_flatten(out, 1, 0);
+    
+    double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
+    double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    
+    for (t_llllelem *el = out->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+            switch (e_ob->l_timeunit) {
+                case EARS_TIMEUNIT_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_SECONDS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_ms_to_fsamps(1000.*hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, hatom_getdouble(&sub_ll->l_head->l_next->l_hatom)*dur_samps);
+                }
+                    break;
+                default:
+                    break;
+            }
+            switch (e_ob->l_envtimeunit) {
+                case EARS_TIMEUNIT_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_SECONDS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_NUM_INTERVALS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_NUM_ONSETS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1. + (1./hatom_getdouble(&sub_ll->l_head->l_hatom))) * (dur_samps - 1));
+                }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch (e_ob->l_timeunit) {
+                case EARS_TIMEUNIT_MS:
+                    hatom_setdouble(&el->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&el->l_hatom), sr));
+                    break;
+                case EARS_TIMEUNIT_SECONDS:
+                    hatom_setdouble(&el->l_hatom, ears_ms_to_fsamps(1000.*hatom_getdouble(&el->l_hatom), sr));
+                    break;
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                    hatom_setdouble(&el->l_hatom, hatom_getdouble(&el->l_hatom) * dur_samps);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    return out;
+}
+
 
 
 // llllelem can be either a number or a t_pts

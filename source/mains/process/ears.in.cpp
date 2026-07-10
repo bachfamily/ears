@@ -125,7 +125,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 void ears_in_llll(t_ears_in *x, t_llll *ll, long inlet)
 {
     if (x->direct) {
-        for (int o = x->nOutlets - 1; o >= 0; o--) {
+        for (long o = x->nOutlets - 1; o >= 0; o--) {
             if (x->inlet_nums[o] == inlet)
                 llllobj_outlet_llll((t_object *) x, LLLL_OBJ_VANILLA, o, ll);
         }
