@@ -4,6 +4,9 @@
 
 #include <float.h>
 #include <limits.h>
+#ifdef WIN_VERSION
+#define _USE_MATH_DEFINES
+#endif
 #include <math.h> /* You may have to define _USE_MATH_DEFINES if you use MSVC */
 #include <stdio.h>
 #include <stdlib.h>
