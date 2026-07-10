@@ -116,7 +116,7 @@ void C74_EXPORT ext_main(void* moduleRef)
     // parentheses (if present) is removed from the llll output at each iteration.
     // If the <m>direct</m> attribute is set to 1, the <m>unwrap</m> attribute has no effect.
     
-    // llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
+    llllobj_class_add_default_bach_attrs_and_methods(ears_in_class, LLLL_OBJ_VANILLA);
 
     class_register(CLASS_BOX, ears_in_class);
 }
@@ -124,7 +124,7 @@ void C74_EXPORT ext_main(void* moduleRef)
 void ears_in_llll(t_ears_in *x, t_llll *ll, long inlet)
 {
     if (x->direct) {
-        for (int o = x->nOutlets - 1; o >= 0; o--) {
+        for (long o = x->nOutlets - 1; o >= 0; o--) {
             if (x->inlet_nums[o] == inlet)
                 llllobj_outlet_llll((t_object *) x, LLLL_OBJ_VANILLA, o, ll);
         }
