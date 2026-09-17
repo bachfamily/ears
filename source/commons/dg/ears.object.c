@@ -4063,6 +4063,117 @@ t_llll *earsbufobj_pitch_llllelem_to_cents_and_samples(t_earsbufobj *e_ob, t_lll
     return out;
 }
 
+// llllelem can be either a number or a t_pts
+t_llll *earsbufobj_pitch_llllelem_to_ratio_and_samples(t_earsbufobj *e_ob, t_llllelem *elem, t_buffer_obj *buf)
+{
+    t_llll *out = llll_get();
+    llll_appendhatom_clone(out, &elem->l_hatom);
+    llll_flatten(out, 1, 0);
+    
+    double dur_samps = ears_buffer_get_size_samps((t_object *)e_ob, buf);
+    double sr = ears_buffer_get_sr((t_object *)e_ob, buf);
+    
+    for (t_llllelem *el = out->l_head; el; el = el->l_next) {
+        if (hatom_gettype(&el->l_hatom) == H_LLLL) {
+            switch (e_ob->l_pitchunit) {
+                case EARS_PITCHUNIT_CENTS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_cents_to_ratio(hatom_getdouble(&sub_ll->l_head->l_next->l_hatom)));
+                }
+                    break;
+                case EARS_PITCHUNIT_HERTZ:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_cents_to_ratio(ears_hz_to_cents(hatom_getdouble(&sub_ll->l_head->l_next->l_hatom), EARS_MIDDLE_A_TUNING)));
+                }
+                    break;
+                case EARS_PITCHUNIT_MIDI:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && sub_ll->l_head->l_next && is_hatom_number(&sub_ll->l_head->l_next->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_next->l_hatom, ears_cents_to_ratio(100* hatom_getdouble(&sub_ll->l_head->l_next->l_hatom)));
+                }
+                    break;
+                default:
+                    break;
+            }
+            switch (e_ob->l_envtimeunit) {
+                case EARS_TIMEUNIT_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_SECONDS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom)*1000., sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_RATIO:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, hatom_getdouble(&sub_ll->l_head->l_hatom) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_SAMPS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + hatom_getdouble(&sub_ll->l_head->l_hatom));
+                }
+                    break;
+                case EARS_TIMEUNIT_DURATION_DIFFERENCE_MS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, dur_samps + ears_ms_to_fsamps(hatom_getdouble(&sub_ll->l_head->l_hatom), sr));
+                }
+                    break;
+                case EARS_TIMEUNIT_NUM_INTERVALS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1./hatom_getdouble(&sub_ll->l_head->l_hatom)) * (dur_samps - 1));
+                }
+                    break;
+                case EARS_TIMEUNIT_NUM_ONSETS:
+                {
+                    t_llll *sub_ll = hatom_getllll(&el->l_hatom);
+                    if (sub_ll && sub_ll->l_head && is_hatom_number(&sub_ll->l_head->l_hatom))
+                        hatom_setdouble(&sub_ll->l_head->l_hatom, (1. + (1./hatom_getdouble(&sub_ll->l_head->l_hatom))) * (dur_samps - 1));
+                }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch (e_ob->l_pitchunit) {
+                case EARS_PITCHUNIT_CENTS:
+                    hatom_setdouble(&el->l_hatom, ears_cents_to_ratio(hatom_getdouble(&el->l_hatom)));
+                    break;
+                case EARS_PITCHUNIT_HERTZ:
+                    hatom_setdouble(&el->l_hatom, ears_cents_to_ratio(ears_hz_to_cents(hatom_getdouble(&el->l_hatom), EARS_MIDDLE_A_TUNING)));
+                    break;
+                case EARS_PITCHUNIT_MIDI:
+                    hatom_setdouble(&el->l_hatom, ears_cents_to_ratio(100*hatom_getdouble(&el->l_hatom)));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    return out;
+}
+
+
 
 
 // llllelem can be either a number or a t_pts

@@ -1057,7 +1057,7 @@ t_ears_err ears_buffer_paulstretch_envelope(t_object *ob, t_buffer_obj *source, 
                 orig_sample_wk[i*channelcount + c] *= rescale(i, framecount-end_size, framecount-1, 1., 0.);
         
         // compute output frame count
-        t_ears_envelope_iterator eei = ears_envelope_iterator_create(stretchenv, 0., false, slopemapping);
+        t_ears_envelope_iterator eei = ears_envelope_iterator_create(stretchenv, 0., NULL, slopemapping);
         long n = 0;
         double start_pos = 0.;
         char have_warned = false;

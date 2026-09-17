@@ -150,7 +150,7 @@ void buf_resample_assist(t_buf_resample *x, void *b, long m, long a, char *s)
         if (a == 0)
             sprintf(s, "symbol/list/llll: Incoming Buffer Names"); // @in 0 @type symbol/list/llll @digest Incoming buffer names
         else
-            sprintf(s, "float/list/llll: Resampling factors"); // @in 0 @type float/list/llll @digest Resampling factors
+            sprintf(s, "float/list/llll: Resampling factors"); // @in 1 @type float/list/llll @digest Resampling factors
     } else {
         sprintf(s, "symbol/list: Resampleted Buffer Names"); // @out 0 @type symbol/list @digest Resampled buffer names
     }
@@ -256,7 +256,7 @@ void buf_resample_bang(t_buf_resample *x)
                 double factor_end = hatom_getdouble(&llll_getindex(ll, 3, I_MODULO)->l_hatom);
                 double factor_factor = hatom_getdouble(&llll_getindex(ll, 4, I_MODULO)->l_hatom);
                 double maxlensamps = hatom_getdouble(&llll_getindex(ll, 5, I_MODULO)->l_hatom) * ears_buffer_get_sr((t_object *)x, in) / 1000.;
-                ears_buffer_resample_envelope_speed_circualar((t_object *)x, out, factor_start, factor_end, factor_factor, window_width_samples, maxlensamps);
+                ears_buffer_resample_envelope_speed_circular((t_object *)x, out, factor_start, factor_end, factor_factor, window_width_samples, maxlensamps);
 
             // ORDINARY CASES
             } else {
@@ -264,12 +264,12 @@ void buf_resample_bang(t_buf_resample *x)
                 t_llll *env = earsbufobj_time_llllelem_to_relative_and_samples((t_earsbufobj *)x, el, in, x->e_derivative_sampling_rate);
                 
                 // check if envelope crosses zero or is constantly negative (and hence needs reverse)
-                t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., false, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 1., NULL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
                 double min_y = ears_envelope_iterator_get_min_y(&eei);
                 double max_y = ears_envelope_iterator_get_max_y(&eei);
                 
                 if (mode != EARS_RESAMPLINGMODE_SINC) {
-                    object_warn((t_object *)x, "Only sinc interpolation is supported via envelopes. Defaulting to sinc.");
+                    object_warn((t_object *)x, "Only sinc interpolation is supported with envelopes. Defaulting to sinc.");
                 }
                 
                 if (min_y == 0 || max_y == 0) {
@@ -283,9 +283,9 @@ void buf_resample_bang(t_buf_resample *x)
                         if (ll && ll->l_size >= 2 && is_hatom_number(&ll->l_head->l_next->l_hatom))
                             hatom_setdouble(&ll->l_head->l_next->l_hatom, hatom_getdouble(&ll->l_head->l_next->l_hatom) * -1);
                     }
-                    ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                    ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, NULL,  earsbufobj_get_slope_mapping((t_earsbufobj *)x));
                 } else {
-                    ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+                    ears_buffer_resample_envelope((t_object *)x, out, env, window_width_samples, NULL,  earsbufobj_get_slope_mapping((t_earsbufobj *)x));
                 }
                 
                 llll_free(env);

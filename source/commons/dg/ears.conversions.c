@@ -224,6 +224,20 @@ double ears_cents_to_ratio(double cents)
     return pow(2, cents/1200.);
 }
 
+double ears_cents_to_invratio(double cents)
+{
+    return 1./pow(2, cents/1200.);
+}
+
+double ears_reciprocal(double val)
+{
+    return 1./val;
+}
+
+double ears_identity(double val)
+{
+    return val;
+}
 
 double ears_hz_to_cents(double freq, double middleAtuning)
 {

@@ -249,6 +249,7 @@ typedef enum {
 } e_ears_op;
 
 
+typedef double (*t_double_func)(double);
 
 typedef struct _ears_envelope_iterator
 {
@@ -260,7 +261,8 @@ typedef struct _ears_envelope_iterator
     t_pts       right_pts;
     double      default_val;
     
-    char        use_decibels;
+//    char        use_decibels;
+    t_double_func remap_fn;
     
     e_slope_mapping slopemapping;
 } t_ears_envelope_iterator;
@@ -313,10 +315,10 @@ t_ears_err ears_buffer_join(t_object *ob, t_buffer_obj **source, long num_source
                               long *xfade_samples, char also_fade_boundaries,
                               e_ears_fade_types fade_type, double fade_curve, e_slope_mapping slopemapping,
                               e_ears_resamplingpolicy resamplingpolicy, long resamplingfiltersize, e_ears_resamplingmode resamplingmode);
-t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels); // also work inplace, with source == dest
-t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, char thresh_is_in_decibel, e_slope_mapping slopemapping); // also work inplace, with source == dest
-t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels); // also work inplace, with source == dest
-t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, char thresh_is_in_decibel, e_slope_mapping slopemapping); // also work inplace, with source == dest
+t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, t_double_func func); // also work inplace, with source == dest
+t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, t_double_func func, e_slope_mapping slopemapping); // also work inplace, with source == dest
+t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, t_double_func func); // also work inplace, with source == dest
+t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, t_double_func remap_fn, e_slope_mapping slopemapping); // also work inplace, with source == dest
 t_ears_err ears_buffer_overdrive(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double drive); // also work inplace, with source == dest
 t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *drive, e_slope_mapping slopemapping); // also work inplace, with source == dest
 t_ears_err ears_buffer_normalize(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double linear_amp_level, double mix); // also work inplace, with source == dest
@@ -485,11 +487,12 @@ t_ears_err ears_buffer_convert_sr(t_object *ob, t_buffer_obj *buf, double sr, lo
 t_ears_err ears_buffer_convert_size(t_object *ob, t_buffer_obj *buf, long sizeinsamps);
 t_ears_err ears_buffer_convert_format(t_object *ob, t_buffer_obj *orig, t_buffer_obj *dest, e_ears_channel_convert_modes channelmode_upmix, e_ears_channel_convert_modes channelmode_downmix);
 t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampling_factor, long window_width, e_ears_resamplingmode resamplingmode = EARS_RESAMPLINGMODE_SINC);
-t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, e_slope_mapping slopemapping);
+t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, t_double_func remap_fn, e_slope_mapping slopemapping);
+
 e_ears_resamplingmode ears_symbol_to_resamplingmode(t_object *ob, t_symbol *s);
 
 // experimental, don't use
-t_ears_err ears_buffer_resample_envelope_speed_circualar(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps);
+t_ears_err ears_buffer_resample_envelope_speed_circular(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps);
 
 
 /// WRITE FILES
@@ -518,8 +521,8 @@ long ears_resample(e_ears_resamplingmode resamplingmode, float *in, long num_in_
 
 
 /// Helper tools
-t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double default_val, char use_decibels, e_slope_mapping slopemapping);
-t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem *envelope, double fallback_val, char use_decibels, e_slope_mapping slopemapping); // also accounts for static numbers
+t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double default_val, t_double_func remap_fn, e_slope_mapping slopemapping);
+t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem *envelope, double fallback_val, t_double_func remap_fn, e_slope_mapping slopemapping); // also accounts for static numbers
 double ears_envelope_iterator_walk_interp(t_ears_envelope_iterator *eei, long sample_num, long tot_num_samples);
 void ears_envelope_get_max_x(t_llllelem *el, t_atom *a_max);
 void ears_envelope_iterator_reset(t_ears_envelope_iterator *eei);

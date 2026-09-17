@@ -44,8 +44,8 @@ t_ears_err ears_buffer_rubberband(t_object *ob, t_buffer_obj *source, t_buffer_o
     else
         options |= RubberBand::RubberBandStretcher::OptionProcessRealTime;
 
-    t_ears_envelope_iterator ts_eei = ears_envelope_iterator_create(timestretch_factor, 0., false, slopemapping);
-    t_ears_envelope_iterator ps_eei = ears_envelope_iterator_create(pitchshift_factor, 0., false, slopemapping);
+    t_ears_envelope_iterator ts_eei = ears_envelope_iterator_create(timestretch_factor, 0., NULL, slopemapping);
+    t_ears_envelope_iterator ps_eei = ears_envelope_iterator_create(pitchshift_factor, 0., NULL, slopemapping);
 
 //    double frequencyshift = 1.;
 //    if (pitchshift_cents != 0.0)

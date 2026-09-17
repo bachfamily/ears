@@ -23,8 +23,9 @@ These might break compatibility with older patches
 *** VERSION CHANGES ***
 ***********************
 
-- ears.ebur128~: new object
-– ears.psola~: new object
+- ears.ebur128~: new object for EBUR128 loudness measurement
+– ears.psola~: new object for PSOLA synthesis
+- ears.respeed~: new barebone time/pitch object that uses playback speed change (as simple wrapper around ears.resample~)
 
 - ears.split: 
 	· new @maxnumsegments attribute to define maximum number of segments

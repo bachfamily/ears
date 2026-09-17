@@ -23,6 +23,13 @@
 	<inletlist>
 		<inlet id="0" type="INLET_TYPE">
 			<digest>
+				Incoming buffer names
+			</digest>
+			<description>
+			</description>
+		</inlet>
+		<inlet id="1" type="INLET_TYPE">
+			<digest>
 				Resampling factors
 			</digest>
 			<description>
@@ -420,7 +427,12 @@
 	</seealsolist>
 
 	<misc name = "Input">
-		<entry name ="Inlet 1 (float/list/llll)">
+		<entry name ="Inlet 1 (symbol/list/llll)">
+			<description>
+				Incoming buffer names.
+			</description>
+		</entry>
+		<entry name ="Inlet 2 (float/list/llll)">
 			<description>
 				Resampling factors.
 			</description>

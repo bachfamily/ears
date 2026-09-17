@@ -95,6 +95,9 @@ double ears_rad_to_deg(double rad);
 
 double ears_ratio_to_cents(double ratio);
 double ears_cents_to_ratio(double cents);
+double ears_cents_to_invratio(double cents);
+double ears_reciprocal(double val);
+double ears_identity(double val);
 
 double ears_hz_to_cents(double freq, double middleAtuning);
 double ears_cents_to_hz(double cents, double middleAtuning);

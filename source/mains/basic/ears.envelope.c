@@ -229,10 +229,10 @@ void buf_envelope_bang(t_buf_envelope *x)
         
         if (env->l_depth == 1 && env->l_head) {
             // envelope is a single number
-            ears_buffer_gain((t_object *)x, out, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARS_AMPUNIT_DECIBEL);
+            ears_buffer_gain((t_object *)x, out, out, hatom_getdouble(&env->l_head->l_hatom), x->e_ob.l_ampunit == EARS_AMPUNIT_DECIBEL ? ears_db_to_linear : NULL);
         } else {
             // envelope is an envelope in llll form
-            ears_buffer_gain_envelope((t_object *)x, out, out, env, x->e_ob.l_envampunit == EARS_AMPUNIT_DECIBEL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
+            ears_buffer_gain_envelope((t_object *)x, out, out, env, x->e_ob.l_envampunit == EARS_AMPUNIT_DECIBEL ? ears_db_to_linear : NULL, earsbufobj_get_slope_mapping((t_earsbufobj *)x));
         }
         
         llll_free(env);

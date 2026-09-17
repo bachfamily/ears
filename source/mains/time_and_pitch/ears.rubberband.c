@@ -33,7 +33,7 @@
 	buffer, pitch, stretch, shift, pitchshift, timestretch, rubberband, rubber, band
  
 	@seealso
-	ears.soundtouch~, ears.paulstretch~, ears.resample~
+	ears.soundtouch~, ears.paulstretch~, ears.respeed~
 	
 	@owner
 	Daniele Ghisi

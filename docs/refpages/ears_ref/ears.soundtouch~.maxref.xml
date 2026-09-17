@@ -402,7 +402,7 @@
 	<seealsolist>
 		<seealso name="ears.rubberband~" />
 		<seealso name="ears.paulstretch~" />
-		<seealso name="ears.resample~" />
+		<seealso name="ears.respeed~" />
 	</seealsolist>
 
 	<misc name = "Input">

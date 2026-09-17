@@ -104,8 +104,8 @@ t_ears_err ears_buffer_freeverb_envelope(t_object *ob, t_buffer_obj *source, t_b
         float *wet = (float *)bach_newptrclear((framecount + framepad) * sizeof(float));
         
         // building envelopes
-        t_ears_envelope_iterator eei_dry = ears_envelope_iterator_create(dry_env, dry_default, false, slopemapping);
-        t_ears_envelope_iterator eei_wet = ears_envelope_iterator_create(wet_env, wet_default, false, slopemapping);
+        t_ears_envelope_iterator eei_dry = ears_envelope_iterator_create(dry_env, dry_default, NULL, slopemapping);
+        t_ears_envelope_iterator eei_wet = ears_envelope_iterator_create(wet_env, wet_default, NULL, slopemapping);
         for (long i = 0; i < framecount; i++) {
             dry[i] = ears_envelope_iterator_walk_interp(&eei_dry, i, framecount);
             wet[i] = ears_envelope_iterator_walk_interp(&eei_wet, i, framecount);

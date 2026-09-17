@@ -228,7 +228,7 @@ void buf_mixdown_bang(t_buf_mixdown *x)
             ears_buffer_clone((t_object *)x, in, out);
             ears_buffer_convert_numchannels((t_object *)x, out, numchannels, (e_ears_channel_convert_modes)channelmode_upmix, (e_ears_channel_convert_modes)channelmode_downmix);
             if (autogain)
-                ears_buffer_gain((t_object *)x, out, out, numchannels*1./curr_num_channels, false);
+                ears_buffer_gain((t_object *)x, out, out, numchannels*1./curr_num_channels, NULL);
         } else {
             ears_buffer_clone((t_object *)x, in, out);
         }

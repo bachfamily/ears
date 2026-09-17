@@ -586,7 +586,25 @@
     "seealso": [
       "ears.soundtouch~",
       "ears.paulstretch~",
-      "ears.resample~"
+      "ears.respeed~"
+    ]
+  },
+  "ears.respeed~": {
+    "digest": "Vary buffer playback speed",
+    "module": "ears",
+    "category": [
+      "ears time and pitch"
+    ],
+    "keywords": [
+      "buffer",
+      "respeed",
+      "property",
+      "change",
+      "vinyl"
+    ],
+    "seealso": [
+      "ears.rubberband~",
+      "ears.soundtouch~"
     ]
   },
   "ears.paulfreeze~": {
@@ -644,7 +662,7 @@
     "seealso": [
       "ears.rubberband~",
       "ears.paulstretch~",
-      "ears.resample~"
+      "ears.respeed~"
     ]
   },
   "ears.read~": {

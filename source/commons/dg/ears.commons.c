@@ -1355,7 +1355,7 @@ t_ears_err ears_buffer_resample(t_object *ob, t_buffer_obj *buf, double resampli
 
 // THIS ONE IS EXPERIMENTAL
 // resampling without converting sr
-t_ears_err ears_buffer_resample_envelope_speed_circualar(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps)
+t_ears_err ears_buffer_resample_envelope_speed_circular(t_object *ob, t_buffer_obj *buf, double factor_start, double factor_end, double factor_factor, long window_width, long maxlen_samps)
 {
     t_ears_err err = EARS_ERR_NONE;
     double curr_sr = buffer_getsamplerate(buf);
@@ -1395,10 +1395,10 @@ t_ears_err ears_buffer_resample_envelope_speed_circualar(t_object *ob, t_buffer_
 
 
 // resampling without converting sr
-t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, e_slope_mapping slopemapping)
+t_ears_err ears_buffer_resample_envelope(t_object *ob, t_buffer_obj *buf, t_llll *resampling_factor, long window_width, t_double_func remap_fn, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
-    t_ears_envelope_iterator eei = ears_envelope_iterator_create(resampling_factor, 1., false, slopemapping);
+    t_ears_envelope_iterator eei = ears_envelope_iterator_create(resampling_factor, 1., remap_fn, slopemapping);
     double curr_sr = buffer_getsamplerate(buf);
     double maxfactor = ears_envelope_iterator_get_max_y(&eei);
     double sr = curr_sr * maxfactor;
@@ -2454,7 +2454,7 @@ t_ears_err ears_buffer_get_rms(t_object *ob, t_buffer_obj *source, double *rms)
 
 
 // also supports inplace operations
-t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, char use_decibels)
+t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double gain_factor, t_double_func remap_fn)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -2466,7 +2466,7 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
     } else {
-        double factor = use_decibels ? ears_db_to_linear(gain_factor) : gain_factor;
+        double factor = remap_fn ? remap_fn(gain_factor) : gain_factor;
         
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
@@ -2502,7 +2502,7 @@ t_ears_err ears_buffer_gain(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
 
 
 // also supports inplace operations
-t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double clip_threshold, char use_decibels)
+t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, double clip_threshold, t_double_func remap_fn)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -2514,7 +2514,7 @@ t_ears_err ears_buffer_clip(t_object *ob, t_buffer_obj *source, t_buffer_obj *de
         err = EARS_ERR_CANT_READ;
         object_error((t_object *)ob, EARS_ERROR_BUF_CANT_READ);
     } else {
-        double threshold = use_decibels ? ears_db_to_linear(clip_threshold) : clip_threshold;
+        double threshold = remap_fn ? remap_fn(clip_threshold) : clip_threshold;
         
         t_atom_long    channelcount = buffer_getchannelcount(source);        // number of floats in a frame
         t_atom_long    framecount   = buffer_getframecount(source);            // number of floats long the buffer is for a single channel
@@ -2826,7 +2826,7 @@ t_ears_err ears_buffer_pan1d_envelope(t_object *ob, t_buffer_obj *source, t_buff
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., false, slopemapping);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., NULL, slopemapping);
             
             if (channelcount == 1) { // panning a mono source
                 for (long i = 0; i < framecount; i++) {
@@ -3323,7 +3323,7 @@ t_pts elem_to_pts(t_llllelem *incoming_el)
 
 
 
-t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double default_val, char use_decibels, e_slope_mapping slopemapping)
+t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double default_val, t_double_func remap_fn, e_slope_mapping slopemapping)
 {
     t_ears_envelope_iterator eei;
     eei.slopemapping = slopemapping;
@@ -3333,11 +3333,11 @@ t_ears_envelope_iterator ears_envelope_iterator_create(t_llll *envelope, double 
     eei.right_el = envelope ? envelope->l_head : NULL;
     if (eei.right_el)
         eei.left_pts = eei.right_pts = elem_to_pts(eei.right_el);
-    eei.use_decibels = use_decibels;
+    eei.remap_fn = remap_fn;
     return eei;
 }
 
-t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem *envelope, double default_val, char use_decibels, e_slope_mapping slopemapping)
+t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem *envelope, double default_val, t_double_func remap_fn, e_slope_mapping slopemapping)
 {
     t_ears_envelope_iterator eei;
     if (!envelope) {
@@ -3354,7 +3354,7 @@ t_ears_envelope_iterator ears_envelope_iterator_create_from_llllelem(t_llllelem 
         eei.default_val = hatom_getdouble(&envelope->l_hatom);
     }
     eei.slopemapping = slopemapping;
-    eei.use_decibels = use_decibels;
+    eei.remap_fn = remap_fn;
     eei.left_el = NULL;
     if (eei.right_el)
         eei.left_pts = eei.right_pts = elem_to_pts(eei.right_el);
@@ -3376,6 +3376,8 @@ double ears_envelope_iterator_get_max_y(t_ears_envelope_iterator *eei)
         t_llll *ll = hatom_getllll(&el->l_hatom);
         if (ll && ll->l_head) {
             double this_y = hatom_getdouble(&ll->l_head->l_next->l_hatom);
+            if (eei->remap_fn)
+                this_y = eei->remap_fn(this_y);
             if (this_y > max_y)
                 max_y = this_y;
         }
@@ -3390,6 +3392,8 @@ double ears_envelope_iterator_get_min_y(t_ears_envelope_iterator *eei)
         t_llll *ll = hatom_getllll(&el->l_hatom);
         if (ll && ll->l_head) {
             double this_y = hatom_getdouble(&ll->l_head->l_next->l_hatom);
+            if (eei->remap_fn)
+                this_y = eei->remap_fn(this_y);
             if (this_y < min_y)
                 min_y = this_y;
         }
@@ -3425,11 +3429,11 @@ double ears_envelope_iterator_walk_interp(t_ears_envelope_iterator *eei, long sa
     else if (eei->right_el)
         amp = eei->right_pts.y;
     
-    return eei->use_decibels ? ears_db_to_linear(amp) : amp;
+    return eei->remap_fn ? eei->remap_fn(amp) : amp;
 }
 
 
-t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *env, char use_decibels, e_slope_mapping slopemapping)
+t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *env, t_double_func remap_fn, e_slope_mapping slopemapping)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -3456,7 +3460,7 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., use_decibels, slopemapping);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., remap_fn, slopemapping);
             for (long i = 0; i < framecount; i++) {
                 double factor = ears_envelope_iterator_walk_interp(&eei, i, framecount);
                 
@@ -3479,7 +3483,7 @@ t_ears_err ears_buffer_gain_envelope(t_object *ob, t_buffer_obj *source, t_buffe
 }
 
 
-t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, char use_decibels, e_slope_mapping slopemapping)
+t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *thresh, t_double_func remap_fn, e_slope_mapping slopemapping)
 {
     if (!source || !dest)
         return EARS_ERR_NO_BUFFER;
@@ -3506,7 +3510,7 @@ t_ears_err ears_buffer_clip_envelope(t_object *ob, t_buffer_obj *source, t_buffe
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(thresh, 0., use_decibels, slopemapping);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(thresh, 0., remap_fn, slopemapping);
             for (long i = 0; i < framecount; i++) {
                 double threshold = ears_envelope_iterator_walk_interp(&eei, i, framecount);
                 
@@ -3559,7 +3563,7 @@ t_ears_err ears_buffer_overdrive_envelope(t_object *ob, t_buffer_obj *source, t_
             object_error((t_object *)ob, EARS_ERROR_BUF_CANT_WRITE);
         } else {
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create(drive, 0., false, slopemapping);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create(drive, 0., NULL, slopemapping);
             for (long i = 0; i < framecount; i++) {
                 double this_drive = ears_envelope_iterator_walk_interp(&eei, i, framecount);
                 
@@ -3598,7 +3602,7 @@ t_ears_err ears_buffer_normalize(t_object *ob, t_buffer_obj *source, t_buffer_ob
         return EARS_ERR_ZERO_AMP;
     } else {
         double factor = mix * linear_amp_level/maxabs + (1-mix);
-        return ears_buffer_gain(ob, source, dest, factor, false);
+        return ears_buffer_gain(ob, source, dest, factor, NULL);
     }
 }
 
@@ -3617,7 +3621,7 @@ t_ears_err ears_buffer_normalize_rms(t_object *ob, t_buffer_obj *source, t_buffe
         return EARS_ERR_ZERO_AMP;
     } else {
         double factor = mix * linear_amp_level/rms + (1-mix);
-        return ears_buffer_gain(ob, source, dest, factor, false);
+        return ears_buffer_gain(ob, source, dest, factor, NULL);
     }
 }
 
@@ -3932,7 +3936,7 @@ t_ears_err ears_buffer_mix(t_object *ob, t_buffer_obj **source, long num_sources
             
             long this_onset_samps = offset_samps[i] > 0 ? offset_samps[i] : 0;
             
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., false, slopemapping);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., NULL, slopemapping);
             for (j = 0; j < num_samples[i]; j++) {
                 double this_gain = ears_envelope_iterator_walk_interp(&eei, j, num_samples[i]);
                 for (c = 0; c < num_channels[i] && c < channelcount; c++)
@@ -4060,7 +4064,7 @@ t_ears_err ears_buffer_mix_subsampleprec(t_object *ob, t_buffer_obj **source, lo
         for (i = 0, elem = gains ? gains->l_head : NULL; i < num_sources; i++, elem = (elem && elem->l_next) ? elem->l_next : elem) {
             
             double this_onset_samps = offset_samps[i] > 0 ? offset_samps[i] : 0;
-            t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., false, slopemapping);
+            t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., NULL, slopemapping);
 
             if (fmod(this_onset_samps, 1.) == 0) {
                 for (j = 0; j < num_samples[i]; j++) {
@@ -4419,7 +4423,7 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
         t_llllelem *elem = gains ? gains->l_head : NULL;
         long this_onset_samps = offset_samps > 0 ? offset_samps : 0;
         
-        t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., false, slopemapping);
+        t_ears_envelope_iterator eei = ears_envelope_iterator_create_from_llllelem(elem, 1., NULL, slopemapping);
         for (j = 0; j < new_numsamps; j++) {
             double this_gain = ears_envelope_iterator_walk_interp(&eei, j, new_numsamps);
 //            for (c = 0; c < new_channelcount && c < channelcount; c++) {
@@ -4683,8 +4687,8 @@ t_ears_err ears_buffer_synth_from_duration_line(t_object *e_ob, t_buffer_obj **d
         }
 
         // building envelope iterators
-        t_ears_envelope_iterator eei_deltapitch = ears_envelope_iterator_create(pitchenv, 0, false, slopemapping);
-        t_ears_envelope_iterator eei_vel = ears_envelope_iterator_create(velocityenv, velocity, false, slopemapping);
+        t_ears_envelope_iterator eei_deltapitch = ears_envelope_iterator_create(pitchenv, 0, NULL, slopemapping);
+        t_ears_envelope_iterator eei_vel = ears_envelope_iterator_create(velocityenv, velocity, NULL, slopemapping);
 
         // synthesizing
         double running_phase = 0;
@@ -5129,7 +5133,7 @@ t_ears_err ears_buffer_onepole(t_object *ob, t_buffer_obj *source, t_buffer_obj 
 t_ears_err ears_buffer_onepole_envelope(t_object *ob, t_buffer_obj *source, t_buffer_obj *dest, t_llll *cutoff_freq, char highpass, e_slope_mapping slopemapping)
 {
     t_ears_err err = EARS_ERR_NONE;
-    t_ears_envelope_iterator eei = ears_envelope_iterator_create(cutoff_freq, 20., false, slopemapping);
+    t_ears_envelope_iterator eei = ears_envelope_iterator_create(cutoff_freq, 20., NULL, slopemapping);
     
     double a0 = 1.;
     double b1 = 0.;
@@ -5497,7 +5501,7 @@ t_ears_err ears_buffer_expr(t_object *ob, void *expr, /* this can be either a t_
         if (argtype[i] == 2) {
             eei_envs[i] = llll_clone(hatom_getllll(arguments + i));
             ears_llll_to_env_samples(eei_envs[i], total_length_samps, sr, envtimeunit);
-            eei[i] = ears_envelope_iterator_create(eei_envs[i], 0., false, slopemapping);
+            eei[i] = ears_envelope_iterator_create(eei_envs[i], 0., NULL, slopemapping);
         }
     }
     
@@ -7190,7 +7194,7 @@ t_ears_err ears_buffer_envelope_op(t_object *ob, t_buffer_obj *source, t_llll *e
         long channelcount = buffer_getchannelcount(dest);
         long framecount = buffer_getframecount(dest);
         
-        t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., false, slopemapping);
+        t_ears_envelope_iterator eei = ears_envelope_iterator_create(env, 0., NULL, slopemapping);
         
         switch (op) {
             case EARS_OP_TIMES:
@@ -7341,7 +7345,7 @@ t_ears_err ears_buffer_psola_envelope(t_object *ob, t_buffer_obj *source, t_buff
                                       bool pitch_compensation_for_stride, double highpass_cutoff, long input_offset_samps)
 {
     t_ears_err err = EARS_ERR_NONE;
-    t_ears_envelope_iterator eei = ears_envelope_iterator_create(pitch_env, 6000., false, slopemapping);
+    t_ears_envelope_iterator eei = ears_envelope_iterator_create(pitch_env, 6000., NULL, slopemapping);
     
     double sr = ears_buffer_get_sr(ob, source);
     double num_out_samps = duration_samples;
@@ -7454,11 +7458,11 @@ t_ears_err ears_buffer_granulate(t_object *ob, t_buffer_obj *source, t_buffer_ob
                                           )
 {
     t_ears_err err = EARS_ERR_NONE;
-    t_ears_envelope_iterator grain_size_eei = ears_envelope_iterator_create(grain_size, 100., false, slopemapping);
-    t_ears_envelope_iterator grain_interval_eei = ears_envelope_iterator_create(grain_interval, 400., false, slopemapping);
-    t_ears_envelope_iterator grain_interval_jitter_eei = ears_envelope_iterator_create(grain_interval_jitter, 0., false, slopemapping);
-    t_ears_envelope_iterator grain_onset_eei = ears_envelope_iterator_create(grain_onset, 0, false, slopemapping);
-    t_ears_envelope_iterator grain_onset_jitter_eei = ears_envelope_iterator_create(grain_onset_jitter, 0, false, slopemapping);
+    t_ears_envelope_iterator grain_size_eei = ears_envelope_iterator_create(grain_size, 100., NULL, slopemapping);
+    t_ears_envelope_iterator grain_interval_eei = ears_envelope_iterator_create(grain_interval, 400., NULL, slopemapping);
+    t_ears_envelope_iterator grain_interval_jitter_eei = ears_envelope_iterator_create(grain_interval_jitter, 0., NULL, slopemapping);
+    t_ears_envelope_iterator grain_onset_eei = ears_envelope_iterator_create(grain_onset, 0, NULL, slopemapping);
+    t_ears_envelope_iterator grain_onset_jitter_eei = ears_envelope_iterator_create(grain_onset_jitter, 0, NULL, slopemapping);
 
     double sr = ears_buffer_get_sr(ob, source);
     double num_out_samps = duration_samples;
