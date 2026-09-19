@@ -34,6 +34,8 @@ These might break compatibility with older patches
 - ears.essentia: 
 	· fixed many algorithms that didn't work properly
 
+- ears.assemble:
+	· fixed bug causing possible crashes during certain automatic resamplings
 
 - ears.resample, ears.rubberband:
 	· now absolute timing works in envelopes as well

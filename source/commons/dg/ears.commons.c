@@ -4398,6 +4398,7 @@ t_ears_err ears_buffer_assemble_once(t_object *ob, t_buffer_obj *basebuffer, t_b
         ears_resample(resamplingmode, new_sample, num_in_frames, &resampled_samples, num_out_frames, factor, new_channelcount, new_sr/2., new_sr, resamplingfiltersize);
         ears_buffer_unlocksamples(newbuffer);
         new_sample = resampled_samples;
+        new_numsamps = num_out_frames;
         must_free = true;
     }
     
